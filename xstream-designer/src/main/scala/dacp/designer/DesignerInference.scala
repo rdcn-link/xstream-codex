@@ -1,5 +1,7 @@
 package xstream.designer
 
+import _root_.xstream.operator.inference._
+
 import _root_.xstream.data._
 
 import com.fasterxml.jackson.databind.JsonNode

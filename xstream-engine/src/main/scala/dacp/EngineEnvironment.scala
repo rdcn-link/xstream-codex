@@ -1,5 +1,7 @@
 package dacp
 
+import _root_.xstream.operator.inference._
+
 import org.apache.arrow.memory.BufferAllocator
 /** Host boundary: the engine never starts a data server or owns host credentials. */
 trait EngineEnvironment extends OperatorEnvironment {

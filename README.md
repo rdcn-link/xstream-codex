@@ -11,6 +11,9 @@ XStream is a Scala toolkit for stream-oriented computation: typed data access, a
 | Module | Purpose |
 |---|---|
 | [xstream-data](xstream-data/README.md) | DataCatalog → Dataset → Item, typed DataView/DataStream contracts, plugin discovery, file and scientific-format implementations and network codecs |
+| [xstream-operator-sdk](xstream-operator-sdk/README.md) | JVM/Python operator templates and metadata contracts |
+| [xstream-operator-inference](xstream-operator-inference/README.md) | Reusable on-demand structure and sample workers |
+| [xstream-operator-repository](xstream-operator-repository/README.md) | Source submissions, isolated builds, review, public operator and runtime downloads |
 | [xstream-engine](xstream-engine/README.md) | Embedded execution, cancellation, execution policies, automatic remote compute pushdown and the `xstream-runner` launcher |
 | [xstream-designer](xstream-designer/README.md) | Visual Job editing, catalogs, variables, schema and sample previews, chat proposals and YAML import/export |
 
@@ -18,7 +21,7 @@ XStream is a Scala toolkit for stream-oriented computation: typed data access, a
 
 ## Build
 
-Use JDK 17 and sbt 1.10.x. These modules were extracted from [DACP](https://github.com/rdcn-link/dacp-codex). DACP consumes XStream as versioned artifacts; XStream engine and designer consume DACP integration libraries as versioned artifacts. Builds never reach into another source checkout.
+Use JDK 17 and sbt 1.10.x. These modules were extracted from [DACP](https://github.com/rdcn-link/dacp-codex). DACP consumes XStream as versioned artifacts; XStream engine and designer consume DACP transport and execution API integration libraries as versioned artifacts. Builds never reach into another source checkout.
 
 There are no public releases yet. To populate a development machine's local artifact repository, clone both repositories and run:
 
@@ -32,7 +35,7 @@ sbt test
 (cd xstream-designer && sbt stage)
 ```
 
-The bootstrap publishes data artifacts, DACP public integration libraries, then the engine in dependency order. The explicit DACP path is needed only for bootstrapping unpublished development artifacts. Ordinary builds resolve artifacts through sbt repositories. A clean machine cannot build the engine until these integration artifacts are available. See [repository boundaries](docs/repositories.md).
+The bootstrap publishes data artifacts, DACP public integration libraries, XStream operator SDK/inference/executors, then the engine in dependency order. The explicit DACP path is needed only for bootstrapping unpublished development artifacts. Ordinary builds resolve artifacts through sbt repositories. A clean machine cannot build the engine until these integration artifacts are available. See [repository boundaries](docs/repositories.md).
 
 ## Run
 
@@ -49,6 +52,8 @@ Edit configuration paths, service addresses and credentials first. The runner pr
 
 ## Documentation
 
+- [Write an operator](docs/operator-authoring.md)
+- [Submit source and review](docs/operator-submission.md)
 - [Engine and embedding](docs/xstream.md)
 - [Typed streams and scientific views](docs/data-streams.md)
 - [Scientific authoring and previews](docs/designer-scientific.md)

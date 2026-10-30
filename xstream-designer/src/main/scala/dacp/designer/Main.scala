@@ -1,11 +1,13 @@
 package xstream.designer
 
+import _root_.xstream.operator.inference._
+
 import _root_.xstream.data._
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.sun.net.httpserver.{HttpExchange,HttpServer}
 import dacp.client.{Source,Dataset,TlsConfig,WorkflowVariables}
-import dacp.{OperatorInferenceService,InferenceWorkerSettings,StreamCancel,StreamDescriptor,ReadItemParameters,PreviewLimits,OutputSample,OutputSamples,InferenceDiagnostic}
+import dacp.{StreamCancel,StreamDescriptor,ReadItemParameters,PreviewLimits,OutputSample,OutputSamples,InferenceDiagnostic}
 import _root_.xstream.data.{PluginEnvironment,ItemViews,Scan,Predicate,Literal}
 import dacp.union.{Json,YamlDocument}
 import java.net.{InetSocketAddress,URI}
@@ -44,7 +46,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val response=http.send(HttpRequest.newBuilder(URI.create(repo.path("url").asText.stripSuffix("/")+"/v1/operators")).timeout(Duration.ofSeconds(15)).GET().build(),HttpResponse.BodyHandlers.ofInputStream())
     val in=response.body();val bytes=try in.readNBytes(4*1024*1024+1)finally in.close()
     require(response.statusCode()==200,"Operator repository is unavailable");require(bytes.length<=4*1024*1024,"Operator list exceeds 4 MiB")
-    val n=Json.mapper.readTree(bytes);require(n.isArray,"Invalid operator catalog");n.elements.asScala.foreach{o=>dacp.operator.OperatorPresentation.validate(o);dacp.operator.ParameterSchema.validate(o.get("parameters"))};n
+    val n=Json.mapper.readTree(bytes);require(n.isArray,"Invalid operator catalog");n.elements.asScala.foreach{o=>xstream.operator.OperatorPresentation.validate(o);xstream.operator.ParameterSchema.validate(o.get("parameters"))};n
   }
   private val inferenceCache=Path.of(config.path("operator_cache").asText(".designer-operator-cache")).toAbsolutePath
   private val inferencePlugins=new PluginEnvironment(Option(config.get("plugin_directory")).map(n=>Path.of(n.asText)))

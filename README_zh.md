@@ -11,6 +11,9 @@ XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问�
 | 模块 | 用途 |
 |---|---|
 | [xstream-data](xstream-data/README_zh.md) | DataCatalog → Dataset → Item、类型化 DataView/DataStream 契约、插件发现、文件及科学格式实现和网络编码 |
+| [xstream-operator-sdk](xstream-operator-sdk/README_zh.md) | JVM/Python 算子模板及元数据契约 |
+| [xstream-operator-inference](xstream-operator-inference/README_zh.md) | 按需启动并复用的结构及样例推导 worker |
+| [xstream-operator-repository](xstream-operator-repository/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
 | [xstream-engine](xstream-engine/README_zh.md) | 嵌入式执行、取消、执行策略、自动远程计算下推及 `xstream-runner` 启动程序 |
 | [xstream-designer](xstream-designer/README_zh.md) | 图形化作业编辑、目录、变量、结构和样例预览、聊天草案及 YAML 导入导出 |
 
@@ -32,7 +35,7 @@ sbt test
 (cd xstream-designer && sbt stage)
 ```
 
-初始化脚本按依赖顺序发布数据制品、DACP 公共集成库和引擎。显式的 DACP 路径仅用于初始化尚未发布的开发制品，普通构建通过 sbt 仓库解析制品。干净机器必须先取得集成制品才能构建引擎。详见[仓库边界](docs/repositories_zh.md)。
+初始化脚本按依赖顺序发布数据制品、DACP 公共集成库、XStream 算子 SDK/推导/执行器和引擎。显式的 DACP 路径仅用于初始化尚未发布的开发制品，普通构建通过 sbt 仓库解析制品。干净机器必须先取得集成制品才能构建引擎。详见[仓库边界](docs/repositories_zh.md)。
 
 ## 运行
 
@@ -49,6 +52,8 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
 
 ## 文档
 
+- [编写算子](docs/operator-authoring_zh.md)
+- [源码提交与审核](docs/operator-submission_zh.md)
 - [引擎和嵌入](docs/xstream_zh.md)
 - [类型化流和科学视图](docs/data-streams_zh.md)
 - [科学数据编排和预览](docs/designer-scientific_zh.md)

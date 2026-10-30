@@ -16,11 +16,14 @@ Compile / resourceGenerators += Def.task {
   }
 }.taskValue
 
-libraryDependencies += "io.github.rdcn-link" %% "dacp-operator-contract" % "0.1.0-SNAPSHOT"
+lazy val XstreamOperatorContract = RootProject(file("../xstream-operator-sdk/contract"))
+dependsOn(XstreamOperatorContract)
 
-libraryDependencies += "io.github.rdcn-link" %% "dacp-operator-inference" % "0.1.0-SNAPSHOT"
+lazy val XstreamOperatorInference = RootProject(file("../xstream-operator-inference"))
+dependsOn(XstreamOperatorInference)
 
-libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-operator-executors" % "0.1.0-SNAPSHOT" % "runtime,test"
+lazy val XstreamPluginOperatorExecutors = RootProject(file("../plugins/xstream-plugin-operator-executors"))
+dependsOn(XstreamPluginOperatorExecutors % "runtime->compile;test->compile")
 
 libraryDependencies += "org.slf4j" % "slf4j-simple" % "2.0.16"
 

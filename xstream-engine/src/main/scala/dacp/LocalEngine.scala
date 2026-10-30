@@ -1,5 +1,7 @@
 package dacp
 
+import _root_.xstream.operator.inference._
+
 import _root_.xstream.data._
 
 import java.nio.file.Path
@@ -25,7 +27,7 @@ final class LocalEngine(settings:JsonNode,val plugins:PluginEnvironment,
   def operatorCache:Path=Path.of(settings.path("operator_cache").asText(".xstream-operators"))
   def operatorMaxBytes:Long=settings.path("operator_max_bytes").asLong(8L*1024*1024*1024)
   def remoteOperatorLibraryUrls:Seq[String]={import scala.jdk.CollectionConverters._;settings.path("remote_operator_library_urls").elements.asScala.map(_.asText).toVector}
-  private[dacp] val inferenceWorkerPool=new InferenceWorkerPool(InferenceWorkerSettings())
+  val inferenceWorkerPool=new InferenceWorkerPool(InferenceWorkerSettings())
   private val stores=scala.collection.mutable.Map.empty[MaterializationStoreDefinition,MaterializationStore]
   def materializationStore:Option[MaterializationStoreDefinition]=Option(settings.get("materialization_store")).map {n=>import scala.jdk.CollectionConverters._;MaterializationStoreDefinition(n.path("provider").asText,Data.mapper.convertValue(n.path("settings"),classOf[java.util.LinkedHashMap[String,Object]]).asScala.toMap)}
   private[dacp] def openMaterialization(d:MaterializationStoreDefinition):MaterializationStore=synchronized {stores.getOrElseUpdate(d,plugins.byId(classOf[MaterializationStoreProvider],d.provider).open(d.settings))}

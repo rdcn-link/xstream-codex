@@ -3,7 +3,8 @@ name := "xstream-engine"
 version := "0.1.0-SNAPSHOT"
 scalaVersion := "2.13.16"
 libraryDependencies += "io.github.rdcn-link" %% "dacp-union-protocol" % "0.1.0-SNAPSHOT"
-libraryDependencies += "io.github.rdcn-link" %% "dacp-operator-inference" % "0.1.0-SNAPSHOT"
+lazy val XstreamOperatorInference = RootProject(file("../xstream-operator-inference"))
+dependsOn(XstreamOperatorInference)
 libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-api" % "0.1.0-SNAPSHOT"
 libraryDependencies ++= Seq("com.github.docker-java" % "docker-java-core" % "3.4.1", "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.4.1", "org.scalatest" %% "scalatest" % "3.2.19" % Test)
 Test / fork := true
@@ -26,7 +27,8 @@ lazy val bundledDatasets = RootProject(file("../xstream-data/xstream-data-files"
 lazy val bundledCatalog = RootProject(file("../xstream-data/xstream-data-catalog-static"))
 lazy val bundledFormats = RootProject(file("../xstream-data/xstream-data-formats-basic"))
 dependsOn(bundledDatasets % "runtime->compile", bundledCatalog % "runtime->compile", bundledFormats % "runtime->compile")
-libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-operator-executors" % "0.1.0-SNAPSHOT" % "runtime"
+lazy val XstreamPluginOperatorExecutors = RootProject(file("../plugins/xstream-plugin-operator-executors"))
+dependsOn(XstreamPluginOperatorExecutors % "runtime->compile")
 libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-execution-file" % "0.1.0-SNAPSHOT" % "runtime"
 
 lazy val dataScientificcodecs = RootProject(file("../xstream-data/xstream-data-scientific-codecs"))

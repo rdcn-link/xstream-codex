@@ -2,13 +2,13 @@
 
 [中文](repositories_zh.md)
 
-XStream owns data contracts and implementations, the streaming engine and its designer. DACP owns service transport, authorization, federation, clients and the operator repository/SDK/inference integration libraries. This is a source-repository split, not removal of all DACP library dependencies from the engine.
+XStream owns data contracts and implementations, the streaming engine and its designer. XStream also owns operator SDK/contracts, inference, executor and source-analysis plugins, runtime build tools and the operator repository. DACP owns service transport, authorization, federation and clients. This is a source-repository split, not removal of all DACP library dependencies from the engine.
 
 The artifact dependency graph is acyclic:
 
 1. XStream data artifacts.
 2. DACP public integration artifacts, consuming data artifacts.
-3. XStream engine, consuming data and DACP integration artifacts.
+3. XStream operator SDK, inference and executors, then the engine; these consume data and DACP integration artifacts.
 4. DACP servers and XStream designer, consuming the engine and public libraries.
 
 Run `scripts/bootstrap-local.sh /path/to/dacp-codex` from this checkout to publish development dependencies in that order. The script deliberately requires an explicit source path. Published libraries use organization `io.github.rdcn-link`, generally version `0.1.0-SNAPSHOT`; `dacp-client-scala` uses `0.1.0`. Ordinary builds resolve Maven/Ivy artifacts, without sibling-checkout detection, symlinks or source fallbacks. Configure a shared artifact repository when distributing builds to other machines; current unreleased dependencies must first be published there or bootstrapped locally.

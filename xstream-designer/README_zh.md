@@ -24,7 +24,7 @@ target/universal/stage/bin/xstream-designer /etc/dacp/designer.yaml
 4. 拖动卡片调整位置，点击输出端口启动随鼠标移动的预览线，再点击输入端口建立流依赖；右键或 Esc 取消。端口不支持拖拽连线。在右侧修改标题和参数；支持删除步骤、移除连接、撤销、重做与自动排列。
 5. 画布始终有且仅有一个 **Outlet**，可拖动位置，但不能删除或复制。点击算子输出端口，再点击 Outlet，即创建 Job 输出绑定；Outlet 最多连接一个步骤的一个输出端口，新连接替换原绑定。属性侧栏仅编辑步骤属性与参数；结果流名称可在 Job YAML 中修改。选中连到 Outlet 的线并按 Delete 可删除对应绑定，Outlet 本身始终保留。导入文件中的 Job 输出也连到同一个 Outlet。布局保存在浏览器草案中，导出时默认写入 `designer` 辅助区。允许 `outputs: {}`；每个生产者端口最多一个消费者。每个输出端口下方展示表示、格式和可确定的 Schema 字段；未知结构明确标注。
 6. 在 **Variables** 中编辑或加载独立 YAML 变量文件。参数可使用 `$INPUT_URI` 等完整变量值，保留整数、布尔和复合结构的类型。变量值不嵌入模板导出文件，使用 **Export variables** 单独导出。
-7. 参数、变量及连接变化后自动推导输出结构，参数编辑停顿 650 毫秒后触发，合法修改自动保存并同步到导出的作业；未完成或非法输入保留在表单中并提示。设计器使用公共 `dacp-operator-inference` 模块，在自身环境中按需启动并复用推导 worker，从配置的算子仓库获取代码；普通算子的推导不经 Union 或成员节点。`read_item` 从本地目录或已配置服务查询 Item 元信息，上游变化也会更新下游。推导请求串行合并，过期响应丢弃。在右侧 **Outputs** 标签页查看当前步骤各输出端口的完整结构及有界样例。推导不运行 Job；结构返回后再请求有界样例，`read_item` 可读取受限的源数据行。打开 Outputs 页直接展示已有结果，不重复推导。首次推导可能启动 worker。参数不完整或推导失败时明确提示，不保留过期字段，也不猜测未知结构。
+7. 参数、变量及连接变化后自动推导输出结构，参数编辑停顿 650 毫秒后触发，合法修改自动保存并同步到导出的作业；未完成或非法输入保留在表单中并提示。设计器使用公共 `xstream-operator-inference` 模块，在自身环境中按需启动并复用推导 worker，从配置的算子仓库获取代码；普通算子的推导不经 Union 或成员节点。`read_item` 从本地目录或已配置服务查询 Item 元信息，上游变化也会更新下游。推导请求串行合并，过期响应丢弃。在右侧 **Outputs** 标签页查看当前步骤各输出端口的完整结构及有界样例。推导不运行 Job；结构返回后再请求有界样例，`read_item` 可读取受限的源数据行。打开 Outputs 页直接展示已有结果，不重复推导。首次推导可能启动 worker。参数不完整或推导失败时明确提示，不保留过期字段，也不猜测未知结构。
 8. 点击 **Export job YAML** 保存可供 Shell / SDK 提交的标准 Job，导出会打开 YAML 预览窗口，默认勾选 **Include designer metadata**，可取消以只导出执行定义；提供 **Copy**、**Print** 和 **Download**。后续可以通过 **Load YAML** 加载以前导出的 Job，或者在 Job YAML 面板编辑后点击 **Apply YAML**。接受当前公开 Job 格式；内部子作业路由和旧接口格式不作为导入格式。
 
 浏览器使用本机 localStorage 自动保存草案；不同浏览器不共享草案，没有服务器端历史作业存储。加载“历史文件”指上传已有 YAML 文件，不是从运行看板拉取执行历史。设计器不在导出时执行推导；导出检查图结构，实际输入端口及 schema 校验由设计时推导提供。布局支持平移滚动、缩放和适应视图。
@@ -113,7 +113,7 @@ python3 scripts/test-job-designer.py --url http://localhost:8840 \
 
 属性面板采用固定右侧栏，默认隐藏，双击步骤或选择 Outlet 时展开，占用独立列而不遮挡画布；关闭后空间还给画布。左右侧栏均通过边缘窄条箭头折叠与展开，不提供关闭按钮。右侧展开时显示 `>`，折叠后显示 `<`；左侧方向相反。点击画布空白处、连线或按 Esc 不会自动隐藏属性侧栏。顶部直接展示具有清晰边框和立体层次的 **Step** 与 **Parameters** 标签页。底部编辑区默认收起，点击标签展开，使用箭头按钮收起；画布优先占用窗口空间，页面本身不滚动。
 
-属性面板分为 **Step**、**Parameters** 和 **Outputs** 三个标签页。Parameters 根据算子必需的静态 `parameters` 契约生成：名称和类型来自声明，同时显示说明、默认值、枚举及范围。可选参数需显式启用，未启用的参数不写入 Job。对象、数组及完整值变量（`$VAR_NAME`）通过表单配置。属性和参数的合法修改自动保存并同步 YAML，保留类型；连续输入合并为可撤销的编辑操作。详见[参数契约](https://github.com/rdcn-link/dacp-codex/blob/main/docs/operator-parameters_zh.md)。
+属性面板分为 **Step**、**Parameters** 和 **Outputs** 三个标签页。Parameters 根据算子必需的静态 `parameters` 契约生成：名称和类型来自声明，同时显示说明、默认值、枚举及范围。可选参数需显式启用，未启用的参数不写入 Job。对象、数组及完整值变量（`$VAR_NAME`）通过表单配置。属性和参数的合法修改自动保存并同步 YAML，保留类型；连续输入合并为可撤销的编辑操作。详见[参数契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-parameters_zh.md)。
 
 本地目录、服务连接和算子仓库仅通过启动配置中的 `local_catalog`、`target`、`nodes` 和 `repository` 指定，浏览器不提供手动连接、切换或重新加载连接的入口。打开页面时独立加载两个服务，精简页头显示状态及故障信息；上游恢复后刷新页面即可重试。
 
@@ -171,7 +171,7 @@ npm run build
 
 输出预览统一位于右侧 **Outputs** 标签页，不再提供顶部手动推导按钮或下侧独立结构预览页。参数和连线变化自动更新各端口的结构。未接齐输入的步骤单独显示缺失端口，上游及无关分支的成功结构不受影响。
 
-样例由算子的 `previewOutputs`（JVM）或 `preview_outputs`（Python）接口提供，不由界面依据 Schema 合成。所有算子必须实现样例接口；当前输入无法生成样例时明确报告原因。每个端口默认最多 10 行、16 KiB（按序列化后的 UTF-8 JSON 计），单次图预览的样例总量最多 256 KiB；截断会明确标记。结构推导与样例请求分离：结构逐步骤返回后，后续样例请求附带 `preview: {max_rows: 10, max_bytes: 16384}`。样例方法不调用完整作业的处理入口。`read_item` 的样例来自受限源读取，records 保留字段结构，bytes 用 Base64 展示。详见[结构推导与样例接口](https://github.com/rdcn-link/dacp-codex/blob/main/docs/structure-inference_zh.md)。
+样例由算子的 `previewOutputs`（JVM）或 `preview_outputs`（Python）接口提供，不由界面依据 Schema 合成。所有算子必须实现样例接口；当前输入无法生成样例时明确报告原因。每个端口默认最多 10 行、16 KiB（按序列化后的 UTF-8 JSON 计），单次图预览的样例总量最多 256 KiB；截断会明确标记。结构推导与样例请求分离：结构逐步骤返回后，后续样例请求附带 `preview: {max_rows: 10, max_bytes: 16384}`。样例方法不调用完整作业的处理入口。`read_item` 的样例来自受限源读取，records 保留字段结构，bytes 用 Base64 展示。详见[结构推导与样例接口](https://github.com/rdcn-link/xstream-codex/blob/main/docs/structure-inference_zh.md)。
 
 `read_item` 未显式选择 `view` 时，根据 Item 元信息优先选择 records，不支持时使用 bytes；显式选择始终保留。设计器展示自动选择的实际视图，YAML 中省略自动选择的 `view`，执行端也采用相同规则。例如 `dacp://localhost:19860/ds-6zmr-crvh/benchmark` 的 records 视图可返回站点、时间、温度、湿度及质量字段的 Schema。
 
@@ -179,7 +179,7 @@ npm run build
 
 结构推导按步骤跟踪。算子、参数、输入绑定和被引用的变量发生变化时，使该步骤及其下游结果失效；独立分支和上游结果继续展示并复用。删除下游步骤不会重新推导保留的步骤。移动、选中、重命名、调整步骤顺序、切换侧栏或修改 Job 输出绑定不会触发推导。结构与样例结果分别跟踪。服务端比较变量解析后的参数和依赖指纹，因此修改无关变量不会调用未变化的算子。
 
-Schema 的界面类型名称参见[结构推导文档](https://github.com/rdcn-link/dacp-codex/blob/main/docs/structure-inference_zh.md#界面中的-schema-类型名称)，步骤框与 Outputs 统一展示，保留嵌套层级、时间单位与可空性。
+Schema 的界面类型名称参见[结构推导文档](https://github.com/rdcn-link/xstream-codex/blob/main/docs/structure-inference_zh.md#界面中的-schema-类型名称)，步骤框与 Outputs 统一展示，保留嵌套层级、时间单位与可空性。
 
 步骤框的结构采用紧凑的两列表格，分别展示字段名和统一类型名，无额外表头。字段较多时在表格区域滚动，长字段名和类型省略显示，悬停查看完整内容；右侧 Outputs 提供完整结构。
 

@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Bootstrap unreleased integration artifacts, then publish XStream for DACP consumers.
+# Bootstrap unreleased cross-project integration artifacts in dependency order.
 set -euo pipefail
 xstream_root="$(cd "$(dirname "$0")/.." && pwd)"
 if [[ $# != 1 ]]; then echo 'Usage: scripts/bootstrap-local.sh /path/to/dacp-codex' >&2; exit 2; fi
 dacp_root="$(cd "$1" && pwd)"
 (cd "$xstream_root/xstream-data" && sbt -batch publishLocal)
-for module in dacp-plugin-api dacp-operator-sdk dacp-union-protocol dacp-client-scala dacp-operator-inference plugins/dacp-plugin-execution-file plugins/dacp-plugin-operator-executors; do
+for module in dacp-plugin-api dacp-union-protocol dacp-client-scala plugins/dacp-plugin-execution-file; do
   (cd "$dacp_root/$module" && sbt -batch publishLocal)
 done
-(cd "$xstream_root/xstream-engine" && sbt -batch publishLocal)
-echo 'Local artifacts ready. Both repositories now build independently using Maven/Ivy artifacts.'
+for module in xstream-operator-sdk xstream-operator-inference plugins/xstream-plugin-operator-executors xstream-engine; do
+  (cd "$xstream_root/$module" && sbt -batch publishLocal)
+done
+echo 'Development artifacts ready for both repositories.'

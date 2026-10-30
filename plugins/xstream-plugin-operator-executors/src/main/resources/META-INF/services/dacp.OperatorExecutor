@@ -1,0 +1,5 @@
+xstream.operator.executors.ContainerExecutor
+xstream.operator.executors.JvmExecutor
+xstream.operator.executors.PythonExecutor
+
+xstream.operator.executors.CommandExecutor
