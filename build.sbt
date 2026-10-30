@@ -1,0 +1,5 @@
+lazy val data = RootProject(file("xstream-data"))
+lazy val engine = RootProject(file("xstream-engine"))
+lazy val designer = RootProject(file("xstream-designer"))
+lazy val root = (project in file(".")).aggregate(data, engine, designer)
+  .settings(name := "xstream", publish / skip := true)
