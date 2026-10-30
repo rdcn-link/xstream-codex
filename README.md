@@ -1,6 +1,6 @@
 # XStream
 
-<img src="assets/xstream-logo.svg" alt="XStream" width="300">
+<img src="assets/xstream-logo.svg" alt="XStream" width="96">
 
 [中文](README_zh.md)
 
@@ -57,4 +57,4 @@ Edit configuration paths, service addresses and credentials first. The runner pr
 
 ## Logo and origin
 
-The original vector [wordmark](assets/xstream-logo.svg) and [symbol](assets/xstream-mark.svg) depict crossing turquoise/blue and violet/amber streams forming an X. The designer uses this symbol as its favicon. See [ORIGIN](ORIGIN) for source provenance. Public implementation packages retain their existing namespaces; this extraction does not rename API packages.
+The original vector [logo](assets/xstream-logo.svg) and [symbol](assets/xstream-mark.svg) depict crossing turquoise/blue and violet/amber streams forming an X. The designer uses this symbol as its favicon. See [ORIGIN](ORIGIN) for source provenance. Public implementation packages retain their existing namespaces; this extraction does not rename API packages.

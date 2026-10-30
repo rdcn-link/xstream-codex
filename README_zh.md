@@ -1,6 +1,6 @@
 # XStream
 
-<img src="assets/xstream-logo.svg" alt="XStream" width="300">
+<img src="assets/xstream-logo.svg" alt="XStream" width="96">
 
 [English](README.md)
 
