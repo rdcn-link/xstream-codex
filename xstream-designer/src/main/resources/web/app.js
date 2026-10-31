@@ -3,6 +3,7 @@ const $=id=>document.getElementById(id),colors=['#356ce1','#c45b16','#168464','#
 let config,operators=[],connected=null,job={name:'Untitled job',tasks:[],outputs:{}},positions={},selected=null,pendingPort=null,scale=1,report=null,revision=0,proposal=null;
 let selectedSteps=new Set(),suppressCanvasClick=false,graphInteraction=false;
 let inspectedSelection=null,parameterEditor=null,selectedEdge=null,outletSelected=false,outletPosition=null;
+const chatCatalogItems=new Map();
 let undo=[],redo=[],chatHistory=[],yamlEdited=false,yamlTimer=null,docSequence=0;
 let automaticReadViews=new Set();
 let inferenceTimer=null,inferenceRunning=false,inferenceSequence=0,inferencePending=false,inferenceState='Not inferred',inferenceSignature=null,inferenceDraftKey=null;
@@ -30,7 +31,7 @@ function renderLogs(resetView=false){
 }
 function logMessage(text,level='info',source='Designer'){level=logLevel(level);text=String(text);logEntries.push({id:++logSequence,text,level,source,time:new Date().toLocaleTimeString([], {hour12:false})});if(logEntries.length>logLimit)logEntries.shift();setStatus(text,level);renderLogs();}
 function notice(text,error=false){logMessage(text,error?'error':'info');}
-async function api(path,body){const started=performance.now();logMessage('Request started: '+path,'info','API');try{const r=await fetch('/api/'+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const n=await r.json();if(!r.ok)throw Error(n.error||'Request failed (HTTP '+r.status+')');logMessage('Request completed: '+path+' ('+Math.round(performance.now()-started)+' ms)','info','API');return n;}catch(e){logMessage(path+': '+e.message,'error','API');e.designerLogged=true;throw e;}}
+async function api(path,body){const started=performance.now();logMessage('Request started: '+path,'info','API');try{const r=await fetch('api/'+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const n=await r.json();if(!r.ok)throw Error(n.error||'Request failed (HTTP '+r.status+')');logMessage('Request completed: '+path+' ('+Math.round(performance.now()-started)+' ms)','info','API');return n;}catch(e){logMessage(path+': '+e.message,'error','API');e.designerLogged=true;throw e;}}
 function guard(fn){return async(...args)=>{try{return await fn(...args);}catch(e){if(!e.designerLogged)notice(e.message,true);}};}
 window.addEventListener('error',e=>logMessage(e.message||'Unexpected browser error','error','Browser'));
 window.addEventListener('unhandledrejection',e=>{if(!e.reason?.designerLogged)logMessage(e.reason?.message||String(e.reason),'error','Browser');});
@@ -48,7 +49,7 @@ function snapshot(){return{job:clone(job),positions:clone(positions),outletPosit
 function recordSnapshot(state){undo.push(state);if(undo.length>60)undo.shift();redo=[];}
 function remember(){recordSnapshot(snapshot());}
 function invalidate(){revision++;proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;scheduleInference();}
-function persist(){try{localStorage.setItem('xstream-designer',JSON.stringify(snapshot()));}catch(e){notice('Browser draft storage is unavailable. Export YAML to keep your work.');}}
+function persist(){try{localStorage.setItem(config?.draft_key||'xstream-designer',JSON.stringify(snapshot()));}catch(e){notice('Browser draft storage is unavailable. Export YAML to keep your work.');}}
 function changed(){invalidate();render();persist();clearTimeout(yamlTimer);yamlTimer=setTimeout(()=>guard(syncYaml)(),200);}
 async function syncYaml(){const version=++docSequence;const response=await api('document',payload());if(version===docSequence&&!yamlEdited){jobYamlEditor.setText(response.job_yaml);}return response;}
 function restore(s){cancelConnection();job=clone(s.job);automaticReadViews=new Set(s.automaticReadViews||[]);positions=clone(s.positions);outletPosition=s.outletPosition?clone(s.outletPosition):null;outletSelected=false;variablesEditor.setText(s.variables);selected=null;selectedSteps.clear();selectedEdge=null;yamlEdited=false;changed();restoreViewport(s.viewport);}
@@ -130,7 +131,7 @@ function scheduleInference(){
 
 async function inferStepStream(request,seq){
  const retained={...(report?.tasks||{})};const started=performance.now();logMessage('Structure inference started','info','Schema');
- const response=await fetch('/api/infer_stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)});
+ const response=await fetch('api/infer_stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)});
  if(!response.ok){const error=await response.json();throw Error(error.error||'Inference request failed');}
  const reader=response.body.getReader(),decoder=new TextDecoder();let pending='',complete=false;
  function accept(line){if(!line.trim())return;const event=JSON.parse(line);if(seq!==inferenceSequence)return;
@@ -393,6 +394,8 @@ function openItemActions(uri,item,row){
 async function browseItems(uri,path,host){
  host.textContent='Loading…';const result=await api('items',{uri,path});host.replaceChildren();
  for(const item of result.items){
+  const itemUri=uri.replace(/\/$/,'')+'/'+item.path.replace(/^\//,'');
+  if(chatCatalogItems.size<100||chatCatalogItems.has(itemUri))chatCatalogItems.set(itemUri,{uri:itemUri,kind:item.kind,views:item.views,schema:item.schema});
   const folder=item.kind==='folder',row=el('div',undefined,'item'),nested=el('div',undefined,'item-children');row.tabIndex=0;row.setAttribute('role','button');row.dataset.kind=folder?'folder':'item';
   const description=item.path+(item.views.length?' — Available views: '+item.views.join(', '):'');row.title=description;row.setAttribute('aria-label',description);
   const chevron=el('span',folder?'▸':'','item-chevron');row.append(chevron,catalogIcon(folder?'folder':'item'),el('span',item.path.split('/').filter(Boolean).pop()||'','item-label'));
@@ -471,10 +474,27 @@ $('load').addEventListener('click',()=>$('file').click());$('file').addEventList
 $('load-vars').addEventListener('click',()=>$('vars-file').click());$('vars-file').addEventListener('change',guard(async()=>{const f=$('vars-file').files[0];if(f){if(f.size>1024*1024)throw Error('Variable file exceeds 1 MiB');const text=await f.text();await api('mapping',{yaml:text});remember();variablesEditor.setText(text);changed();}$('vars-file').value='';}));$('export-vars').addEventListener('click',guard(async()=>{const n=await api('document',payload());download('variables.yaml',n.variables_yaml);}));
 
 for(const b of document.querySelectorAll('[data-tab]'))b.addEventListener('click',()=>showTab(b.dataset.tab));
-$('chat-form').addEventListener('submit',guard(async e=>{e.preventDefault();requireConnected();const message=$('chat-input').value.trim();if(!message)return;chatHistory.push({role:'user',content:message});$('messages').append(el('div',message,'chat-message user'));$('chat-input').value='';$('chat-send').disabled=true;const version=revision;const draft=proposal?{...payload(),job_yaml:proposal.job_yaml,variables_yaml:proposal.variables_yaml}:payload();try{const result=await api('chat',{...draft,message,messages:chatHistory.slice(-12)});if(version!==revision){notice('Chat proposal discarded because the draft changed.');return;}proposal=result;$('messages').append(el('div',proposal.reply||'Proposed workflow','chat-message'));const detail=el('details'),summary=el('summary','Proposed YAML');detail.append(summary,el('pre',proposal.job_yaml));$('messages').append(detail);chatHistory.push({role:'assistant',content:proposal.reply});$('apply-chat').disabled=false;$('discard-chat').disabled=false;}finally{$('chat-send').disabled=false;}}));
+$('chat-form').addEventListener('submit',guard(async e=>{
+ e.preventDefault();if(config.chat_provider==='disabled')throw Error('Configure chat.url and chat.model on the Designer server.');
+ const message=$('chat-input').value.trim();if(!message)return;
+ chatHistory.push({role:'user',content:message});$('messages').append(el('div',message,'chat-message user'));
+ $('chat-input').value='';$('chat-send').disabled=true;
+ const version=revision,draft=proposal?{...payload(),job_yaml:proposal.job_yaml,variables_yaml:proposal.variables_yaml}:payload();
+ try{
+  const result=await api('chat',{...draft,message,messages:chatHistory.slice(-12),catalog_items:[...chatCatalogItems.values()]});
+  if(version!==revision){notice('Chat response discarded because the draft changed.');return;}
+  $('messages').append(el('div',result.reply,'chat-message'));
+  proposal=typeof result.job_yaml==='string'?result:null;
+  if(proposal){const detail=el('details'),summary=el('summary','Proposed Job YAML');detail.append(summary,el('pre',proposal.job_yaml),el('pre',proposal.variables_yaml));$('messages').append(detail);}
+  chatHistory.push({role:'assistant',content:JSON.stringify(result)});
+  $('apply-chat').disabled=!proposal;$('discard-chat').disabled=!proposal;
+ }finally{$('chat-send').disabled=false;}
+}));
 $('apply-chat').addEventListener('click',guard(async()=>{if(proposal){await loadDocument(proposal.job_yaml,proposal.variables_yaml);proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;notice('Chat proposal applied. Review connections and preview schemas.');}}));$('discard-chat').addEventListener('click',()=>{proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;notice('Proposal discarded.');});
 $('canvas').addEventListener('keydown',e=>{if(e.key==='Escape'){cancelConnection();selectedEdge=null;render();}});
-guard(async()=>{config=await api('config');viewDefinitions=await api('views',{});$('chat-mode').textContent=config.chat_provider==='builtin'?'Built-in command assistant (not an LLM). Try “create CSV filter job”, “add OPERATOR@VERSION”, “connect STEP to STEP:INPUT”, “set variable NAME = VALUE”.':'Chat planner: '+config.chat_provider+' · proposals require your review before applying.';try{const saved=JSON.parse(localStorage.getItem('xstream-designer'));if(saved){await api('document',{job_yaml:JSON.stringify(saved.job),variables_yaml:saved.variables||'{}'});job=saved.job;automaticReadViews=new Set(saved.automaticReadViews||[]);positions=saved.positions||{};outletPosition=saved.outletPosition||null;restoreViewport(saved.viewport);variablesEditor.setText(saved.variables||'{}');}}catch(e){notice('Saved draft could not be restored: '+e.message,true);}renderLibrary();render();await Promise.allSettled([guard(syncYaml)(),guard(connect)(),guard(loadOperators)()]);})();
+$('load-showcase').addEventListener('click',guard(async()=>{if(config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);}));
+guard(async()=>{config=await api('config');viewDefinitions=await api('views',{});$('chat-mode').textContent=config.chat_provider==='disabled'?'Chat is unavailable until a model API is configured on the Designer server.':'Describe your complete analysis goal. The assistant will ask questions or propose a complete Job for review.';
+$('chat-send').disabled=config.chat_provider==='disabled';$('chat-input').disabled=config.chat_provider==='disabled';let restored=false;if(config.showcase){$('load-showcase').hidden=false;$('load-showcase').textContent=config.showcase.label||'Load demo';}try{const saved=JSON.parse(localStorage.getItem(config?.draft_key||'xstream-designer'));if(saved){await api('document',{job_yaml:JSON.stringify(saved.job),variables_yaml:saved.variables||'{}'});job=saved.job;automaticReadViews=new Set(saved.automaticReadViews||[]);positions=saved.positions||{};outletPosition=saved.outletPosition||null;restoreViewport(saved.viewport);variablesEditor.setText(saved.variables||'{}');restored=true;}}catch(e){notice('Saved draft could not be restored: '+e.message,true);}renderLibrary();render();await Promise.allSettled([guard(syncYaml)(),guard(connect)(),guard(loadOperators)()]);if(!restored&&config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);})();
 
 window.addEventListener('resize',hideOperatorTip);document.querySelector('.library').addEventListener('scroll',hideOperatorTip);
 

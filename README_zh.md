@@ -13,7 +13,7 @@ XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问�
 | [xstream-data](xstream-data/README_zh.md) | DataCatalog → Dataset → Item、类型化 DataView/DataStream 契约、插件发现、文件及科学格式实现和网络编码 |
 | [xstream-operator-sdk](xstream-operator-sdk/README_zh.md) | JVM/Python 算子模板及元数据契约 |
 | [xstream-operator-inference](xstream-operator-inference/README_zh.md) | 按需启动并复用的结构及样例推导 worker |
-| [xstream-operator-repository](https://github.com/bluejoe2008/xstream-operator-repository/blob/main/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
+| [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository/blob/main/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
 | [xstream-engine](xstream-engine/README_zh.md) | 嵌入式执行、取消、执行策略、自动远程计算下推及 `xstream-runner` 启动程序 |
 | [xstream-designer](xstream-designer/README_zh.md) | 图形化作业编辑、目录、变量、结构和样例预览、聊天草案及 YAML 导入导出 |
 
@@ -58,8 +58,10 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
 - [类型化流和科学视图](docs/data-streams_zh.md)
 - [科学数据编排和预览](docs/designer-scientific_zh.md)
 - [插件契约和注册](xstream-data/README_zh.md)
-- [DACP 作业 YAML](https://github.com/rdcn-link/dacp-codex/blob/main/docs/jobs_zh.md)
+- [作业 YAML](docs/jobs_zh.md)
 
 ## 标志与来源
 
 原创矢量[完整标志](assets/xstream-logo.svg)和[图形符号](assets/xstream-mark.svg)以青绿/蓝色与紫色/琥珀色交叉流构成 X。设计器使用图形符号作为 favicon。源码来源见 [ORIGIN](ORIGIN)。实现保留现有包命名空间，本次拆分不重命名 API 包。
+
+文档归属与官网发布方式：[维护规则](docs/documentation_zh.md)。

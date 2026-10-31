@@ -13,7 +13,7 @@ XStream is a Scala toolkit for stream-oriented computation: typed data access, a
 | [xstream-data](xstream-data/README.md) | DataCatalog → Dataset → Item, typed DataView/DataStream contracts, plugin discovery, file and scientific-format implementations and network codecs |
 | [xstream-operator-sdk](xstream-operator-sdk/README.md) | JVM/Python operator templates and metadata contracts |
 | [xstream-operator-inference](xstream-operator-inference/README.md) | Reusable on-demand structure and sample workers |
-| [xstream-operator-repository](https://github.com/bluejoe2008/xstream-operator-repository) | Source submissions, isolated builds, review, public operator and runtime downloads |
+| [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository) | Source submissions, isolated builds, review, public operator and runtime downloads |
 | [xstream-engine](xstream-engine/README.md) | Embedded execution, cancellation, execution policies, automatic remote compute pushdown and the `xstream-runner` launcher |
 | [xstream-designer](xstream-designer/README.md) | Visual Job editing, catalogs, variables, schema and sample previews, chat proposals and YAML import/export |
 
@@ -58,8 +58,10 @@ Edit configuration paths, service addresses and credentials first. The runner pr
 - [Typed streams and scientific views](docs/data-streams.md)
 - [Scientific authoring and previews](docs/designer-scientific.md)
 - [Plugin contracts and registration](xstream-data/README.md)
-- [DACP Job YAML](https://github.com/rdcn-link/dacp-codex/blob/main/docs/jobs.md)
+- [Job YAML](docs/jobs.md)
 
 ## Logo and origin
 
 The original vector [logo](assets/xstream-logo.svg) and [symbol](assets/xstream-mark.svg) depict crossing turquoise/blue and violet/amber streams forming an X. The designer uses this symbol as its favicon. See [ORIGIN](ORIGIN) for source provenance. Public implementation packages retain their existing namespaces; this extraction does not rename API packages.
+
+Documentation ownership and website publishing: [maintenance policy](docs/documentation.md).

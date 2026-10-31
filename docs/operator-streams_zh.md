@@ -4,7 +4,7 @@
 源算子可以声明 `inputs: {}`，任务也显式填写 `inputs: {}`；不需要虚构触发 Item。汇算子的必选推导方法返回空的输出映射。Shell 直接使用 `run read_item@1.0 --params '{"uri":"context:/weather/observations","view":"bytes"}'`，省略 `--input`。本地任务默认在所连接节点执行，也可显式指定 `node`。
 
 
-详细格式、流依赖和零输出步骤见[作业说明](https://github.com/rdcn-link/dacp-codex/blob/main/docs/jobs_zh.md)。
+详细格式、流依赖和零输出步骤见[作业说明](jobs_zh.md)。
 
 ## 用户使用契约
 

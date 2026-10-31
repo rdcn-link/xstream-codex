@@ -29,6 +29,18 @@ private[designer] object CatalogConnections {
 
 final class Designer(config:JsonNode) extends AutoCloseable {
   require(!config.has("targets") && !config.has("repositories"),"Configure a single target and repository")
+  private val showcase = Option(config.get("showcase")).map { settings =>
+    def text(key:String):String={
+      val file=Path.of(settings.path(key).asText)
+      require(Files.size(file)<=1024*1024,s"showcase $key exceeds 1 MiB")
+      Files.readString(file)
+    }
+    val job=text("job_file")
+    val variables=if(settings.has("variables_file"))text("variables_file")else "{}"
+    Documents.job(job);Documents.variables(variables)
+    Json.obj().put("job_yaml",job).put("variables_yaml",variables)
+      .put("label",settings.path("label").asText("Load demo"))
+  }
   private val configuredTarget=config.path("target")
   private val configuredRepository=config.path("repository")
   if(configuredTarget.has("url"))Json.origin(configuredTarget.path("url").asText)
@@ -209,6 +221,10 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val n=Json.obj().put("chat_provider",chat.name)
     n.putObject("generator").put("name",DesignerLayout.name).put("version",DesignerLayout.softwareVersion)
     n.putObject("target").put("url",configuredTarget.path("url").asText)
+    showcase.foreach { value =>
+      n.set[JsonNode]("showcase",value)
+      n.put("draft_key", "xstream-designer-showcase")
+    }
     n
   }
   private def document(n:JsonNode,empty:Boolean=false):JsonNode={val j=Documents.job(n.path("job_yaml").asText,empty);Documents.variables(n.path("variables_yaml").asText);j}
@@ -246,9 +262,17 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       document(n,empty=true);require(n.path("message").isTextual && n.path("message").asText.trim.nonEmpty && n.path("message").asText.length<=8000,"Enter a message of up to 8000 characters")
       val request=n.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();request.set[JsonNode]("operators",fetchOperators())
       request.put("origin",configuredTarget.path("url").asText)
-      val result=chat.plan(request);require(result!=null && result.isObject && result.path("reply").isTextual && result.path("job_yaml").isTextual && result.path("variables_yaml").isTextual,"Chat must return reply, job_yaml and variables_yaml strings");Documents.job(result.path("job_yaml").asText,allowEmpty=true);Documents.variables(result.path("variables_yaml").asText)
-      val available=request.path("operators").elements.asScala.map(o=>o.path("name").asText+"@"+o.path("version").asText).toSet+"read_item@1.0"
-      Documents.job(result.path("job_yaml").asText,true).path("tasks").elements.asScala.foreach(t=>require(available(t.path("operator").asText),"Chat proposed an operator outside the connected repository"))
+      require(!n.has("catalog_items") || (n.path("catalog_items").isArray && n.path("catalog_items").size<=100),"At most 100 catalog items may be supplied")
+      val result=chat.plan(request)
+      require(result!=null && result.isObject && result.path("reply").isTextual,"Chat must return a reply")
+      if(result.path("job_yaml").isNull || result.path("job_yaml").isMissingNode) {
+        require(result.path("variables_yaml").isNull || result.path("variables_yaml").isMissingNode,"Clarification cannot change variables")
+      } else {
+        require(result.path("job_yaml").isTextual && result.path("variables_yaml").isTextual,"Job proposals must include job_yaml and variables_yaml")
+        Documents.job(result.path("job_yaml").asText);Documents.variables(result.path("variables_yaml").asText)
+        val available=request.path("operators").elements.asScala.map(o=>o.path("name").asText+"@"+o.path("version").asText).toSet+"read_item@1.0"
+        Documents.job(result.path("job_yaml").asText,true).path("tasks").elements.asScala.foreach(t=>require(available(t.path("operator").asText),"Chat proposed an operator outside the connected repository"))
+      }
       result
     case _=>throw new IllegalArgumentException("Unknown endpoint")
   }

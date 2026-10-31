@@ -45,4 +45,4 @@ run native_uppercase@1.0 --input source=/reports/orders
 
 仓库只接收源码，旧示例中的本地构建仅用于开发验证；公开发布采用[源码提交与审核流程](../../../docs/operator-submission_zh.md)。
 
-`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/rdcn-link/xstream-operator-repository)的本地目录。

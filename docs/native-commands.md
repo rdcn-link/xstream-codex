@@ -75,4 +75,4 @@ No client change or native-specific job syntax is required.
 
 The live test starts and stops its own server on port 18817 (`DACP_NATIVE_TEST_PORT` overrides it), compiles a C filter, and checks streaming beyond pipe capacity, artifacts without executable permission bits, partial failure, cancellation, and recovery. Unit contracts cover registration, literal arguments, unsupported ports, invalid settings, and preservation of plugin settings through publication, download, and cache reuse.
 
-`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/rdcn-link/xstream-operator-repository).

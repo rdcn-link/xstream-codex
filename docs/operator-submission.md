@@ -52,7 +52,7 @@ Use an actually registered runtime name/version. For Java or Scala, set `languag
 ```bash
 # From weather-filter/, package raw source, not prebuilt artifacts.
 zip -r sources.zip src
-# Run from the XStream checkout; install Python SDK dependencies and PyYAML first.
+# Run the helper from the operator repository checkout; install PyYAML first.
 python scripts/submit-operator.py /path/weather-filter/submission.yaml \
   --source /path/weather-filter/sources.zip \
   --url https://operators.example.org \
@@ -75,7 +75,7 @@ Public pages and manifests show the **administrator-assessed trust score**, not 
 
 `source_public` is explicit and mandatory. Administrators can always download source through authenticated review endpoints. If false, public manifests omit the source archive, source repository/revision and build instructions, and public blob URLs cannot download those private files. Detailed scan reports can contain source excerpts and are not public. If true, source becomes public together with the approved artifact. License and SBOM files remain public review materials after approval.
 
-The bundled analyzer performs bounded lexical triage on Python, Java, Scala and shell source plus readable project metadata. It flags network APIs/destinations, process execution, destructive filesystem access, dynamic/native code loading, environment/credential access and file writes. Findings include rule, severity, file, line and a bounded excerpt. It does not perform interprocedural data-flow analysis, dependency vulnerability scanning or behavioral execution. Unsupported files and incomplete coverage cap the automatic score at 2; no recognized executable source scores 0. Scan failures prevent approval. The report records coverage and analyzer ID. This is an implemented baseline analyzer, not a full SAST product. Additional analyzers use `xstream.operator.SourceAnalyzer` and Java ServiceLoader; see [plugin instructions](../plugins/xstream-plugin-source-analysis/README.md).
+The bundled analyzer performs bounded lexical triage on Python, Java, Scala and shell source plus readable project metadata. It flags network APIs/destinations, process execution, destructive filesystem access, dynamic/native code loading, environment/credential access and file writes. Findings include rule, severity, file, line and a bounded excerpt. It does not perform interprocedural data-flow analysis, dependency vulnerability scanning or behavioral execution. Unsupported files and incomplete coverage cap the automatic score at 2; no recognized executable source scores 0. Scan failures prevent approval. The report records coverage and analyzer ID. This is an implemented baseline analyzer, not a full SAST product. Additional analyzers use `xstream.operator.SourceAnalyzer` and Java ServiceLoader; see [plugin instructions](operator-build-extensions.md).
 
 ## Isolated builds
 
@@ -121,7 +121,7 @@ Python bytecode and JVM JARs can be decompiled. `source_public` controls the ori
 
 Administrators can update the category labels of an already published operator in its review detail panel. This changes public classification only; the approved artifact and trust score remain unchanged. The authenticated endpoint is `POST /api/admin/submissions/{id}/categories`, with a JSON object such as `{"categories":["Data processing","Merging"]}`.
 
-For common Python/Arrow, JVM and scientific Python environments, see [runtime examples](../examples/runtimes/README.md).
+For common Python/Arrow, JVM and scientific Python environments, see [runtime examples](operator-runtimes.md).
 
 Operator detail pages provide the **Operator package** and any public source, license and SBOM downloads. Shared execution and build environments are downloaded from the **Runtimes** catalog, linked from the operator details. The Docker image ID identifies the execution image; an archive SHA-256 verifies the downloaded file.
 

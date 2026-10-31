@@ -65,4 +65,4 @@ For complete source examples, wheel packaging, remote file transfer, administrat
 
 The repository accepts source only. Local builds in these examples are for development verification; use the [source submission and review workflow](../../../docs/operator-submission.md) for public publication.
 
-`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/rdcn-link/xstream-operator-repository).

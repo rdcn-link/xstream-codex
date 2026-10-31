@@ -129,4 +129,4 @@ API v2 supports optional `provenance` metadata and SHA-256-addressed source, lic
 
 Operators must also provide `icon`; administrators assign public `categories`; see [categories and icons](operator-presentation.md) for the contract and publication examples.
 
-`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/rdcn-link/xstream-operator-repository).

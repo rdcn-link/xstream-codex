@@ -75,7 +75,7 @@ Review submissions 标签页展示原始清单、源码公开声明、私有源�
 
 `source_public` 必须显式声明。管理员始终可以通过认证后的审核接口下载源码。设为 false 时，公开清单隐藏源码归档、源码仓库/版本及构建说明，公开 blob URL 不能下载这些私有文件。详细扫描报告可能包含源码片段，不对公众开放。设为 true 时，源码随批准的算子一起公开。许可证及 SBOM 在批准后仍作为公开审核材料提供。
 
-内置分析器对 Python、Java、Scala、shell 源码和可读项目元数据执行有大小限制的词法检查，标记网络 API/地址、进程执行、破坏性文件访问、动态/本地代码加载、环境/凭据读取和文件写入。每项发现包含规则、严重程度、文件、行号与有限片段。它不执行跨过程数据流分析、依赖漏洞扫描或行为运行。存在不支持文件或覆盖不完整时自动得分最高为 2；没有识别出可执行源码时为 0。扫描失败不能批准。报告记录覆盖范围与分析器 ID。这是已实现的基础分析器，不是完整 SAST 产品。可通过 `xstream.operator.SourceAnalyzer` 与 Java ServiceLoader 增加分析器，参见[插件说明](../plugins/xstream-plugin-source-analysis/README_zh.md)。
+内置分析器对 Python、Java、Scala、shell 源码和可读项目元数据执行有大小限制的词法检查，标记网络 API/地址、进程执行、破坏性文件访问、动态/本地代码加载、环境/凭据读取和文件写入。每项发现包含规则、严重程度、文件、行号与有限片段。它不执行跨过程数据流分析、依赖漏洞扫描或行为运行。存在不支持文件或覆盖不完整时自动得分最高为 2；没有识别出可执行源码时为 0。扫描失败不能批准。报告记录覆盖范围与分析器 ID。这是已实现的基础分析器，不是完整 SAST 产品。可通过 `xstream.operator.SourceAnalyzer` 与 Java ServiceLoader 增加分析器，参见[插件说明](operator-build-extensions_zh.md)。
 
 ## 隔离构建
 
@@ -121,7 +121,7 @@ Python 字节码和 JVM JAR 可能被反编译。`source_public` 控制原始源
 
 管理员可以在已发布算子的审核详情中修改分类标签。此操作仅调整公开分类，不改变已批准的构建产物或可信度评分。认证接口为 `POST /api/admin/submissions/{id}/categories`，JSON 请求体示例为 `{"categories":["Data processing","Merging"]}`。
 
-Python/Arrow、JVM 和 Python 科学计算环境的准备方式见[常用运行环境示例](../examples/runtimes/README_zh.md)。
+Python/Arrow、JVM 和 Python 科学计算环境的准备方式见[常用运行环境示例](operator-runtimes_zh.md)。
 
 算子详情页提供 **Operator package**（算子程序包）及允许公开的源码、许可证和 SBOM 下载。共用的执行与构建环境统一在 **Runtimes** 目录下载，算子详情页提供对应环境的跳转链接。Docker 镜像 ID 标识执行镜像，归档 SHA-256 用于校验下载文件。
 

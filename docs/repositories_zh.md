@@ -17,4 +17,4 @@ XStream 负责数据契约及实现、流式引擎及设计器；XStream 同时�
 
 第三方格式依赖保留在数据插件模块，现有 ServiceLoader 注册文件随实现迁移。贡献者注册和配置示例仍在数据及设计器指南中；新增插件不需要修改中央注册表。
 
-[算子仓库服务](https://github.com/bluejoe2008/xstream-operator-repository)现为独立项目，依赖 XStream 的版本化算子契约和源码分析制品，不再参与本仓库聚合构建。
+[算子仓库服务](https://github.com/rdcn-link/xstream-operator-repository)现为独立项目，依赖 XStream 的版本化算子契约和源码分析制品，不再参与本仓库聚合构建。

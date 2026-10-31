@@ -51,4 +51,4 @@ shell 仍使用 `run uppercase@1.0 --input source=/reports/orders`，无需客�
 
 验证命令及完整行为详见[英文参考](native-commands.md)。真实联调脚本 `scripts/test-native-execution.py` 需要已 stage 的服务器、cc、证书、Docker 权限及 Python 运行时镜像；它启动并停止自己的服务器，默认端口 18817，可用 `DACP_NATIVE_TEST_PORT` 修改。
 
-`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/rdcn-link/xstream-operator-repository)的本地目录。

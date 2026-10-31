@@ -39,50 +39,24 @@ The lower **Logs** panel records operation messages, API request start/completio
 
 ## Chat composition
 
-Chat returns a proposal and explanation. **Apply proposed changes** replaces the graph only after review, and changes can be undone. Model output undergoes the same structural checks and is restricted to operators from the connected repository and logical nodes published by Union. Chat does not execute jobs.
+Chat connects to a Chat Completions-compatible model API. Describe a complete processing or analysis requirement, then answer follow-up questions. The assistant proposes a complete Job YAML and typed variables when enough information is available. It does not execute Jobs. Review the proposal and click **Apply proposed changes** to update the canvas; Undo remains available.
 
-The default `chat.provider: builtin` is an offline command assistant, **not a language model**. It supports English / Chinese commands and a CSV filtering template:
-
-```text
-create CSV filter job
-add piflow_filter@1.0
-connect read to parse:source
-set variable LIMIT = 123
-rename Weather analysis
-```
-
-The CSV template requires parser, filter and CSV output operators in the repository. After generation, select a real `INPUT_URI` from the catalog and review the filter.
-
-For unrestricted natural-language composition, directly configure a Chat Completions-compatible model service, including a self-hosted model:
+Configure the full API endpoint and model on the Designer server:
 
 ```yaml
 chat:
-  provider: openai-compatible
-  url: http://localhost:8000/v1/chat/completions
-  model: your-deployed-model
-  token_env: DACP_DESIGNER_CHAT_TOKEN
+  url: https://model.example/v1/chat/completions
+  model: your-model
+  token_env: XSTREAM_MODEL_API_KEY
 ```
 
-Use the complete chat endpoint as `url`. The designer sends the current draft, repository catalog,  the latest 12 messages and parses the JSON proposal. Truncated or invalid responses cannot be applied. See the [official vLLM server documentation](https://docs.vllm.ai/en/latest/serving/online_serving/openai_compatible_server/) for the model-service contract. The local example has no model configured; the offline command assistant remains usable.
+Set the named environment variable before starting the service. It supplies the Bearer credential and is never sent to the browser. Omit token_env for a model service that requires no credential. Without chat configuration, the editor works normally and Chat is disabled. There is no built-in command assistant.
 
-Alternatively, configure a custom model adapter HTTP service:
+For example: “Read weather observations, keep valid records above a temperature threshold supplied as a variable, merge the regional streams and produce CSV.” Include actual Item paths or expand the relevant Catalog folders first. The model receives the current draft, variables, available operator declarations, up to 100 browsed Item descriptors and the latest 12 messages. Catalog contents are loaded lazily, so this context is not a complete inventory. Data contents and output samples are not automatically sent. If paths, meanings or required operators are missing, the assistant should ask rather than invent them. Metadata and conversation are sent to the configured model service.
 
-```yaml
-chat:
-  provider: http
-  url: https://model-adapter.example/dacp/plan
-  token_env: DACP_DESIGNER_CHAT_TOKEN
-```
+The model returns a JSON object with reply, job_yaml and variables_yaml. For a clarification, both YAML fields are null and the canvas stays unchanged. A proposal supplies complete YAML strings, follows logical stream connections and uses available operators. Invalid, truncated or unsupported proposals cannot be applied. Model requests time out after 90 seconds; responses are limited to 1 MiB.
 
-The adapter is model-vendor independent. The designer POSTs JSON containing `instructions`, `message`, `messages` (conversation history), `job_yaml`, `variables_yaml`, `operators` (repository catalog), `nodes` (a node array) and `origin`. Return one JSON object:
-
-```json
-{"reply":"Explain the changes","job_yaml":"name: ...\ntasks: ...\noutputs: ...\n","variables_yaml":"LIMIT: 123\n"}
-```
-
-`token_env` is optional; when configured, a Bearer Token is read from the server environment, not entered in the browser. The adapter timeout is 90 seconds and response limit is 1 MiB. Deployers supply and configure the actual model adapter. No model keys are bundled, and the offline assistant is not described as general AI.
-
-Third parties may implement `xstream.designer.ChatPlanner`, register their class in `META-INF/services/xstream.designer.ChatPlanner`, add its JAR to `plugins/` and launch with `java --add-opens=java.base/java.nio=ALL-UNNAMED -cp "lib/*:plugins/*" xstream.designer.Main CONFIG.yaml`, and select its `name` through `chat.provider`. No core registry changes are required. Adapters generate drafts and cannot bypass public graph validation. External JARs should use a matching designer contract as a Provided dependency.
+Third-party model providers can still implement xstream.designer.ChatPlanner through Java ServiceLoader, registered in META-INF/services/xstream.designer.ChatPlanner. Add the provider JAR to plugins/ and launch with `java --add-opens=java.base/java.nio=ALL-UNNAMED -cp "lib/*:plugins/*" xstream.designer.Main CONFIG.yaml`; select the provider name through chat.provider. The ordinary configuration above directly calls the model API and needs no adapter service.
 
 ## APIs and development
 
@@ -221,3 +195,16 @@ The Catalogs tree distinguishes host roots, datasets, folders and data Items wit
 Item rows show only their leaf names and file/folder icons, with no view badges. Hover or keyboard focus exposes the complete Item path and available views. Click an Item to reveal compact view/copy icons on an independent floating layer below its row (above when space is limited), without a popup or ⋯ button. Selecting a view sets `read_item` parameters; copying does not change the Job. Escape or clicking outside hides the icons.
 
 [Scientific view selection, structure and samples](../docs/designer-scientific.md): plugin-defined array, image and sequence forms with compact previews.
+
+## Bundled website showcase
+
+An optional `showcase` configuration loads `job_file` and optional `variables_file` as the first-time visitor's default draft. Both are server-local YAML files, validated at startup and limited to 1 MiB each. Only their public contents and the `label` are returned to the browser; configuration paths are omitted. With a showcase enabled, browser drafts use a separate storage key, survive reload and remain visitor-local. The Load demo button restores the default draft/variables using the ordinary undoable import path. Existing saved drafts take priority over the default. Use only public example data in these files.
+
+```yaml
+showcase:
+  job_file: /srv/demo/showcase.yaml
+  variables_file: /srv/demo/variables.yaml
+  label: Load demo
+```
+
+Frontend assets and API requests use relative URLs, allowing deployment at a same-origin reverse-proxy prefix such as `/demo/`. The proxy strips that prefix, preserves the public Host/Origin pair and streams incremental responses without buffering the complete inference report. The independent XStream website supplies its own Designer distribution, sample catalog and deployment supervisor; this service does not need to connect to a production node.

@@ -4,7 +4,7 @@ Status: implemented through Flight DoExchange and the Python shell/SDK and Scala
 Source operators may declare `inputs: {}`; tasks must also explicitly provide `inputs: {}`. No trigger Item is needed. Sink operators return an empty output mapping from their mandatory inference method. In the shell, use `run read_item@1.0 --params '{"uri":"context:/weather/observations","view":"bytes"}'` without `--input`. Local tasks default to the connected node; `node` may explicitly select placement.
 
 
-See [Jobs](https://github.com/rdcn-link/dacp-codex/blob/main/docs/jobs.md) for the format, stream dependencies and sinks.
+See [Jobs](jobs.md) for the format, stream dependencies and sinks.
 
 ## User-facing contract
 

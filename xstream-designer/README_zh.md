@@ -37,52 +37,26 @@ submit workflow.yaml --vars variables.yaml
 
 下侧 **Logs** 面板记录当前浏览器会话的操作提示、API 请求起止与耗时、请求错误、结构推导诊断以及浏览器异常，按 Info / Warning / Error 分类，可过滤、清空。日志按时间从新到旧排列，新消息显示在顶部；开启自动跟随后保持在顶部，关闭后新增消息尽量保持原阅读位置。上方状态栏仅显示最新一条消息，完整消息保留在日志面板。日志只在浏览器内存中保留最近 1,000 条，不写入磁盘；页面刷新后清空。节点和服务进程的完整后台日志仍保存在各自日志文件中。
 
-## 聊天编排
+## 对话编排
 
-聊天返回草案及说明，**Apply proposed changes** 后才替换当前图，支持撤销。模型输出与普通草案使用相同的图结构校验，并限制为所连接仓库的算子。它不会执行作业。
+Chat 连接兼容 Chat Completions 的大模型 API。用户描述一段完整的数据处理或分析需求，再通过问答补充信息。信息充分后，助手提出完整 Job YAML 和保留类型的变量。它不执行 Job。检查提议后点击 **Apply proposed changes** 才更新画布，并且可以 Undo。
 
-默认 `chat.provider: builtin` 是离线命令助手，**不是大语言模型**。支持英文／中文命令以及 CSV 过滤模板，例如：
-
-```text
-create CSV filter job
-add piflow_filter@1.0
-connect read to parse:source
-set variable LIMIT = 123
-rename Weather analysis
-```
-
-CSV 模板需要仓库包含相应 parser、filter、CSV 输出算子。模板生成后，用户须从实际目录设置 `INPUT_URI`，并检查过滤条件和执行位置。
-
-自由自然语言编排可直接使用兼容 Chat Completions 的模型服务，例如自部署模型：
+在 Designer 服务端配置完整 API 地址和模型：
 
 ```yaml
 chat:
-  provider: openai-compatible
-  url: http://localhost:8000/v1/chat/completions
-  model: your-deployed-model
-  token_env: DACP_DESIGNER_CHAT_TOKEN
+  url: https://model.example/v1/chat/completions
+  model: your-model
+  token_env: XSTREAM_MODEL_API_KEY
 ```
 
-`url` 填完整的聊天请求端点。设计器将当前草案、仓库清单、最近 12 条对话发送给模型，并解析返回的 JSON 草案；截断或不合法的响应不会应用。此接口的模型服务约定参见 [vLLM 官方说明](https://docs.vllm.ai/en/latest/serving/online_serving/openai_compatible_server/)。本地示例默认未配置模型，仍可使用离线命令助手。
+启动服务前设置指定的环境变量，用作 Bearer 凭据，不会发送到浏览器。无需凭据的模型服务可省略 token_env。未配置 chat 时编辑器正常工作，Chat 不可用。不再提供内置命令助手。
 
-也可以连接自定义模型适配 HTTP 服务：
+需求示例：“读取气象观测，保留有效且超过温度阈值的记录，阈值使用变量；合并各区域数据流并输出 CSV。”请提供实际 Item 路径，或先展开相关 Catalog 文件夹。模型收到当前草案、变量、可用算子声明、最多 100 个已浏览 Item 的描述和最近 12 条对话。目录按需加载，因此这不是完整清单。不自动发送数据内容和输出样例。路径、语义或所需算子不明确时，助手应继续提问而不是编造。元信息和对话会发送至配置的模型服务。
 
-```yaml
-chat:
-  provider: http
-  url: https://model-adapter.example/dacp/plan
-  token_env: DACP_DESIGNER_CHAT_TOKEN
-```
+模型返回包含 reply、job_yaml 和 variables_yaml 的 JSON 对象。澄清问题时两个 YAML 字段均为 null，画布保持原样。提出方案时提供完整 YAML 字符串，使用逻辑流连接和可用算子。不合法、被截断或使用不支持算子的提议不能应用。模型请求超时为 90 秒，响应上限 1 MiB。
 
-适配服务不必采用特定模型供应商。设计器 POST JSON，字段包括 `instructions`、`message`、`messages`（聊天历史）、`job_yaml`、`variables_yaml`、`operators`（仓库清单）、`origin`。返回单个 JSON 对象：
-
-```json
-{"reply":"说明变更","job_yaml":"name: ...\ntasks: ...\noutputs: ...\n","variables_yaml":"LIMIT: 123\n"}
-```
-
-`token_env` 可省略；设置后从服务端环境读取 Bearer Token，不在网页输入密钥。HTTP 适配器超时 90 秒，响应上限 1 MiB。需要由部署者提供并配置实际模型适配服务；不绑定模型密钥，也不把离线命令助手描述为通用 AI。
-
-第三方还可实现 `xstream.designer.ChatPlanner`，通过 `META-INF/services/xstream.designer.ChatPlanner` 注册实现类，将 JAR 放入 `plugins/`，使用 `java --add-opens=java.base/java.nio=ALL-UNNAMED -cp "lib/*:plugins/*" xstream.designer.Main CONFIG.yaml` 启动，然后设置 `chat.provider` 为实现的 `name`。无需修改核心注册表。适配器仅负责草案生成，不能绕过公共图校验。外部 JAR 应以 Provided 方式引用匹配版本的设计器契约。
+第三方模型提供者仍可实现 xstream.designer.ChatPlanner，通过 Java ServiceLoader 注册到 META-INF/services/xstream.designer.ChatPlanner。将提供者 JAR 放入 plugins/，使用 `java --add-opens=java.base/java.nio=ALL-UNNAMED -cp "lib/*:plugins/*" xstream.designer.Main CONFIG.yaml` 启动，并通过 chat.provider 选择名称。上面的常规配置直接调用模型 API，不需要另建适配服务。
 
 ## 接口与开发
 
@@ -225,3 +199,16 @@ Item 行仅显示末级名称与文件/文件夹图标，不再展示视图小�
 [科学视图选择、结构预览及样例](../docs/designer-scientific_zh.md)：支持数组、图像、序列的插件式表单及紧凑展示。
 
 Item 操作浮动框显示在名称末尾的右下方，独立于列表行。文件夹仅点击左侧箭头展开或收起；点击名称只显示操作。Item 行采用紧凑间距。
+
+## 官网内置演示
+
+可选 `showcase` 配置读取 `job_file` 和可选 `variables_file`，作为首次访客的默认草稿。两者是服务器本地 YAML 文件，启动时校验，每个文件最多 1 MiB。浏览器仅获得公开内容及 `label`，不包含配置文件路径。启用后草稿使用独立存储键，刷新后保留，且仅属于各自访客。Load demo 通过普通可撤销导入恢复默认草稿和变量。已有草稿优先于默认示例。文件中只能放公开示例数据。
+
+```yaml
+showcase:
+  job_file: /srv/demo/showcase.yaml
+  variables_file: /srv/demo/variables.yaml
+  label: Load demo
+```
+
+前端资源及 API 使用相对 URL，允许在同源反向代理的 `/demo/` 等前缀下运行。代理移除前缀、保留公开 Host/Origin 组合，并流式转发增量响应，不等待完整推导报告。独立 XStream 官网提供自己的 Designer 发行目录、示例目录和部署监督程序，本服务不需要连接生产节点。

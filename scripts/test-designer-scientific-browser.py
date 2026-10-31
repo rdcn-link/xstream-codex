@@ -17,7 +17,7 @@ def route(req):
  path=req.request.url.split('designer.test',1)[1]
  if path.startswith('/api/'):
   name=path.rsplit('/',1)[1];n=req.request.post_data_json if req.request.method=='POST' else {}
-  if name=='config':data={'chat_provider':'builtin','generator':{'name':'XStream Designer','version':'test'}}
+  if name=='config':data={'chat_provider':'disabled','generator':{'name':'XStream Designer','version':'test'}}
   elif name=='views':data=views
   elif name=='operators':data=[]
   elif name=='catalogs':data=[{'name':'In-context catalog','uri':'context:/'}]

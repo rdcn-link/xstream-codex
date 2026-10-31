@@ -21,6 +21,23 @@ class DesignerSpec extends AnyFunSuite {
                   |    inputs: {source: read}
                   |outputs: {result: parse}
                   |""".stripMargin
+  test("showcase configuration exposes a validated default draft without exposing configuration paths") {
+    val dir=java.nio.file.Files.createTempDirectory("designer-showcase")
+    val jobFile=dir.resolve("demo.yaml");val varsFile=dir.resolve("vars.yaml")
+    java.nio.file.Files.writeString(jobFile,workflow);java.nio.file.Files.writeString(varsFile,"INPUT_URI: context:/weather/demo.csv\nN: 123\n")
+    val config=Json.obj().put("host","127.0.0.1").put("port",0)
+    config.putObject("repository").put("url","http://localhost:8820")
+    config.putObject("showcase").put("job_file",jobFile.toString).put("variables_file",varsFile.toString).put("label","Load demo")
+    val site=new Designer(config);site.start()
+    try {
+      val response=HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}/api/config")).build(),HttpResponse.BodyHandlers.ofString())
+      val data=Json.mapper.readTree(response.body())
+      assert(data.path("showcase").path("job_yaml").asText==workflow)
+      assert(Documents.variables(data.path("showcase").path("variables_yaml").asText).path("N").asInt==123)
+      assert(data.path("draft_key").asText=="xstream-designer-showcase")
+      assert(!response.body().contains(dir.toString))
+    } finally {site.close();java.nio.file.Files.delete(jobFile);java.nio.file.Files.delete(varsFile);java.nio.file.Files.delete(dir)}
+  }
   test("catalog credentials match origins independently of dataset paths") {
     assert(CatalogConnections.origin("dacp://localhost:18861/weather")=="dacp://localhost:18861")
     assert(CatalogConnections.origin("dacp://localhost:18861/")=="dacp://localhost:18861")
@@ -73,7 +90,7 @@ class DesignerSpec extends AnyFunSuite {
     assert(!preview.path("outputs").path("unknown").has("schema_json"))
     assert(!report.path("outputs").path("result").has("schema_json"))
   }
-  test("public HTTP editor, export and repository-driven command chat without leaking credentials"){
+  test("public HTTP editor, export and unconfigured model chat without leaking credentials"){
     val repo=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
     repo.createContext("/v1/operators",x=>{val bytes="""[{"name":"piflow_csv_parser","version":"1.0","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["bytes"]}}},{"name":"piflow_filter","version":"1.0","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["records"]}}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()});repo.start()
     val config=Documents.mapping(s"""host: 127.0.0.1
@@ -88,7 +105,7 @@ class DesignerSpec extends AnyFunSuite {
     def post(path:String,body:com.fasterxml.jackson.databind.JsonNode)=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}"+path)).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(body.toString)).build(),HttpResponse.BodyHandlers.ofString())
     try{
       assert(get("/").body().contains("id=\"outputs-tab\""));assert(!get("/").body().contains("id=\"infer\""));assert(!get("/").body().contains("id=\"tab-schema\""));assert(!get("/api/config").body().contains("secret.token"))
-      assert(get("/").body().contains("/yaml-editor.js"))
+      assert(get("/").body().contains("src=\"yaml-editor.js\""))
       val editor=get("/yaml-editor.js")
       assert(editor.statusCode()==200 && editor.body().contains("CodeMirror"))
       assert(!editor.body().contains("https://esm.sh"))
@@ -105,9 +122,9 @@ class DesignerSpec extends AnyFunSuite {
       assert(plain.statusCode()==200)
       assert(!Documents.job(Json.mapper.readTree(plain.body()).path("job_yaml").asText).has("designer"))
       val request=Json.obj().put("job_yaml",workflow.replace("    node: nd-abcd-efgh\n","")).put("variables_yaml","{}").put("message","add piflow_filter@1.0")
-      val response=post("/api/chat",request);assert(response.statusCode()==200,response.body())
-      assert(Documents.job(Json.mapper.readTree(response.body()).path("job_yaml").asText).path("tasks").size()==3)
-      request.put("message","add imaginary@1.0");assert(post("/api/chat",request).statusCode()==400)
+      val response=post("/api/chat",request);assert(response.statusCode()==400,response.body())
+      assert(response.body().contains("Chat is not configured"))
+      assert(get("/api/config").body().contains("disabled"))
       assert(post("/api/nodes",Json.obj()).statusCode()==400)
       assert(post("/api/connect",Json.obj()).statusCode()==400)
       assert(post("/api/operators",Json.obj().put("repository","ops")).statusCode()==400)
@@ -151,4 +168,43 @@ class DesignerSpec extends AnyFunSuite {
     }finally {site.close();xstream.data.Data.deleteTree(dir)}
   }
 
+  test("model conversation clarifies requirements and proposes a complete Job without running it") {
+    val answer=new java.util.concurrent.atomic.AtomicReference[com.fasterxml.jackson.databind.JsonNode](
+      Json.obj().put("reply","Which Item contains observations?").putNull("job_yaml").putNull("variables_yaml"))
+    val observed=new java.util.concurrent.atomic.AtomicReference[com.fasterxml.jackson.databind.JsonNode]()
+    val model=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
+    model.createContext("/v1/operators",x=>{
+      val bytes="[]".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
+    })
+    model.createContext("/completions",x=>{
+      observed.set(Json.mapper.readTree(x.getRequestBody.readAllBytes()))
+      val response=Json.obj()
+      response.putArray("choices").addObject().put("finish_reason","stop").putObject("message").put("content",answer.get.toString)
+      val bytes=Json.mapper.writeValueAsBytes(response);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
+    })
+    model.start()
+    val config=Json.obj().put("host","127.0.0.1").put("port",0)
+    val origin=s"http://127.0.0.1:${model.getAddress.getPort}"
+    config.putObject("repository").put("url",origin)
+    config.putObject("chat").put("url",origin+"/completions").put("model","test-model")
+    val site=new Designer(config);site.start()
+    val client=HttpClient.newHttpClient()
+    val request=Json.obj().put("job_yaml","name: Draft\ntasks: []\noutputs: {}\n").put("variables_yaml","{}").put("message","Analyze my weather observations and return the resulting stream")
+    request.putArray("catalog_items").addObject().put("uri","context:/weather/observations").putArray("views").add("records")
+    def send()=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}/api/chat")).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(request.toString)).build(),HttpResponse.BodyHandlers.ofString())
+    try {
+      val clarification=send()
+      assert(clarification.statusCode()==200,clarification.body())
+      assert(Json.mapper.readTree(clarification.body()).path("job_yaml").isNull)
+      val proposal="name: Weather analysis\ntasks:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: $INPUT_URI}\noutputs: {result: read}\n"
+      answer.set(Json.obj().put("reply","Here is a complete Job proposal").put("job_yaml",proposal).put("variables_yaml","INPUT_URI: context:/weather/observations\nN: 123\n"))
+      request.put("message","Use context:/weather/observations")
+      val result=send()
+      assert(result.statusCode()==200,result.body())
+      assert(Documents.job(Json.mapper.readTree(result.body()).path("job_yaml").asText).path("tasks").size()==1)
+      assert(observed.get.path("messages").get(1).path("content").asText.contains("context:/weather/observations"))
+      answer.set(Json.obj().put("reply","Invalid operator").put("job_yaml",proposal.replace("read_item@1.0","unknown@1.0")).put("variables_yaml","{}"))
+      assert(send().statusCode()==400)
+    } finally {site.close();model.stop(0)}
+  }
 }

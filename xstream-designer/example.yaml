@@ -1,7 +1,10 @@
 host: 127.0.0.1
 port: 8840
-chat:
-  provider: builtin
+# Optional natural-language Job design; key is read only by the server.
+# chat:
+#   url: https://model.example/v1/chat/completions
+#   model: your-model
+#   token_env: XSTREAM_MODEL_API_KEY
 target:
   url: dacp://localhost:19860
   ca: /etc/dacp/ca.crt
@@ -15,10 +18,16 @@ operator_max_bytes: 8589934592
 inference_workers:
   max_workers: 4
   idle_seconds: 60
-  request_timeout_seconds: 60
+  timeout_seconds: 60
 
 # Catalog shared by the designer JVM; descendants are loaded only on expansion.
 local_catalog:
   datasets: {}
 # Additional data services; target above is also a browsable service.
 nodes: []
+
+# Optional website showcase; first-time visitors load this validated draft automatically.
+# showcase:
+#   job_file: /srv/demo/showcase.yaml
+#   variables_file: /srv/demo/variables.yaml
+#   label: Load demo

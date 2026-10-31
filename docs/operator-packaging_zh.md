@@ -129,4 +129,4 @@ API v2 支持可选 `provenance` 元数据，以及 SHA-256 寻址的源码、�
 
 算子还必须提供 `icon`；公开 `categories` 由管理员指定，规则和发布示例见[分类与图标](operator-presentation_zh.md)。
 
-`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/rdcn-link/xstream-operator-repository)的本地目录。
