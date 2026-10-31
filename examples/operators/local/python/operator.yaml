@@ -1,0 +1,25 @@
+name: local_uppercase
+version: '1.0'
+description: Stream ASCII bytes as uppercase using the Python SDK.
+language: python
+runtime: python-arrow@1.0
+entrypoint: upper_ascii
+source_public: true
+inputs:
+  source:
+    representations: [bytes]
+    formats: []
+parameters:
+  type: object
+  properties:
+    uppercase:
+      type: boolean
+      default: true
+      description: Convert ASCII letters to uppercase.
+  required: []
+  additionalProperties: false
+icon:
+  path: M4 18L10 6L16 18M6 14H14M18 8H22M20 6V18
+  color: '#14866b'
+provenance:
+  license: Apache-2.0

@@ -1,0 +1,2 @@
+xstream.operator.executors.PythonLocalBuilder
+xstream.operator.executors.CommandLocalBuilder

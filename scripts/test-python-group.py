@@ -17,7 +17,13 @@ def process(ctx):
     if ctx.params.get('extra'):ctx.bytes_output('unused','text')
     if source.representation=='records':
         out=ctx.records_output('result',source.schema)
-        for batch in source.records():out.write(batch)
+        import builtins
+        for batch in source.records():
+            if ctx._batch_inputs:
+                assert batch is builtins._xstream_probe_batch, 'internal link serialized the batch'
+            else:
+                builtins._xstream_probe_batch = batch
+            out.write(batch)
     else:
         out=ctx.bytes_output('result','text')
         for chunk in source.bytes():out.write(chunk.upper())
@@ -63,6 +69,7 @@ class PythonGroup(unittest.TestCase):
             else:self.assertEqual(b''.join(chunks),b'ABC'*30000*12)
     def test_execution_uses_stream_headers_without_inference(self):self.run_group(records=True,dynamic=True)
     def test_large_byte_stream_same_pid(self):self.run_group()
+    def test_dynamic_byte_output_uses_actual_header(self):self.run_group(dynamic=True)
     def test_records_preserve_schema_nulls_and_batches(self):self.run_group(records=True)
     def test_contract_failure_terminates_without_deadlock(self):self.run_group(mismatch=True)
 if __name__=='__main__':unittest.main()

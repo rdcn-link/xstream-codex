@@ -1,0 +1,22 @@
+name: Local Python and Scala stream chain
+tasks:
+  - id: read
+    operator: read_item@1.0
+    inputs: {}
+    params:
+      uri: context:/weather/local-input.txt
+      view: bytes
+  - id: upper
+    operator:
+      local: ./python
+    inputs:
+      source: read
+    params:
+      uppercase: true
+  - id: identity
+    operator:
+      local: ./scala
+    inputs:
+      source: upper
+outputs:
+  result: identity

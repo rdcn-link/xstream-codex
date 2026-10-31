@@ -3,14 +3,14 @@ package xstream.data
 /** Metadata/browsing helper for structured file plugins. Content acquisition remains plugin-owned. */
 abstract class StructuredDataAccess(source:ByteSource,chunkBytes:Int=65536) extends DatasetAccess {
   protected def entries:Seq[Item]
-  protected def content[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]
+  protected def content[S](path:String,kind:DataViewType[S]):Option[DataView[S]]
   def list():Seq[Item]=entries
   def describe(path:String):Item={LogicalPath.validate(path);if(path=="/")Item("/","",None,"folder",views=Some(Seq("bytes")))else entries.find(_.path==path).getOrElse(throw new java.io.FileNotFoundException("structured item not found"))}
   def list(path:String):Seq[Item]={require(describe(path).kind=="folder","listing requires folder");entries.filter(i=>LogicalPath.parent(i.path)==path)}
   def count(path:String):Option[Long]=describe(path).recordCount
-  final def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]={
+  final def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={
     val item=describe(path)
-    if(path=="/")DataViews.when(kind,DataViews.Bytes)(DataViews[ByteChunk,AllBytes.type]((_,c,o)=>{
+    if(path=="/")DataViews.when(kind,DataViews.Bytes)(DataViews.blocks[ByteChunk,AllBytes.type]((_,c,o)=>{
       val in=source.open(c.check)
       try {o.start(BytesDescriptor());val b=new Array[Byte](chunkBytes);var end=false;while(!end){c.check();val n=in.read(b);if(n<0)end=true else if(n>0)o.accept(ByteChunk(b,0,n))}}finally in.close()
     }))

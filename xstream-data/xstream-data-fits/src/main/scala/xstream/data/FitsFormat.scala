@@ -12,7 +12,7 @@ import java.nio.{ByteBuffer,ByteOrder}
 final class FitsFormat extends StructuredFileHandler {
   val id="fits";val extensions=Set("fits","fit","fts")
   override def signatureMatches(b:Array[Byte]):Boolean=new String(b,java.nio.charset.StandardCharsets.US_ASCII).startsWith("SIMPLE")
-  override def validateOptions(o:FileOptions):Unit={require(o.columns.isEmpty && o.parameters.keySet.subsetOf(Set("chunk_bytes")),"invalid FITS options");o.parameters.get("chunk_bytes").foreach(v=>require(v.isInstanceOf[Number] && v.asInstanceOf[Number].longValue>=8 && v.asInstanceOf[Number].longValue<=DataViewCodecs.MaxBlockBytes,"invalid FITS chunk size"))}
+  override def validateOptions(o:FileOptions):Unit={require(o.columns.isEmpty && o.parameters.keySet.subsetOf(Set("chunk_bytes")),"invalid FITS options");o.parameters.get("chunk_bytes").foreach(v=>require(v.isInstanceOf[Number] && v.asInstanceOf[Number].longValue>=8 && v.asInstanceOf[Number].longValue<=DataViewSupports.MaxBlockBytes,"invalid FITS chunk size"))}
   private def encoding(h:ImageHDU):NumericEncoding=NumericEncoding(h.getBitPix match {case 8=>"uint8";case 16=>"int16";case 32=>"int32";case 64=>"int64";case -32=>"float32";case -64=>"float64";case _=>throw new IllegalArgumentException("unsupported FITS BITPIX")},ByteOrder.BIG_ENDIAN)
   private def attrs(h:BasicHDU[_],index:Int):Map[String,com.fasterxml.jackson.databind.JsonNode]={
     val cards=Data.mapper.createArrayNode();val it=h.getHeader.iterator()
@@ -64,10 +64,10 @@ final class FitsFormat extends StructuredFileHandler {
       def dimensions(h:ImageHDU):Vector[Dimension]={val shape=Option(h.getAxes).map(_.toVector).getOrElse(Vector.empty);shape.zipWithIndex.map{case(n,i)=>val axis=shape.size-i;Dimension(Option(h.getHeader.getStringValue("CTYPE"+axis)).filter(_.nonEmpty).getOrElse("axis"+axis),n.toLong,None,Option(h.getHeader.getStringValue("CUNIT"+axis)))}}
       new StructuredDataAccess(source,context.byteChunk) {
         val entries=hdus.zipWithIndex.map {case(h,i)=>
-          val views=h match {case image:ImageHDU if dimensions(image).nonEmpty=>if(dimensions(image).size==2)Seq("array","image")else Seq("array");case _:BinaryTableHDU if tables(i).nonEmpty=>Seq("records");case _=>Seq.empty}
+          val views=h match {case image:ImageHDU if dimensions(image).nonEmpty=>Seq("array");case _:BinaryTableHDU if tables(i).nonEmpty=>Seq("records");case _=>Seq.empty}
           Item("/hdu"+i,"fits-hdu",tables.get(i).flatten,views=Some(views),recordCount=if(views.contains("records"))Some(h.asInstanceOf[BinaryTableHDU].getNRows.toLong)else None)
         }.toVector
-        def content[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]={
+        def content[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={
           val index=path.stripPrefix("/hdu").toInt;val h=hdus(index)
           h match {
             case image:ImageHDU=>
@@ -90,15 +90,8 @@ final class FitsFormat extends StructuredFileHandler {
                   buffer.flip();c.check();out.accept(ArrayChunk(section,e,buffer))
                 }
               }
-              DataViews.when(kind,ScientificViews.Arrays)(DataViews[ArrayChunk,ArraySelection](arrays)).orElse {
-                if(dims.size!=2)None else DataViews.when(kind,ScientificViews.Images)(DataViews[ImageTile,ImageSelection]((selection,c,out)=>{
-                  val region=selection.region.getOrElse(ImageRegion(0,0,dims(1).length,dims(0).length))
-                  require(BigInt(region.x)+region.width<=dims(1).length && BigInt(region.y)+region.height<=dims(0).length,"image region out of bounds")
-                  out.start(ImageDescriptor(dims(1).length,dims(0).length,1,e,metadata))
-                  arrays(ArraySelection(Some(ArraySection(Vector(region.y,region.x),Vector(region.height,region.width),Vector(1,1)))),c,new DataConsumer[ArrayChunk]{def start(d:DataDescriptor[ArrayChunk]):Unit=();def accept(b:ArrayChunk):Unit=out.accept(ImageTile(ImageRegion(b.section.origin(1),b.section.origin(0),b.section.shape(1),b.section.shape(0)),1,e,b.values))})
-                }))
-              }
-            case table:BinaryTableHDU=>DataViews.when(kind,DataViews.Records)(DataViews[RecordBatch,Scan]((scan,c,out)=>{
+              DataViews.when(kind,ScientificViews.Arrays)(DataViews.blocks[ArrayChunk,ArraySelection](arrays))
+            case table:BinaryTableHDU=>DataViews.when(kind,DataViews.Records)(DataViews.blocks[RecordBatch,Scan]((scan,c,out)=>{
               val schema=tables(index).get
               ScanStreams.stream(scan,c.allocator,BatchStreams.records(out,c.check)){receiver=>
                 val root=VectorSchemaRoot.create(schema,c.allocator)

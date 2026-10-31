@@ -1,4 +1,4 @@
-name := "xstream-data-scientific-codecs"
+name := "xstream-data-scientific-views"
 organization := "io.github.rdcn-link"
 version := "0.1.0-SNAPSHOT"
 scalaVersion := "2.13.16"

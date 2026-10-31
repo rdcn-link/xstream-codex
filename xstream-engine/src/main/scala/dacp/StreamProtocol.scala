@@ -24,19 +24,24 @@ object StreamProtocol {
   def header(f: OperatorFrame): JsonNode = Data.mapper.readTree(f.metadata)
   def frame(kind: String, port: String = "", data: Array[Byte] = Array.emptyByteArray): OperatorFrame =
     OperatorFrame(Data.mapper.createObjectNode().put("type",kind).put("port",port).toString.getBytes(java.nio.charset.StandardCharsets.UTF_8),data)
-  def start(port: String,repr: String,format: String,s: Option[Schema]=None,structure:Option[JsonNode]=None): OperatorFrame = {
+  def start(port: String,repr: String,format: String,s: Option[Schema]=None,structure:Option[JsonNode]=None,dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null): OperatorFrame = {
     val h=Data.mapper.createObjectNode().put("type","start").put("port",port).put("representation",repr).put("format",format)
     structure.foreach(x=>h.set[JsonNode]("structure",x))
     s.foreach(x=>h.put("schema",java.util.Base64.getEncoder.encodeToString(x.serializeAsMessage())))
-    OperatorFrame(Data.mapper.writeValueAsBytes(h))
+    val data=if(dictionaries!=null && !dictionaries.getDictionaryIds.isEmpty){
+      import scala.jdk.CollectionConverters._
+      val allocator=dictionaries.lookup(dictionaries.getDictionaryIds.asScala.head).getVector.getAllocator
+      ArrowIpc.header(s.get,dictionaries,allocator)
+    }else Array.emptyByteArray
+    OperatorFrame(Data.mapper.writeValueAsBytes(h),data)
   }
   def schema(h: JsonNode): Schema = org.apache.arrow.vector.ipc.message.MessageSerializer.deserializeSchema(new org.apache.arrow.vector.ipc.ReadChannel(java.nio.channels.Channels.newChannel(new java.io.ByteArrayInputStream(java.util.Base64.getDecoder.decode(h.path("schema").asText)))))
   def rename(f: OperatorFrame,port: String,task: String=""): OperatorFrame = {
     val h=header(f).deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();h.put("port",port);if(task.nonEmpty) h.put("task",task)
     OperatorFrame(Data.mapper.writeValueAsBytes(h),f.data)
   }
-  def batch(root: VectorSchemaRoot): Array[Byte] = {
-    val out=new java.io.ByteArrayOutputStream();val w=new ArrowStreamWriter(root,null,out)
+  def batch(root: VectorSchemaRoot,dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null): Array[Byte] = {
+    val out=new java.io.ByteArrayOutputStream();val w=new ArrowStreamWriter(root,dictionaries,out)
     try {w.start();w.writeBatch();w.end();out.toByteArray} finally w.close()
   }
   def send(listener: org.apache.arrow.flight.FlightProducer.ServerStreamListener,root: VectorSchemaRoot,f: OperatorFrame,cancel: StreamCancel): Unit = {
@@ -44,7 +49,7 @@ object StreamProtocol {
     root.clear();root.allocateNew();root.getVector(0).asInstanceOf[VarBinaryVector].setSafe(0,OperatorFrames.encode(f));root.setRowCount(1);listener.putNext()
   }
   def receive(root: VectorSchemaRoot): OperatorFrame = {
-    require(root.getSchema==PluginSchemas.bytes && root.getRowCount==1,"invalid stream envelope")
+    require(root.getSchema.getFields==PluginSchemas.bytes.getFields && root.getRowCount==1,"invalid stream envelope")
     OperatorFrames.decode(root.getVector(0).asInstanceOf[VarBinaryVector].get(0))
   }
   def thread(cancel: StreamCancel)(f: => Unit): Thread = {

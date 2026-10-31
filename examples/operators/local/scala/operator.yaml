@@ -1,0 +1,21 @@
+name: local_scala_identity
+version: '1.0'
+description: Stream bytes without buffering the entire Item using the Scala SDK.
+language: scala
+runtime: jvm@1.1
+entrypoint: example.Identity
+source_public: true
+inputs:
+  source:
+    representations: [bytes]
+    formats: []
+parameters:
+  type: object
+  properties: {}
+  required: []
+  additionalProperties: false
+icon:
+  path: M4 18L10 6L16 18M6 14H14M18 8H22M20 6V18
+  color: '#14866b'
+provenance:
+  license: Apache-2.0

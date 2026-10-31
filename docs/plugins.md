@@ -13,4 +13,8 @@ Built-in implementations and contributed plugins use the same extension contract
 
 Implement public no-argument classes and list them in `META-INF/services/<fully-qualified-interface>`. Add the plugin JAR and dependencies to the host classpath and restart; do not edit a central registry. Executor contracts currently come from the DACP integration API as `dacp.OperatorExecutor`; bundled implementations use `xstream.operator.executors`. Source-review contracts use `xstream.operator`. Registration filenames must match the actual interface names.
 
-Scientific views preserve arrays, images and sequences rather than silently flattening them into records. Keep format dependencies in their data plugins. Operator code runs in isolated environments; host-installed plugins themselves are trusted code. Include configuration examples, registration instructions and contract tests for contributions; module guides list current validation commands.
+Scientific views preserve arrays and sequences rather than silently flattening them into records. Keep format dependencies in their data plugins. Operator code runs in isolated environments; host-installed plugins themselves are trusted code. Include configuration examples, registration instructions and contract tests for contributions; module guides list current validation commands.
+
+## Local development
+
+The standalone engine supports source-directory references, reusable builds and direct source submission; see [local operator libraries](local-operators.md). `LocalOperatorBuilder` is an implemented build extension point with built-in `python` and `command` providers registered through ServiceLoader.

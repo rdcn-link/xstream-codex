@@ -4,13 +4,13 @@ Typed data access for XStream and DACP, independent of the job engine and networ
 
 ## Modules
 
-- `xstream-data-core`: DataCatalog → Dataset → Item, DataView/DataStream, selections, plugin lifecycle and codec contracts.
+- `xstream-data-core`: DataCatalog → Dataset → Item, DataView/ArrowDataStream, selections, plugin lifecycle and standard Arrow representations.
 - `xstream-data-files`, `xstream-data-catalog-static`, `xstream-data-mounted`: file/JDBC, configured and mounted catalogs.
 - `xstream-data-formats-basic`, `xstream-data-parquet`, `xstream-data-excel`, `xstream-data-archives`: existing readers and structured browsing.
 - `xstream-data-netcdf`: NetCDF groups and numeric variables, bounded strided array selections. Non-numeric variables remain browsable without an array view.
-- `xstream-data-fits`: HDUs, bounded image/array tiles and supported fixed-size binary tables; variable-size and complex table cells are not advertised as records.
+- `xstream-data-fits`: HDUs, bounded array tiles and supported fixed-size binary tables; variable-size and complex table cells are not advertised as records.
 - `xstream-data-fasta`: bounded sequence chunks with IDs, symbol offsets and final markers; ID/range selection scans the source sequentially.
-- `xstream-data-scientific-codecs`: version 1 array/image/sequence descriptors and block codecs for network adapters.
+- `xstream-data-scientific-views`: array/sequence request selection, schema presentation and bounded Arrow batch samples.
 
 ## Build and use
 
@@ -19,7 +19,7 @@ cd xstream-data
 sbt compile
 ```
 
-Applications depend on core at compile time and selected implementations at runtime. DACP server distributions bundle the scientific plugins. Register formats in `META-INF/services/xstream.data.FormatHandler` and codecs in `META-INF/services/xstream.data.DataViewCodec`; entries contain fully qualified implementation class names. External JARs and their dependencies can use the existing plugin directory; core registries need no edits.
+Applications depend on core at compile time and selected implementations at runtime. DACP server distributions bundle the scientific plugins. Register formats in `META-INF/services/xstream.data.FormatHandler` and view support in `META-INF/services/xstream.data.DataViewSupport`; entries contain fully qualified implementation class names. External JARs and their dependencies can use the existing plugin directory; core registries need no edits.
 
 Configure a file item with `format: netcdf`, `format: fits` or `format: fasta`. NetCDF/FITS accept `chunk_bytes` (8–16777216, default 65536). FASTA accepts `chunk_symbols` (1–1048576, default 65536) and `alphabet` (`dna`, `rna`, `protein`, `unknown`). Format parameters belong to the item's `options` map.
 
@@ -27,7 +27,7 @@ NetCDF children use group/variable paths; FITS children use `/hdu0`, `/hdu1`, et
 
 Scientific network adapters preserve typed descriptors and bounded blocks through nodes, Union proxies and clients. read_item supports scientific selections; the designer provides structure and sample previews. Downstream operators must explicitly support the representation. See [designer scientific views](../docs/designer-scientific.md).
 
-Run parser/codec contract tests with `cd ../dacp-server && sbt 'testOnly dacp.DataStreamSpec dacp.ScientificFormatsSpec'`.
+Run parser and Arrow contract tests with `sbt test` from this module root. See the [Arrow representation contract](../docs/arrow-streams.md).
 
 ## Configuration example
 

@@ -4,7 +4,6 @@
  function structureRows(s){
   if(!s||typeof s!=='object')return [];
   if(s.view==='array')return [['type',s.data_type],...(s.dimensions||[]).map(d=>[d.name,String(d.length)+(d.unit?' '+d.unit:'')])];
-  if(s.view==='image')return [['type',s.data_type],['width',s.width],['height',s.height],['channels',s.channels]];
   if(s.view==='sequence')return [['alphabet',s.alphabet],['chunks','sequence ID + offset']];
   return Object.entries(s).filter(([k])=>k!=='attributes').slice(0,8).map(([k,v])=>[k,typeof v==='object'?JSON.stringify(v):String(v)]);
  }

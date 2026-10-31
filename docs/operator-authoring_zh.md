@@ -128,3 +128,7 @@ outputs:
 stdout 保留给流协议，日志写 stderr。输入须消费到 EOS；成功才发出结束事件，异常不能伪造成功。bytes 输出被分块；单条记录批次不得超过协议上限，样例还受行数和字节数预算限制。不要把流全部读入内存，也不要为普通中间步骤创建持久文件。
 
 进一步阅读：[SDK](../xstream-operator-sdk/README_zh.md) · [参数](operator-parameters_zh.md) · [结构推导](structure-inference_zh.md) · [流协议](operator-streams_zh.md)
+
+## 本地开发
+
+独立引擎支持源码目录引用、可复用构建和直接提交源码，详见[本地算子库](local-operators_zh.md)。其中 `LocalOperatorBuilder` 是已实现的构建扩展点，内置 `python` 与 `command` 提供者通过 ServiceLoader 注册。

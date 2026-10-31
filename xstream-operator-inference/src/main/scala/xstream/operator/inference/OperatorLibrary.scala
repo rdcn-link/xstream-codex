@@ -45,7 +45,7 @@ object OperatorLibrary {
     val lock = c.lock()
     try f finally { lock.release(); c.close() }
   }
-  private def plan(config: OperatorEnvironment, reference: String, image: String, executor: String, entrypoint: String,
+  private[inference] def plan(config: OperatorEnvironment, reference: String, image: String, executor: String, entrypoint: String,
                    artifact: Option[Path], filename: Option[String], ports: JsonNode, configuration: JsonNode): ResolvedOperator = {
     val target = filename.map { name =>
       require(name.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*"), "invalid artifact filename")

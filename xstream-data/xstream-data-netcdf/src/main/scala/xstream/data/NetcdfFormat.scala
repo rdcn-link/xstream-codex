@@ -10,7 +10,7 @@ final class NetcdfFormat extends StructuredFileHandler {
   override def signatureMatches(b:Array[Byte]):Boolean=b.length>=4 && b(0)=='C' && b(1)=='D' && b(2)=='F'
   override def validateOptions(o:FileOptions):Unit={
     require(o.columns.isEmpty && o.parameters.keySet.subsetOf(Set("chunk_bytes")),"invalid NetCDF options")
-    o.parameters.get("chunk_bytes").foreach(v=>require(v.isInstanceOf[Number] && v.asInstanceOf[Number].longValue>=8 && v.asInstanceOf[Number].longValue<=DataViewCodecs.MaxBlockBytes,"invalid NetCDF chunk size"))
+    o.parameters.get("chunk_bytes").foreach(v=>require(v.isInstanceOf[Number] && v.asInstanceOf[Number].longValue>=8 && v.asInstanceOf[Number].longValue<=DataViewSupports.MaxBlockBytes,"invalid NetCDF chunk size"))
   }
   private def encoding(v:Variable):Option[NumericEncoding]={
     val types=Map("byte"->"int8","ubyte"->"uint8","short"->"int16","ushort"->"uint16","int"->"int32","uint"->"uint32","long"->"int64","ulong"->"uint64","float"->"float32","double"->"float64","enum1"->"uint8","enum2"->"uint16","enum4"->"uint32")
@@ -39,8 +39,8 @@ final class NetcdfFormat extends StructuredFileHandler {
       new StructuredDataAccess(source,context.byteChunk) {
         val entries=groups.filter(_!=file.getRootGroup).map(g=>Item("/"+g.getFullName,"netcdf-group",None,"folder",views=Some(Seq.empty))).toVector ++
           variables.toVector.sortBy(_._1).map{case(path,v)=>Item(path,"netcdf-variable",None,views=Some(if(encoding(v).nonEmpty)Seq("array")else Seq.empty))}
-        def content[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]=variables.get(path).flatMap { v=>encoding(v).flatMap { e=>
-          DataViews.when(kind,ScientificViews.Arrays)(DataViews[ArrayChunk,ArraySelection]((request,c,out)=>{
+        def content[S](path:String,kind:DataViewType[S]):Option[DataView[S]]=variables.get(path).flatMap { v=>encoding(v).flatMap { e=>
+          DataViews.when(kind,ScientificViews.Arrays)(DataViews.blocks[ArrayChunk,ArraySelection]((request,c,out)=>{
             check();c.check()
             val dimensions=dims(v)
             var attrs=attributes(v.getAttributes.asScala)

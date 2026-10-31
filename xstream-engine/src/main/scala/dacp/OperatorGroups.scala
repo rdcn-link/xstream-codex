@@ -25,6 +25,7 @@ object OperatorGroups {
     if(!config.operatorFusionEnabled)return Left("disabled_by_configuration")
     if(plan.outputs.isEmpty)return Left("no_selected_outputs")
     if(plan.tasks.size<2)return Left("single_step")
+    if(plan.tasks.exists(_.localOperator.nonEmpty))return Left("local_operator_boundary")
     if(plan.tasks.exists(_.source.nonEmpty))return Left("inline_source")
     val dc=DefaultDockerClientConfig.createDefaultConfigBuilder().build()
     val transport=new ApacheDockerHttpClient.Builder().dockerHost(dc.getDockerHost).sslConfig(dc.getSSLConfig).build()

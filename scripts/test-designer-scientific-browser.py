@@ -10,7 +10,6 @@ web=root/'xstream-designer/src/main/resources/web'
 integer={'type':'integer','minimum':0}
 views={
  'array':{'selection':{'type':'object','properties':{k:{'type':'array','items':integer} for k in ('origin','shape','stride')},'additionalProperties':False}},
- 'image':{'selection':{'type':'object','properties':{k:integer for k in ('x','y','width','height')},'additionalProperties':False}},
  'sequence':{'selection':{'type':'object','properties':{'ids':{'type':'array','items':{'type':'string'}},'offset':integer,'length':integer},'additionalProperties':False}}}
 
 def route(req):
@@ -27,7 +26,7 @@ def route(req):
   elif name in ('infer','infer_stream'):
    job=json.loads(n['job_yaml']);tasks={}
    for t in job['tasks']:
-    view=t['params'].get('view','sequence');structure={'sequence':{'view':'sequence','alphabet':'dna'},'image':{'view':'image','width':12,'height':8,'channels':1,'data_type':'uint8'},'array':{'view':'array','data_type':'float32','dimensions':[{'name':'time','length':4},{'name':'lat','length':180}]}}.get(view)
+    view=t['params'].get('view','sequence');structure={'sequence':{'view':'sequence','alphabet':'dna'},'array':{'view':'array','data_type':'float32','dimensions':[{'name':'time','length':4},{'name':'lat','length':180}]}}.get(view)
     d={'representations':[view],'formats':['fasta'],'certainty':'known','structure':structure}
     if n.get('preview'):d['sample']={'representation':view,'format':'fasta','rows':[{'id':'chr1','offset':2,'symbols':'GTAC','last':True}],'truncated':False}
     tasks[t['id']]={'outputs':{'result':d},'diagnostics':[]}
@@ -97,11 +96,6 @@ with sync_playwright() as p:
  length.get_by_label('Parameter value',exact=True).fill('4')
  expect(page.locator('#step-save-status')).to_have_text('')
  assert page.evaluate('job.tasks[0].params.selection.length')==4
- page.get_by_role('group',name='view',exact=True).get_by_label('Parameter value',exact=True).select_option(label='"image"')
- expect(page.get_by_label('Set selection',exact=True)).not_to_be_checked()
- page.get_by_label('Set selection',exact=True).check()
- expect(page.locator('[data-parameter-path="params.selection.width"]')).to_be_visible()
- assert page.evaluate('job.tasks[0].params.selection') == {}, page.evaluate('job.tasks[0].params')
  page.get_by_role('group',name='view',exact=True).get_by_label('Parameter value',exact=True).select_option(label='"array"')
  page.get_by_label('Set selection',exact=True).check()
  expect(page.locator('[data-parameter-path="params.selection.stride"]')).to_be_visible()

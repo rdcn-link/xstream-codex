@@ -42,7 +42,7 @@ class ScientificDesignerSpec extends AnyFunSuite {
       |outputs: {result: read}
       |""".stripMargin
     try {
-      val views=post("views",Json.obj());assert(views.path("array").path("selection").path("properties").has("stride"));assert(views.path("image").path("selection").path("properties").has("width"));assert(views.path("sequence").path("selection").path("properties").has("ids"))
+      val views=post("views",Json.obj());assert(views.path("array").path("selection").path("properties").has("stride"));assert(!views.has("image"));assert(views.path("sequence").path("selection").path("properties").has("ids"))
       val asset=http.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}/scientific-views.js")).GET().build(),HttpResponse.BodyHandlers.ofString());assert(asset.statusCode()==200)
       val children=post("items",Json.obj().put("uri","context:/science").put("path","/sample.fa"));assert(children.path("items").get(0).path("views").get(0).asText=="sequence")
       val request=Json.obj().put("job_yaml",job()).put("variables_yaml","N: 4")
@@ -55,15 +55,14 @@ class ScientificDesignerSpec extends AnyFunSuite {
       assert(Json.mapper.writeValueAsBytes(sample).length<=1024)
       val variants=Vector(
         ("array","climate.nc/temperature","{origin: [0, 1], shape: [2, 1], stride: [1, 1]}"),
-        ("image","sky.fits/hdu0","{x: 1, y: 0, width: 1, height: 2}"))
+        ("array","sky.fits/hdu0","{origin: [0, 1], shape: [2, 1], stride: [1, 1]}"))
       variants.foreach {case(view,path,selection)=>
         val yaml=job(view,selection).replace("sample.fa/sequences",path)
         val r=post("infer",Json.obj().put("job_yaml",yaml).put("variables_yaml","{}").set[com.fasterxml.jackson.databind.JsonNode]("preview",Json.obj().put("max_rows",2).put("max_bytes",1024)))
         val out=r.path("outputs").path("result");assert(out.path("structure").path("view").asText==view,r.toString)
         val row=out.path("sample").path("rows").get(0)
         assert(row.path("values").get(0).asInt==2 && row.path("values").get(1).asInt==5)
-        if(view=="array")assert(out.path("structure").path("dimensions").size==2)
-        else assert(out.path("structure").path("width").asInt==3 && row.path("x").asInt==1)
+        assert(out.path("structure").path("dimensions").size==2)
       }
       val exported=post("export",request).path("job_yaml").asText
       assert(Documents.job(exported).path("tasks").get(0).path("params").path("selection").path("length").asText=="$N")

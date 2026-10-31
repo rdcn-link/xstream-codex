@@ -14,7 +14,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
 
 `xstream-runner` 是本模块发布的程序，不是独立模块。记录输出为 JSONL，字节流直接写 stdout。启动参数为 `CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。
 
-`read_item.params.uri: context:/dataset/item` 引用已绑定的 DataCatalog，也可以使用显式的 `dacp://host:port/dataset/item` URI。远程连接和凭据配置在 `nodes`。算子来自审核公开的仓库，保留现有隔离运行环境及兼容算子同进程合并。
+`read_item.params.uri: context:/dataset/item` 引用已绑定的 DataCatalog，也可以使用显式的 `dacp://host:port/dataset/item` URI。远程连接和凭据配置在 `nodes`。算子来自审核公开的仓库，或显式引用[本地源码目录](../docs/local-operators_zh.md)，保留现有隔离运行环境及兼容算子同进程合并。
 
 Scala 嵌入、插件注册、取消、物化/重放、目录生命周期及设计器配置见[完整指南](../docs/xstream_zh.md)。[English](README.md)。
 

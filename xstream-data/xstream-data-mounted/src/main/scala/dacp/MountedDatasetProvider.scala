@@ -53,7 +53,7 @@ class MountedDatasetProvider extends DatasetProvider {
         }
         def list(path:String):Seq[Item]={require(describe(path).kind=="folder","listing requires a folder");list().filter(i=>LogicalPath.parent(i.path)==path)}
         def count(path:String):Option[Long]={val(a,p,_,_)=route(path);a.count(p)}
-        def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]={val(a,p,_,_)=route(path);a.view(p,kind)}
+        def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={val(a,p,_,_)=route(path);a.view(p,kind)}
         override def close():Unit={var error:Throwable=null;opened.values.toVector.reverse.foreach(a=>try a.close()catch{case scala.util.control.NonFatal(t)=>if(error==null)error=t else error.addSuppressed(t)});opened.clear();if(error!=null)throw error}
       }
       override def close():Unit={var error:Throwable=null;children.reverseIterator.foreach(c=>try c._3.close()catch{case scala.util.control.NonFatal(t)=>if(error==null)error=t else error.addSuppressed(t)});children.clear();if(error!=null)throw error}

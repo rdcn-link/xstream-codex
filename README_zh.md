@@ -48,7 +48,7 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
   xstream-designer/example.yaml
 ```
 
-请先修改配置路径、服务地址和凭据。启动程序将所选输出流写入 stdout；设计器默认监听 `http://127.0.0.1:8840/`。算子使用审核公开的仓库或经校验的本地缓存，内置 `read_item` 无需下载算子包。
+请先修改配置路径、服务地址和凭据。启动程序将所选输出流写入 stdout；设计器默认监听 `http://127.0.0.1:8840/`。算子使用审核公开的仓库、经校验的包缓存，或用于独立开发的[本地源码库](docs/local-operators_zh.md)，内置 `read_item` 无需下载算子包。
 
 ## 文档
 
@@ -56,6 +56,7 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
 - [源码提交与审核](docs/operator-submission_zh.md)
 - [引擎和嵌入](docs/xstream_zh.md)
 - [类型化流和科学视图](docs/data-streams_zh.md)
+- [Arrow 流契约与数据表示](docs/arrow-streams_zh.md)
 - [科学数据编排和预览](docs/designer-scientific_zh.md)
 - [插件契约和注册](xstream-data/README_zh.md)
 - [作业 YAML](docs/jobs_zh.md)

@@ -17,8 +17,8 @@ final class FastaFormat extends StructuredFileHandler {
     val alphabet=options.parameters.get("alphabet").map(_.toString).getOrElse("unknown")
     new StructuredDataAccess(source,context.byteChunk) {
       val entries=Seq(Item("/sequences","fasta",None,views=Some(Seq("sequence"))))
-      def content[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]=DataViews.when(kind,ScientificViews.Sequences)(
-        DataViews[SequenceChunk,SequenceSelection]((selection,c,out)=>{
+      def content[S](path:String,kind:DataViewType[S]):Option[DataView[S]]=DataViews.when(kind,ScientificViews.Sequences)(
+        DataViews.blocks[SequenceChunk,SequenceSelection]((selection,c,out)=>{
           val reader=new BufferedReader(new InputStreamReader(source.open(()=>{check();c.check()}),UTF_8),65536)
           try {
             out.start(SequenceDescriptor(alphabet))

@@ -24,7 +24,7 @@ object ComputePushdown {
         case None=>
           val inputs=t.inputs.values.toVector
           val upstream=inputs.flatMap(_.task).map(id=>locations(id))
-          if(t.source.isEmpty && inputs.nonEmpty && upstream.size==inputs.size && upstream.forall(_.nonEmpty) && upstream.distinct.size==1)upstream.head else None
+          if(t.source.isEmpty && t.localOperator.isEmpty && inputs.nonEmpty && upstream.size==inputs.size && upstream.forall(_.nonEmpty) && upstream.distinct.size==1)upstream.head else None
       }
       locations(t.id)=location
     }
@@ -59,7 +59,7 @@ object ComputePushdown {
   def yaml(plan:JobPlan):String={
     val n=Json.obj().put("name",plan.name);val tasks=n.putArray("tasks")
     plan.tasks.foreach { t=>
-      require(t.source.isEmpty,"Remote execution requires repository operators")
+      require(t.source.isEmpty && t.localOperator.isEmpty,"Remote execution requires repository operators")
       val task=tasks.addObject().put("id",t.id).put("operator",t.operator);t.title.foreach(task.put("title",_))
       task.set[JsonNode]("params",Json.mapper.valueToTree(t.params));val inputs=task.putObject("inputs")
       t.inputs.toVector.sortBy(_._1).foreach{case(p,b)=>inputs.put(p,b.task.get+":"+b.port)}

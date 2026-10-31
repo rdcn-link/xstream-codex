@@ -48,7 +48,7 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
   xstream-designer/example.yaml
 ```
 
-Edit configuration paths, service addresses and credentials first. The runner prints its selected output stream to stdout; the designer listens on `http://127.0.0.1:8840/` by default. Operators use approved public repositories or their verified local cache. The built-in `read_item` needs no package download.
+Edit configuration paths, service addresses and credentials first. The runner prints its selected output stream to stdout; the designer listens on `http://127.0.0.1:8840/` by default. Operators use approved public repositories, verified package caches, or explicit [local source libraries](docs/local-operators.md) for standalone development. The built-in `read_item` needs no package download.
 
 ## Documentation
 
@@ -56,6 +56,7 @@ Edit configuration paths, service addresses and credentials first. The runner pr
 - [Submit source and review](docs/operator-submission.md)
 - [Engine and embedding](docs/xstream.md)
 - [Typed streams and scientific views](docs/data-streams.md)
+- [Arrow stream contracts and representations](docs/arrow-streams.md)
 - [Scientific authoring and previews](docs/designer-scientific.md)
 - [Plugin contracts and registration](xstream-data/README.md)
 - [Job YAML](docs/jobs.md)

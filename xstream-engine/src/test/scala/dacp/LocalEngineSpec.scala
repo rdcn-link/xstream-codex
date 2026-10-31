@@ -17,8 +17,19 @@ class LocalEngineSpec extends AnyFunSuite {
       val start=frames.map(StreamProtocol.header).find(_.path("type").asText=="start").get
       assert(start.path("representation").asText=="sequence" && start.path("structure").path("view").asText=="sequence")
       val data=frames.filter(f=>StreamProtocol.header(f).path("type").asText=="data")
-      assert(data.map(f=>new String(f.data,java.nio.charset.StandardCharsets.UTF_8)).mkString=="GTAC")
-      assert(StreamProtocol.header(data.head).path("block").path("offset").asLong==2)
+      val allocator=new org.apache.arrow.memory.RootAllocator()
+      try {
+        val parts=scala.collection.mutable.ArrayBuffer.empty[SequenceChunk]
+        data.foreach { frame=>
+          val stream=ArrowIpc.readStream(new java.io.ByteArrayInputStream(frame.data),StreamContext(allocator))
+          ArrowBlocks.consume(stream,new DataConsumer[SequenceChunk] {
+            def start(d:DataDescriptor[SequenceChunk]):Unit=()
+            def accept(b:SequenceChunk):Unit=parts+=b
+          })
+        }
+        assert(parts.map(_.symbols.toString).mkString=="GTAC" && parts.head.offset==2)
+      }finally allocator.close()
+
       assert(frames.map(StreamProtocol.header).exists(_.path("type").asText=="end"))
       intercept[IllegalArgumentException](Jobs.parse(yaml.replace("view: sequence","view: records")))
     }finally {cancel.close();host.close();plugins.close();Data.deleteTree(dir)}
@@ -39,4 +50,14 @@ class LocalEngineSpec extends AnyFunSuite {
     }finally {host.close();plugins.close()}
     intercept[IllegalArgumentException](DataCatalogRuntime.catalog)
   }
+  test("local references are explicit, preserve parameters and reject conflicting declarations") {
+    val text="name: Local\ntasks:\n- id: filter\n  operator: {local: ./filter}\n  inputs: {}\n  params: {limit: 123}\noutputs: {result: filter}\n"
+    val task=Jobs.parse(text).tasks.head
+    assert(task.localOperator.contains("./filter") && task.operator.isEmpty && task.source.isEmpty)
+    assert(task.params.get("limit")==Integer.valueOf(123))
+    intercept[IllegalArgumentException](Jobs.parse(text.replace("local: ./filter","local: ./filter, runtime: python@1.0")))
+    intercept[IllegalArgumentException](Jobs.parse(text.replace("local: ./filter","local: 123")))
+    intercept[IllegalArgumentException](Jobs.parse(text.replace("local: ./filter","local: ''")))
+  }
+
 }

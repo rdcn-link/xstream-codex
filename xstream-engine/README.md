@@ -14,7 +14,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
 
 `xstream-runner` is a program shipped by this module, not a separate module. Records are printed as JSONL; bytes are streamed directly to stdout. The launcher accepts `CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`.
 
-Use `read_item.params.uri: context:/dataset/item` for the bound DataCatalog, or an explicit `dacp://host:port/dataset/item` URI. Configure remote connections and credentials in `nodes`. Operators come from approved public repositories; existing isolated runtimes and compatible-operator fusion remain in use.
+Use `read_item.params.uri: context:/dataset/item` for the bound DataCatalog, or an explicit `dacp://host:port/dataset/item` URI. Configure remote connections and credentials in `nodes`. Operators come from approved public repositories or explicit [local source directories](../docs/local-operators.md); existing isolated runtimes and compatible-operator fusion remain in use.
 
 See [the full guide](../docs/xstream.md) for Scala embedding, plugin registration, cancellation, materialization/replay, catalog lifecycle and designer configuration. [中文](README_zh.md).
 

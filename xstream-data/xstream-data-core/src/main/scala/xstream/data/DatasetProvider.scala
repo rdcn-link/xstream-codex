@@ -8,8 +8,8 @@ trait DatasetAccess extends DataSetAdapter with AutoCloseable {
   def close(): Unit = ()
   def list(path: String): Seq[Item]
   def count(path: String): Option[Long]
-  def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]
-  final def requireView[K,S](path:String,kind:DataViewType[K,S]):DataView[K,S] =
+  def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]
+  final def requireView[S](path:String,kind:DataViewType[S]):DataView[S] =
     view(path,kind).getOrElse(throw new IllegalArgumentException("unsupported stream view: " + kind.name))
 }
 trait PublishedDataset extends AutoCloseable {

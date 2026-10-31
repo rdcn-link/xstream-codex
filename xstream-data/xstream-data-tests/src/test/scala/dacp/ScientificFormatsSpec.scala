@@ -25,7 +25,7 @@ class ScientificFormatsSpec extends AnyFunSuite {
     try {
       assert(access.list("/").map(_.path)==Seq("/sequences"))
       val s=access.requireView("/sequences",ScientificViews.Sequences).open(SequenceSelection(Set("chr1"),2,Some(5)),StreamContext(a))
-      s.consume(new DataConsumer[SequenceChunk]{def start(d:DataDescriptor[SequenceChunk]):Unit=assert(d.isInstanceOf[SequenceDescriptor]);def accept(b:SequenceChunk):Unit=chunks+=b})
+      ArrowBlocks.consume(s,new DataConsumer[SequenceChunk]{def start(d:DataDescriptor[SequenceChunk]):Unit=assert(d.isInstanceOf[SequenceDescriptor]);def accept(b:SequenceChunk):Unit=chunks+=b})
       assert(chunks.map(_.symbols.toString).mkString=="GTACG")
       assert(chunks.head.offset==2 && chunks.last.last && chunks.forall(_.symbols.length<=3))
     }finally {access.close();Files.delete(p)}
@@ -35,10 +35,10 @@ class ScientificFormatsSpec extends AnyFunSuite {
     val file=new nom.tam.fits.Fits();file.addHDU(nom.tam.fits.Fits.makeHDU(Array(Array[Short](1,2,3),Array[Short](4,5,6))));file.write(p.toFile);file.close()
     val access=new _root_.xstream.data.fits.FitsFormat().openStructure(ByteSource.local(p),FileOptions(),c,()=>())
     try {
-      assert(access.describe("/hdu0").views.get==Seq("array","image"))
+      assert(access.describe("/hdu0").views.get==Seq("array"))
       val s=access.requireView("/hdu0",ScientificViews.Arrays).open(ArraySelection(Some(ArraySection(Vector(0,1),Vector(2,1),Vector(1,1)))),StreamContext(a))
       val values=scala.collection.mutable.ArrayBuffer.empty[Short]
-      s.consume(new DataConsumer[ArrayChunk]{def start(d:DataDescriptor[ArrayChunk]):Unit=assert(d.asInstanceOf[ArrayDescriptor].dimensions.map(_.length)==Vector(2,3));def accept(b:ArrayChunk):Unit={val v=b.values.duplicate().order(b.encoding.byteOrder);while(v.hasRemaining)values+=v.getShort()}})
+      ArrowBlocks.consume(s,new DataConsumer[ArrayChunk]{def start(d:DataDescriptor[ArrayChunk]):Unit=assert(d.asInstanceOf[ArrayDescriptor].dimensions.map(_.length)==Vector(2,3));def accept(b:ArrayChunk):Unit={val v=b.values.duplicate().order(b.encoding.byteOrder);while(v.hasRemaining)values+=v.getShort()}})
       assert(values.toVector==Vector[Short](2,5))
     }finally {access.close();Files.delete(p)}
   }}
@@ -52,7 +52,7 @@ class ScientificFormatsSpec extends AnyFunSuite {
     try {
       val s=access.requireView("/temperature",ScientificViews.Arrays).open(ArraySelection(Some(ArraySection(Vector(1),Vector(2),Vector(2)))),StreamContext(a))
       val values=scala.collection.mutable.ArrayBuffer.empty[Int]
-      s.consume(new DataConsumer[ArrayChunk]{def start(d:DataDescriptor[ArrayChunk]):Unit=assert(d.asInstanceOf[ArrayDescriptor].dimensions.head.name=="time");def accept(b:ArrayChunk):Unit={val v=b.values.duplicate().order(b.encoding.byteOrder);while(v.hasRemaining)values+=v.getInt()}})
+      ArrowBlocks.consume(s,new DataConsumer[ArrayChunk]{def start(d:DataDescriptor[ArrayChunk]):Unit=assert(d.asInstanceOf[ArrayDescriptor].dimensions.head.name=="time");def accept(b:ArrayChunk):Unit={val v=b.values.duplicate().order(b.encoding.byteOrder);while(v.hasRemaining)values+=v.getInt()}})
       assert(values.toVector==Vector(20,40))
     }finally {access.close();Files.delete(p)}
   }}
@@ -65,19 +65,20 @@ class ScientificFormatsSpec extends AnyFunSuite {
       assert(access.describe("/genome/sequences").views.contains(Seq("sequence")))
       var count=0
       val stream=access.requireView("/genome/sequences",ScientificViews.Sequences).open(SequenceSelection(),StreamContext(a))
-      stream.consume(new DataConsumer[SequenceChunk]{def start(d:DataDescriptor[SequenceChunk]):Unit=();def accept(b:SequenceChunk):Unit=count+=b.symbols.length})
+      ArrowBlocks.consume(stream,new DataConsumer[SequenceChunk]{def start(d:DataDescriptor[SequenceChunk]):Unit=();def accept(b:SequenceChunk):Unit=count+=b.symbols.length})
       assert(count==4)
     }finally {access.close();Files.delete(p)}
   }}
-  test("scientific codecs are discovered and preserve descriptors and payloads") {using { (c,a)=>
-    val codec=new _root_.xstream.data.scientific.ArrayCodec()
-    assert(DataViewCodecs.all(c.plugins).map(_.kind.name).toSet==Set("array","image","sequence"))
+  test("scientific selection and presentation supports are discovered without output codecs") {using { (c,a)=>
+    val support=new _root_.xstream.data.scientific.ArrayViewSupport()
+    assert(DataViewSupports.all(c.plugins).map(_.kind.name).toSet==Set("array","sequence"))
+    val request=Data.mapper.readTree("""{"origin":[1],"shape":[2],"stride":[1]}""")
+    val selection=support.selection(request)
+    assert(support.selection(support.selectionJson(selection))==selection)
     val encoding=NumericEncoding("int32",ByteOrder.LITTLE_ENDIAN)
     val d=ArrayDescriptor(Vector(Dimension("x",3)),encoding)
-    assert(codec.descriptor(codec.descriptor(d))==d)
-    val b=ArrayChunk(ArraySection(Vector(1),Vector(2),Vector(1)),encoding,ByteBuffer.allocate(8).order(encoding.byteOrder).putInt(20).putInt(30).flip())
-    val decoded=codec.decode(codec.encode(b),d)
-    assert(decoded.section==b.section && decoded.values==b.values)
-    intercept[IllegalArgumentException](codec.decode(EncodedDataBlock(codec.encode(b).metadata,Array[Byte](1)),d))
+    support.validateSelection(selection,ArrowRepresentations.schema(d))
+    val b=ArrayChunk(selection.section.get,encoding,ByteBuffer.allocate(8).order(encoding.byteOrder).putInt(20).putInt(30).flip())
+    intercept[IllegalArgumentException](support.selection(Data.mapper.readTree("""{"unknown":1}""")))
   }}
 }

@@ -37,7 +37,10 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
     val stderr=new StringBuilder
     try {
       val definition=resolved.getOrElse(task.source match {
-        case None=>OperatorLibrary.resolve(config,task.operator,docker)
+        case None=>task.localOperator match {
+          case Some(reference)=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,reference,docker,()=>cancel.active())
+          case None=>OperatorLibrary.resolve(config,task.operator,docker)
+        }
         case Some(code)=>
           val runtime=config.sourceRuntimes.getOrElse(code.runtime,throw new IllegalArgumentException("source runtime is not configured"))
           val artifact=temporary.resolve("operator.source")
@@ -50,12 +53,12 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       val starts=inputs.toVector.sortBy(_._1).map {case(port,source)=>
         val f=source.next().getOrElse(throw new IllegalArgumentException("missing input metadata"));val h=StreamProtocol.header(f)
         require(h.path("type").asText=="start","input must start with metadata");definition.inputs(port).accept(h)
-        (port,source,h)
+        (port,source,h,f.data)
       }
       // Output ports announce their own metadata at runtime; inference is an explicit authoring action.
       val op=definition
       val manifest=Data.mapper.createArrayNode()
-      starts.zipWithIndex.foreach {case((port,_,h),i)=>
+      starts.zipWithIndex.foreach {case((port,_,h,_),i)=>
         val filename=s"$i.arrow";val path=temporary.resolve(filename)
         require(new ProcessBuilder("mkfifo",path.toString).start().waitFor()==0,"mkfifo failed")
         val channel=FileChannel.open(path,StandardOpenOption.READ,StandardOpenOption.WRITE);handles+=channel;cancel.add(channel)
@@ -96,16 +99,23 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       }
       docker.attachContainerCmd(container).withStdOut(true).withStdErr(true).withFollowStream(true).exec(callback).awaitStarted()
       docker.startContainerCmd(container).exec()
-      val writers=starts.zipWithIndex.map{case((port,source,h),i)=>StreamProtocol.thread(cancel){
+      val writers=starts.zipWithIndex.map{case((port,source,h,initial),i)=>StreamProtocol.thread(cancel){
         val repr=h.path("representation").asText
-        val schema=if(repr=="records") StreamProtocol.schema(h) else PluginSchemas.bytes
+        val schema=if(repr=="bytes") PluginSchemas.bytes else StreamProtocol.schema(h)
         val root=VectorSchemaRoot.create(schema,allocator)
         val output=new java.io.FilterOutputStream(Channels.newOutputStream(handles(i))){
           override def write(bytes:Array[Byte],offset:Int,length:Int):Unit=out.write(bytes,offset,length)
           override def close():Unit=flush()
         }
-        val writer=new ArrowStreamWriter(root,null,output)
+        val initialReader=if(initial.nonEmpty)Some(new ArrowStreamReader(new java.io.ByteArrayInputStream(initial),allocator))else None
+        var dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=initialReader.orNull
+        val provider=new org.apache.arrow.vector.dictionary.DictionaryProvider {
+          def lookup(id:Long):org.apache.arrow.vector.dictionary.Dictionary=if(dictionaries==null)null else dictionaries.lookup(id)
+          def getDictionaryIds:java.util.Set[java.lang.Long]=if(dictionaries==null)java.util.Collections.emptySet[java.lang.Long]()else dictionaries.getDictionaryIds
+        }
+        val writer=new ArrowStreamWriter(root,provider,output)
         try {
+          initialReader.foreach(r=>require(r.getVectorSchemaRoot.getSchema==schema && !r.loadNextBatch(),"invalid input dictionary header"))
           writer.start();var ended=false
           while(!ended) {
             cancel.active();val f=source.next().getOrElse(throw new IllegalArgumentException("truncated input"));val meta=StreamProtocol.header(f)
@@ -116,14 +126,14 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
                 try {require(reader.getVectorSchemaRoot.getSchema==schema,"input schema changed");require(reader.loadNextBatch(),"empty record frame")
                   val batch=new VectorUnloader(reader.getVectorSchemaRoot).getRecordBatch
                   try new VectorLoader(root).load(batch) finally batch.close()
-                  writer.writeBatch();require(!reader.loadNextBatch(),"one record batch per frame required")
-                } finally reader.close()
+                  dictionaries=reader;writer.writeBatch();require(!reader.loadNextBatch(),"one record batch per frame required")
+                } finally {dictionaries=initialReader.orNull;reader.close()}
               case "end"=>ended=true
               case _=>throw new IllegalArgumentException("unexpected input event")
             }
           }
           writer.end()
-        } finally {writer.close();root.close()}
+        } finally {try writer.close() finally {try root.close() finally initialReader.foreach(_.close())}}
       }}
       var begun=Set.empty[String];var ended=Set.empty[String]
       var next=OperatorFrames.read(pipe)

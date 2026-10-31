@@ -5,3 +5,6 @@ scalaVersion := "2.13.16"
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.18.3",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test)
+
+lazy val dataCore = RootProject(file("../../xstream-data/xstream-data-core"))
+dependsOn(dataCore)

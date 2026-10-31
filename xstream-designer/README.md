@@ -194,7 +194,7 @@ The Catalogs tree distinguishes host roots, datasets, folders and data Items wit
 
 Item rows show only their leaf names and file/folder icons, with no view badges. Hover or keyboard focus exposes the complete Item path and available views. Click an Item to reveal compact view/copy icons on an independent floating layer below its row (above when space is limited), without a popup or ⋯ button. Selecting a view sets `read_item` parameters; copying does not change the Job. Escape or clicking outside hides the icons.
 
-[Scientific view selection, structure and samples](../docs/designer-scientific.md): plugin-defined array, image and sequence forms with compact previews.
+[Scientific view selection, structure and samples](../docs/designer-scientific.md): plugin-defined array and sequence forms with compact previews.
 
 ## Bundled website showcase
 

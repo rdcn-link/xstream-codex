@@ -93,7 +93,7 @@ private[dacp] final class LocalJobExecution(config:EngineEnvironment,executor:Ta
               }
               }
               observe("outputs",port,f)
-              if(selected(port))writer.foreach(_.append(port,OperatorFrames.encode(f)))
+              if(selected(port))writer.foreach(_.append(port,f))
               edges.find(e=>e._1==t.id && e._2==port) match {
                 case Some(e)=>queues(e._3,e._4).put(StreamProtocol.rename(f,e._4))
                 case None=>val label=plan.outputs.find(_._2==(t.id,port)).map(_._1)
@@ -111,7 +111,7 @@ private[dacp] final class LocalJobExecution(config:EngineEnvironment,executor:Ta
                       try {
                         var end=Option.empty[OperatorFrame];var f=in.next()
                         while(f.nonEmpty){
-                          val decoded=OperatorFrames.decode(f.get);val h=StreamProtocol.header(decoded)
+                          val decoded=f.get;val h=StreamProtocol.header(decoded)
                           require(h.path("port").asText==p && end.isEmpty,"invalid replay port or events after end")
                           if(h.path("type").asText=="end")end=Some(decoded)else output(decoded)
                           f=in.next() // Verify checksum and EOF before downstream observes end.

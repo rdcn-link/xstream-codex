@@ -36,16 +36,6 @@ final case class ArrayDescriptor(dimensions:Vector[Dimension],encoding:NumericEn
 final case class ArrayChunk(section:ArraySection,encoding:NumericEncoding,values:ByteBuffer) {
   require(section.shape.foldLeft(BigInt(encoding.bytesPerValue))(_*_ )==values.remaining(),"array payload size mismatch")
 }
-final case class ImageRegion(x:Long,y:Long,width:Long,height:Long) {
-  require(x>=0 && y>=0 && width>=0 && height>=0,"invalid image region")
-}
-final case class ImageDescriptor(width:Long,height:Long,channels:Int,encoding:NumericEncoding,attributes:Map[String,JsonNode]=Map.empty) extends DataDescriptor[ImageTile] {
-  require(width>=0 && height>=0 && channels>0,"invalid image dimensions")
-}
-/** Dense pixel-interleaved tile, row-major. Coordinates and channels must match its descriptor. */
-final case class ImageTile(region:ImageRegion,channels:Int,encoding:NumericEncoding,values:ByteBuffer) {
-  require(channels>0 && BigInt(region.width)*region.height*channels*encoding.bytesPerValue==values.remaining(),"image payload size mismatch")
-}
 final case class SequenceSelection(ids:Set[String]=Set.empty,offset:Long=0,length:Option[Long]=None) {
   require(ids.forall(_.nonEmpty) && offset>=0 && length.forall(_>=0),"invalid sequence selection")
 }
@@ -57,9 +47,7 @@ final case class SequenceChunk(id:String,offset:Long,symbols:CharSequence,last:B
   require(id.nonEmpty && offset>=0 && symbols!=null,"invalid sequence chunk")
 }
 final case class ArraySelection(section:Option[ArraySection]=None)
-final case class ImageSelection(region:Option[ImageRegion]=None)
 object ScientificViews {
-  val Arrays=new DataViewType[ArrayChunk,ArraySelection]("array")
-  val Images=new DataViewType[ImageTile,ImageSelection]("image")
-  val Sequences=new DataViewType[SequenceChunk,SequenceSelection]("sequence")
+  val Arrays=new DataViewType[ArraySelection]("array")
+  val Sequences=new DataViewType[SequenceSelection]("sequence")
 }

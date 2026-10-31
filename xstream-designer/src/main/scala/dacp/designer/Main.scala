@@ -91,7 +91,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         val item=ds.describe("/"+parts(1));val view=ItemViews.select(requested,inferencePlugins.views(item))
         if(Set("records","bytes")(view))describeItem(value,view,cancel)
         else {
-          val codec=DataViewCodecs.named(inferencePlugins,view)
+          val codec=DataViewSupports.named(inferencePlugins,view)
           val selected=codec.selection(selection.getOrElse(Json.obj()))
           Using.resource(new org.apache.arrow.memory.RootAllocator(Long.MaxValue)){a=>
             val stream=ds.requireView("/"+parts(1),codec.kind).open(selected,StreamContext(a,()=>cancel.active()))
@@ -103,7 +103,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       val metadata=dataset.describe(path);val view=ItemViews.select(requested,metadata.views)
       if(Set("records","bytes")(view))describeItem(value,view,cancel)
       else {
-        val codec=DataViewCodecs.named(inferencePlugins,view)
+        val codec=DataViewSupports.named(inferencePlugins,view)
         val selected=codec.selection(selection.getOrElse(Json.obj()))
         Using.resource(dataset.open(path)){item=>
           dacp.DataViewInference.inspect(codec)(item.asView(codec.kind,selected),selected,metadata.format,limits,()=>cancel.active())
@@ -232,7 +232,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     case "/api/operators"=>fetchOperators()
     case "/api/views"=>
       val out=Json.obj()
-      DataViewCodecs.all(inferencePlugins).foreach { c=>val n=out.putObject(c.kind.name);n.set[JsonNode]("selection",c.selectionSchema) }
+      DataViewSupports.all(inferencePlugins).foreach { c=>val n=out.putObject(c.kind.name);n.set[JsonNode]("selection",c.selectionSchema) }
       out
     case "/api/catalogs"=>
       val a=Json.mapper.createArrayNode();a.addObject().put("name","In-context catalog").put("uri","context:/")

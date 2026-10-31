@@ -14,6 +14,13 @@ import _root_.xstream.data.{PluginSchemas}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
+/** Pull cursor with borrowed roots; advance/close releases the previous batch. */
+trait OperatorBatchInput extends AutoCloseable {
+  def getVectorSchemaRoot:VectorSchemaRoot
+  def loadNextBatch():Boolean
+  def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider
+}
+
 /** Business logic only. The runner owns streams, output framing, end events and cleanup. */
 trait Operator {
   def inferOutputs(inputs:Map[String,StreamDescriptor],params:JsonNode):InferenceResult
@@ -75,11 +82,11 @@ abstract class RecordsOperator extends Operator {
     val schema=input.schema.map(outputSchema(_,params))
     InferenceResult(Map("result"->StreamDescriptor(Set("records"),Set("arrow"),schema,if(schema.nonEmpty)"known"else "unknown")))
   }
-  /** Returned roots are borrowed; the SDK serializes synchronously and does not close them. */
+  /** Returned roots are borrowed; the SDK consumes synchronously and does not close them. */
   def transform(batch:VectorSchemaRoot,params:JsonNode):Option[VectorSchemaRoot]
   final def process(ctx:OperatorContext):Unit={
     val in=ctx.input("source")
-    val out=ctx.recordsOutput("result",outputSchema(in.schema,ctx.params))
+    val out=ctx.recordsOutput("result",outputSchema(in.schema,ctx.params),dictionaries=in.dictionaries)
     in.foreachRecords(root=>transform(root,ctx.params).foreach(out.write))
   }
 }
@@ -132,6 +139,11 @@ object OperatorRunner {
     val ctx=new OperatorContext(directory,params,OutputStream.nullOutputStream(),inputs,Some(emit))
     try {Console.withOut(System.err){process(ctx)};ctx.finish()}finally ctx.close()
   }
+  /** In-process links bypass IPC: only external process boundaries emit data frames. */
+  def runBatches(directory:Path,params:Path,inputs:Map[String,OperatorBatchInput],streams:Map[String,InputStream],emit:OperatorFrame=>Unit,batches:(String,ArrowBatch)=>Unit)(process:OperatorContext=>Unit):Unit={
+    val ctx=new OperatorContext(directory,params,OutputStream.nullOutputStream(),streams,Some(emit),inputs,Some(batches))
+    try {Console.withOut(System.err){process(ctx)};ctx.finish()}finally ctx.close()
+  }
   def run(args:Array[String],out:OutputStream=System.out)(process:OperatorContext=>Unit):Unit={
     require(args.length==3 && args(0)=="operator","expected operator INPUT PARAMS")
     val ctx=new OperatorContext(Path.of(args(1)),Path.of(args(2)),out)
@@ -140,7 +152,9 @@ object OperatorRunner {
 }
 final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
                             inputStreams:Map[String,InputStream]=Map.empty,
-                            emit:Option[OperatorFrame=>Unit]=None) extends AutoCloseable {
+                            emit:Option[OperatorFrame=>Unit]=None,
+                            batchInputs:Map[String,OperatorBatchInput]=Map.empty,
+                            batchOutput:Option[(String,ArrowBatch)=>Unit]=None) extends AutoCloseable {
   private val mapper=new ObjectMapper()
   val params:JsonNode=mapper.readTree(Files.readAllBytes(paramsFile))
   require(params!=null && params.isObject,"params must be a JSON object")
@@ -159,42 +173,50 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
   private val outputs=mutable.LinkedHashMap.empty[String,Output]
   def inputNames:Vector[String]=names
   private def active():Unit={require(!closed && !finished,"operator context ended");if(Thread.currentThread().isInterrupted)throw new java.util.concurrent.CancellationException()}
-  private def frame(kind:String,port:String,data:Array[Byte]=Array.emptyByteArray,repr:String="",format:String="",schema:Option[Schema]=None):Unit={
+  private def frame(kind:String,port:String,data:Array[Byte]=Array.emptyByteArray,repr:String="",format:String="",schema:Option[Schema]=None,dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null):Unit={
     active();val h=mapper.createObjectNode().put("type",kind).put("port",port)
     if(kind=="start") {h.put("representation",repr).put("format",format);schema.foreach(s=>h.put("schema",java.util.Base64.getEncoder.encodeToString(s.serializeAsMessage())))}
-    val event=OperatorFrame(mapper.writeValueAsBytes(h),data)
+    val payload=if(kind=="start" && dictionaries!=null && !dictionaries.getDictionaryIds.isEmpty)ArrowIpc.header(schema.get,dictionaries,allocator)else data
+    val event=OperatorFrame(mapper.writeValueAsBytes(h),payload)
     emit match {case Some(send)=>send(event);case None=>OperatorFrames.write(out,event)}
   }
   def input(name:String):Input={active();require(names.contains(name),"unknown input port");opened.getOrElseUpdate(name,new Input(name,entries.find(_.path("port").asText==name).get))}
-  private def output(name:String,repr:String,format:String,schema:Option[Schema]):Output={
+  private def output(name:String,repr:String,format:String,schema:Option[Schema],dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null):Output={
     active();require(validName(name) && !outputs.contains(name),"invalid or duplicate output port")
     require(!writing,"declare all outputs before writing data")
-    val value=new Output(name,repr,schema);frame("start",name,repr=repr,format=format,schema=schema);outputs(name)=value;value
+    val value=new Output(name,repr,schema,dictionaries);frame("start",name,repr=repr,format=format,schema=schema,dictionaries=dictionaries);outputs(name)=value;value
   }
   def bytesOutput(name:String,format:String="binary"):Output=output(name,"bytes",format,None)
-  def recordsOutput(name:String,schema:Schema,format:String="arrow"):Output=output(name,"records",format,Some(schema))
+  def recordsOutput(name:String,schema:Schema,format:String="arrow",dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null):Output=output(name,"records",format,Some(schema),dictionaries)
   final class Input private[OperatorContext](val name:String,entry:JsonNode) {
     val representation:String=entry.path("representation").asText
     val format:String=entry.path("format").asText
     require(Set("bytes","records")(representation),"unsupported input representation")
-    private var reader:ArrowStreamReader=null
+    private var reader:OperatorBatchInput=null
     private var consumed=false
     private var iterating=false
-    private def open():ArrowStreamReader={
+    private def open():OperatorBatchInput={
       active();require(index<names.size && names(index)==name && !consumed && !iterating,"consume inputs once in lexical port order")
       if(reader==null){
-        val relative=Path.of(entry.path("file").asText)
-        require(!relative.isAbsolute && relative.getNameCount==1 && relative.toString!=".." && relative.toString!=".","invalid input filename")
-        // Arrow's Channels adapter probes available() for large reads. JDK file
-        // channels implement that probe with seek(), which is invalid for FIFOs.
-        val raw=new java.io.FilterInputStream(inputStreams.getOrElse(name,Files.newInputStream(directory.resolve(relative)))) {
-          override def available():Int=0
-        }
-        try {reader=new ArrowStreamReader(raw,allocator);reader.getVectorSchemaRoot}catch{case t:Throwable=>if(reader!=null)reader.close()else raw.close();throw t}
-        if(representation=="bytes")require(reader.getVectorSchemaRoot.getSchema==PluginSchemas.bytes,"invalid bytes schema")
+        reader=batchInputs.getOrElse(name,{
+          val relative=Path.of(entry.path("file").asText)
+          require(!relative.isAbsolute && relative.getNameCount==1 && relative.toString!=".." && relative.toString!=".","invalid input filename")
+          val raw=new java.io.FilterInputStream(inputStreams.getOrElse(name,Files.newInputStream(directory.resolve(relative)))) {
+            override def available():Int=0
+          }
+          val ipc=new ArrowStreamReader(raw,allocator)
+          try {ipc.getVectorSchemaRoot;new OperatorBatchInput {
+            def getVectorSchemaRoot:VectorSchemaRoot=ipc.getVectorSchemaRoot
+            def loadNextBatch():Boolean=ipc.loadNextBatch()
+            def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=ipc
+            def close():Unit=ipc.close()
+          }}catch{case t:Throwable=>ipc.close();throw t}
+        })
+        if(representation=="bytes")require(reader.getVectorSchemaRoot.getSchema.getFields==PluginSchemas.bytes.getFields,"invalid bytes schema")
       };reader
     }
     def schema:Schema=open().getVectorSchemaRoot.getSchema
+    def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=open().dictionaries
     private def foreachBatch(f:VectorSchemaRoot=>Unit):Unit={
       val r=open()
       iterating=true
@@ -243,8 +265,17 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
     })}
     private[OperatorContext] def closeReader():Unit=if(reader!=null){reader.close();reader=null}
   }
-  final class Output private[OperatorContext](val name:String,repr:String,schema:Option[Schema]) {
-    def write(bytes:Array[Byte]):Unit={active();require(repr=="bytes","bytes output required");writing=true;bytes.grouped(65536).foreach(b=>frame("data",name,b))}
+  final class Output private[OperatorContext](val name:String,repr:String,schema:Option[Schema],dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider) {
+    private var byteRoot:VectorSchemaRoot=null
+    private def emitBytes(bytes:Array[Byte]):Unit=batchOutput match {
+      case None=>frame("data",name,bytes)
+      case Some(send)=>
+        if(byteRoot==null)byteRoot=VectorSchemaRoot.create(ArrowRepresentations.schema(BytesDescriptor()),allocator)
+        byteRoot.clear();byteRoot.allocateNew();byteRoot.getVector(0).asInstanceOf[VarBinaryVector].setSafe(0,bytes);byteRoot.setRowCount(1)
+        send(name,ArrowBatch(byteRoot))
+    }
+    private[OperatorContext] def closeBuffers():Unit=if(byteRoot!=null){byteRoot.close();byteRoot=null}
+    def write(bytes:Array[Byte]):Unit={active();require(repr=="bytes","bytes output required");writing=true;bytes.grouped(65536).foreach(emitBytes)}
     private var stream:OutputStream=null
     private var streamClosed=false
     /** Buffers at most 64 KiB. flush publishes pending bytes; close never closes protocol stdout. */
@@ -258,7 +289,7 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
           override def write(bytes:Array[Byte],offset:Int,length:Int):Unit={
             writable();java.util.Objects.checkFromIndexSize(offset,length,bytes.length)
             var start=offset
-            while(start<offset+length){val end=start+math.min(65536,offset+length-start);frame("data",name,java.util.Arrays.copyOfRange(bytes,start,end));writing=true;start=end}
+            while(start<offset+length){val end=start+math.min(65536,offset+length-start);emitBytes(java.util.Arrays.copyOfRange(bytes,start,end));writing=true;start=end}
           }
           override def flush():Unit={writable();out.flush()}
           override def close():Unit={streamClosed=true}
@@ -272,13 +303,18 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
       stream
     }
     private[OperatorContext] def flushStream():Unit=if(stream!=null && !streamClosed)stream.flush()
-    /** Serializes before returning; caller keeps ownership of the root. */
+    /** Borrowed vectors are consumed before returning. Internal links need no IPC. */
     def write(root:VectorSchemaRoot):Unit={
       active();require(repr=="records" && schema.contains(root.getSchema),"output schema mismatch");writing=true
-      val bytes=new ByteArrayOutputStream();val writer=new ArrowStreamWriter(root,null,bytes)
-      try {writer.start();writer.writeBatch();writer.end();frame("data",name,bytes.toByteArray)}finally writer.close()
+      batchOutput match {
+        case Some(send)=>send(name,ArrowBatch(root,dictionaries))
+        case None=>
+          val bytes=new ByteArrayOutputStream();val writer=new ArrowStreamWriter(root,dictionaries,bytes)
+          try {writer.start();writer.writeBatch();writer.end();frame("data",name,bytes.toByteArray)}finally writer.close()
+      }
     }
+
   }
   private[operator] def finish():Unit={active();require(index==names.size,"all inputs must be consumed to Arrow EOS");outputs.values.foreach(_.flushStream());outputs.keys.foreach(p=>frame("end",p));finished=true}
-  def close():Unit=if(!closed){closed=true;var failure:Throwable=null;opened.values.foreach(i=>try i.closeReader()catch{case scala.util.control.NonFatal(t)=>if(failure==null)failure=t else failure.addSuppressed(t)});try allocator.close()catch{case scala.util.control.NonFatal(t)=>if(failure==null)failure=t else failure.addSuppressed(t)};if(failure!=null)throw failure}
+  def close():Unit=if(!closed){closed=true;var failure:Throwable=null;outputs.values.foreach(_.closeBuffers());opened.values.foreach(i=>try i.closeReader()catch{case scala.util.control.NonFatal(t)=>if(failure==null)failure=t else failure.addSuppressed(t)});try allocator.close()catch{case scala.util.control.NonFatal(t)=>if(failure==null)failure=t else failure.addSuppressed(t)};if(failure!=null)throw failure}
 }

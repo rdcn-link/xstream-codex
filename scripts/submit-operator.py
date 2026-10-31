@@ -8,6 +8,8 @@ import json
 import os
 from pathlib import Path
 import re
+import tempfile
+import zipfile
 from urllib.parse import urlsplit
 import yaml
 
@@ -102,17 +104,51 @@ def submit(definition, source, origin, token):
     return result
 
 
+def package_directory(directory, destination):
+    """Archive publishable sources only: never local.yaml, build outputs, caches or credentials."""
+    directory = directory.resolve()
+    paths = []
+    for name in ('src', 'resources'):
+        root = directory / name
+        if not root.exists():
+            continue
+        if root.is_symlink() or not root.is_dir():
+            raise ValueError('source roots must be real directories')
+        for path in sorted(root.rglob('*')):
+            if path.is_symlink():
+                raise ValueError('source archive cannot contain symlinks')
+            if path.is_file() and '__pycache__' not in path.parts:
+                paths.append(path)
+    if not any(p.suffix in ('.py', '.java', '.scala') and p.relative_to(directory).parts[0] == 'src' for p in paths):
+        raise ValueError('src/ must contain operator sources')
+    if len(paths) > 16384 or sum(p.stat().st_size for p in paths) > 64 * 1024 * 1024:
+        raise ValueError('source archive exceeds 16384 files or 64 MiB')
+    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as archive:
+        for path in paths:
+            archive.write(path, path.relative_to(directory).as_posix())
+    return destination
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('definition', type=Path, help='Source submission YAML')
-    parser.add_argument('--source', type=Path, required=True, help='ZIP/TAR containing src/ and optional resources/')
+    parser.add_argument('definition', type=Path, help='Source submission YAML or local operator directory containing operator.yaml')
+    parser.add_argument('--source', type=Path, help='ZIP/TAR containing src/ and optional resources/')
     parser.add_argument('--url', required=True)
     auth = parser.add_mutually_exclusive_group(required=True)
     auth.add_argument('--token-file', type=Path)
     auth.add_argument('--token-env')
     args = parser.parse_args()
     token = args.token_file.read_text().strip() if args.token_file else os.environ.get(args.token_env, '')
-    submit(args.definition, args.source, args.url, token)
+    if args.definition.is_dir():
+        if args.source is not None:
+            parser.error('--source cannot be used with a local operator directory')
+        with tempfile.TemporaryDirectory(prefix='xstream-submit-') as temporary:
+            source = package_directory(args.definition, Path(temporary) / 'operator-sources.zip')
+            submit(args.definition / 'operator.yaml', source, args.url, token)
+    else:
+        if args.source is None:
+            parser.error('--source is required with a YAML definition')
+        submit(args.definition, args.source, args.url, token)
 
 
 if __name__ == '__main__':

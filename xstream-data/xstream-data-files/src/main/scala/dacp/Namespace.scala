@@ -216,9 +216,9 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
       virtual(Some(path)).values.filter(b => LogicalPath.parent(b.path) == path)).sortBy(_.path)
   }
 
-  def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]={
+  def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={
     LogicalPath.validate(path)
-    Some(DataViews[K,S]((selection,context,out)=>{
+    Some(DataViews[S]((selection,context,out)=>{
       def consume(access:DatasetAccess,child:String):Unit={
         val stream=access.requireView(child,kind).open(selection,context)
         try stream.consume(out) finally stream.close()

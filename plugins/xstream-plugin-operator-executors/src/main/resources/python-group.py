@@ -47,75 +47,58 @@ def main(directory):
     def validate(contract,h):
         if h['representation'] not in contract['representations'] or (contract['formats'] and h['format'] not in contract['formats']):raise ValueError('group port contract mismatch')
         if 'schema' in contract and pa.ipc.read_schema(pa.BufferReader(base64.b64decode(contract['schema'])))!=pa.ipc.read_schema(pa.BufferReader(base64.b64decode(h['schema']))):raise ValueError('schema mismatch')
-    class Channel(io.RawIOBase):
-        def __init__(self):super().__init__();self.q=queue.Queue(4);self.pending=b'';self.eof=False
-        def readable(self):return True
-        def writable(self):return True
-        def seekable(self):return False
-        def write(self,data):
-            b=bytes(data)
-            for pos in range(0,len(b),65536):
-                while True:
-                    active()
-                    try:self.q.put(b[pos:pos+65536],timeout=.1);break
-                    except queue.Full:pass
-            return len(b)
-        def finish(self):
+    def observe_batch(task,direction,port,batch):
+        key=(task,direction,port)
+        n=dict(type='task_metric',task=task,direction=direction,port=port,phase='data',payload_bytes=batch.nbytes)
+        if key in record_ports:n['records']=batch.num_rows
+        emit(n)
+    class Link:
+        def __init__(self,task,port,contract):
+            self.task,self.port,self.contract=task,port,contract
+            self.meta=None;self.ready=threading.Event();self.events=queue.Queue(1);self.closed=False;self.current=None
+        def put(self,value):
             while True:
                 active()
-                try:self.q.put(None,timeout=.1);return
+                if self.closed:raise RuntimeError('internal input closed')
+                try:self.events.put(value,timeout=.1);return
                 except queue.Full:pass
-        def read(self,n=-1):
-            if n<0:raise ValueError('unbounded channel read forbidden')
-            result=bytearray()
-            while len(result)<n:
-                active()
-                if not self.pending and not self.eof:
-                    try:
-                        value=self.q.get(timeout=.1)
-                        if value is None:self.eof=True
-                        else:self.pending=value
-                    except queue.Empty:continue
-                if self.eof and not self.pending:break
-                take=min(n-len(result),len(self.pending));result.extend(self.pending[:take]);self.pending=self.pending[take:]
-            return bytes(result)
-        def readinto(self,b):
-            data=self.read(len(b));b[:len(data)]=data;return len(data)
-    class Link:
-        def __init__(self,task,port,contract):self.task,self.port,self.contract=task,port,contract;self.channel=Channel();self.meta=None;self.ready=threading.Event();self.events=queue.Queue(2)
         def send(self,h,payload):
             if h['type']=='start':
                 validate(self.contract,h)
                 if self.ready.is_set():raise ValueError('duplicate internal metadata')
-                self.meta=h;self.ready.set()
+                self.meta=h
+                self.schema=pa.ipc.read_schema(pa.BufferReader(base64.b64decode(h['schema']))) if h['representation']=='records' else pa.schema([('data',pa.binary())])
+                self.ready.set()
+            elif h['type']=='end':self.put(None)
+            else:raise ValueError('internal data must be Arrow batches')
             observe(self.task,'inputs',self.port,h,payload)
+        def send_batch(self,batch):
+            if not self.ready.is_set() or batch.schema!=self.schema:raise ValueError('internal schema changed')
+            # Borrow the batch until the consumer advances, including NumPy-backed buffers.
+            observe_batch(self.task,'inputs',self.port,batch)
+            released=threading.Event()
+            self.put((batch,released))
+            while not released.wait(.1):active()
+        def __iter__(self):return self
+        def __next__(self):
+            if self.current is not None:self.current.set();self.current=None
             while True:
                 active()
-                try:self.events.put((h,payload),timeout=.1);return
-                except queue.Full:pass
-        def next(self):
-            while True:
-                active()
-                try:return self.events.get(timeout=.1)
+                if self.closed:raise StopIteration
+                try:
+                    value=self.events.get(timeout=.1)
+                    if value is None:self.close();raise StopIteration
+                    batch,self.current=value
+                    return batch
                 except queue.Empty:pass
-        def run(self):
-            try:
-                h,_=self.next();records=h['representation']=='records'
-                schema=pa.ipc.read_schema(pa.BufferReader(base64.b64decode(h['schema']))) if records else pa.schema([('data',pa.binary())])
-                with pa.ipc.new_stream(self.channel,schema) as writer:
-                    while True:
-                        h,payload=self.next()
-                        if h['type']=='end':break
-                        if h['type']!='data':raise ValueError('invalid internal event')
-                        if records:
-                            with pa.ipc.open_stream(payload) as reader:
-                                if reader.schema!=schema:raise ValueError('schema changed')
-                                batches=list(reader)
-                                if len(batches)!=1:raise ValueError('expected one record batch')
-                                writer.write_batch(batches[0])
-                        else:writer.write_batch(pa.record_batch([pa.array([payload],type=pa.binary())],schema=schema))
-                self.channel.finish()
-            except BaseException as e:fail(e)
+        def close(self):
+            self.closed=True
+            if self.current is not None:self.current.set();self.current=None
+            while True:
+                try:
+                    value=self.events.get_nowait()
+                    if value is not None:value[1].set()
+                except queue.Empty:break
     artifact=Path(spec['steps'][0]['artifact'])
     if artifact.suffix=='.zip':
         sys.path.insert(0,str(artifact))
@@ -142,24 +125,25 @@ def main(directory):
                 link=Link(step['id'],port,step['inputs'][port]);links[key]=link;targets[(step['id'],port)]=link
     selected={(b['task'],b['port']):p for p,b in spec['outputs'].items()};metadata=set();metadata_ready=threading.Event()
     def execute(step,work):
-        task=step['id'];d=Path(work)/task;d.mkdir();manifest=[];streams={}
+        task=step['id'];d=Path(work)/task;d.mkdir();manifest=[];streams={};batch_inputs={}
         try:
             for port,b in sorted(step['bindings'].items()):
                 if 'task' in b:
                     link=targets[(task,port)]
                     while not link.ready.wait(.1):active()
-                    h=link.meta;stream=link.channel
+                    h=link.meta;stream=None;batch_inputs[port]=link
                 else:
                     h=external[b['port']];stream=(directory/h['file']).open('rb');validate(step['inputs'][port],h)
-                manifest.append(dict(h,port=port,file=port+'.arrow'));streams[port]=stream
+                manifest.append(dict(h,port=port,file=port+'.arrow'))
+                if stream is not None:streams[port]=stream
             (d/'manifest.json').write_text(json.dumps(manifest));(d/'params.json').write_text(json.dumps(step['params']))
-            begun=set();ended=set();ports=set(step['outputs'])
+            begun=set();ended=set();ports=set(step['outputs']);representations={}
             def output(h,payload):
                 active();port=h['port'];key=(task,port)
                 kind=h['type']
                 if kind=='start':
                     if port in begun:raise ValueError('duplicate output')
-                    validate(step['outputs'].get(port,dict(representations=['bytes','records'],formats=[])),h);begun.add(port)
+                    validate(step['outputs'].get(port,dict(representations=['bytes','records'],formats=[])),h);begun.add(port);representations[port]=h['representation']
                 elif kind=='data':
                     if port not in begun or port in ended:raise ValueError('invalid output data')
                 elif kind=='end':
@@ -176,16 +160,28 @@ def main(directory):
                         with lock:
                             metadata.add(key)
                             if len(metadata)==len(selected):metadata_ready.set()
+            def output_batch(port,batch):
+                active();key=(task,port)
+                if port not in begun or port in ended:raise ValueError('batch before metadata or after end')
+                observe_batch(task,'outputs',port,batch)
+                if key in links:links[key].send_batch(batch)
+                if key in selected:
+                    while not metadata_ready.wait(.1):active()
+                    if representations[port]=='bytes':
+                        payloads=[v.as_py() for v in batch.column(0)]
+                    else:
+                        sink=pa.BufferOutputStream()
+                        with pa.ipc.new_stream(sink,batch.schema) as writer:writer.write_batch(batch)
+                        payloads=[sink.getvalue().to_pybytes()]
+                    for payload in payloads:emit(dict(type='data',port=selected[key]),payload)
             emit(dict(type='task_state',task=task,state='running',runtime_pid=os.getpid()))
-            with module.OperatorContext(['operator',str(d),str(d/'params.json')],input_streams=streams,emit=output) as ctx:functions[task](ctx)
+            with module.OperatorContext(['operator',str(d),str(d/'params.json')],input_streams=streams,emit=output,batch_inputs=batch_inputs,emit_batch=output_batch) as ctx:functions[task](ctx)
             if ended!=begun or not ports.issubset(ended):raise ValueError('incomplete output')
             emit(dict(type='task_state',task=task,state='succeeded',runtime_pid=os.getpid()))
         except BaseException as e:fail(e);raise
         finally:
             for stream in streams.values():stream.close()
     with tempfile.TemporaryDirectory(prefix='dacp-group-') as work:
-        for link in links.values():
-            t=threading.Thread(target=link.run,daemon=True);threads.append(t);t.start()
         pool=ThreadPoolExecutor(max_workers=len(spec['steps']))
         futures=[pool.submit(execute,s,work) for s in spec['steps']]
         try:

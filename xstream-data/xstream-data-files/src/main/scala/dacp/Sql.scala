@@ -186,8 +186,8 @@ private[dacp] class SqlDatasetAccess(sql: SqlAdapter, byteChunk: Int) extends Ba
   def describe(path: String): Item = sql.describe(path)
   def count(path: String): Option[Long] = Some(sql.count(path))
   override protected def batchViews(path:String):Option[Seq[String]]=Some(Seq("records","bytes"))
-  override def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]] =
-    if(kind eq DataViews.Bytes)Some(DataViews[ByteChunk,AllBytes.type]((_,c,o)=>SqlAdapter.bytes(sql,path,c.allocator,byteChunk,o,c.check)).asInstanceOf[DataView[K,S]])
+  override def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]] =
+    if(kind eq DataViews.Bytes)Some(DataViews.blocks[ByteChunk,AllBytes.type]((_,c,o)=>SqlAdapter.bytes(sql,path,c.allocator,byteChunk,o,c.check)).asInstanceOf[DataView[S]])
     else super.view(path,kind)
   override def readScan(path: String, request: Scan, allocator: BufferAllocator,
                     listener: BatchReceiver, ready: () => Unit): Unit =

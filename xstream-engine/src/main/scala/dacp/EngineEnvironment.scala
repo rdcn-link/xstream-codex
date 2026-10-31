@@ -6,6 +6,8 @@ import org.apache.arrow.memory.BufferAllocator
 /** Host boundary: the engine never starts a data server or owns host credentials. */
 trait EngineEnvironment extends OperatorEnvironment {
   def computePushdown:Option[ComputePushdown]=None
+  /** None for remote-serving hosts; local paths are a standalone-engine capability. */
+  def localOperatorBase:Option[java.nio.file.Path]=None
   def debug:Boolean
   def sourceRuntimes:Map[String,SourceRuntime]
   def operatorFusionEnabled:Boolean

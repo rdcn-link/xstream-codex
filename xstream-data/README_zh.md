@@ -4,13 +4,13 @@
 
 ## 模块
 
-- `xstream-data-core`：DataCatalog → Dataset → Item、DataView/DataStream、选择条件、插件生命周期及编码契约。
+- `xstream-data-core`：DataCatalog → Dataset → Item、DataView/ArrowDataStream、选择条件、插件生命周期及标准 Arrow 表示。
 - `xstream-data-files`、`xstream-data-catalog-static`、`xstream-data-mounted`：文件/JDBC、配置式及挂载目录。
 - `xstream-data-formats-basic`、`xstream-data-parquet`、`xstream-data-excel`、`xstream-data-archives`：已有格式读取及结构浏览。
 - `xstream-data-netcdf`：NetCDF 分组、数值变量和有界的步长数组选择；非数值变量可以浏览但不提供数组视图。
-- `xstream-data-fits`：HDU、有界图像/数组块和支持的定长二进制表；变长、复数表单元不声明 records 能力。
+- `xstream-data-fits`：HDU、有界数组块和支持的定长二进制表；变长、复数表单元不声明 records 能力。
 - `xstream-data-fasta`：包含序列 ID、符号偏移和结束标记的有界序列块；按 ID/范围选择时顺序扫描源文件。
-- `xstream-data-scientific-codecs`：供网络适配器使用的第 1 版数组、图像、序列描述和分块编码。
+- `xstream-data-scientific-views`：数组、序列的请求选择、结构展示及有界 Arrow 批次样例。
 
 ## 构建与使用
 
@@ -19,7 +19,7 @@ cd xstream-data
 sbt compile
 ```
 
-应用在编译时依赖 core，在运行时加载所需实现。DACP 服务端发行包包含科学格式插件。在 `META-INF/services/xstream.data.FormatHandler` 注册格式，在 `META-INF/services/xstream.data.DataViewCodec` 注册编码器，每行填写实现类全名。外部 JAR 及其依赖可放入既有插件目录，不需要修改核心注册表。
+应用在编译时依赖 core，在运行时加载所需实现。DACP 服务端发行包包含科学格式插件。在 `META-INF/services/xstream.data.FormatHandler` 注册格式，在 `META-INF/services/xstream.data.DataViewSupport` 注册视图支持，每行填写实现类全名。外部 JAR 及其依赖可放入既有插件目录，不需要修改核心注册表。
 
 文件 Item 可配置 `format: netcdf`、`format: fits` 或 `format: fasta`。NetCDF/FITS 接受 `chunk_bytes`（8–16777216，默认 65536）；FASTA 接受 `chunk_symbols`（1–1048576，默认 65536）及 `alphabet`（`dna`、`rna`、`protein`、`unknown`）。格式参数放入 Item 的 `options` 映射。
 
@@ -27,7 +27,7 @@ NetCDF 子对象使用分组/变量路径；FITS 使用 `/hdu0`、`/hdu1` 等；
 
 科学数据网络适配器可通过节点、Union 代理和客户端传输类型化描述及有界数据块。read_item 支持科学视图选择，设计器提供结构与样例预览；下游算子需显式支持对应表示。详见[设计器科学视图](../docs/designer-scientific_zh.md)。
 
-解析器与编码契约测试：`cd ../dacp-server && sbt 'testOnly dacp.DataStreamSpec dacp.ScientificFormatsSpec'`。
+在本模块根目录执行 `sbt test`，运行解析器与 Arrow 契约测试。另见 [Arrow 表示契约](../docs/arrow-streams_zh.md)。
 
 ## 配置示例
 

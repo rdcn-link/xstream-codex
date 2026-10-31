@@ -12,7 +12,7 @@ from .inference import descriptor, result, records_schema, run_inference, run_op
 
 
 class OperatorContext:
-    def __init__(self, args=None, output=None, input_streams=None, emit=None):
+    def __init__(self, args=None, output=None, input_streams=None, emit=None, batch_inputs=None, emit_batch=None):
         args = sys.argv[1:] if args is None else args
         if len(args) != 3 or args[0] != 'operator':
             raise ValueError('expected operator INPUT PARAMS')
@@ -39,6 +39,8 @@ class OperatorContext:
         self._resources = ExitStack()
         self._input_streams = input_streams or {}
         self._emit = emit
+        self._batch_inputs = batch_inputs or {}
+        self._emit_batch = emit_batch
         self._output = sys.stdout.buffer if output is None else output
         self._redirect = redirect_stdout(sys.stderr) if emit is None else None
 
@@ -129,8 +131,13 @@ class _Input:
             filename = self._entry['file']
             if not filename or Path(filename).name != filename or filename in ('.', '..'):
                 raise ValueError('invalid input filename')
-            self._raw = ctx._resources.enter_context(ctx._input_streams[self.name] if self.name in ctx._input_streams else (ctx.directory / filename).open('rb'))
-            self._reader = ctx._resources.enter_context(pa.ipc.open_stream(self._raw))
+            if self.name in ctx._batch_inputs:
+                self._raw = None
+                self._reader = ctx._batch_inputs[self.name]
+                ctx._resources.callback(self._reader.close)
+            else:
+                self._raw = ctx._resources.enter_context(ctx._input_streams[self.name] if self.name in ctx._input_streams else (ctx.directory / filename).open('rb'))
+                self._reader = ctx._resources.enter_context(pa.ipc.open_stream(self._raw))
             if self.representation == 'bytes' and self._reader.schema != pa.schema([('data', pa.binary())]):
                 raise ValueError('invalid bytes schema')
         return self._reader
@@ -148,7 +155,7 @@ class _Input:
             self._context._index += 1
         finally:
             reader.close()
-            self._raw.close()
+            if self._raw is not None: self._raw.close()
 
     def records(self):
         if self.representation != 'records':
@@ -179,11 +186,18 @@ class _Output:
                 raise TypeError('bytes output requires bytes-like values')
             ctx._writing = True
             for offset in range(0, len(value), 65536):
-                ctx._frame(self.name, 'data', bytes(value[offset:offset + 65536]))
+                chunk = bytes(value[offset:offset + 65536])
+                if ctx._emit_batch is not None:
+                    ctx._emit_batch(self.name, pa.record_batch([pa.array([chunk], type=pa.binary())], names=['data']))
+                else:
+                    ctx._frame(self.name, 'data', chunk)
         else:
             if not isinstance(value, pa.RecordBatch) or not value.schema.equals(self.schema, check_metadata=True):
                 raise ValueError('output schema mismatch')
             ctx._writing = True
+            if ctx._emit_batch is not None:
+                ctx._emit_batch(self.name, value)
+                return
             sink = pa.BufferOutputStream()
             with pa.ipc.new_stream(sink, self.schema) as writer:
                 writer.write_batch(value)

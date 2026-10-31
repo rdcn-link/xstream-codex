@@ -19,8 +19,9 @@ object GroupUpper extends BytesOperator {
 }
 object GroupCopy extends BytesOperator {override def outputFormat="text";def transform(b:Array[Byte],p:JsonNode)=b}
 object GroupRecords extends RecordsOperator {
+  val borrowed=new java.util.concurrent.ConcurrentLinkedQueue[VectorSchemaRoot]()
   override def previewOutputs(inputs:Map[String,dacp.StreamDescriptor],params:JsonNode,limits:dacp.PreviewLimits)=inputs.get("source").flatMap(_.sample).map(s=>Map("result"->s.bounded(limits))).getOrElse(Map.empty)
-  def transform(batch:VectorSchemaRoot,p:JsonNode):Option[VectorSchemaRoot]=Some(batch)
+  def transform(batch:VectorSchemaRoot,p:JsonNode):Option[VectorSchemaRoot]={borrowed.add(batch);Some(batch)}
 }
 class GroupSpec extends AnyFunSuite {
   private def artifact(dir:Path):Path={
@@ -77,6 +78,7 @@ class GroupSpec extends AnyFunSuite {
   }
 
   test("record links preserve schemas, nulls, batch contents and row metrics") {
+    GroupRecords.borrowed.clear()
     val dir=Files.createTempDirectory("group-records-");val jar=artifact(dir)
     val field=new org.apache.arrow.vector.types.pojo.Field("value",org.apache.arrow.vector.types.pojo.FieldType.nullable(new org.apache.arrow.vector.types.pojo.ArrowType.Int(32,true)),java.util.Collections.emptyList())
     val schema=new org.apache.arrow.vector.types.pojo.Schema(java.util.Collections.singletonList(field))
@@ -100,6 +102,37 @@ class GroupSpec extends AnyFunSuite {
       };next=OperatorFrames.read(in)
     }
     assert(rows==Vector(1,null,3));assert(reported);allocator.close()
+    val seen=GroupRecords.borrowed.iterator();val first=seen.next();assert(first eq seen.next());assert(!seen.hasNext)
+  }
+
+  test("same-JVM links preserve dictionary values through the final IPC boundary") {
+    val dir=Files.createTempDirectory("group-dictionaries-");val jar=artifact(dir)
+    val allocator=new RootAllocator()
+    val encoding=new org.apache.arrow.vector.types.pojo.DictionaryEncoding(3L,false,new org.apache.arrow.vector.types.pojo.ArrowType.Int(32,true))
+    val field=new org.apache.arrow.vector.types.pojo.Field("station",new org.apache.arrow.vector.types.pojo.FieldType(true,new org.apache.arrow.vector.types.pojo.ArrowType.Int(32,true),encoding),null)
+    val schema=new org.apache.arrow.vector.types.pojo.Schema(java.util.Collections.singletonList(field))
+    val root=VectorSchemaRoot.create(schema,allocator)
+    val values=new org.apache.arrow.vector.VarCharVector("values",allocator)
+    val provider=new org.apache.arrow.vector.dictionary.DictionaryProvider.MapDictionaryProvider(new org.apache.arrow.vector.dictionary.Dictionary(values,encoding))
+    try {
+      values.allocateNew();values.setSafe(0,"A".getBytes("UTF-8"));values.setValueCount(1)
+      root.allocateNew();root.getVector(0).asInstanceOf[org.apache.arrow.vector.IntVector].setSafe(0,0);root.setRowCount(1)
+      val writer=new ArrowStreamWriter(root,provider,Files.newOutputStream(dir.resolve("0.arrow")))
+      try {writer.start();writer.writeBatch();writer.end()}finally writer.close()
+      val contract=OperatorGroupContract(Set("records"),Set("arrow"))
+      val base=group(jar)
+      val model=base.copy(steps=base.steps.map(s=>s.copy(program=s.program.copy(entrypoint="xstream.operator.executors.GroupRecords"),inputs=Map("source"->contract),outputs=Map("result"->contract))))
+      new JvmExecutor().groupCommand(model).get.files.foreach{case(n,b)=>Files.write(dir.resolve(n),b)}
+      Files.writeString(dir.resolve("manifest.json"),"""[{"port":"i0","file":"0.arrow","representation":"records","format":"arrow"}]""")
+      val output=new ByteArrayOutputStream();new JvmGroupExecution(dir,output).run()
+      val input=new ByteArrayInputStream(output.toByteArray);var next=OperatorFrames.read(input);var count=0
+      while(next.nonEmpty){val f=next.get;val h=Data.mapper.readTree(f.metadata)
+        if(h.path("type").asText=="data"){
+          val reader=new org.apache.arrow.vector.ipc.ArrowStreamReader(new ByteArrayInputStream(f.data),allocator)
+          try {assert(reader.loadNextBatch());assert(reader.lookup(3L).getVector.getObject(0).toString=="A");count+=reader.getVectorSchemaRoot.getRowCount}finally reader.close()
+        };next=OperatorFrames.read(input)
+      };assert(count==1)
+    }finally {root.close();provider.close();assert(allocator.getAllocatedMemory==0);allocator.close()}
   }
 
 }

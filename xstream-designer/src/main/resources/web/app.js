@@ -326,7 +326,6 @@ function itemIcon(kind,views){
   records:{path:'M3 4h18v16H3zM3 9h18M9 4v16M3 14h18',color:'#438f87'},
   bytes:{path:'M3 6h6v12H3zM15 6h3v12M14 18h7',color:'#697fa9'},
   array:{path:'M3 7 12 2 21 7v10l-9 5-9-5zM3 7l9 5 9-5M12 12v10',color:'#8359bf'},
-  image:{path:'M3 4h18v16H3zM3 17l6-6 4 4 3-3 5 5M15 8h2',color:'#c58235'},
   sequence:{path:'M6 2c0 8 12 12 12 20M18 2C18 10 6 14 6 22M7 5h10M8 10h8M8 15h8M7 20h10',color:'#258b8b'}
  };
  for(const view of views){

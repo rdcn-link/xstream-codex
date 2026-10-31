@@ -39,8 +39,8 @@ class DirectoryAdapter(base: Path, batchSize: Int, inferSample: Int, excludeMeta
     val path=resolve(item);val h=Formats.detect(ByteSource.local(path),options)
     Some(if(h.records)Seq("records","bytes")else Seq("bytes"))
   }
-  override def view[K,S](item:String,kind:DataViewType[K,S]):Option[DataView[K,S]] =
-    if(kind eq DataViews.Bytes)Some(DataViews[ByteChunk,AllBytes.type]((_,context,out)=>{
+  override def view[S](item:String,kind:DataViewType[S]):Option[DataView[S]] =
+    if(kind eq DataViews.Bytes)Some(DataViews.blocks[ByteChunk,AllBytes.type]((_,context,out)=>{
       val path=resolve(item)
       val in=Files.newInputStream(path)
       try {
@@ -49,7 +49,7 @@ class DirectoryAdapter(base: Path, batchSize: Int, inferSample: Int, excludeMeta
         var ended=false
         while(!ended){context.check();val n=in.read(buffer);if(n<0)ended=true else if(n>0)out.accept(ByteChunk(buffer,0,n))}
       } finally in.close()
-    }).asInstanceOf[DataView[K,S]]) else super.view(item,kind)
+    }).asInstanceOf[DataView[S]]) else super.view(item,kind)
   protected def read(item:String,view:String,allocator:BufferAllocator,listener:BatchReceiver,ready:()=>Unit):Unit={
     require(view=="records","unsupported stream view")
     ready();val path=resolve(item);val handler=Formats.detect(ByteSource.local(path),options)

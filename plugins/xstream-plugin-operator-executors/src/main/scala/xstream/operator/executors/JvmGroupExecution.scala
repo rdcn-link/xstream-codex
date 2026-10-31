@@ -3,7 +3,7 @@ package xstream.operator.executors
 import _root_.xstream.data._
 
 import dacp._
-import xstream.operator.{Operator,OperatorRunner}
+import xstream.operator.{Operator,OperatorRunner,OperatorBatchInput}
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import java.io._
 import java.nio.file.{Files,Path}
@@ -50,33 +50,73 @@ private[executors] final class JvmGroupExecution(input:Path,output:OutputStream=
   private def validate(c:JsonNode,h:JsonNode):Unit={
     val repr=h.path("representation").asText;require(c.path("representations").elements.asScala.exists(_.asText==repr),"group port representation mismatch")
     val formats=c.path("formats");require(formats.isEmpty || formats.elements.asScala.exists(_.asText==h.path("format").asText),"group port format mismatch")
-    if(c.has("schema"))require(schema(h)==schema(mapper.createObjectNode().put("schema",c.path("schema").asText)),"group port schema mismatch")
+    if(c.has("schema"))require(_root_.xstream.data.ArrowStreamMetadata.logical(schema(h))==_root_.xstream.data.ArrowStreamMetadata.logical(schema(mapper.createObjectNode().put("schema",c.path("schema").asText))),"group port schema mismatch")
   }
-  private class Link(contract:JsonNode,task:String,port:String) {
+  private def batchMetric(task:String,direction:String,port:String,batch:ArrowBatch):Unit={
+    val n=mapper.createObjectNode().put("type","task_metric").put("task",task).put("direction",direction).put("port",port).put("phase","data")
+      .put("payload_bytes",batch.root.getFieldVectors.asScala.map(_.getBufferSize.toLong).sum)
+    if(recordPorts.contains(task+"/"+direction+"/"+port))n.put("records",batch.root.getRowCount)
+    event(n)
+  }
+  private final case class Transfer(batch:Option[ArrowBatch],released:CompletableFuture[Unit])
+  /** One outstanding borrowed batch. Producer waits for consumer advance before reusing buffers. */
+  private class Link(contract:JsonNode,task:String,port:String) extends OperatorBatchInput {
     val metadata=new CompletableFuture[JsonNode]()
-    val events=new ArrayBlockingQueue[OperatorFrame](2)
-    val in=new PipedInputStream(262144);val out=new PipedOutputStream(in)
-    resources.add(in);resources.add(out)
-    def send(f:OperatorFrame,h:JsonNode):Unit={
-      if(h.path("type").asText=="start"){validate(contract,h);require(metadata.complete(h),"duplicate internal metadata")}
+    private val events=new ArrayBlockingQueue[Transfer](1)
+    @volatile private var ended=false
+    private var current:Transfer=null
+    private var header:JsonNode=null
+    private var empty:VectorSchemaRoot=null
+    private var initial:ArrowStreamReader=null
+    resources.add(this)
+    def sendHeader(f:OperatorFrame,h:JsonNode):Unit={
+      active()
+      h.path("type").asText match {
+        case "start"=>
+          validate(contract,h);header=h
+          if(f.data.nonEmpty){initial=new ArrowStreamReader(new ByteArrayInputStream(f.data),allocator);initial.getVectorSchemaRoot;require(!initial.loadNextBatch(),"start contains business rows")}
+          require(metadata.complete(h),"duplicate internal metadata")
+        case "end"=>offer(Transfer(None,new CompletableFuture[Unit]()))
+        case _=>throw new IllegalArgumentException("internal data must be Arrow batches")
+      }
       observe(task,"inputs",port,f,h)
-      active();while(!events.offer(f,100,TimeUnit.MILLISECONDS))active()
     }
-    def next():OperatorFrame={active();var f=events.poll(100,TimeUnit.MILLISECONDS);while(f==null){active();f=events.poll(100,TimeUnit.MILLISECONDS)};f}
-    def start():Unit={thread {
-      val first=mapper.readTree(next().metadata);val repr=first.path("representation").asText
-      val s=if(repr=="records")schema(first)else PluginSchemas.bytes
-      val root=VectorSchemaRoot.create(s,allocator);val writer=new ArrowStreamWriter(root,null,out)
-      try{writer.start();var ended=false
-        while(!ended){val f=next();mapper.readTree(f.metadata).path("type").asText match {
-          case "end"=>ended=true
-          case "data" if repr=="bytes"=>root.clear();root.allocateNew();root.getVector(0).asInstanceOf[VarBinaryVector].setSafe(0,f.data);root.setRowCount(1);writer.writeBatch()
-          case "data"=>val reader=new ArrowStreamReader(new ByteArrayInputStream(f.data),allocator)
-            try{require(reader.getVectorSchemaRoot.getSchema==s,"record schema changed");require(reader.loadNextBatch(),"empty record frame");val batch=new VectorUnloader(reader.getVectorSchemaRoot).getRecordBatch;try new VectorLoader(root).load(batch)finally batch.close();writer.writeBatch();require(!reader.loadNextBatch(),"one batch per frame required")}finally reader.close()
-          case _=>throw new IllegalArgumentException("invalid internal stream event")
-        }};writer.end()
-      }finally{writer.close();root.close();out.close()}
-    };()}
+    private def offer(value:Transfer):Unit={
+      active();require(!ended,"internal stream closed")
+      while(!events.offer(value,100,TimeUnit.MILLISECONDS)){active();require(!ended,"internal stream closed")}
+    }
+    def sendBatch(batch:ArrowBatch):Unit={
+      require(header!=null,"batch before metadata")
+      val expected=if(header.path("representation").asText=="bytes")PluginSchemas.bytes else schema(header)
+      require(batch.root.getSchema.getFields==expected.getFields,"internal schema changed")
+      val value=Transfer(Some(batch),new CompletableFuture[Unit]())
+      batchMetric(task,"inputs",port,batch);offer(value)
+      var waiting=true
+      while(waiting){active();try {value.released.get(100,TimeUnit.MILLISECONDS);waiting=false}catch{case _:java.util.concurrent.TimeoutException=>()}}
+    }
+    private def release():Unit=if(current!=null){current.released.complete(());current=null}
+    def loadNextBatch():Boolean={
+      active();release()
+      var value=events.poll(100,TimeUnit.MILLISECONDS)
+      while(value==null){active();require(!ended,"internal stream closed");value=events.poll(100,TimeUnit.MILLISECONDS)}
+      current=value
+      if(value.batch.isEmpty){release();false}else true
+    }
+    def getVectorSchemaRoot:VectorSchemaRoot={
+      if(current!=null && current.batch.nonEmpty)current.batch.get.root else {
+        require(header!=null,"missing internal metadata")
+        if(empty==null)empty=VectorSchemaRoot.create(if(header.path("representation").asText=="bytes")PluginSchemas.bytes else schema(header),allocator)
+        empty
+      }
+    }
+    private def currentDictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=
+      if(current!=null)current.batch.map(_.dictionaries).orNull else initial
+    private val dictionaryProvider=new org.apache.arrow.vector.dictionary.DictionaryProvider {
+      def lookup(id:Long):org.apache.arrow.vector.dictionary.Dictionary={val p=currentDictionaries;if(p==null)null else p.lookup(id)}
+      def getDictionaryIds:java.util.Set[java.lang.Long]={val p=currentDictionaries;if(p==null)java.util.Collections.emptySet[java.lang.Long]()else p.getDictionaryIds}
+    }
+    def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=dictionaryProvider
+    def close():Unit=synchronized {if(!ended){ended=true;release();var value=events.poll();while(value!=null){value.released.completeExceptionally(new java.util.concurrent.CancellationException("link closed"));value=events.poll()};if(empty!=null){empty.close();empty=null};if(initial!=null){initial.close();initial=null}}}
   }
   def run():Unit={
     val work=Files.createTempDirectory("dacp-in-process-")
@@ -96,36 +136,57 @@ private[executors] final class JvmGroupExecution(input:Path,output:OutputStream=
         require(instance.isInstanceOf[Operator],"group operator must implement the SDK Operator contract")
         s.path("id").asText->instance.asInstanceOf[Operator]
       }.toMap
-      links.foreach(_._2._3.start())
       val tasks=steps.map { step=>thread {
         val id=step.path("id").asText;val directory=Files.createDirectory(work.resolve(id));val manifest=mapper.createArrayNode()
-        val streams=step.path("bindings").fields.asScala.map { e=>
+        val batchInputs=scala.collection.mutable.Map.empty[String,OperatorBatchInput]
+        val streams=step.path("bindings").fields.asScala.flatMap { e=>
           val port=e.getKey;val b=e.getValue
           val (meta,stream)=if(b.has("task")){
             val link=byTarget((id,port));var h:JsonNode=null
             while(h==null){active();try h=link.metadata.get(100,TimeUnit.MILLISECONDS)catch{case _:java.util.concurrent.TimeoutException=>()}}
-            (h,link.in:InputStream)
-          }else{val h=external(b.path("port").asText);validate(step.path("inputs").path(port),h);val raw=Files.newInputStream(input.resolve(h.path("file").asText));resources.add(raw);(h,raw)}
-          val m=meta.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();m.put("port",port).put("file",port+".arrow");manifest.add(m);port->stream
+            batchInputs(port)=link
+            (h,None)
+          }else{val h=external(b.path("port").asText);validate(step.path("inputs").path(port),h);val raw=Files.newInputStream(input.resolve(h.path("file").asText));resources.add(raw);(h,Some(raw))}
+          val m=meta.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();m.put("port",port).put("file",port+".arrow");manifest.add(m)
+          stream.map(port->_)
         }.toMap
         Files.write(directory.resolve("manifest.json"),mapper.writeValueAsBytes(manifest));Files.write(directory.resolve("params.json"),mapper.writeValueAsBytes(step.path("params")))
-        val ports=step.path("outputs").fieldNames.asScala.toSet;var begun=Set.empty[String];var ended=Set.empty[String]
+        val ports=step.path("outputs").fieldNames.asScala.toSet;var begun=Set.empty[String];var ended=Set.empty[String];var portKinds=Map.empty[String,String]
         state(id,"running")
-        OperatorRunner.runStreams(directory,directory.resolve("params.json"),streams,f=>{
+        OperatorRunner.runBatches(directory,directory.resolve("params.json"),batchInputs.toMap,streams,f=>{
           active();val h=mapper.readTree(f.metadata);val port=h.path("port").asText;val key=(id,port)
           h.path("type").asText match {
-            case "start"=>require(!begun(port),"duplicate group start");if(ports(port))validate(step.path("outputs").path(port),h);begun+=port
+            case "start"=>require(!begun(port),"duplicate group start");if(ports(port))validate(step.path("outputs").path(port),h);begun+=port;portKinds+=port->h.path("representation").asText
             case "data"=>require(begun(port) && !ended(port),"group data before metadata or after end")
             case "end"=>require(begun(port) && !ended(port),"invalid group end");ended+=port
             case _=>throw new IllegalArgumentException("invalid group output event")
           }
           observe(id,"outputs",port,f,h)
-          bySource.get(key).foreach(_._3.send(f,h))
+          bySource.get(key).foreach(_._3.sendHeader(f,h))
           selected.get(key).foreach { label=>
             val meta=h.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();meta.put("port",label)
             if(h.path("type").asText!="start")while(!headers.await(100,TimeUnit.MILLISECONDS))active()
             output.synchronized{OperatorFrames.write(output,OperatorFrame(mapper.writeValueAsBytes(meta),f.data));output.flush()}
             if(h.path("type").asText=="start")headers.countDown()
+          }
+        },(port,batch)=>{
+          active();val key=(id,port)
+          require(begun(port) && !ended(port),"batch before metadata or after end")
+          batchMetric(id,"outputs",port,batch)
+          bySource.get(key).foreach(_._3.sendBatch(batch))
+          selected.get(key).foreach { label=>
+            while(!headers.await(100,TimeUnit.MILLISECONDS))active()
+            val chunks=if(portKinds(port)=="bytes"){
+              val vector=batch.root.getVector(0).asInstanceOf[VarBinaryVector]
+              (0 until batch.root.getRowCount).map(vector.get).toVector
+            }else {
+              val bytes=new ByteArrayOutputStream();val writer=new ArrowStreamWriter(batch.root,batch.dictionaries,bytes)
+              try {writer.start();writer.writeBatch();writer.end();Vector(bytes.toByteArray)}finally writer.close()
+            }
+            chunks.foreach { bytes=>
+              val h=mapper.createObjectNode().put("type","data").put("port",label)
+              output.synchronized{OperatorFrames.write(output,OperatorFrame(mapper.writeValueAsBytes(h),bytes));output.flush()}
+            }
           }
         })(operators(id).process)
         require(ended==begun && ports.subsetOf(ended),"incomplete group output")

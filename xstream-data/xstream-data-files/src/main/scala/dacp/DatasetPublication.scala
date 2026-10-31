@@ -145,7 +145,7 @@ class DirectoryDatasetProvider extends DatasetProvider {
         }
         def describe(path: String): Item = use(selected(path))(_.describe(path))
         def count(path: String): Option[Long] = use(selected(path))(_.count(path))
-        def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]=Some(DataViews[K,S]((selection,context,out)=>
+        def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]=Some(DataViews[S]((selection,context,out)=>
           use(selected(path)){a=>val stream=a.requireView(path,kind).open(selection,context);try stream.consume(out)finally stream.close()}))
 
       }

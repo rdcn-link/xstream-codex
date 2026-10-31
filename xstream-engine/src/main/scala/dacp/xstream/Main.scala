@@ -23,6 +23,9 @@ object Main {
   def main(args:Array[String]):Unit={
     require(args.length>=2 && args.length<=4,"Usage: xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]")
     val config=YamlDocument.parse(Files.readString(Path.of(args(0))))
+    // Relative operator references are anchored to the Job file, never to launcher cwd.
+    require(config.isObject,"runner configuration must be a mapping")
+    if(!config.has("job_working_directory"))config.asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].put("job_working_directory",Path.of(args(1)).toAbsolutePath.normalize.getParent.toString)
     val variables=if(args.length>=3)YamlDocument.parse(Files.readString(Path.of(args(2))))else Json.obj()
     val policy=if(args.length>=4)YamlDocument.parse(Files.readString(Path.of(args(3))))else Json.obj()
     val yaml=WorkflowVariables.resolve(Files.readString(Path.of(args(1))),variables)
@@ -81,11 +84,11 @@ object RemoteItems {
     val item=cancel.add(dataset.open(path,predicate=binding.scan.flatMap(_.predicate).map(clientPredicate),columns=binding.scan.flatMap(_.columns),limit=binding.scan.flatMap(_.limit)));val bytes=if(view=="bytes")Some(cancel.add(item.asBytes()))else None
     if(!Set("records","bytes")(view)){
       val plugins=new PluginEnvironment()
-      val codec=DataViewCodecs.named(plugins,view)
+      val codec=DataViewSupports.named(plugins,view)
       return ItemFrameStreams.remote(metadata.format,cancel){out=>
         try {
           val stream=item.asView(codec.kind,codec.selection(binding.selection.getOrElse(Data.mapper.createObjectNode())))
-          try stream.consume(new DataConsumer[codec.Block]{def start(d:DataDescriptor[codec.Block]):Unit=out.start(codec.descriptor(d));def accept(b:codec.Block):Unit={cancel.active();out.accept(codec.encode(b))}})finally stream.close()
+          try stream.consume(out)finally stream.close()
         }finally {item.close();dataset.close();plugins.close()}
       }
     }
@@ -93,9 +96,9 @@ object RemoteItems {
     new FrameSource {
       private var began=false;private var ended=false
       def next():Option[OperatorFrame]={
-        cancel.active();if(!began){began=true;return Some(StreamProtocol.start("",view,metadata.format,records.map(_.root.getSchema)))}
+        cancel.active();if(!began){began=true;return Some(StreamProtocol.start("",view,metadata.format,records.map(_.root.getSchema),dictionaries=records.map(_.dictionaries).orNull))}
         if(ended)return None
-        val data=bytes.map(_.readNBytes(65536)).orElse(records.filter(_.next()).map(r=>StreamProtocol.batch(r.root)))
+        val data=bytes.map(_.readNBytes(65536)).orElse(records.filter(_.next()).map(r=>StreamProtocol.batch(r.root,r.dictionaries)))
         data.filter(_.nonEmpty) match {case Some(b)=>Some(StreamProtocol.frame("data",data=b));case None=>ended=true;Some(StreamProtocol.frame("end"))}
       }
       def close():Unit={try item.close()finally dataset.close()}

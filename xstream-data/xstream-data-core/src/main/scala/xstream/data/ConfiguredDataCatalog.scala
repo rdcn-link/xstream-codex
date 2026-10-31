@@ -25,7 +25,7 @@ final class ConfiguredDataCatalog(settings:JsonNode,val plugins:PluginEnvironmen
       def list(path:String):Seq[Item]=access.list(path)
       def describe(path:String):Item=access.describe(path)
       def count(path:String):Option[Long]=access.count(path)
-      def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]=access.view(path,kind)
+      def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]=access.view(path,kind)
       override def close():Unit=try access.close()finally published.close()
     }
   }

@@ -44,4 +44,11 @@ class ComputePushdownSpec extends AnyFunSuite {
     val raw=Json.obj();raw.putObject("materialization").put("default","materialize")
     assert(place(tasks,Map("out"->("f"->"result")),raw=raw).regions.isEmpty)
   }
+  test("local directory operators and downstream chains stay on the host") {
+    val local=process("local","read").copy(operator="",localOperator=Some("./filter"))
+    val p=place(Vector(read("read",a+"/d/i"),local,process("next","local")),Map("out"->("next"->"result")))
+    assert(p.regions.isEmpty && p.placements("local")=="local" && p.placements("next")=="local")
+    intercept[IllegalArgumentException](ComputePushdown.yaml(JobPlan(Vector(local),Map.empty)))
+  }
+
 }

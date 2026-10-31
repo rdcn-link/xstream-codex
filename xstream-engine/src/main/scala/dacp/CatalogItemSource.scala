@@ -17,7 +17,7 @@ object CatalogItemSource {
       try {
         val path="/"+parts(1);val item=access.describe(path)
         val view=ItemViews.select(binding.view,plugins.views(item))
-        ItemFrameStreams.consume(access,path,view,item.format,binding.scan,StreamContext(allocator,()=>cancel.active()),if(Set("bytes","records")(view))None else Some(DataViewCodecs.named(plugins,view)),binding.selection)(queue.put)
+        ItemFrameStreams.consume(access,path,view,item.format,binding.scan,StreamContext(allocator,()=>cancel.active()),if(Set("bytes","records")(view))None else Some(DataViewSupports.named(plugins,view)),binding.selection)(queue.put)
         queue.put(StreamProtocol.frame("end"));queue.end()
       }finally {access.close();lease.close()}
     }

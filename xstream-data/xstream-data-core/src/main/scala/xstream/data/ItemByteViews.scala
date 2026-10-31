@@ -11,13 +11,13 @@ object ItemByteViews {
     def list(path:String):Seq[Item]=source.list(path).map(published)
     def describe(path:String):Item=published(source.describe(path))
     def count(path:String):Option[Long]=source.count(path)
-    def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]]={
+    def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={
       LogicalPath.validate(path)
       if((kind eq DataViews.Bytes) && fallback(source.describe(path)))
-        Some(DataViews[ByteChunk,AllBytes.type]((_,context,out)=>{
+        Some(DataViews.blocks[ByteChunk,AllBytes.type]((_,context,out)=>{
           val records=source.requireView(path,DataViews.Records).open(Scan(),context)
-          try RecordJsonl.encode(out,context.check,chunkSize)(records.consume) finally records.close()
-        }).asInstanceOf[DataView[K,S]])
+          try RecordJsonl.encode(out,context.check,chunkSize)(consumer=>ArrowBlocks.consume(records,consumer)) finally records.close()
+        }).asInstanceOf[DataView[S]])
       else source.view(path,kind)
     }
     override def close():Unit=source.close()

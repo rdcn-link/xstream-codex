@@ -7,7 +7,7 @@ import scala.jdk.CollectionConverters._
 import org.yaml.snakeyaml.Yaml
 
 case class InputBinding(uri: Option[String] = None, task: Option[String] = None, port: String = "result", view: String = "bytes", scan:Option[Scan]=None, selection:Option[com.fasterxml.jackson.databind.JsonNode]=None)
-case class Task(id: String, inputs: Map[String,InputBinding], operator: String, params: java.util.Map[String,Object], node: Option[String] = None, source: Option[SourceOperator] = None, title: Option[String] = None, outputPorts:Seq[String]=Seq.empty, proxyPath:Vector[String]=Vector.empty)
+case class Task(id: String, inputs: Map[String,InputBinding], operator: String, params: java.util.Map[String,Object], node: Option[String] = None, source: Option[SourceOperator] = None, title: Option[String] = None, outputPorts:Seq[String]=Seq.empty, proxyPath:Vector[String]=Vector.empty, localOperator:Option[String]=None)
 case class PlacementDecision(step:String,node:String,reason:String,requestedSource:Option[String]=None,resolvedSource:Option[String]=None)
 case class JobPlan(tasks: Vector[Task], outputs: Map[String,(String,String)], name:String="Job",placements:Vector[PlacementDecision]=Vector.empty)
 case class SourceOperator(runtime: String, source: String, entrypoint: String = "Main")
@@ -43,7 +43,10 @@ object Jobs {
   }
 
   def authorizeSource(config: EngineEnvironment, task: Task): Unit =
-    require(task.source.isEmpty || config.debug, "FORBIDDEN: source submission requires DEBUG mode")
+    {
+      require(task.localOperator.isEmpty || config.localOperatorBase.nonEmpty,"FORBIDDEN: local operators require a local engine")
+      require(task.source.isEmpty || config.debug, "FORBIDDEN: source submission requires DEBUG mode")
+    }
   def source(value: Object): SourceOperator = {
     val m=mapping(value,"source operator")
     require(m.keySet.subsetOf(Set("runtime","source","entrypoint")) && Set("runtime","source").subsetOf(m.keySet),"invalid source operator")
@@ -61,7 +64,9 @@ object Jobs {
   def validate(t: Task): Unit = {
     t.title.foreach(v=>require(v.trim.nonEmpty && v.length<=256 && !v.exists(_.isControl),"title must contain 1 to 256 characters without control characters"))
     name(t.id); t.inputs.keys.foreach(name)
-    require(t.source.isDefined || t.operator.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*@[A-Za-z0-9_-][A-Za-z0-9_.-]*"),"operator must be name@version")
+    require(t.localOperator.isEmpty || (t.source.isEmpty && t.operator.isEmpty),"local operator cannot specify another operator")
+    t.localOperator.foreach(p=>require(p.trim.nonEmpty && !p.exists(_.isControl),"invalid local operator path"))
+    require(t.localOperator.isDefined || t.source.isDefined || t.operator.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*@[A-Za-z0-9_-][A-Za-z0-9_.-]*"),"operator must be name@version")
     require(t.params != null,"params must be a mapping")
     t.inputs.values.foreach { b =>
       require(b.uri.isDefined != b.task.isDefined,"input requires exactly one of uri or task")
@@ -89,9 +94,11 @@ object Jobs {
         port -> InputBinding(task=Some(task),port=output)
       }
       val params=new java.util.LinkedHashMap[String,Object](); m.get("params").foreach(v => mapping(v,"params").foreach{case(k,v)=>params.put(k,v)})
-      val inline=if(m("operator").isInstanceOf[java.util.Map[_,_]])Some(source(m("operator")))else None
+      val declaration=if(m("operator").isInstanceOf[java.util.Map[_,_]])Some(mapping(m("operator"),"operator"))else None
+      val local=declaration.filter(_.contains("local")).map { d=>require(d.keySet==Set("local") && d("local").isInstanceOf[String],"local operator requires only a string local reference");d("local").toString }
+      val inline=if(declaration.nonEmpty && local.isEmpty)Some(source(m("operator")))else None
       require(m.get("title").forall(_.isInstanceOf[String]),"title must be a string")
-      val t=Task(m("id").toString,inputs,if(inline.isDefined)""else m("operator").toString,params,m.get("node").map(_.toString),inline,m.get("title").map(_.toString));validate(t);t
+      val t=Task(m("id").toString,inputs,if(inline.isDefined || local.isDefined)""else m("operator").toString,params,m.get("node").map(_.toString),inline,m.get("title").map(_.toString),localOperator=local);validate(t);t
     }.toVector
     require(tasks.nonEmpty && tasks.size <= 64 && tasks.map(_.id).distinct.size == tasks.size,"empty, oversized, or duplicate task list")
     val ids=tasks.map(_.id).toSet

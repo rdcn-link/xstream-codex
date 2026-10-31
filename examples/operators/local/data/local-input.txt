@@ -1,0 +1,2 @@
+temperature: 21.5 C
+streaming weather observations

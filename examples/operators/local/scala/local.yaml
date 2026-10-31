@@ -1,0 +1,6 @@
+image: xstream/operator-jvm:1.1
+executor: jvm
+build:
+  provider: command
+  command: [sbt, package]
+  artifact: target/scala-2.13/local-scala-identity_2.13-1.0.jar

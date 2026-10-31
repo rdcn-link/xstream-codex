@@ -20,14 +20,14 @@ trait BatchDatasetAccess extends DatasetAccess {
   protected def readScan(path:String,scan:Scan,allocator:BufferAllocator,out:BatchReceiver,check:()=>Unit):Unit =
     ScanStreams.stream(scan,allocator,out)(filtered=>read(path,"records",allocator,filtered,check))
   protected def batchViews(path:String):Option[Seq[String]]=describe(path).views
-  override def view[K,S](path:String,kind:DataViewType[K,S]):Option[DataView[K,S]] = {
+  override def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]] = {
     if(!(kind eq DataViews.Records) && !(kind eq DataViews.Bytes)) return None
     if(batchViews(path).exists(v=> !v.contains(kind.name))) return None
-    if(kind eq DataViews.Records) Some(DataViews[RecordBatch,Scan]((s,c,o)=>
-      if(s==Scan())read(path,"records",c.allocator,BatchStreams.records(o,c.check),c.check)
-      else readScan(path,s,c.allocator,BatchStreams.records(o,c.check),c.check)).asInstanceOf[DataView[K,S]])
-    else if(kind eq DataViews.Bytes) Some(DataViews[ByteChunk,AllBytes.type]((_,c,o)=>
-      read(path,"bytes",c.allocator,BatchStreams.bytes(o,c.check),c.check)).asInstanceOf[DataView[K,S]])
+    if(kind eq DataViews.Records) Some(DataViews[Scan]((s,c,o)=>
+      if(s==Scan())read(path,"records",c.allocator,BatchStreams.arrow(o,"records",c.check),c.check)
+      else readScan(path,s,c.allocator,BatchStreams.arrow(o,"records",c.check),c.check)).asInstanceOf[DataView[S]])
+    else if(kind eq DataViews.Bytes) Some(DataViews[AllBytes.type]((_,c,o)=>
+      read(path,"bytes",c.allocator,BatchStreams.arrow(o,"bytes",c.check),c.check)).asInstanceOf[DataView[S]])
     else None
   }
 }
@@ -46,29 +46,36 @@ object BatchStreams {
       (0 until root.getRowCount).foreach { i=>check();val b=v.get(i);out.accept(ByteChunk(b,0,b.length)) }
     }
   }
+  /** Publishes existing Arrow buffers directly with standardized view metadata. */
+  def arrow(out:ArrowConsumer,view:String,check:()=>Unit):BatchReceiver=new BatchReceiver {
+    private var source:VectorSchemaRoot=null
+    private var schema:org.apache.arrow.vector.types.pojo.Schema=null
+    private var dictionaries:DictionaryProvider=null
+    def start(r:VectorSchemaRoot,d:DictionaryProvider,o:IpcOption):Unit={
+      check();source=r;dictionaries=d
+      schema=ArrowRepresentations.schema(if(view=="records")RecordsDescriptor(r.getSchema,d)else BytesDescriptor())
+      require(schema.getFields==r.getSchema.getFields,"view field mismatch")
+      out.start(schema,d)
+    }
+    def putNext():Unit={check();out.accept(ArrowBatch(new VectorSchemaRoot(schema,source.getFieldVectors,source.getRowCount),dictionaries))}
+  }
   def read(access:DatasetAccess,path:String,view:String,a:BufferAllocator,out:BatchReceiver,check:()=>Unit):Unit =
     if(view=="records") scan(access,path,Scan(),a,out,check)
     else {
       require(view=="bytes","unsupported stream view")
-      val s=access.requireView(path,DataViews.Bytes).open(AllBytes,StreamContext(a,check))
-      var root:VectorSchemaRoot=null
-      try s.consume(new DataConsumer[ByteChunk] {
-        def start(d:DataDescriptor[ByteChunk]):Unit={root=VectorSchemaRoot.create(PluginSchemas.bytes,a);out.start(root)}
-        def accept(b:ByteChunk):Unit={check();root.clear();root.allocateNew();root.getVector(0).asInstanceOf[VarBinaryVector].setSafe(0,b.bytes,b.offset,b.length);root.setRowCount(1);out.putNext()}
-      }) finally {s.close();if(root!=null)root.close()}
-      out.completed()
+      consume(access.requireView(path,DataViews.Bytes).open(AllBytes,StreamContext(a,check)),a,out,check)
     }
-  def scan(access:DatasetAccess,path:String,selection:Scan,a:BufferAllocator,out:BatchReceiver,check:()=>Unit):Unit={
-    val s=access.requireView(path,DataViews.Records).open(selection,StreamContext(a,check))
+  def scan(access:DatasetAccess,path:String,selection:Scan,a:BufferAllocator,out:BatchReceiver,check:()=>Unit):Unit=
+    consume(access.requireView(path,DataViews.Records).open(selection,StreamContext(a,check)),a,out,check)
+  /** Adapts batch callbacks by retaining Arrow buffers; no IPC encode/decode occurs here. */
+  def consume(stream:ArrowDataStream,a:BufferAllocator,out:BatchReceiver,check:()=>Unit):Unit={
     var root:VectorSchemaRoot=null
     try {
-      s.consume(new DataConsumer[RecordBatch] {
-        def start(d:DataDescriptor[RecordBatch]):Unit={
-          val descriptor=d.asInstanceOf[RecordsDescriptor]
-          root=VectorSchemaRoot.create(descriptor.schema,a)
-          out.start(root,descriptor.dictionaries,IpcOption.DEFAULT)
+      stream.consume(new ArrowConsumer {
+        def start(schema:org.apache.arrow.vector.types.pojo.Schema,d:DictionaryProvider):Unit={
+          check();root=VectorSchemaRoot.create(schema,a);out.start(root,d,IpcOption.DEFAULT)
         }
-        def accept(b:RecordBatch):Unit={
+        def accept(b:ArrowBatch):Unit={
           check()
           val batch=new org.apache.arrow.vector.VectorUnloader(b.root).getRecordBatch
           try {
@@ -90,6 +97,6 @@ object BatchStreams {
         }
       })
       out.completed()
-    } finally {s.close();if(root!=null)root.close()}
+    } finally {stream.close();if(root!=null)root.close()}
   }
 }

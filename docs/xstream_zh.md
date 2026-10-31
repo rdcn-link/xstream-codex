@@ -86,7 +86,7 @@ data_catalog:
 
 提供者返回线程安全的 `DataCatalog`。其 `open(name)` 返回调用者持有的 `PublishedDataset` 租约，再打开 `DatasetAccess`，使用后关闭两个句柄。`DatasetProvider`、`FormatHandler` 和算子执行器继续使用现有契约，详见[插件](https://github.com/rdcn-link/dacp-codex/blob/main/docs/plugins_zh.md)。启动程序打包标准数据源、基础格式、静态目录、执行存储和算子执行器；更多插件通过 `plugin_directory` 加载。
 
-算子必须来自经过审核公开发布的仓库，使用名称/版本标识。本地执行使用仓库产物和校验过的缓存，不允许通过启动程序加载任意源码或 JAR。`read_item` 是内置数据源，无需算子容器。
+名称/版本引用使用已审核公开的仓库算子及校验过的产物。独立本地开发可显式引用[本地算子源码目录](local-operators_zh.md)，复用构建缓存与同一 SDK。`read_item` 是内置数据源，无需算子容器。
 
 ## 设计器
 

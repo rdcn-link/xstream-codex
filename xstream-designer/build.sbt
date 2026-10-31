@@ -41,7 +41,7 @@ lazy val staticCatalog = RootProject(file("../xstream-data/xstream-data-catalog-
 lazy val formats = RootProject(file("../xstream-data/xstream-data-formats-basic"))
 dependsOn(datasetPlugins % "runtime->compile;test->compile", staticCatalog % "runtime->compile;test->compile", formats % "runtime->compile;test->compile")
 
-lazy val dataScientificcodecs = RootProject(file("../xstream-data/xstream-data-scientific-codecs"))
+lazy val dataScientificcodecs = RootProject(file("../xstream-data/xstream-data-scientific-views"))
 dependsOn(dataScientificcodecs % "runtime->compile;test->compile")
 
 lazy val dataNetcdf = RootProject(file("../xstream-data/xstream-data-netcdf"))

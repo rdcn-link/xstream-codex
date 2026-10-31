@@ -86,7 +86,7 @@ data_catalog:
 
 The provider returns a thread-safe `DataCatalog`. Its `open(name)` returns a caller-owned `PublishedDataset` lease; open it for a `DatasetAccess` and close both handles after use. `DatasetProvider`, `FormatHandler` and operator executor plugins retain their existing contracts; see [plugins](https://github.com/rdcn-link/dacp-codex/blob/main/docs/plugins.md). The runner bundles standard datasets, basic formats, the static catalog, execution storage and operator executors. Additional plugins can be loaded through `plugin_directory`.
 
-Operators must be approved public repository operators, identified by name/version. Local execution uses repository artifacts and their verified cache; it does not accept arbitrary source files or JARs through the launcher. `read_item` is a built-in data source and needs no operator container.
+Versioned references use approved public repository operators and verified artifacts. Standalone development can explicitly reference [local operator source directories](local-operators.md), with reusable builds and the same SDK. `read_item` is a built-in data source and needs no operator container.
 
 ## Designer
 

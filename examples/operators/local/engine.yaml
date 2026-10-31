@@ -1,0 +1,11 @@
+# Run from the repository root. Local operator paths in job.yaml are relative to that file.
+datasets:
+  weather:
+    provider: directory
+    source:
+      root: examples/operators/local/data
+remote_operator_library_urls: []
+operator_cache: .xstream-operators
+execution_directory: .xstream-executions
+max_concurrent_tasks: 4
+compute_pushdown_enabled: false

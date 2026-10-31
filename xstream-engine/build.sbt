@@ -31,7 +31,7 @@ lazy val XstreamPluginOperatorExecutors = RootProject(file("../plugins/xstream-p
 dependsOn(XstreamPluginOperatorExecutors % "runtime->compile")
 libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-execution-file" % "0.1.0-SNAPSHOT" % "runtime"
 
-lazy val dataScientificcodecs = RootProject(file("../xstream-data/xstream-data-scientific-codecs"))
+lazy val dataScientificcodecs = RootProject(file("../xstream-data/xstream-data-scientific-views"))
 dependsOn(dataScientificcodecs % "runtime->compile;test->compile")
 
 lazy val dataNetcdf = RootProject(file("../xstream-data/xstream-data-netcdf"))

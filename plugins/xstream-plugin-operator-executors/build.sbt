@@ -21,3 +21,6 @@ Compile / resourceGenerators += Def.task {
 
 lazy val dataCore = RootProject(file("../../xstream-data/xstream-data-core"))
 dependsOn(dataCore)
+
+lazy val operatorContract = RootProject(file("../../xstream-operator-sdk/contract"))
+dependsOn(operatorContract)
