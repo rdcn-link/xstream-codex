@@ -45,7 +45,7 @@ The adapter supports zero or one bytes input and zero or one bytes output. Recor
 For an existing runtime executable, save the `executor_config` mapping alone as `command.yaml`, and the port declarations as `ports.yaml`:
 
 ```bash
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository publish uppercase@1.0 \
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publish uppercase@1.0 \
   --root .operator-catalog --image example/native-runtime:1 \
   --executor command --entrypoint /usr/bin/tr \
   --ports ports.yaml --executor-config command.yaml
@@ -67,10 +67,12 @@ No client change or native-specific job syntax is required.
 
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt test)
-(cd xstream-operator-repository && sbt test)
+(cd "$REPOSITORY_HOME" && sbt test)
 (cd /path/to/dacp-codex/dacp-server && sbt test stage)
 # Requires cc, certificates, Docker access, and xstream/operator-python:1.0:
 .venv/bin/python scripts/test-native-execution.py
 ```
 
 The live test starts and stops its own server on port 18817 (`DACP_NATIVE_TEST_PORT` overrides it), compiles a C filter, and checks streaming beyond pipe capacity, artifacts without executable permission bits, partial failure, cancellation, and recovery. Unit contracts cover registration, literal arguments, unsupported ports, invalid settings, and preservation of plugin settings through publication, download, and cache reuse.
+
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).

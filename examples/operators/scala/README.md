@@ -21,9 +21,9 @@ From the project root, with JDK 17, sbt, and Docker access:
 # Build the shared environment once (skip when already installed).
 scripts/build-jvm-runtime.sh
 (cd examples/operators/scala && sbt package)
-(cd xstream-operator-repository && sbt stage)
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/scala/operators --root .operator-catalog
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository serve --root .operator-catalog --port 8820
+(cd "$REPOSITORY_HOME" && sbt stage)
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/scala/operators --root .operator-catalog
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository serve --root .operator-catalog --port 8820
 ```
 
 Configure the execution node:
@@ -64,3 +64,5 @@ See [operator packaging](../../../docs/operator-packaging.md) for executor plugi
 For complete source examples, wheel packaging, remote file transfer, administrator publication, and execution instructions, see [Write and upload custom operators](../../../docs/operator-authoring.md).
 
 The repository accepts source only. Local builds in these examples are for development verification; use the [source submission and review workflow](../../../docs/operator-submission.md) for public publication.
+
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).

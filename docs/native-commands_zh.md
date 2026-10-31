@@ -37,7 +37,7 @@ parameters:
 将配置映射单独保存为 `command.yaml`，端口声明保存为 `ports.yaml`，即可发布：
 
 ```bash
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository publish uppercase@1.0 \
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publish uppercase@1.0 \
   --root .operator-catalog --image example/native-runtime:1 \
   --executor command --entrypoint /usr/bin/tr \
   --ports ports.yaml --executor-config command.yaml
@@ -50,3 +50,5 @@ shell 仍使用 `run uppercase@1.0 --input source=/reports/orders`，无需客�
 `CommandExecutor` 通过 `META-INF/services/dacp.OperatorExecutor` 注册，位于 `plugins/xstream-plugin-operator-executors`。外部插件使用同一扩展点：将 `dacp-plugin-api` 作为 Provided 依赖，打包 service 文件，将插件和私有依赖放入 `plugin_directory` 后重启。`OperatorProgram.configuration` 为插件自有设置，`inputs`、`outputs` 将端口名映射到支持的表示集合。插件自行验证，核心只负责通用元数据传递与资源管理。
 
 验证命令及完整行为详见[英文参考](native-commands.md)。真实联调脚本 `scripts/test-native-execution.py` 需要已 stage 的服务器、cc、证书、Docker 权限及 Python 运行时镜像；它启动并停止自己的服务器，默认端口 18817，可用 `DACP_NATIVE_TEST_PORT` 修改。
+
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。

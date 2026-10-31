@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """Compile, container-test, and publish one Scala EcoFlow operator."""
 import argparse
 import importlib.util
@@ -48,7 +49,7 @@ def main():
     instructions.write_text('See README.md and spark/README.md in the source archive.\n'
         'Build shared runtime first. Compile and verify individually:\n'
         '.venv/bin/python examples/operators/piflow/spark/publish.py ' + args.name + ' --spark-home /path/to/extracted/pyspark-4.0.1\n')
-    command = ['sudo', '-n', '-u', 'cnic', '-g', 'docker', str(ROOT / 'xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository'),
+    command = ['sudo', '-n', '-u', 'cnic', '-g', 'docker', str(Path(os.environ['REPOSITORY_HOME']) / 'target/universal/stage/bin/xstream-operator-repository'),
         'publish', item['operator'] + '@1.0', '--root', str(destination), '--image', 'xstream/operator-ecoflow-spark:1.0',
         '--executor', 'jvm', '--entrypoint', 'dacp.ecoflow.Op_' + args.name, '--artifact', str(jar), '--ports', str(ports),
         '--description', spec['description'], '--source-archive', str(archive), '--source-repository', inventory['repository'],

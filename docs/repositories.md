@@ -2,7 +2,7 @@
 
 [中文](repositories_zh.md)
 
-XStream owns data contracts and implementations, the streaming engine and its designer. XStream also owns operator SDK/contracts, inference, executor and source-analysis plugins, runtime build tools and the operator repository. DACP owns service transport, authorization, federation and clients. This is a source-repository split, not removal of all DACP library dependencies from the engine.
+XStream owns data contracts and implementations, the streaming engine and its designer. XStream also owns operator SDK/contracts, inference, executor and source-analysis plugins, and runtime build tools. The [operator repository service](https://github.com/bluejoe2008/xstream-operator-repository) is an independent project consuming versioned XStream contract and source-analysis artifacts. DACP owns service transport, authorization, federation and clients. This is a source-repository split, not removal of all DACP library dependencies from the engine.
 
 The artifact dependency graph is acyclic:
 

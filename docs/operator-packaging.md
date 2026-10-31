@@ -40,7 +40,7 @@ parameters:
 
 ```bash
 # Run from the project root after staging the repository.
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository publish summary@1 --root .operator-catalog --image example/jvm-arrow:1 --executor jvm --entrypoint example.Summary --artifact summary.jar --ports ports.yaml
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publish summary@1 --root .operator-catalog --image example/jvm-arrow:1 --executor jvm --entrypoint example.Summary --artifact summary.jar --ports ports.yaml
 ```
 
 The repository does not need executor plugins to store or serve manifests. Execution nodes must have a matching plugin. Publisher validation is generic; executor-specific artifact and entrypoint validation happens on the execution node.
@@ -110,7 +110,7 @@ The plugin validates its entrypoint/artifact and `OperatorProgram.configuration`
 
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt test)
-(cd xstream-operator-repository && sbt test)
+(cd "$REPOSITORY_HOME" && sbt test)
 (cd /path/to/dacp-codex/dacp-server && sbt 'testOnly dacp.OperatorLibrarySpec dacp.CoreSpec dacp.CollaborationSpec')
 scripts/test-operator-repository.sh
 ```
@@ -128,3 +128,5 @@ The implemented [item-based, stream-only contract](operator-streams.md) binds na
 API v2 supports optional `provenance` metadata and SHA-256-addressed source, license and SBOM downloads. These files are separate from execution and never fetched automatically by execution nodes. See [source and review information](operator-provenance.md) for YAML fields, CLI flags, manifest descriptors and validation limits.
 
 Operators must also provide `icon`; administrators assign public `categories`; see [categories and icons](operator-presentation.md) for the contract and publication examples.
+
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).

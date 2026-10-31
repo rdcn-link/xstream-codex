@@ -18,7 +18,7 @@ cc -O2 -Wall -Wextra -Werror -s \
 
 ```bash
 python3 scripts/package-operator-sources.py
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository seed \
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed \
   --operators examples/operators/native/operators --root .operator-catalog
 ```
 
@@ -44,3 +44,5 @@ run native_uppercase@1.0 --input source=/reports/orders
 附带源码的新版本及可选的许可证、SBOM 发布方式参见[源码与审查信息](../../../docs/operator-provenance_zh.md)。初始化仓库前须先打包源码。
 
 仓库只接收源码，旧示例中的本地构建仅用于开发验证；公开发布采用[源码提交与审核流程](../../../docs/operator-submission_zh.md)。
+
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。

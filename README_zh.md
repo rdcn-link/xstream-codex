@@ -13,7 +13,7 @@ XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问�
 | [xstream-data](xstream-data/README_zh.md) | DataCatalog → Dataset → Item、类型化 DataView/DataStream 契约、插件发现、文件及科学格式实现和网络编码 |
 | [xstream-operator-sdk](xstream-operator-sdk/README_zh.md) | JVM/Python 算子模板及元数据契约 |
 | [xstream-operator-inference](xstream-operator-inference/README_zh.md) | 按需启动并复用的结构及样例推导 worker |
-| [xstream-operator-repository](xstream-operator-repository/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
+| [xstream-operator-repository](https://github.com/bluejoe2008/xstream-operator-repository/blob/main/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
 | [xstream-engine](xstream-engine/README_zh.md) | 嵌入式执行、取消、执行策略、自动远程计算下推及 `xstream-runner` 启动程序 |
 | [xstream-designer](xstream-designer/README_zh.md) | 图形化作业编辑、目录、变量、结构和样例预览、聊天草案及 YAML 导入导出 |
 

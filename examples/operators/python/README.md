@@ -9,7 +9,7 @@ Run from the project root, with Docker access and a staged operator repository:
 ```bash
 docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:1.0 .
 python3 scripts/package-operator-sources.py
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/python --root .operator-catalog
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/python --root .operator-catalog
 ```
 
 Reference `operator: identity_python@1.0` in a task and configure its node's `remote_operator_library_urls` to reach the repository. Alternatively, set `local_operator_library: ../examples/operators/python` when starting the node from `dacp-server`. This optional example is not included in the default starter catalog. Building this environment needs network access to obtain the Python image and pinned PyArrow dependency; task execution uses no network.
@@ -18,7 +18,7 @@ The included `pyproject.toml` builds the same source as an installable `identity
 
 ```bash
 .venv/bin/python -m pip wheel --no-deps --no-build-isolation --wheel-dir examples/operators/python/dist ./examples/operators/python
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository publish identity_wheel@1.0 --root .operator-catalog --image xstream/operator-python:1.0 --executor python --entrypoint identity --artifact examples/operators/python/dist/dacp_example_ops-1.0-py3-none-any.whl --ports examples/operators/python/identity_python/1.0/operator.yaml
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publish identity_wheel@1.0 --root .operator-catalog --image xstream/operator-python:1.0 --executor python --entrypoint identity --artifact examples/operators/python/dist/dacp_example_ops-1.0-py3-none-any.whl --ports examples/operators/python/identity_python/1.0/operator.yaml
 ```
 
 Dependencies must already exist in the runtime. The executor installs the wheel offline with `--no-index --no-deps`, then invokes its module. Multiple operators may reference different modules in the same wheel. See [packaging and executor contracts](../../../docs/operator-packaging.md).
@@ -28,3 +28,5 @@ For complete source examples, wheel packaging, remote file transfer, administrat
 New source-bearing versions and optional license/SBOM publication are described in [source and review information](../../../docs/operator-provenance.md). Package sources before seeding.
 
 The repository accepts source only. Local builds in these examples are for development verification; use the [source submission and review workflow](../../../docs/operator-submission.md) for public publication.
+
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).

@@ -108,4 +108,4 @@ submit weather.yaml --vars variables.yaml
 
 ## 发布与核对
 
-仓库浏览、下载公开；发布需要 token。各算子的构建、测试和逐个上传命令见 [PiFlow 发布说明](../examples/operators/piflow/README_zh.md#逐个验证发布)，HTTP 上传契约见[仓库手册](../xstream-operator-repository/README_zh.md)。发布后先核对 `/v1/operators`，再核对对应版本的页面、参数、源码和许可证；源码集合的完整移植进度不能当作在线仓库清单。
+仓库浏览、下载公开；发布需要 token。各算子的构建、测试和逐个上传命令见 [PiFlow 发布说明](../examples/operators/piflow/README_zh.md#逐个验证发布)，HTTP 上传契约见[仓库手册](https://github.com/bluejoe2008/xstream-operator-repository/blob/main/README_zh.md)。发布后先核对 `/v1/operators`，再核对对应版本的页面、参数、源码和许可证；源码集合的完整移植进度不能当作在线仓库清单。

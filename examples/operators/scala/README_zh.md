@@ -21,9 +21,9 @@
 # 首次构建共享环境，已安装时可跳过。
 scripts/build-jvm-runtime.sh
 (cd examples/operators/scala && sbt package)
-(cd xstream-operator-repository && sbt stage)
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/scala/operators --root .operator-catalog
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository serve --root .operator-catalog --port 8820
+(cd "$REPOSITORY_HOME" && sbt stage)
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/scala/operators --root .operator-catalog
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository serve --root .operator-catalog --port 8820
 ```
 
 配置执行节点：
@@ -64,3 +64,5 @@ JVM 启动器向 `example.ScalaIdentity.main` 传递 `operator /input /input/par
 完整源码示例、wheel 打包、远程文件传输、管理员发布和执行步骤见[编写与上传自定义算子](../../../docs/operator-authoring_zh.md)。
 
 仓库只接收源码，旧示例中的本地构建仅用于开发验证；公开发布采用[源码提交与审核流程](../../../docs/operator-submission_zh.md)。
+
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。

@@ -108,4 +108,4 @@ Results stream to the client by default. Materialization at selected boundaries,
 
 ## Publication and verification
 
-Browsing and downloads are public; publication requires a token. Build, test and publish operators individually using the [PiFlow publication guide](../examples/operators/piflow/README.md#verify-and-publish-individually); see the [repository manual](../xstream-operator-repository/README.md) for the HTTP upload contract. After publication, check `/v1/operators`, then the version page, parameters, sources and license. The complete source-adaptation inventory is not an online publication list.
+Browsing and downloads are public; publication requires a token. Build, test and publish operators individually using the [PiFlow publication guide](../examples/operators/piflow/README.md#verify-and-publish-individually); see the [repository manual](https://github.com/bluejoe2008/xstream-operator-repository) for the HTTP upload contract. After publication, check `/v1/operators`, then the version page, parameters, sources and license. The complete source-adaptation inventory is not an online publication list.

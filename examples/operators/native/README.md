@@ -18,7 +18,7 @@ Set the execution server's `local_operator_library` to the absolute path of `exa
 
 ```bash
 python3 scripts/package-operator-sources.py
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository seed \
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed \
   --operators examples/operators/native/operators --root .operator-catalog
 ```
 
@@ -44,3 +44,5 @@ Run with Docker group access (for example, wrap the last command in `sg docker -
 New source-bearing versions and optional license/SBOM publication are described in [source and review information](../../../docs/operator-provenance.md). Package sources before seeding.
 
 The repository accepts source only. Local builds in these examples are for development verification; use the [source submission and review workflow](../../../docs/operator-submission.md) for public publication.
+
+`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/bluejoe2008/xstream-operator-repository).

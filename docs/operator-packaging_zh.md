@@ -40,7 +40,7 @@ parameters:
 
 ```bash
 # 在完成仓库 stage 构建后，从项目根目录运行。
-xstream-operator-repository/target/universal/stage/bin/xstream-operator-repository publish summary@1 --root .operator-catalog --image example/jvm-arrow:1 --executor jvm --entrypoint example.Summary --artifact summary.jar --ports ports.yaml
+${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publish summary@1 --root .operator-catalog --image example/jvm-arrow:1 --executor jvm --entrypoint example.Summary --artifact summary.jar --ports ports.yaml
 ```
 
 仓库存储和提供清单不需要执行器插件。执行节点必须安装对应插件。发布校验保持通用，入口和 artifact 的执行器专用校验在执行节点进行。
@@ -110,7 +110,7 @@ final class CustomExecutor extends dacp.OperatorExecutor {
 
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt test)
-(cd xstream-operator-repository && sbt test)
+(cd "$REPOSITORY_HOME" && sbt test)
 (cd /path/to/dacp-codex/dacp-server && sbt 'testOnly dacp.OperatorLibrarySpec dacp.CoreSpec dacp.CollaborationSpec')
 scripts/test-operator-repository.sh
 ```
@@ -128,3 +128,5 @@ scripts/test-operator-repository.sh
 API v2 支持可选 `provenance` 元数据，以及 SHA-256 寻址的源码、许可证和 SBOM 下载。这些文件与执行分离，执行节点不自动获取。YAML 字段、CLI 参数、清单描述和校验限制见[源码与审查信息](operator-provenance_zh.md)。
 
 算子还必须提供 `icon`；公开 `categories` 由管理员指定，规则和发布示例见[分类与图标](operator-presentation_zh.md)。
+
+`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/bluejoe2008/xstream-operator-repository)的本地目录。

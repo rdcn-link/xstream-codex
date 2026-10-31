@@ -16,3 +16,5 @@ XStream 负责数据契约及实现、流式引擎及设计器；XStream 同时�
 在本项目根目录执行 `sbt test` 运行数据、引擎和设计器测试。解析器/流契约测试位于 `xstream-data/xstream-data-tests`；浏览器检查位于 `scripts/test-designer-*.py`，需要 Playwright 和 Chromium。DACP 服务及集成测试仍在 DACP 项目中。两个项目分别执行 `python3 scripts/check-doc-translations.py` 检查文档配对。
 
 第三方格式依赖保留在数据插件模块，现有 ServiceLoader 注册文件随实现迁移。贡献者注册和配置示例仍在数据及设计器指南中；新增插件不需要修改中央注册表。
+
+[算子仓库服务](https://github.com/bluejoe2008/xstream-operator-repository)现为独立项目，依赖 XStream 的版本化算子契约和源码分析制品，不再参与本仓库聚合构建。
