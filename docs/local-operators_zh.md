@@ -30,7 +30,7 @@ tasks:
 outputs: {result: filter}
 ```
 
-`operator.local` 不能与内联源码定义混用。普通 `operator: name@version` 保持原有仓库和包查找方式。采用 `operator: {local: name@version}` 时，从 `local_operator_library/name/version/` 读取源码；目录中的名称和版本必须与 `operator.yaml` 一致。
+`operator.local` 不能与内联源码定义混用。普通 `operator: name@version` 使用仓库和包查找。采用 `operator: {local: name@version}` 时，从 `local_operator_library/name/version/` 读取源码；目录中的名称和版本必须与 `operator.yaml` 一致。
 
 Runner 的相对目录引用以 Job 文件所在目录为基准，而非启动进程工作目录。嵌入的 `LocalEngine` 使用 `job_working_directory`，默认是进程工作目录；Runner 配置显式指定该项时覆盖 Job 目录。`local_operator_library`、`operator_cache`、数据根目录等配置路径仍相对于进程工作目录。
 
@@ -114,7 +114,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
 ## 发布同一份源码
 
 ```bash
-python scripts/submit-operator.py ./temperature-filter \
+xstream-operator submit ./temperature-filter \
   --url https://operators.example.org --token-file /protected/submitter.token
 ```
 

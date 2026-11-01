@@ -1,6 +1,6 @@
 # xstream-data
 
-Typed data access for XStream and DACP, independent of the job engine and network services. Public contracts live in `xstream.data`; implementations are separate ServiceLoader plugins. See [typed streams](../docs/data-streams.md) and [plugin development](https://github.com/rdcn-link/dacp-codex/blob/main/docs/plugins.md).
+Typed data access for JVM applications, independent of the job engine and network services. Public contracts live in `xstream.data`; implementations are separate ServiceLoader plugins. See [typed streams](../docs/data-streams.md) and [plugin development](../docs/plugins.md).
 
 ## Modules
 
@@ -19,7 +19,7 @@ cd xstream-data
 sbt compile
 ```
 
-Applications depend on core at compile time and selected implementations at runtime. DACP server distributions bundle the scientific plugins. Register formats in `META-INF/services/xstream.data.FormatHandler` and view support in `META-INF/services/xstream.data.DataViewSupport`; entries contain fully qualified implementation class names. External JARs and their dependencies can use the existing plugin directory; core registries need no edits.
+Applications depend on core at compile time and selected implementations at runtime. Runner and Designer distributions bundle the scientific plugins. Register formats in `META-INF/services/xstream.data.FormatHandler` and view support in `META-INF/services/xstream.data.DataViewSupport`; entries contain fully qualified implementation class names. External JARs and their dependencies can use the existing plugin directory; core registries need no edits.
 
 Configure a file item with `format: netcdf`, `format: fits` or `format: fasta`. NetCDF/FITS accept `chunk_bytes` (8–16777216, default 65536). FASTA accepts `chunk_symbols` (1–1048576, default 65536) and `alphabet` (`dna`, `rna`, `protein`, `unknown`). Format parameters belong to the item's `options` map.
 
@@ -49,3 +49,5 @@ datasets:
         format: fasta
         options: {alphabet: dna, chunk_symbols: 65536}
 ```
+
+Complete Scala examples: [DataView and view streams](../docs/data-view-examples.md).

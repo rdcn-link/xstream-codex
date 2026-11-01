@@ -2,7 +2,7 @@ package xstream.designer
 
 
 import org.scalatest.funsuite.AnyFunSuite
-import dacp.union.Json
+import _root_.xstream.util.Json
 import com.sun.net.httpserver.HttpServer
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets.UTF_8

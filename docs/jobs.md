@@ -37,7 +37,7 @@ For a Union target, use its public dataset paths. Union resolves the owning memb
 
 Every operator must implement [structure inference](https://github.com/rdcn-link/xstream-codex/blob/main/docs/structure-inference.md). Output descriptors come from this method, not manifest output declarations. A sink may infer an empty output map and finish successfully without emitting frames. A Job may set `outputs: {}`; the client then waits for completion without receiving result data. Unselected branches still execute. Submission and execution do not invoke inference automatically; explicitly call `infer` during authoring when needed.
 
-Upstream and downstream steps run concurrently with bounded buffering. Failure, cancellation and timeout cancel the attempt and release resources. Retries and materialization are configured in a separate [execution policy YAML](https://github.com/rdcn-link/dacp-codex/blob/main/docs/materialization.md). Retries can repeat external side effects; operators must provide appropriate idempotency.
+Upstream and downstream steps run concurrently with bounded buffering. Failure, cancellation and timeout cancel the attempt and release resources. Retries and materialization are configured in a separate [execution policy YAML](materialization.md). Retries can repeat external side effects; operators must provide appropriate idempotency.
 
 
 See the [operator catalog](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-catalog.md) for currently published collaboration operators, parameters and complete input/output examples.

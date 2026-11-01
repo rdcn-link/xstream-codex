@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-此独立示例实现 `scala_identity@1.0`，无需导入或重新构建 DACP 服务器。它生成薄 JAR，并复用 `xstream/operator-jvm:1.1` 中的 Scala、Arrow、Jackson 和 JVM。算子保留原始输入字节；可以将批次处理代码替换为自己的变换逻辑。
+此独立示例实现 `scala_identity@1.0`，使用 XStream JVM SDK。它生成薄 JAR，并复用 `xstream/operator-jvm:1.1` 中的 Scala、Arrow、Jackson 和 JVM。算子保留原始输入字节；可以将批次处理代码替换为自己的变换逻辑。
 
 示例文件：
 

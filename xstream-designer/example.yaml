@@ -5,10 +5,7 @@ port: 8840
 #   url: https://model.example/v1/chat/completions
 #   model: your-model
 #   token_env: XSTREAM_MODEL_API_KEY
-target:
-  url: dacp://localhost:19860
-  ca: /etc/dacp/ca.crt
-  token_file: /etc/dacp/union-user.token
+target: {}
 repository:
   url: http://localhost:8820
 
@@ -22,8 +19,12 @@ inference_workers:
 
 # Catalog shared by the designer JVM; descendants are loaded only on expansion.
 local_catalog:
-  datasets: {}
-# Additional data services; target above is also a browsable service.
+  datasets:
+    weather:
+      provider: directory
+      source:
+        root: examples/data
+# Optional remote data connections; local design works without them.
 nodes: []
 
 # Optional website showcase; first-time visitors load this validated draft automatically.

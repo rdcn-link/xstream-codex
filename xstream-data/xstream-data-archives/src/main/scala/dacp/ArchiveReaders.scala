@@ -78,7 +78,7 @@ object ArchiveReaders {
     val id = "zip"
     val extensions = Set("zip")
     def index(path: Path, publicName: String, demand: () => Unit): Seq[ContainerEntry] = checked {
-      demand(); ZipArchive.index(path).map(e => ContainerEntry(e.name,e.directory,e.size,e.modified))
+      demand(); ZipArchive.index(path).map(e => ContainerEntry(e.name,e.directory,e.size,e.modified,e.created))
     }
     def withFile[A](path: Path, publicName: String, name: String, demand: () => Unit)(f: Path => A): A =
       checked { ZipArchive.withFile(path,name,demand)(f) }

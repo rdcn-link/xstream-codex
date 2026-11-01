@@ -2,8 +2,8 @@ package xstream.designer
 
 
 import dacp._
-import dacp.client.WorkflowVariables
-import dacp.union.Json
+import _root_.xstream.connector.dacp.client.WorkflowVariables
+import _root_.xstream.util.Json
 import org.scalatest.funsuite.AnyFunSuite
 import scala.collection.mutable.ArrayBuffer
 

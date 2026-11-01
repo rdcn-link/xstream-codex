@@ -7,7 +7,7 @@ EcoFlow 的科学算子保留上游 Scala / Spark 算法，通过私有适配层
 在项目根目录准备 SDK 和 API JAR，并获取固定版本的 Spark 发行内容：
 
 ```bash
-(cd /path/to/dacp-codex/dacp-plugin-api && sbt package)
+(cd xstream-execution-api && sbt package)
 (cd xstream-operator-sdk && sbt package)
 .venv/bin/python -m pip download --no-deps --dest /tmp/dacp-piflow-deps pyspark==4.0.1
 mkdir -p /tmp/dacp-piflow-spark

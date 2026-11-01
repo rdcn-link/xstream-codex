@@ -37,7 +37,7 @@ def main():
         for p in jars.glob('*.jar'):
             if not p.name.startswith('scala-compiler-'):
                 shutil.copyfile(p, lib / p.name)
-        api = ROOT / 'dacp-plugin-api/target/scala-2.13/dacp-plugin-api_2.13-0.1.0-SNAPSHOT.jar'
+        api = ROOT / 'xstream-execution-api/target/scala-2.13/xstream-execution-api_2.13-0.1.0-SNAPSHOT.jar'
         shutil.copyfile(api, lib / api.name)
         native = root / 'opt/native'
         native.mkdir()

@@ -92,6 +92,7 @@ class InferenceWorkerPoolSpec extends AnyFunSuite {
       val command=OperatorCommand(entrypoint=Some(Vector("a","arguments")),arguments=Vector("b"))
       val key=OperatorInference.workerKey(op,command,false)
       assert(key==OperatorInference.workerKey(op,command,false))
+      assert(OperatorInference.workerKey(op,command,false,"alice")!=OperatorInference.workerKey(op,command,false,"bob"))
       assert(key!=OperatorInference.workerKey(op,command.copy(entrypoint=Some(Vector("a")),arguments=Vector("arguments","b")),false))
       assert(key!=OperatorInference.workerKey(op.copy(image="sha256:"+"b"*64),command,false))
       java.nio.file.Files.writeString(file,"second")

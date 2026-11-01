@@ -8,7 +8,7 @@
 curl http://localhost:8820/v1/operators
 ```
 
-该接口和仓库首页显示实际已发布版本。`read_item@1.0` 是 DACP 节点内置的数据读取步骤，无需发布到仓库。源码树中的 Scala、Java、原生命令、常用算子集合及其他 PiFlow 移植代码属于可构建示例，不等于当前仓库已发布的能力。
+该接口和仓库首页显示实际已发布版本。`read_item@1.0` 是引擎内置的数据读取步骤，无需发布到仓库。源码树中的 Scala、Java、原生命令、常用算子集合及其他 PiFlow 移植代码属于可构建示例，不等于当前仓库已发布的能力。
 
 ## 端口、参数和执行方式
 
@@ -104,7 +104,7 @@ outputs:
 submit weather.yaml --vars variables.yaml
 ```
 
-默认结果通过 stream 返回；选定边界的物化、重试和超时由独立的[执行策略](https://github.com/rdcn-link/dacp-codex/blob/main/docs/materialization_zh.md)控制。算子内部收集数据与引擎保存输出是不同机制。
+默认结果通过 stream 返回；选定边界的物化、重试和超时由独立的[执行策略](materialization_zh.md)控制。算子内部收集数据与引擎保存输出是不同机制。
 
 ## 发布与核对
 

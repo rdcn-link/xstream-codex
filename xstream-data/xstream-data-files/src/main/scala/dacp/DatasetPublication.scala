@@ -132,7 +132,14 @@ class DirectoryDatasetProvider extends DatasetProvider {
         }
         private def use[A](access: DatasetAccess)(f: DatasetAccess => A): A =
           try f(access) finally access.close()
-        def list(): Seq[Item] = use(namespace(discover(check)))(_.list())
+        private def times(item:Item):Item={
+          val p=physical(item.path)
+          if(item.kind=="folder" && Files.isDirectory(p,LinkOption.NOFOLLOW_LINKS)){
+            val a=Files.readAttributes(p,classOf[BasicFileAttributes],LinkOption.NOFOLLOW_LINKS)
+            item.copy(creationTimeMs=Some(a.creationTime().toMillis),lastModifiedTimeMs=Some(a.lastModifiedTime().toMillis))
+          }else item
+        }
+        def list(): Seq[Item] = use(namespace(discover(check)))(_.list()).map(times)
         def list(path: String): Seq[Item] = {
           val p = physical(path)
           if (Files.isDirectory(p,LinkOption.NOFOLLOW_LINKS)) {
@@ -140,10 +147,10 @@ class DirectoryDatasetProvider extends DatasetProvider {
             val in = Files.newDirectoryStream(p)
             val children = try in.iterator().asScala.flatMap { child => check(); binding(child) }.toVector finally in.close()
             val folder = if (path == "/") Seq.empty else Seq(PublishedItem(path,kind="folder"))
-            use(namespace(folder ++ children))(_.list(path))
+            use(namespace(folder ++ children))(_.list(path)).map(times)
           } else use(selected(path))(_.list(path))
         }
-        def describe(path: String): Item = use(selected(path))(_.describe(path))
+        def describe(path: String): Item = times(use(selected(path))(_.describe(path)))
         def count(path: String): Option[Long] = use(selected(path))(_.count(path))
         def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]=Some(DataViews[S]((selection,context,out)=>
           use(selected(path)){a=>val stream=a.requireView(path,kind).open(selection,context);try stream.consume(out)finally stream.close()}))

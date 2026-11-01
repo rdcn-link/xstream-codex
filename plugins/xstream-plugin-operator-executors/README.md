@@ -1,4 +1,4 @@
-# DACP operator executors
+# XStream operator executors
 
 [中文](README_zh.md)
 

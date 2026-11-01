@@ -2,7 +2,7 @@ package dacp
 
 import _root_.xstream.data._
 
-import dacp.union.Json
+import _root_.xstream.util.Json
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import java.nio.file.{Files,Path,StandardOpenOption,StandardCopyOption}

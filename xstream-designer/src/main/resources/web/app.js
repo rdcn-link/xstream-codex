@@ -396,7 +396,8 @@ async function browseItems(uri,path,host){
   const itemUri=uri.replace(/\/$/,'')+'/'+item.path.replace(/^\//,'');
   if(chatCatalogItems.size<100||chatCatalogItems.has(itemUri))chatCatalogItems.set(itemUri,{uri:itemUri,kind:item.kind,views:item.views,schema:item.schema});
   const folder=item.kind==='folder',row=el('div',undefined,'item'),nested=el('div',undefined,'item-children');row.tabIndex=0;row.setAttribute('role','button');row.dataset.kind=folder?'folder':'item';
-  const description=item.path+(item.views.length?' — Available views: '+item.views.join(', '):'');row.title=description;row.setAttribute('aria-label',description);
+  const timestamp=value=>value==null?'Unknown':new Date(value).toISOString();
+  const description=item.path+(item.views.length?' — Available views: '+item.views.join(', '):'')+'\nCreated: '+timestamp(item.creation_time_ms)+'\nModified: '+timestamp(item.last_modified_time_ms);row.title=description;row.setAttribute('aria-label',description);
   const chevron=el('span',folder?'▸':'','item-chevron');row.append(chevron,catalogIcon(folder?'folder':'item'),el('span',item.path.split('/').filter(Boolean).pop()||'','item-label'));
   if(folder){
    row.setAttribute('aria-expanded','false');chevron.tabIndex=0;chevron.setAttribute('role','button');chevron.setAttribute('aria-label','Expand folder');

@@ -2,7 +2,7 @@ organization := "io.github.rdcn-link"
 version := "0.1.0-SNAPSHOT"
 name := "xstream-plugin-operator-executors"
 scalaVersion := "2.13.16"
-libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-api" % "0.1.0-SNAPSHOT"
+libraryDependencies += "io.github.rdcn-link" %% "xstream-execution-api" % "0.1.0-SNAPSHOT"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test
 
 lazy val operatorSdk = RootProject(file("../../xstream-operator-sdk/jvm"))

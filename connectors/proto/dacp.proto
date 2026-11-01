@@ -1,0 +1,59 @@
+syntax = "proto3";
+package xstream.connector.dacp.protocol;
+option java_outer_classname = "Metadata";
+message Item {
+  // Public logical address rooted at the Dataset, never a storage path.
+  string path = 1;
+  string format = 2;
+  bytes arrow_schema = 3;
+  // "folder" or "data"; source storage types remain private.
+  string kind = 4;
+  repeated string views = 5; // Registered representation names; empty for unreadable folders.
+  optional int64 last_modified_time_ms = 6; // UTC Unix epoch milliseconds; absent if unknown.
+  optional int64 total_size_bytes = 7; // Content bytes; absent if unknown, zero is known empty.
+  optional int64 creation_time_ms = 9; // Source-reported UTC Unix epoch milliseconds; absent if unknown.
+  optional int64 record_count = 8; // Exact logical record count; absent if unknown/not applicable.
+}
+message DataSet {
+  string uri = 1;
+  repeated Item items = 2;
+  string name = 3;
+  string description = 4; // User-defined JSON object serialized as text; defaults to "{}".
+  string node_identity = 5; // Provenance when displayed through Union.
+  int64 observed_at_ms = 6;
+}
+message Directory {
+  repeated DataSet datasets = 1;
+  bool complete = 2;
+  uint32 unavailable_sources = 3;
+}
+enum ErrorCode { UNKNOWN = 0; NOT_FOUND = 1; FORBIDDEN = 2; SCHEMA_CONFLICT = 3; INVALID_ARGUMENT = 4; }
+message Error { ErrorCode code = 1; string message = 2; }
+message Ticket { string dataset = 1; string item = 2; string view = 3; Scan scan = 4; bytes selection_json = 5; }
+
+// Flight DoExchange command. Exactly one request variant is set.
+message OperatorRequest {
+  oneof request {
+    string job_yaml = 1;
+    bytes task_yaml = 2;
+  }
+  bytes execution_policy_yaml = 3;
+  bool retry_aware = 4;
+  string replay_from = 5;
+}
+
+// Public records query; literal values are canonical text with an explicit type.
+message Literal { string type = 1; string value = 2; }
+message Predicate {
+  string op = 1;
+  string column = 2;
+  repeated Literal values = 3;
+  repeated Predicate children = 4;
+}
+message Scan {
+  Predicate predicate = 1;
+  // Absent projection means all columns; present empty projection is invalid.
+  message Projection { repeated string columns = 1; }
+  Projection projection = 2;
+  optional int64 limit = 3;
+}

@@ -2,7 +2,7 @@ package xstream.data
 
 import java.nio.file.Path
 
-case class ContainerEntry(name: String, directory: Boolean, size: Option[Long], modified: Option[Long])
+case class ContainerEntry(name: String, directory: Boolean, size: Option[Long], modified: Option[Long], created: Option[Long] = None)
 
 /** Container readers enumerate logical children; format readers interpret each child's content. */
 trait ContainerReader extends Plugin {

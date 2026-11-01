@@ -1,18 +1,24 @@
-# Repository boundaries and artifact builds
+# Modules and builds
 
 [中文](repositories_zh.md)
 
-XStream owns data contracts and implementations, the streaming engine and its designer. XStream also owns operator SDK/contracts, inference, executor and source-analysis plugins, and runtime build tools. The [operator repository service](https://github.com/rdcn-link/xstream-operator-repository) is an independent project consuming versioned XStream contract and source-analysis artifacts. DACP owns service transport, authorization, federation and clients. This is a source-repository split, not removal of all DACP library dependencies from the engine.
+XStream builds from this repository alone. It has no dependency on DACP Maven artifacts, source checkouts or running services.
 
-The artifact dependency graph is acyclic:
+| Module | Responsibility |
+|---|---|
+| `xstream-data` | Catalogs, data access, Arrow streams and format plugins |
+| `xstream-execution-api` | Stream, inference, executor, history and materialization contracts; JSON/YAML utilities |
+| `xstream-operator-sdk` | JVM/Python authoring SDKs and metadata validation |
+| `xstream-operator-inference` | On-demand, reusable inference workers |
+| `plugins/xstream-plugin-operator-executors` | Container, JVM, Python and native launch implementations |
+| `plugins/xstream-plugin-execution-file` | File-backed execution history and materialized Arrow streams |
+| `connectors/xstream-dacp-protocol` | Remote data wire encoding and TLS client transport |
+| `connectors/xstream-dacp-client` | Remote catalog, Item and Job client used by the runner and designer |
+| `xstream-engine` | Embedded execution and `xstream-runner` |
+| `xstream-designer` | Visual authoring and previews |
 
-1. XStream data artifacts.
-2. DACP public integration artifacts, consuming data artifacts.
-3. XStream operator SDK, inference and executors, then the engine; these consume data and DACP integration artifacts.
-4. DACP servers and XStream designer, consuming the engine and public libraries.
+Use JDK 17 and sbt 1.10.x. Run `scripts/bootstrap-local.sh` to publish development dependencies, then `sbt test`. Stage applications with `(cd xstream-engine && sbt stage)` and `(cd xstream-designer && sbt stage)`. Artifacts use organization `io.github.rdcn-link` and version `0.1.0-SNAPSHOT`.
 
-Run `scripts/bootstrap-local.sh /path/to/dacp-codex` from this checkout to publish development dependencies in that order. The script deliberately requires an explicit source path. Published libraries use organization `io.github.rdcn-link`, generally version `0.1.0-SNAPSHOT`; `dacp-client-scala` uses `0.1.0`. Ordinary builds resolve Maven/Ivy artifacts, without sibling-checkout detection, symlinks or source fallbacks. Configure a shared artifact repository when distributing builds to other machines; current unreleased dependencies must first be published there or bootstrapped locally.
+The independent operator repository service consumes published XStream libraries. Remote data services are optional runtime integrations; they are not build dependencies. Core operator contracts and inference do not depend on the remote connector.
 
-Run `sbt test` from this project root for data, engine and designer tests. Parser/stream contract tests live in `xstream-data/xstream-data-tests`; browser checks live in `scripts/test-designer-*.py` and require Playwright plus Chromium. DACP service and integration tests remain in the DACP checkout. Run `python3 scripts/check-doc-translations.py` in each repository.
-
-Third-party format dependencies stay in their data plugin modules. Existing ServiceLoader registration files move with their implementations. Contributor registration and configuration examples remain in the data and designer guides; adding a plugin does not require a central registry edit.
+Data contract tests live in `xstream-data/xstream-data-tests`. Designer browser tests in `scripts/test-designer-*.py` require Playwright and Chromium. Run `python3 scripts/check-doc-translations.py` to check translation pairs. Third-party format dependencies belong to plugins; see [plugin development](plugins.md).

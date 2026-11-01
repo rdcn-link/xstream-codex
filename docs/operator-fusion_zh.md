@@ -2,7 +2,7 @@
 
 [English](operator-fusion.md)
 
-DACP 会自动检查 Job 的执行位置、算子环境和执行器能力。满足条件时，一个节点上的整个子 Job 使用一个隔离容器、一个 JVM 或 Python 解释器，步骤在同进程内并发执行。内部边使用有界内存流和背压，不经服务器或 Flight 转发，也不生成中间结果文件。入口和最终结果仍使用原有 Flight 流协议，提交的 Job 无须增加开关。
+XStream 会自动检查 Job 的执行位置、算子环境和执行器能力。满足条件时，一个节点上的整个子 Job 使用一个隔离容器、一个 JVM 或 Python 解释器，步骤在同进程内并发执行。内部边使用有界内存流和背压，不经服务器或 Flight 转发，也不生成中间结果文件。入口和最终结果仍使用原有 Flight 流协议，提交的 Job 无须增加开关。
 
 管理员可在节点配置中设置 `operator_fusion_enabled: false`，强制独立执行，用于性能对比或故障排查；默认值为 `true`。该开关同时作用于普通 Job 和 Union 子 Job，执行记录中的原因是 `disabled_by_configuration`。
 
@@ -11,7 +11,7 @@ DACP 会自动检查 Job 的执行位置、算子环境和执行器能力。满�
 - 子 Job 至少有两个步骤，所有步骤解析后的运行环境镜像 SHA-256 必须完全相同。镜像标签、JDK 主版本相同并不足够。
 - 所有步骤使用同一个支持 `OperatorExecutor.groupCommand` 的执行器。混合 JVM / Python / 原生命令不合并。
 - JVM 算子必须实现 `xstream.operator.Operator`，包括 Scala 的 `BytesOperator`、`ByteStreamOperator` 和 `RecordsOperator` 模板。通过 JAR 类元数据检查能力，不在服务器 JVM 加载用户类。
-- Python 算子必须显式定义线程安全的 `process(ctx)`，并使用同一个 `.py` 或 wheel 代码包。wheel 中的各模块可提供不同入口。该限制避免多个包互相覆盖 Python 模块；依赖仍由共同的镜像提供。
+- Python 算子必须显式定义线程安全的 `process(ctx)`。不同步骤可以使用不同的 `.py`、wheel 或仓库 ZIP 代码包。每个包使用独立模块命名空间，`process(ctx)` 内的导入也按该包解析，避免同名入口和辅助模块相互覆盖。同一包的多次引用复用其模块；运行环境依赖和分组 SDK 仍由共同镜像共享。
 - 不合并 DEBUG 内联源码、普通容器入口或原生可执行程序。它们仍按原有方式执行。
 
 普通 Job 的所有步骤在同一节点时，直接在该节点尝试合并；如果指定的唯一节点是远端，整个 Job 交给目标节点判断。Union 为每个成员节点的子 Job 分别判断，不移动原始数据或改变任务节点。协调器会先检查节点区域收缩后的依赖图：例如 A → B → A 会形成区域循环，禁止合并，以免等待下游输入时阻塞上游启动。

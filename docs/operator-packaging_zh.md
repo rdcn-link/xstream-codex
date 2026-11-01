@@ -36,7 +36,7 @@ parameters:
   additionalProperties: false
 ```
 
-`jvm` 需要 JAR 和 main 类。`python` 需要 `.py` 或 `.whl`，wheel 用 `entrypoint` 选择模块，源码直接执行脚本。`command` 适配原生 stdin/stdout 程序，见[原生命令](native-commands_zh.md)。`container` 使用镜像自带入口，不接受入口覆盖或代码文件。每个执行器接收 `operator /input /input/params.json` 和 `DACP_OPERATOR=name@version`，遵守 [Arrow IPC 契约](https://github.com/rdcn-link/dacp-codex/blob/main/docs/reference_zh.md#任务执行与算子)。
+`jvm` 需要 JAR 和 main 类。`python` 需要 `.py` 或 `.whl`，wheel 用 `entrypoint` 选择模块，源码直接执行脚本。`command` 适配原生 stdin/stdout 程序，见[原生命令](native-commands_zh.md)。`container` 使用镜像自带入口，不接受入口覆盖或代码文件。每个执行器接收 `operator /input /input/params.json` 和 `XSTREAM_OPERATOR=name@version`，遵守 [Arrow IPC 契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams_zh.md)。
 
 ```bash
 # 在完成仓库 stage 构建后，从项目根目录运行。
@@ -65,7 +65,7 @@ ${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publis
 }
 ```
 
-完整容器省略 `artifact`。摘要为 64 位小写十六进制，大小为正字节数。元数据原子发布，版本不能覆盖。项目直接使用此 schema，不提供旧清单读取或迁移回退。
+完整容器省略 `artifact`。摘要为 64 位小写十六进制，大小为正字节数。元数据原子发布，版本不能覆盖。
 
 仓库布局：
 
@@ -92,7 +92,7 @@ Docker 层在本地共享，JVM 构建器把运行环境层与可选完整镜像
 
 ## 执行器插件
 
-实现 `dacp-plugin-api` 的 `dacp.OperatorExecutor`，在 `META-INF/services/dacp.OperatorExecutor` 注册完整类名。API 依赖为 `Provided`，插件和私有依赖放到 `plugin_directory` 后重启。无需修改核心注册表或客户端。重复执行器 ID 明确失败。内置 `container`、`jvm`、`python`、`command` 位于 `plugins/xstream-plugin-operator-executors`，使用相同 ServiceLoader 机制。
+实现 `xstream-execution-api` 的 `dacp.OperatorExecutor`，在 `META-INF/services/dacp.OperatorExecutor` 注册完整类名。API 依赖为 `Provided`，插件和私有依赖放到 `plugin_directory` 后重启。无需修改核心注册表或客户端。重复执行器 ID 明确失败。内置 `container`、`jvm`、`python`、`command` 位于 `plugins/xstream-plugin-operator-executors`，使用相同 ServiceLoader 机制。
 
 ```scala
 final class CustomExecutor extends dacp.OperatorExecutor {
@@ -111,8 +111,7 @@ final class CustomExecutor extends dacp.OperatorExecutor {
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt test)
 (cd "$REPOSITORY_HOME" && sbt test)
-(cd /path/to/dacp-codex/dacp-server && sbt 'testOnly dacp.OperatorLibrarySpec dacp.CoreSpec dacp.CollaborationSpec')
-scripts/test-operator-repository.sh
+python3 scripts/test-operator-authoring.py
 ```
 
 契约测试覆盖服务注册、启动校验、共享导出/代码包/下载、不可变发布、公共下载、校验失败、清理、仓库顺序和离线缓存。仓库集成测试通过分布式 Arrow/FIFO 流水线执行真实 JAR。[Scala 示例](../examples/operators/scala/README_zh.md) 独立编译并使用运行环境提供的依赖；[Python 示例](../examples/operators/python/README_zh.md) 演示源码和 wheel。

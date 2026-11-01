@@ -69,7 +69,7 @@ private[inference] final class DockerInferenceWorker(op:ResolvedOperator,command
       .withTmpFs(Map("/tmp"->"rw,noexec,nosuid,nodev,size=128m").asJava).withCapDrop(Capability.ALL)
       .withSecurityOpts(Vector("no-new-privileges:true").asJava).withLogConfig(new LogConfig(LogConfig.LoggingType.NONE))
     val create=docker.createContainerCmd(op.image).withHostConfig(host).withCmd(command.arguments.asJava)
-      .withEnv((command.environment+("DACP_OPERATOR"->op.program.get.reference)).map{case(k,v)=>s"$k=$v"}.toVector.asJava)
+      .withEnv((command.environment+("XSTREAM_OPERATOR"->op.program.get.reference)).map{case(k,v)=>s"$k=$v"}.toVector.asJava)
       .withLabels(Map("dacp.purpose"->"structure_inference","dacp.inference_mode"->"worker").asJava)
     command.entrypoint.foreach(v=>create.withEntrypoint(v.asJava))
     container=timed("container creation"){create.exec().getId}

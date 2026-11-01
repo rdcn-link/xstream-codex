@@ -59,7 +59,7 @@ def build(runtime_catalog,destination,version="1.1"):
         m=dict(api_version=2,icon=dict(path='M3 5h18v14H3zM3 10h18M9 5v14',color='#14866b'),name=name,version=version,description=desc,parameters=parameter_schema(s['params']),
                inputs={'source':{'representations':[s['representation']],'formats':[]}},
                execution={'executor':'python','entrypoint':'dacp_common.'+name,'config':{}},runtime=runtime,artifact=artifact,
-               provenance={'source_archive':source,'source_repository':'https://github.com/rdcn-link/dacp-codex',
+               provenance={'source_archive':source,'source_repository':'https://github.com/rdcn-link/xstream-codex',
                            'build_instructions':'Run .venv/bin/python examples/operators/common/build.py --runtime-catalog .operator-catalog; see bundled bilingual README files. Requires the shared xstream/operator-python:1.0 runtime; no new image per operator.'})
         p=destination/name/version;p.mkdir(parents=True,exist_ok=True);(p/'manifest.json').write_text(json.dumps(m,ensure_ascii=False))
     return artifact,source

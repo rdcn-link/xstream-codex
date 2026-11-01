@@ -68,3 +68,28 @@ datasets:
 可选的 `DataViewSupport` 插件解析、输出请求选择条件，并提供有界的结构与样例展示。通过 `META-INF/services/xstream.data.DataViewSupport` 注册。其输出同样是普通 Arrow，不负责载荷字节的编解码。内置 array 与 sequence 支持位于 `xstream-data-scientific-views`。Flight 直接传输这些有类型的列，包括描述元数据与空 schema。Python 的 `as_view`、`as_array`、`as_sequences` 返回 `ArrowViewReader`，迭代得到 PyArrow RecordBatch。
 
 契约测试覆盖空 schema、稳定 schema、边界、借用生命周期、显式快照、失败与取消清理、字典 IPC、选择条件、嵌套浏览及科学结构的精确保留。另见[设计器科学视图](designer-scientific_zh.md)。
+
+完整 Scala 示例：[DataView 与视图流](data-view-examples_zh.md)。
+
+## 从 Item 到流
+
+每个视图选择一个 Item 的表示方式，各种表示均遵守同一个 Arrow 流契约。
+
+```mermaid
+flowchart TD
+  Catalog["DataCatalog"] --> Dataset["Dataset"] --> Item["Item"]
+  Item --> Bytes["bytes：AllBytes"]
+  Item --> Records["records：Scan"]
+  Item --> Arrays["array：ArraySelection"]
+  Item --> Sequences["sequence：SequenceSelection"]
+  Bytes --> Stream["ArrowDataStream"]
+  Records --> Stream
+  Arrays --> Stream
+  Sequences --> Stream
+  Stream --> Schema["start：schema 与字典"] --> Batches["accept：有界 Arrow 批次"]
+  Batches --> Consumer["算子 / 应用"]
+```
+
+## Item 时间元数据
+
+`Item.creationTimeMs` 与 `lastModifiedTimeMs` 为可选的 UTC Unix 毫秒时间戳；`None` 表示未知，`Some(0L)` 是已知的 Unix 纪元。文件和物理文件夹采用文件系统报告值；ZIP 条目保留可用的创建及修改时间，TAR 条目保留可用修改时间。SQL、科学文件内部对象和虚拟文件夹由各插件决定，不能用注册时间、解压时间或当前时间代替原始时间。文件夹大小和记录数仍未知。查询时间属性不读取内容或遍历子项。

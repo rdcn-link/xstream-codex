@@ -8,7 +8,7 @@ The current collaboration-example deployment publishes the following 6 operators
 curl http://localhost:8820/v1/operators
 ```
 
-This endpoint and the repository homepage show the versions actually published. `read_item@1.0` is a built-in DACP data-reading step and requires no repository publication. Scala, Java, native-command, common-operator collections and other PiFlow adaptations in the source tree are buildable examples, not necessarily published operators.
+This endpoint and the repository homepage show the versions actually published. `read_item@1.0` is a built-in XStream data-reading step and requires no repository publication. Scala, Java, native-command, common-operator collections and other PiFlow adaptations in the source tree are buildable examples, not necessarily published operators.
 
 ## Ports, parameters and execution
 
@@ -104,7 +104,7 @@ Save as `weather.yaml`, and create `variables.yaml`:
 submit weather.yaml --vars variables.yaml
 ```
 
-Results stream to the client by default. Materialization at selected boundaries, retries and timeouts use a separate [execution policy](https://github.com/rdcn-link/dacp-codex/blob/main/docs/materialization.md). Operator-internal input collection and engine-managed output persistence are separate mechanisms.
+Results stream to the client by default. Materialization at selected boundaries, retries and timeouts use a separate [execution policy](materialization.md). Operator-internal input collection and engine-managed output persistence are separate mechanisms.
 
 ## Publication and verification
 

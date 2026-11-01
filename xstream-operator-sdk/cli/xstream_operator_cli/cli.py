@@ -129,25 +129,28 @@ def package_directory(directory, destination):
     return destination
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('definition', type=Path, help='Source submission YAML or local operator directory containing operator.yaml')
-    parser.add_argument('--source', type=Path, help='ZIP/TAR containing src/ and optional resources/')
-    parser.add_argument('--url', required=True)
-    auth = parser.add_mutually_exclusive_group(required=True)
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="xstream-operator", description="Develop and publish XStream operators.")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    commands = parser.add_subparsers(dest="command", required=True)
+    submit_parser = commands.add_parser("submit", help="Submit operator sources for build and review", description=__doc__)
+    submit_parser.add_argument('definition', type=Path, help='Source submission YAML or local operator directory containing operator.yaml')
+    submit_parser.add_argument('--source', type=Path, help='ZIP/TAR containing src/ and optional resources/')
+    submit_parser.add_argument('--url', required=True)
+    auth = submit_parser.add_mutually_exclusive_group(required=True)
     auth.add_argument('--token-file', type=Path)
     auth.add_argument('--token-env')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     token = args.token_file.read_text().strip() if args.token_file else os.environ.get(args.token_env, '')
     if args.definition.is_dir():
         if args.source is not None:
-            parser.error('--source cannot be used with a local operator directory')
+            submit_parser.error('--source cannot be used with a local operator directory')
         with tempfile.TemporaryDirectory(prefix='xstream-submit-') as temporary:
             source = package_directory(args.definition, Path(temporary) / 'operator-sources.zip')
             submit(args.definition / 'operator.yaml', source, args.url, token)
     else:
         if args.source is None:
-            parser.error('--source is required with a YAML definition')
+            submit_parser.error('--source is required with a YAML definition')
         submit(args.definition, args.source, args.url, token)
 
 

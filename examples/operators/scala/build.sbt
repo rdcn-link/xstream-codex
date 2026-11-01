@@ -13,7 +13,7 @@ libraryDependencies += "io.github.rdcn-link" %% "xstream-operator-sdk" % "0.1.0-
 // Bundle SDK and its small public contracts; Arrow/Jackson stay in the runtime.
 Compile / packageBin / mappings ++= {
   val jars = (Compile / dependencyClasspath).value.map(_.data).filter(f =>
-    f.getName.startsWith("xstream-operator-sdk_") || f.getName.startsWith("dacp-plugin-api_"))
+    f.getName.startsWith("xstream-operator-sdk_") || f.getName.startsWith("xstream-execution-api_"))
   jars.flatMap { jar =>
     val unpack = target.value / ("bundled-" + jar.getName)
     IO.delete(unpack)

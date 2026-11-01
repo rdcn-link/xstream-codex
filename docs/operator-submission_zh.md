@@ -6,6 +6,15 @@
 
 ## 开发者流程
 
+在 XStream 源码目录一次性安装提交命令：
+
+```bash
+python3 -m pip install ./xstream-operator-sdk/cli
+xstream-operator submit --help
+```
+
+安装后可在任意目录提交，提交机器无需安装 PyArrow、JVM 或 Docker。
+
 1. 从仓库管理员获取个人提交 Token。
 2. 浏览 `/runtimes` 或 GET `/v1/runtimes`，选择兼容且预装所需依赖的固定执行/构建环境。
 3. 使用[算子 SDK](operator-authoring_zh.md)实现处理、输出结构推导和有大小限制的输出样例。
@@ -52,8 +61,8 @@ provenance:
 ```bash
 # 在 weather-filter/ 中打包原始源码，而非构建产物。
 zip -r sources.zip src
-# 在 XStream 项目中执行；预先安装 Python SDK 依赖及 PyYAML。
-python scripts/submit-operator.py /path/weather-filter/submission.yaml \
+# 使用已安装的命令提交源码归档。
+xstream-operator submit /path/weather-filter/submission.yaml \
   --source /path/weather-filter/sources.zip \
   --url https://operators.example.org \
   --token-file /secure/submitter.token
@@ -126,3 +135,23 @@ Python/Arrow、JVM 和 Python 科学计算环境的准备方式见[常用运行�
 算子详情页提供 **Operator package**（算子程序包）及允许公开的源码、许可证和 SBOM 下载。共用的执行与构建环境统一在 **Runtimes** 目录下载，算子详情页提供对应环境的跳转链接。Docker 镜像 ID 标识执行镜像，归档 SHA-256 用于校验下载文件。
 
 管理员可通过 `POST /api/admin/submissions/{id}/icon` 修改已发布算子的图标，请求示例为 `{"icon":{"path":"M3 4h18v16H3z","color":"#2378cb"}}`。此接口同样要求管理员会话及 CSRF 校验。仅修改校验通过的 SVG 路径和颜色，保留已批准的构建产物、运行环境和可信度评估。
+
+## 源码发布流程
+
+源码提交后不会直接公开，必须经过构建和审核。
+
+```mermaid
+sequenceDiagram
+  participant D as 开发者
+  participant CLI as xstream-operator
+  participant R as 算子仓库
+  participant B as 隔离构建器
+  participant A as 管理员
+  D->>CLI: 提交源码与 Token
+  CLI->>R: 认证上传源码归档
+  R->>R: 扫描并评分
+  R->>B: 在选定运行时构建
+  B-->>R: 算子包与诊断
+  A->>R: 批准分类与可信度
+  R-->>D: 公开算子版本
+```

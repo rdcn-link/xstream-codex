@@ -3,7 +3,7 @@ package xstream.designer
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import dacp.union.Json
+import _root_.xstream.util.Json
 import java.util.Base64
 import java.nio.ByteBuffer
 import org.apache.arrow.vector.types.pojo.Schema

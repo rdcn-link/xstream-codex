@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
-# Bootstrap unreleased cross-project integration artifacts in dependency order.
+# Publish this checkout's development artifacts in dependency order.
 set -euo pipefail
+if [[ $# != 0 ]]; then echo 'Usage: scripts/bootstrap-local.sh' >&2; exit 2; fi
 xstream_root="$(cd "$(dirname "$0")/.." && pwd)"
-if [[ $# != 1 ]]; then echo 'Usage: scripts/bootstrap-local.sh /path/to/dacp-codex' >&2; exit 2; fi
-dacp_root="$(cd "$1" && pwd)"
-(cd "$xstream_root/xstream-data" && sbt -batch publishLocal)
-for module in dacp-plugin-api dacp-union-protocol dacp-client-scala plugins/dacp-plugin-execution-file; do
-  (cd "$dacp_root/$module" && sbt -batch publishLocal)
-done
-for module in xstream-operator-sdk xstream-operator-inference plugins/xstream-plugin-operator-executors xstream-engine; do
+for module in xstream-data xstream-execution-api connectors/xstream-dacp-protocol connectors/xstream-dacp-client xstream-operator-sdk xstream-operator-inference plugins/xstream-plugin-operator-executors plugins/xstream-plugin-execution-file plugins/xstream-plugin-source-analysis xstream-engine; do
   (cd "$xstream_root/$module" && sbt -batch publishLocal)
 done
-echo 'Development artifacts ready for both repositories.'
+echo 'XStream development artifacts are ready.'

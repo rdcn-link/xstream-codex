@@ -6,10 +6,10 @@ import _root_.xstream.data._
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.sun.net.httpserver.{HttpExchange,HttpServer}
-import dacp.client.{Source,Dataset,TlsConfig,WorkflowVariables}
+import _root_.xstream.connector.dacp.client.{Source,Dataset,TlsConfig,WorkflowVariables}
 import dacp.{StreamCancel,StreamDescriptor,ReadItemParameters,PreviewLimits,OutputSample,OutputSamples,InferenceDiagnostic}
 import _root_.xstream.data.{PluginEnvironment,ItemViews,Scan,Predicate,Literal}
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.util.{Json,YamlDocument}
 import java.net.{InetSocketAddress,URI}
 import java.net.http.{HttpClient,HttpRequest,HttpResponse}
 import java.nio.charset.StandardCharsets.UTF_8
@@ -23,7 +23,7 @@ private[designer] object CatalogConnections {
   def origin(value:String):String={
     val uri=URI.create(value)
     require(uri.getScheme=="dacp" && uri.getHost!=null && uri.getUserInfo==null && uri.getQuery==null && uri.getFragment==null,"Expected DACP catalog URI")
-    Json.origin(new URI("dacp",null,uri.getHost,uri.getPort,null,null,null).toString)
+    _root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(new URI("dacp",null,uri.getHost,uri.getPort,null,null,null).toString)
   }
 }
 
@@ -43,7 +43,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   }
   private val configuredTarget=config.path("target")
   private val configuredRepository=config.path("repository")
-  if(configuredTarget.has("url"))Json.origin(configuredTarget.path("url").asText)
+  if(configuredTarget.has("url"))_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(configuredTarget.path("url").asText)
   private val repositoryUri=URI.create(configuredRepository.path("url").asText)
   require(Set("http","https")(repositoryUri.getScheme) && repositoryUri.getHost!=null,"Repository requires HTTP URL")
   private val chat=ChatPlanner.configured(config.path("chat"))
@@ -65,8 +65,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private val workerSettings=InferenceWorkerSettings.read(Option(config.get("inference_workers")).map(n=>Json.mapper.convertValue(n,classOf[java.util.LinkedHashMap[String,Object]]).asInstanceOf[Object]))
   private val localCatalog=new xstream.data.ConfiguredDataCatalog(config.path("local_catalog"),inferencePlugins)
   private val nodeConnections=config.path("nodes").elements.asScala.toVector
-  private val connections=(Vector(configuredTarget).filter(_.has("url"))++nodeConnections).groupBy(n=>Json.origin(n.path("url").asText)).values.map(_.head).toVector.sortBy(_.path("url").asText)
-  private def connection(value:String):JsonNode=connections.find(n=>Json.origin(n.path("url").asText)==CatalogConnections.origin(value)).getOrElse(throw new IllegalArgumentException("Node is not configured"))
+  private val connections=(Vector(configuredTarget).filter(_.has("url"))++nodeConnections).groupBy(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)).values.map(_.head).toVector.sortBy(_.path("url").asText)
+  private def connection(value:String):JsonNode=connections.find(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)==CatalogConnections.origin(value)).getOrElse(throw new IllegalArgumentException("Node is not configured"))
   private val inferenceRuntime=new OperatorInferenceService(inferenceCache.resolve("local"),Seq(configuredRepository.path("url").asText),
     inferenceCache,if(config.has("operator_max_bytes"))Json.number(config,"operator_max_bytes",1,8L*1024*1024*1024)else 8L*1024*1024*1024,inferencePlugins,workerSettings)
   private val inference=new DesignerInference(inferenceRuntime.infer,describeItem,previewItem,Some(describeQueriedItem),Some(previewQueriedItem),None,Some(inferSource))
@@ -74,9 +74,9 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val uri=URI.create(value)
     require(uri.getScheme=="dacp" && uri.getHost!=null && uri.getUserInfo==null && uri.getQuery==null && uri.getFragment==null,"expected public Item URI")
     val origin=new URI("dacp",null,uri.getHost,uri.getPort,null,null,null).toString
-    val configured=connections.find(n=>Json.origin(n.path("url").asText)==Json.origin(origin))
+    val configured=connections.find(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)==_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(origin))
     val local=configured.nonEmpty
-    val remote=config.path("remote_item_credentials").path(Json.origin(origin))
+    val remote=config.path("remote_item_credentials").path(_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(origin))
     require(local || remote.isTextual,"Remote Item service requires configured remote_item_credentials")
     val credentials=if(local)tls(configured.get)else TlsConfig(ca=tls(configuredTarget).ca,tokenFile=Some(Path.of(remote.asText)))
     val parts=Option(uri.getPath).getOrElse("").stripPrefix("/").split("/",2)
@@ -134,8 +134,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     require(descriptor.representations==Set("records"),"sql requires records view")
     descriptor.copy(schema=descriptor.schema.map(s=>scan.bind(s).outputSchema))
   }
-  private def clientPredicate(p:Predicate):dacp.client.Predicate={
-    import dacp.client.Expressions.col
+  private def clientPredicate(p:Predicate):_root_.xstream.connector.dacp.client.Predicate={
+    import _root_.xstream.connector.dacp.client.Expressions.col
     def literal(v:Literal):Any=v.kind match {
       case "integer"=>BigInt(v.value);case "decimal"=>BigDecimal(v.value);case "float"=>v.value.toDouble
       case "boolean"=>v.value.toBoolean;case "string"=>v.value
@@ -249,8 +249,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     case "/api/items"=>
       val uri=n.path("uri").asText;val out=Json.obj();val list=out.putArray("items");val path=n.path("path").asText("/")
       if(uri.startsWith("context:"))Using.resource(localCatalog.open(URI.create(uri).getPath.stripPrefix("/"))){ds=>ds.list(path).foreach {i=>
-        val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");inferencePlugins.views(i).foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)))
-      }}else {val t=connection(uri);Using.resource(Source.open(uri,tls(t),15)){ds=>ds.list(path).foreach{i=>val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");i.views.foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)))}}};out
+        val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");inferencePlugins.views(i).foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))
+      }}else {val t=connection(uri);Using.resource(Source.open(uri,tls(t),15)){ds=>ds.list(path).foreach{i=>val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");i.views.foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))}}};out
     case "/api/mapping"=>Documents.mapping(n.path("yaml").asText)
     case "/api/document"=>val j=document(n,empty=true);val out=Json.obj().put("job_yaml",YamlDocument.dump(j)).put("variables_yaml",YamlDocument.dump(Documents.variables(n.path("variables_yaml").asText)));out.set[JsonNode]("job",j);out
     case "/api/export"=>val j=document(n);if(n.path("include_designer").asBoolean(true))DesignerLayout.stamp(j) else j.asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].remove("designer");Json.obj().put("job_yaml",YamlDocument.dump(j)).put("variables_yaml",YamlDocument.dump(Documents.variables(n.path("variables_yaml").asText)))

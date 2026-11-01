@@ -11,7 +11,7 @@ object ZipArchive {
   val MaxEntries = 10000
   val MaxEntryBytes = 512L * 1024 * 1024
   val MaxTotalBytes = 2L * 1024 * 1024 * 1024
-  case class Entry(name: String, directory: Boolean, size: Option[Long], modified: Option[Long])
+  case class Entry(name: String, directory: Boolean, size: Option[Long], modified: Option[Long], created: Option[Long])
   def index(path: Path): Seq[Entry] = {
     val zip = new ZipFile(path.toFile)
     try {
@@ -28,7 +28,7 @@ object ZipArchive {
         require(e.getSize <= MaxEntryBytes, "ZIP entry size limit exceeded")
         total = Math.addExact(total, math.max(0L,e.getSize))
         require(total <= MaxTotalBytes, "ZIP total size limit exceeded")
-        result += Entry(name,e.isDirectory,Option(e.getSize).filter(_ >= 0),Option(e.getTime).filter(_ >= 0))
+        result += Entry(name,e.isDirectory,Option(e.getSize).filter(_ >= 0),Option(e.getTime).filter(_ >= 0),Option(e.getCreationTime).map(_.toMillis))
       }
       val indexed = result.result()
       val files = indexed.filterNot(_.directory).map(e => "/" + e.name).toSet

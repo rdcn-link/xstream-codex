@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--docker-prefix',default='');a=p.parse_args()
     home=ROOT/'examples/operators/common-scala';specs=json.loads((home/'src/main/resources/catalog.json').read_text())
-    jar=home/'target/scala-2.13/dacp-common-scala_2.13-1.0.jar'
+    jar=home/'target/scala-2.13/xstream-common-scala_2.13-1.0.jar'
     with tempfile.TemporaryDirectory(prefix='dacp-scala-contract-',dir='/tmp') as tmp:
         tmp=Path(tmp);tmp.chmod(0o755)
         for name,s in specs.items():

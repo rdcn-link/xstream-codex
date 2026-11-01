@@ -13,7 +13,7 @@ inputs:
   source: {representations: [bytes], formats: []}
 provenance:
   source_archive: ../../../../../../.operator-sources/dacp-sources.zip
-  source_repository: https://github.com/rdcn-link/dacp-codex
+  source_repository: https://github.com/rdcn-link/xstream-codex
   build_instructions: See examples/operators/native/README.md for the C compiler command and runtime setup.
 
 parameters:

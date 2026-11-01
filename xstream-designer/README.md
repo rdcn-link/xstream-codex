@@ -16,9 +16,11 @@ target/universal/stage/bin/xstream-designer /etc/dacp/designer.yaml
 
 The default address is `http://127.0.0.1:8840/`. Set `host: 0.0.0.0` for network access. Administrators maintain configuration; visitors do not log in. Configured ordinary upstream client credentials determine the catalogs and inference capabilities available to the website.
 
+The distribution bundles `xstream-data-archives` for the in-context catalog: ZIP, TAR, TAR.GZ/TGZ and GZIP Items expose their children when expanded. GZIP exposes one decompressed child; TAR.GZ exposes archive members directly. Nested archives are not recursively expanded. Dataset and Item rows use compact spacing.
+
 ## Design workflow
 
-1. Opening the page loads the local catalog and configured service roots automatically; `target.url` is optional. The designer treats every target as a DACP service; a Union decides how to split and place steps internally.
+1. Opening the page loads the local catalog and configured service roots automatically; `target.url` is optional. Remote targets use the DACP connector; placement is handled by the execution service.
 2. The configured `repository` loads automatically through `/v1/operators`. Search names and descriptions, choose versions and drag operators onto the canvas. `read_item@1.0` is a built-in data source.
 3. Open the left **Catalogs** tab. Expand a catalog to load its datasets, then expand datasets and folders to browse Items. Click an Item to reveal floating action icons at the lower right of the end of its name: one per available view and one for **Copy path**. Hover or keyboard focus identifies each icon. Choosing a view sets its URI and explicit view on the selected or a new read step. Copying preserves the complete path including dataset name, such as `/science/climate.nc/temperature`. Folders expand or collapse only through their left arrow; clicking a folder name reveals its actions without expanding. Item rows use compact spacing. Union connections use public Union URIs.
 4. Drag cards, click an output to start a pointer-following preview line, then click an input to establish the stream dependency. Right-click or press Esc to cancel. Port drag-to-connect is not supported. Edit titles and parameters in the inspector. Delete steps, remove connections, undo, redo and arrange automatically.
@@ -188,7 +190,7 @@ nodes:
     token_file: /etc/dacp/node-a.token
 ```
 
-The designer binds one JVM-wide DataCatalog through the same plugin contracts as XStream and DACP Server. `local_catalog.data_catalog` can configure a custom DataCatalogProvider instead of static datasets. See [XStream engine](../docs/xstream.md) and [Job read parameters](https://github.com/rdcn-link/dacp-codex/blob/main/docs/jobs.md#item-paths-remote-services-and-sql).
+The designer binds one JVM-wide DataCatalog through XStream plugin contracts. `local_catalog.data_catalog` can configure a custom DataCatalogProvider instead of static datasets. See [XStream engine](../docs/xstream.md) and [Job read parameters](../docs/jobs.md).
 
 The Catalogs tree distinguishes host roots, datasets, folders and data Items with separate icons. Roots load at startup and children load on expansion; there is no catalog refresh button.
 

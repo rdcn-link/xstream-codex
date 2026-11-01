@@ -36,7 +36,7 @@ parameters:
   additionalProperties: false
 ```
 
-`jvm` needs a JAR and main class. `python` needs a `.py` or `.whl` artifact and a module name (`entrypoint` selects the module for wheels; source executes the script). `command` adapts native stdin/stdout programs; see [native commands](native-commands.md). `container` uses its image's existing entrypoint and accepts neither an entrypoint override nor a code artifact. Every executor receives `operator /input /input/params.json` and `DACP_OPERATOR=name@version`, following the existing [Arrow IPC contract](https://github.com/rdcn-link/dacp-codex/blob/main/docs/reference.md#task-execution-and-operators).
+`jvm` needs a JAR and main class. `python` needs a `.py` or `.whl` artifact and a module name (`entrypoint` selects the module for wheels; source executes the script). `command` adapts native stdin/stdout programs; see [native commands](native-commands.md). `container` uses its image's existing entrypoint and accepts neither an entrypoint override nor a code artifact. Every executor receives `operator /input /input/params.json` and `XSTREAM_OPERATOR=name@version`, following the existing [Arrow IPC contract](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams.md).
 
 ```bash
 # Run from the project root after staging the repository.
@@ -65,7 +65,7 @@ Manifest schema `api_version: 2` separates execution, runtime, and code:
 }
 ```
 
-`artifact` is omitted for complete containers. Digests are 64 lowercase hexadecimal characters; sizes are positive byte counts. Metadata is published atomically and versions cannot be overwritten. The development project uses this schema directly; there are no old-manifest readers or migration fallbacks.
+`artifact` is omitted for complete containers. Digests are 64 lowercase hexadecimal characters; sizes are positive byte counts. Metadata is published atomically and versions cannot be overwritten.
 
 Repository layout:
 
@@ -92,7 +92,7 @@ Docker layers are shared locally, and the JVM builder separates the runtime laye
 
 ## Executor plugins
 
-Implement `dacp.OperatorExecutor` from `dacp-plugin-api` and register the fully qualified class in `META-INF/services/dacp.OperatorExecutor`. Compile the API as `Provided`, install the plugin JAR and private dependencies in `plugin_directory`, and restart the node. No core registry or client changes are needed. Duplicate executor IDs fail explicitly. The built-in `container`, `jvm`, `python`, and `command` implementations live in `plugins/xstream-plugin-operator-executors` and use that same ServiceLoader mechanism.
+Implement `dacp.OperatorExecutor` from `xstream-execution-api` and register the fully qualified class in `META-INF/services/dacp.OperatorExecutor`. Compile the API as `Provided`, install the plugin JAR and private dependencies in `plugin_directory`, and restart the node. No core registry or client changes are needed. Duplicate executor IDs fail explicitly. The built-in `container`, `jvm`, `python`, and `command` implementations live in `plugins/xstream-plugin-operator-executors` and use that same ServiceLoader mechanism.
 
 ```scala
 final class CustomExecutor extends dacp.OperatorExecutor {
@@ -111,8 +111,7 @@ The plugin validates its entrypoint/artifact and `OperatorProgram.configuration`
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt test)
 (cd "$REPOSITORY_HOME" && sbt test)
-(cd /path/to/dacp-codex/dacp-server && sbt 'testOnly dacp.OperatorLibrarySpec dacp.CoreSpec dacp.CollaborationSpec')
-scripts/test-operator-repository.sh
+python3 scripts/test-operator-authoring.py
 ```
 
 Contract tests cover service registration, launch validation, shared exports/bundles/downloads, immutable publication, public downloads, checksum failures, cleanup, library ordering, and offline caches. The repository integration exercises real JAR execution through the distributed Arrow/FIFO pipeline. A complete [Scala example](../examples/operators/scala/README.md) compiles independently against runtime-provided libraries. See the [Python example](../examples/operators/python/README.md) for source and wheel execution.

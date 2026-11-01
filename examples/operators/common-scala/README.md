@@ -4,7 +4,7 @@
 
 This collection contains 100 Scala operators: 50 text, 20 JSON, 20 CSV and 10 binary operators, with the `scala_` prefix and version `1.0`. All use the `jvm` executor, one shared thin JAR (including the small SDK, with Arrow, Jackson and Scala supplied by the runtime) and the `xstream/operator-jvm:1.1` runtime. Each has an independent JVM entrypoint and repository manifest, with downloadable sources. Execution logic is Scala; Python build scripts only generate metadata and publication materials.
 
-Every operator reads `source` and writes `result`, both using `bytes`. Text, CSV and JSON use UTF-8. The table supplies required parameter examples; use `{}` for parameterless operators. Unknown or missing parameters fail. Arrow input streams are fully consumed through EOS, then a complete Item is transformed in memory, with a default 16 MiB limit. `max_input_bytes` accepts an integer from 1 through 16777216. Oversized input fails without truncation. Output travels through DACP result streams without saving server-side result files. These bounded document operators are not suitable for unbounded streams; see the [Python record operators](../common/README.md) for batch processing.
+Every operator reads `source` and writes `result`, both using `bytes`. Text, CSV and JSON use UTF-8. The table supplies required parameter examples; use `{}` for parameterless operators. Unknown or missing parameters fail. Arrow input streams are fully consumed through EOS, then a complete Item is transformed in memory, with a default 16 MiB limit. `max_input_bytes` accepts an integer from 1 through 16777216. Oversized input fails without truncation. Output travels through XStream result streams without saving server-side result files. These bounded document operators are not suitable for unbounded streams; see the [Python record operators](../common/README.md) for batch processing.
 
 CSV requires a unique header and consistent row widths. Quotes, escaped quotes, embedded newlines and CRLF are supported; output uses LF. CSV-to-JSON preserves strings. Use unoccupied names when renaming or adding columns. JSON array sorting supports numbers or strings; missing fields, incompatible types and invalid UTF-8 fail. `text_fold_german` only lowercases and expands ß; `text_html_unescape_basic` only decodes the five entities `&lt;`, `&gt;`, `&quot;`, `&#x27;` and `&amp;`. Character reversal and counting use Unicode code points, not grapheme clusters. Textual digest and count results end in LF.
 
@@ -13,14 +13,14 @@ CSV requires a unique header and consistent row widths. Quotes, escaped quotes, 
 Requires JDK 17, sbt, Python 3 and PyArrow. Publish local dependencies from the project root first, sequentially rather than running concurrent builds sharing targets. Pass `--runtime-descriptor runtime.json`, containing a registered JVM runtime descriptor (the `runtime` object of an approved JVM operator), and `--runtime-catalog` for its blob store; the archive digest is verified.
 
 ```bash
-(cd /path/to/dacp-codex/dacp-plugin-api && sbt publishLocal)
+(cd xstream-execution-api && sbt publishLocal)
 (cd xstream-operator-sdk && sbt publishLocal)
 .venv/bin/python examples/operators/common-scala/build.py --runtime-descriptor runtime.json
 ```
 
 The builder generates independent entrypoints, compiles the thin JAR and verifies 100 input/output examples. Output is `examples/operators/common-scala/target/catalog`. Publication shares code, runtime and source blobs, submitting each operator through the token-authenticated HTTP API; every successful entry is immediately browsable. Versions cannot be overwritten; use a new version when changing code. Repeated publication accepts only identical manifests. Use HTTPS remotely. Downloadable sources contain implementation, build files, entrypoints, test samples and bilingual instructions. They depend on this project's SDK and build helpers; build from the project root using the commands above.
 
-Reference `operator: scala_text_uppercase@1.0` in an existing workflow, bind input to `source` and consume output with `port: result`. For example, `scala_text_replace@1.0` takes `params: {old: ",", new: ";"}`. See the [complete Union workflow](https://github.com/rdcn-link/dacp-codex/blob/main/examples/union/job.yaml) and [operator authoring guide](../../../docs/operator-authoring.md).
+Reference `operator: scala_text_uppercase@1.0` in an existing workflow, bind input to `source` and consume output with `port: result`. For example, `scala_text_replace@1.0` takes `params: {old: ",", new: ";"}`. See the [complete Union workflow](https://github.com/rdcn-link/xstream-codex/blob/main/examples/xstream/read.yaml) and [operator authoring guide](../../../docs/operator-authoring.md).
 
 ## Parameters and input/output examples
 

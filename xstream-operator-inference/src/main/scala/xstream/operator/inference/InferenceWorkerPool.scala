@@ -15,8 +15,8 @@ case class InferenceWorkerSettings(maxWorkers:Int=4,idleSeconds:Int=60,timeoutSe
 object InferenceWorkerSettings {
   def read(raw:Option[Object]):InferenceWorkerSettings=raw.map { v=>
     val n=Data.mapper.valueToTree[com.fasterxml.jackson.databind.JsonNode](v)
-    dacp.union.Json.fields(n,Set.empty,Set("max_workers","idle_seconds","timeout_seconds"))
-    def number(k:String,d:Int,max:Int)=if(n.has(k))dacp.union.Json.number(n,k,1,max).toInt else d
+    _root_.xstream.util.Json.fields(n,Set.empty,Set("max_workers","idle_seconds","timeout_seconds"))
+    def number(k:String,d:Int,max:Int)=if(n.has(k))_root_.xstream.util.Json.number(n,k,1,max).toInt else d
     InferenceWorkerSettings(number("max_workers",4,64),number("idle_seconds",60,86400),number("timeout_seconds",60,120))
   }.getOrElse(InferenceWorkerSettings())
 }

@@ -12,7 +12,7 @@ inputs:
     formats: []
 provenance:
   source_archive: ../../../../../.operator-sources/dacp-sources.zip
-  source_repository: https://github.com/rdcn-link/dacp-codex
+  source_repository: https://github.com/rdcn-link/xstream-codex
   build_instructions: |
     Python source is the execution artifact; runtime dependencies: examples/operators/python/Dockerfile.
 

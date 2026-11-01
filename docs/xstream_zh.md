@@ -1,12 +1,12 @@
 # XStream 执行引擎
 
-XStream 使用有界、支持背压的数据流执行 YAML Job。`xstream-engine` 是可嵌入的 Scala 模块，内含 `xstream-runner` 启动程序；启动程序不单独建模块，不启动 DACP 服务、看板或监听端口。DACP Server 内嵌同一个引擎，Union 继续负责成员分配和可执行子作业下发。独立宿主会自动将封闭的远程数据源处理区域下推到已配置的 DACP 服务。
+XStream 使用有界、支持背压的数据流执行 YAML Job。`xstream-engine` 是可嵌入的 Scala 模块，内含 `xstream-runner` 启动程序。本地执行不需要数据服务器；需要远程数据时，可配置连接器并启用自动计算下推。
 
 ## DataCatalog 生命周期
 
 统一层次为 **DataCatalog → Dataset → Item**。一个 JVM 通过 `DataCatalogRuntime` 绑定一个 DataCatalog。宿主可为同一实例申请租约；已有目录时不能绑定另一个目录，最后一个租约负责关闭目录。应用必须先停止 Job 再释放目录。启动不要求预加载全部 Dataset、Item 或数据内容，插件可以动态发现它们。
 
-DACP Server 根据 `datasets` 或 `data_catalog` 初始化目录，内嵌的 `JobEngine` 使用同一实例。`context:` 读取通过直接、有界的队列传递，不绕回网络；远程 `dacp:` 读取仍通过配置的数据服务。数据源和格式保持插件化。
+宿主根据 `datasets` 或 `data_catalog` 初始化目录，内嵌的 `JobEngine` 使用同一实例。`context:` 读取使用直接、有界的队列，不绕回网络。远程 `dacp:` 读取使用本仓库的连接器。数据源和格式通过插件提供。
 
 ## Item 引用
 
@@ -19,7 +19,7 @@ params:
   sql: SELECT station_id, temperature FROM source LIMIT 100
 ```
 
-`context:/dataset/item` 引用接收方 JVM 的目录，不是操作系统文件路径。`dacp://host:port/dataset/item` 显式指定服务，服务也可位于本机。两种引用都支持相同的 `view` 和受限只读 SQL。旧 `path` 参数已删除。远程下发前，context 引用必须固定到提交目录的数据源，不能在下游成员的目录中重新解释。
+`context:/dataset/item` 引用接收方 JVM 的目录，不是操作系统文件路径。`dacp://host:port/dataset/item` 显式指定服务，服务也可位于本机。两种引用都支持相同的 `view` 和受限只读 SQL。远程下发前，context 引用必须固定到提交目录的数据源，不能在下游成员的目录中重新解释。
 
 Folder Item 通过 `DatasetAccess.list(path)` 或相应 SDK 逐层浏览。`read_item` 不隐式拼接或递归读取文件夹。
 
@@ -50,7 +50,7 @@ nodes:
 
 ```scala
 import dacp._
-import dacp.union.YamlDocument
+import xstream.util.YamlDocument
 import java.nio.file.{Files, Path}
 
 val settings = YamlDocument.parse(Files.readString(Path.of("engine.yaml")))
@@ -84,7 +84,7 @@ data_catalog:
     jdbc_url: jdbc:h2:/srv/catalog
 ```
 
-提供者返回线程安全的 `DataCatalog`。其 `open(name)` 返回调用者持有的 `PublishedDataset` 租约，再打开 `DatasetAccess`，使用后关闭两个句柄。`DatasetProvider`、`FormatHandler` 和算子执行器继续使用现有契约，详见[插件](https://github.com/rdcn-link/dacp-codex/blob/main/docs/plugins_zh.md)。启动程序打包标准数据源、基础格式、静态目录、执行存储和算子执行器；更多插件通过 `plugin_directory` 加载。
+提供者返回线程安全的 `DataCatalog`。其 `open(name)` 返回调用者持有的 `PublishedDataset` 租约，再打开 `DatasetAccess`，使用后关闭两个句柄。`DatasetProvider`、`FormatHandler` 和算子执行器继续使用现有契约，详见[插件](plugins_zh.md)。启动程序打包标准数据源、基础格式、静态目录、执行存储和算子执行器；更多插件通过 `plugin_directory` 加载。
 
 名称/版本引用使用已审核公开的仓库算子及校验过的产物。独立本地开发可显式引用[本地算子源码目录](local-operators_zh.md)，复用构建缓存与同一 SDK。`read_item` 是内置数据源，无需算子容器。
 
@@ -115,8 +115,22 @@ nodes:
 
 执行策略只要选择了任何物化输出，或者是显式重放，就保留原本地图和持久化归属。普通流式重试和超时策略仍作用于物理执行。远程子作业自身不独立重试、不物化输出；重试由发起引擎协调，消费者须按流协议丢弃失败尝试的部分输出。远程请求受发起引擎客户端剩余时限约束；接收服务保留自身可能更短的执行时限。取消会关闭远程结果流，并取消服务器端执行。远程失败直接传播，不自动回退本地以免重复副作用。
 
-执行历史保存原 Job、`placements`、带下发 YAML 的 `remote_subjobs`，以及包含 `remote_execution_id` 和最终状态的 `remote_job` 子记录。包下载、运行环境缓存和执行元数据可能使用磁盘；流边不物化数据。嵌入宿主可以通过 `EngineEnvironment.computePushdown` 提供自己的 `ComputePushdown` 适配器；`LocalEngine` 也接受可选的 `remoteCompute` 适配器。DACP Server 的现有嵌入宿主不会隐式开启这项独立宿主策略，也不绕过现有调度。
+执行历史保存原 Job、`placements`、带下发 YAML 的 `remote_subjobs`，以及包含 `remote_execution_id` 和最终状态的 `remote_job` 子记录。包下载、运行环境缓存和执行元数据可能使用磁盘；流边不物化数据。嵌入宿主可以通过 `EngineEnvironment.computePushdown` 提供自己的 `ComputePushdown` 适配器；`LocalEngine` 也接受可选的 `remoteCompute` 适配器。嵌入宿主自行决定是否启用下推，并协调自身调度。
 
 另见[下推 Job 示例](../examples/xstream/pushdown.yaml)。修改远程 URI 和宿主配置后，使用 `xstream-runner` 执行。
 
 接收服务为 Union 时，`context:/公开数据集名/Item` 通过其公开数据集到成员的映射解析。显式使用该 Union 配置公布的服务地址具有相同含义。若使用可识别的成员节点 URI，读取步骤则定位到对应的数据归属成员。
+
+## 执行路径
+
+执行单元由执行器能力和相同运行时镜像决定。流边传递数据，结构推导属于独立的编排操作。
+
+```mermaid
+flowchart LR
+  Job["Job YAML 与变量"] --> Resolve["解析算子和 context Item"]
+  Resolve --> Plan["规划本地 / 远程执行"]
+  Plan --> Units["执行单元"]
+  Units --> Source["read_item"] --> Process["处理算子"] --> Result["结果流"]
+  Policy["执行策略"] -.-> Units
+  Process -. "选定边界" .-> Store["物化存储"]
+```

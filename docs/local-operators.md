@@ -114,7 +114,7 @@ The example reads a local Item, uppercases bytes in Python, then transfers the s
 ## Publish the same sources
 
 ```bash
-python scripts/submit-operator.py ./temperature-filter \
+xstream-operator submit ./temperature-filter \
   --url https://operators.example.org --token-file /protected/submitter.token
 ```
 

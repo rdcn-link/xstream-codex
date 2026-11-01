@@ -11,7 +11,7 @@ XStream 的内置实现和外部插件使用同一套扩展契约。核心负责
 | SourceAnalyzer / SourceArchive / SourceBuildRecipe | [xstream-plugin-source-analysis](../plugins/xstream-plugin-source-analysis/README_zh.md) |
 | ChatPlanner | [xstream-designer](../xstream-designer/README_zh.md) |
 
-实现公开的无参类，并在 `META-INF/services/<接口全名>` 中列出实现类。将插件 JAR 及依赖加入宿主类路径后重启，不修改中央注册表。执行器的契约暂由 DACP 集成 API 的 `dacp.OperatorExecutor` 提供，内置实现位于 `xstream.operator.executors`；源码审核契约位于 `xstream.operator`。注册文件名称必须与实际接口全名一致。
+实现公开的无参类，并在 `META-INF/services/<接口全名>` 中列出实现类。将插件 JAR 及依赖加入宿主类路径后重启，不修改中央注册表。执行器契约由 `xstream-execution-api` 的 `dacp.OperatorExecutor` 提供，内置实现位于 `xstream.operator.executors`；源码审核契约位于 `xstream.operator`。注册文件名称必须与实际接口全名一致。
 
 科学视图保持数组和序列结构，不能静默展平成 records。第三方格式依赖留在各自数据插件中。算子代码在隔离运行环境中执行；宿主安装的插件本身属于受信任代码。新增实现应包含配置示例、注册说明和契约测试；各模块手册提供现有测试命令。
 

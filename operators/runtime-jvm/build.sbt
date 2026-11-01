@@ -1,4 +1,4 @@
-name := "dacp-jvm-runtime-dependencies"
+name := "xstream-jvm-runtime-dependencies"
 organization := "io.github.rdcn-link"
 version := "0.1.0-SNAPSHOT"
 scalaVersion := "2.13.16"
@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   ("org.apache.hadoop" % "hadoop-mapreduce-client-core" % "3.4.1").excludeAll(ExclusionRule("org.apache.hadoop")),
   "org.slf4j" % "slf4j-simple" % "2.0.16",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test)
-libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-api" % "0.1.0-SNAPSHOT"
+libraryDependencies += "io.github.rdcn-link" %% "xstream-execution-api" % "0.1.0-SNAPSHOT"
 // Align shared libraries with the data service's resolved dependency versions.
 dependencyOverrides ++= Seq(
   "org.slf4j" % "slf4j-api" % "2.0.17",

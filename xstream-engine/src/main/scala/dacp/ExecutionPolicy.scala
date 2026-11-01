@@ -2,7 +2,7 @@ package dacp
 
 
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.Json
+import _root_.xstream.util.Json
 import scala.jdk.CollectionConverters._
 
 /** Policy covers connected output streams, never arbitrary operator side effects. */

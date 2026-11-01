@@ -92,7 +92,7 @@ Source archives cannot contain prebuilt JARs, wheels, executables, nested archiv
 
 ```bash
 python -m zipfile -c sources.zip src
-python scripts/submit-operator.py /path/to/submission.yaml \
+xstream-operator submit /path/to/submission.yaml \
   --source /path/to/sources.zip --url https://operators.example.org \
   --token-file /secure/submitter.token
 ```
@@ -119,7 +119,7 @@ outputs:
   result: upper
 ```
 
-Replace the URI with an actual Item in the execution catalog. `context:` uses the bound catalog; a remote URI specifies its DACP address explicitly. In DACP Shell, `submit workflow.yaml` receives and prints the result stream incrementally. Standalone execution uses `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`.
+Replace the URI with an actual Item in the execution catalog. `context:` uses the bound catalog; a remote URI specifies its DACP address explicitly. Standalone execution uses `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`.
 
 ## Startup arguments and protocol boundaries
 

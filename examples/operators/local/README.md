@@ -23,7 +23,7 @@ STREAMING WEATHER OBSERVATIONS
 To submit either example after selecting the actual repository runtime in `operator.yaml`:
 
 ```bash
-python scripts/submit-operator.py examples/operators/local/python \
+xstream-operator submit examples/operators/local/python \
   --url https://operators.example.org --token-file /protected/submitter.token
 ```
 

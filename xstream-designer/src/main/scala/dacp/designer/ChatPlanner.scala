@@ -2,7 +2,7 @@ package xstream.designer
 
 
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.Json
+import _root_.xstream.util.Json
 import java.net.URI
 import java.net.http.{HttpClient,HttpRequest,HttpResponse}
 import java.time.Duration

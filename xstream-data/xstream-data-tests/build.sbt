@@ -28,3 +28,5 @@ lazy val module10 = RootProject(file("../xstream-data-netcdf"))
 dependsOn(module10 % "test->compile")
 lazy val module11 = RootProject(file("../xstream-data-fits"))
 dependsOn(module11 % "test->compile")
+
+Test / unmanagedSources += baseDirectory.value / ".." / ".." / "examples" / "xstream" / "ViewExamples.scala"

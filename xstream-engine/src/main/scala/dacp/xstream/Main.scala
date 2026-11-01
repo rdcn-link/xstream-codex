@@ -3,8 +3,8 @@ package dacp.xstream
 import _root_.xstream.data._
 
 import dacp._
-import dacp.client.{Source,TlsConfig,WorkflowVariables}
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.connector.dacp.client.{Source,TlsConfig,WorkflowVariables}
+import _root_.xstream.util.{Json,YamlDocument}
 import java.nio.file.{Files,Path}
 import scala.util.Using
 import scala.jdk.CollectionConverters._
@@ -56,8 +56,8 @@ object Main {
 }
 
 object RemoteItems {
-  private def clientPredicate(p:Predicate):dacp.client.Predicate={
-    import dacp.client.Expressions.col
+  private def clientPredicate(p:Predicate):_root_.xstream.connector.dacp.client.Predicate={
+    import _root_.xstream.connector.dacp.client.Expressions.col
     def literal(v:Literal):Any=v.kind match {
       case "integer"=>BigInt(v.value);case "decimal"=>BigDecimal(v.value);case "float"=>v.value.toDouble
       case "boolean"=>v.value.toBoolean;case "string"=>v.value

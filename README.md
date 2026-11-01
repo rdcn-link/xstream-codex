@@ -21,21 +21,18 @@ XStream is a Scala toolkit for stream-oriented computation: typed data access, a
 
 ## Build
 
-Use JDK 17 and sbt 1.10.x. These modules were extracted from [DACP](https://github.com/rdcn-link/dacp-codex). DACP consumes XStream as versioned artifacts; XStream engine and designer consume DACP transport and execution API integration libraries as versioned artifacts. Builds never reach into another source checkout.
-
-There are no public releases yet. To populate a development machine's local artifact repository, clone both repositories and run:
+Use JDK 17 and sbt 1.10.x. Building requires only this checkout, without DACP source or DACP artifacts. The bootstrap script publishes XStream development artifacts to the local repository in dependency order.
 
 ```bash
-git clone git@github.com:rdcn-link/dacp-codex.git
 git clone git@github.com:rdcn-link/xstream-codex.git
 cd xstream-codex
-scripts/bootstrap-local.sh ../dacp-codex
+scripts/bootstrap-local.sh
 sbt test
 (cd xstream-engine && sbt stage)
 (cd xstream-designer && sbt stage)
 ```
 
-The bootstrap publishes data artifacts, DACP public integration libraries, XStream operator SDK/inference/executors, then the engine in dependency order. The explicit DACP path is needed only for bootstrapping unpublished development artifacts. Ordinary builds resolve artifacts through sbt repositories. A clean machine cannot build the engine until these integration artifacts are available. See [repository boundaries](docs/repositories.md).
+Remote DACP data access is implemented by the connector in this repository. Local execution needs no running data service. See [modules and builds](docs/repositories.md).
 
 ## Run
 
@@ -61,8 +58,30 @@ Edit configuration paths, service addresses and credentials first. The runner pr
 - [Plugin contracts and registration](xstream-data/README.md)
 - [Job YAML](docs/jobs.md)
 
-## Logo and origin
+## Logo
 
-The original vector [logo](assets/xstream-logo.svg) and [symbol](assets/xstream-mark.svg) depict crossing turquoise/blue and violet/amber streams forming an X. The designer uses this symbol as its favicon. See [ORIGIN](ORIGIN) for source provenance. Public implementation packages retain their existing namespaces; this extraction does not rename API packages.
+The vector [logo](assets/xstream-logo.svg) and [symbol](assets/xstream-mark.svg) depict crossing streams forming an X. The designer uses the symbol as its favicon.
 
 Documentation ownership and website publishing: [maintenance policy](docs/documentation.md).
+
+Complete Scala examples: [DataView and view streams](docs/data-view-examples.md).
+
+## Architecture
+
+The local catalog, engine and designer are usable independently. Remote services are optional connectors.
+
+```mermaid
+flowchart LR
+  Designer["Visual Designer"] --> Job["Job YAML + policy"]
+  Runner["Runner / embedded host"] --> Engine["XStream engine"]
+  Job --> Engine
+  Catalog["DataCatalog"] --> View["Item / DataView"]
+  View --> Arrow["Arrow streams"] --> Engine
+  Repository["Operator repository"] --> Engine
+  Engine --> Result["Result stream"]
+  Remote["Optional remote connector"] -.-> View
+```
+
+## Visual identity
+
+The canonical visual assets are `assets/xstream-mark.svg` and `assets/xstream-logo.svg`. The X symbol sits above five parallel, continuous small waves with short wavelengths and low amplitude. Keep the symbol geometry, dark background and cyan/blue/purple/amber palette consistent across applications.

@@ -4,8 +4,7 @@ version := "0.1.0-SNAPSHOT"
 scalaVersion := "2.13.16"
 lazy val operatorContract = RootProject(file("../xstream-operator-sdk/contract"))
 dependsOn(operatorContract)
-libraryDependencies += "io.github.rdcn-link" %% "dacp-union-protocol" % "0.1.0-SNAPSHOT"
-libraryDependencies += "io.github.rdcn-link" %% "dacp-plugin-api" % "0.1.0-SNAPSHOT"
+libraryDependencies += "io.github.rdcn-link" %% "xstream-execution-api" % "0.1.0-SNAPSHOT"
 libraryDependencies ++= Seq(
   "com.github.docker-java" % "docker-java-core" % "3.4.1",
   "com.github.docker-java" % "docker-java-transport-httpclient5" % "3.4.1",

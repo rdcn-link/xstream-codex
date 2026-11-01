@@ -1,7 +1,7 @@
 package xstream.designer
 
 import _root_.xstream.data._
-import dacp.union.Json
+import _root_.xstream.util.Json
 import org.scalatest.funsuite.AnyFunSuite
 import java.nio.file.Files
 import java.net.URI

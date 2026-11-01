@@ -63,7 +63,7 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
     LogicalPath.validate(item.path)
     require(item.path != "/", "structured listing must not contain its root")
     val result = item.copy(path=root + item.path)
-    if (item.kind == "folder") result.copy(lastModifiedTimeMs=None,totalSizeBytes=None,recordCount=None)
+    if (item.kind == "folder") result.copy(totalSizeBytes=None,recordCount=None)
     else { require(item.kind == "data","invalid structured item kind"); result }
   }
   private def structuredListing(parent: Option[String]): Map[String,Item] = {
@@ -115,8 +115,8 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
     val roots = archives.filter { case (alias,_) => parent.forall(p => p == alias || p.startsWith(alias + "/")) }
     archived(roots).foreach { case (path,a) =>
       require(!entries.contains(path), "archive entry conflicts with published alias")
-      result(path) = if (a.entry.directory) ItemProperties.folder(path) else
-        Item(path,{ val id = Formats.extensionFormat(a.entry.name).id; if (Containers.supports(id)) "bin" else id },None,lastModifiedTimeMs=a.entry.modified,totalSizeBytes=a.entry.size)
+      result(path) = if (a.entry.directory) ItemProperties.folder(path).copy(lastModifiedTimeMs=a.entry.modified,creationTimeMs=a.entry.created) else
+        Item(path,{ val id = Formats.extensionFormat(a.entry.name).id; if (Containers.supports(id)) "bin" else id },None,lastModifiedTimeMs=a.entry.modified,totalSizeBytes=a.entry.size,creationTimeMs=a.entry.created)
       var parent = LogicalPath.parent(path)
       while (parent != "/" && !archives.contains(parent)) {
         require(!entries.contains(parent), "archive folder conflicts with published alias")
@@ -177,7 +177,7 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
         case _ => description
       }
       if (Containers.supports(description.format) || (description.format != "sql" && Formats.byId(description.format).isInstanceOf[StructuredFileHandler]))
-        Item(b.path,description.format,Some(PluginSchemas.bytes),"folder",views=Some(Seq("bytes")))
+        enriched.copy(schema=Some(PluginSchemas.bytes),kind="folder",totalSizeBytes=None,recordCount=None,views=Some(Seq("bytes")))
       else enriched.copy(path = b.path, views=Some(config.plugins.views(enriched)))
     }
   }
@@ -205,7 +205,7 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
     }.getOrElse {
       val item = virtual(Some(path)).getOrElse(path,throw new java.io.FileNotFoundException("logical item not found"))
       if (item.kind == "folder") item else withResolved(path) { (a,i) => a.describe(i).copy(path=path,
-        lastModifiedTimeMs=item.lastModifiedTimeMs,totalSizeBytes=item.totalSizeBytes) }
+        lastModifiedTimeMs=item.lastModifiedTimeMs,totalSizeBytes=item.totalSizeBytes,creationTimeMs=item.creationTimeMs) }
     }
   }
   def list(): Seq[Item] = (snapshot(entries.values.toVector,infer=false) ++ virtual().values).sortBy(_.path)
@@ -234,7 +234,7 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
 object ItemProperties {
   def file(item: Item, path: Path, options: FileOptions = FileOptions(), knownCount: Option[FileRecordCount] = None, plugins:PluginEnvironment): Item = {
     val attributes = Files.readAttributes(path, classOf[java.nio.file.attribute.BasicFileAttributes])
-    item.copy(lastModifiedTimeMs=Some(attributes.lastModifiedTime().toMillis),
+    item.copy(creationTimeMs=Some(attributes.creationTime().toMillis),lastModifiedTimeMs=Some(attributes.lastModifiedTime().toMillis),
       totalSizeBytes=Some(attributes.size()), recordCount=knownCount.filter(_.matches(attributes)).map(_.value)
         .orElse(plugins.formats.detect(ByteSource.local(path),options).cheapCount(ByteSource.local(path),options)))
   }

@@ -4,7 +4,7 @@ import org.apache.arrow.memory.BufferAllocator
 import org.apache.arrow.vector.ipc.ArrowStreamReader
 import java.util.concurrent.atomic.AtomicLong
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.Json
+import _root_.xstream.util.Json
 /** Payload counters count each input/output independently, excluding framing/TLS overhead. */
 private[dacp] final class UnionPortMetrics(allocator:BufferAllocator) {
   private val bytes=new AtomicLong();private val remoteBytes=new AtomicLong();private val rows=new AtomicLong()

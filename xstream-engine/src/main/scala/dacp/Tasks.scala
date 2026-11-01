@@ -82,7 +82,7 @@ object Jobs {
   def parse(text: String): JobPlan = {
     require(text.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 1024*1024,"job exceeds 1 MiB")
     val options=new org.yaml.snakeyaml.LoaderOptions(); options.setAllowDuplicateKeys(false)
-    val raw=try dacp.union.Json.mapper.convertValue(dacp.union.YamlDocument.parse(text),classOf[Object])catch{case e:org.yaml.snakeyaml.error.YAMLException=>throw new IllegalArgumentException("invalid job YAML",e)}
+    val raw=try _root_.xstream.util.Json.mapper.convertValue(_root_.xstream.util.YamlDocument.parse(text),classOf[Object])catch{case e:org.yaml.snakeyaml.error.YAMLException=>throw new IllegalArgumentException("invalid job YAML",e)}
     val doc=mapping(raw,"job")
     require(doc.keySet.subsetOf(Set("name","tasks","outputs","designer")) && doc.contains("name"),"invalid job settings")
     require(doc.get("tasks").exists(_.isInstanceOf[java.util.List[_]]),"tasks must be a list")

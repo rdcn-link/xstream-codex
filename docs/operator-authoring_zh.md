@@ -92,7 +92,7 @@ provenance:
 
 ```bash
 python -m zipfile -c sources.zip src
-python scripts/submit-operator.py /path/to/submission.yaml \
+xstream-operator submit /path/to/submission.yaml \
   --source /path/to/sources.zip --url https://operators.example.org \
   --token-file /secure/submitter.token
 ```
@@ -119,7 +119,7 @@ outputs:
   result: upper
 ```
 
-把 URI 替换为目标执行目录中的真实 Item。`context:` 使用当前执行服务绑定的目录；远程 URI 显式指定 DACP 地址。在 DACP Shell 中执行 `submit workflow.yaml`，客户端逐步接收并打印结果流；独立执行使用 `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。
+把 URI 替换为目标执行目录中的真实 Item。`context:` 使用当前执行服务绑定的目录；远程 URI 显式指定 DACP 地址。独立执行使用 `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。
 
 ## 启动参数与协议边界
 

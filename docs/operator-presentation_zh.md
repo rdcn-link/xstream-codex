@@ -2,7 +2,7 @@
 
 [English](operator-presentation.md)
 
-开发者提供 `icon`、`inputs`、`parameters`。仓库管理员在审批时指定**多个分类标签**。提交内容不能包含 `category` 或 `categories`；批准后的公开清单采用 `categories: [Climate, Conversion]`，单数 `category` 已删除。
+开发者提供 `icon`、`inputs`、`parameters`。仓库管理员在审批时指定**多个分类标签**。提交内容不能包含 `category` 或 `categories`；批准后的公开清单采用 `categories: [Climate, Conversion]`。
 
 ```yaml
 icon:

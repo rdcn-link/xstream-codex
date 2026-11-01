@@ -4,7 +4,7 @@ Before building, publish plugin-api and operator-sdk to the local dependency rep
 
 [中文](README_zh.md)
 
-This standalone example implements `scala_identity@1.0` without importing or rebuilding the DACP server. It produces a thin JAR, sharing Scala, Arrow, Jackson, and the JVM from `xstream/operator-jvm:1.1`. The operator preserves the original input bytes; replace its batch processing with your transformation.
+This standalone example implements `scala_identity@1.0` using the XStream JVM SDK. It produces a thin JAR, sharing Scala, Arrow, Jackson, and the JVM from `xstream/operator-jvm:1.1`. The operator preserves the original input bytes; replace its batch processing with your transformation.
 
 Example files:
 

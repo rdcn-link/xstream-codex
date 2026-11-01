@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.yaml.snakeyaml.Yaml
 import scala.jdk.CollectionConverters._
 
-case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None)
+case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None)
 
 /** Immutable operator metadata plus globally shared, content-addressed runtime/code artifacts. */
 object OperatorLibrary {
@@ -23,6 +23,24 @@ object OperatorLibrary {
       while(n != -1) { md.update(buffer,0,n); n = in.read(buffer) }
     } finally in.close()
     md.digest().map(b => f"${b & 255}%02x").mkString
+  }
+  private val runtimeCatalogs=new java.util.concurrent.ConcurrentHashMap[String,JsonNode]()
+  private def runtimeInfo(base:String,image:String,executor:String):Option[JsonNode]={
+    try {
+      val catalog=runtimeCatalogs.computeIfAbsent(base,_=>{
+        val connection=URI.create(base.stripSuffix("/")+"/v1/runtimes").toURL.openConnection()
+        connection.setConnectTimeout(2000);connection.setReadTimeout(2000)
+        val in=connection.getInputStream;try Data.mapper.readTree(in) finally in.close()
+      })
+      catalog.elements.asScala.find(r=>r.path("image").asText==image && r.path("executors").elements.asScala.exists(_.asText==executor)).map(_.deepCopy[JsonNode]())
+    }catch{case scala.util.control.NonFatal(_)=>None}
+  }
+  def runtimeDescriptor(op:ResolvedOperator):JsonNode={
+    val n=Data.mapper.createObjectNode().put("runtime_image",op.image).put("runtime_executor",op.executor)
+    op.runtime.foreach { r=>
+      n.put("runtime_name",r.path("name").asText).put("runtime_version",r.path("version").asText)
+      if(r.has("dependencies"))n.set[JsonNode]("runtime_dependencies",r.path("dependencies").deepCopy[JsonNode]())
+    };n
   }
   private class MissingOperator extends RuntimeException
   private def fetch(url: String, file: Path, limit: Long, manifest: Boolean = false): Unit = {
@@ -125,7 +143,7 @@ object OperatorLibrary {
               try docker.loadImageCmd(in).exec() finally in.close()
               docker.inspectImageCmd(image).exec()
           }
-          resolved
+          resolved.copy(runtime=runtimeInfo(base,image,execution.path("executor").asText))
         }
         if (Files.exists(entry)) prepare(metadata(entry))
         else {

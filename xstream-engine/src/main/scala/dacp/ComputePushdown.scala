@@ -2,7 +2,7 @@ package dacp
 
 
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.util.{Json,YamlDocument}
 import scala.jdk.CollectionConverters._
 
 /** Host-supplied remote execution transport. No Union membership or server dependency. */
@@ -82,12 +82,12 @@ final class DacpComputePushdown(config:JsonNode) extends ComputePushdown {
   val nodes:Set[String]=connections.keySet
   def execute(node:String,plan:JobPlan,emit:OperatorFrame=>Unit,cancel:StreamCancel,onExecution:String=>Unit):Unit={
     val connection=connections(node)
-    val tls=dacp.client.TlsConfig(ca=Option(connection.get("ca")).map(n=>java.nio.file.Path.of(n.asText)),tokenFile=Option(connection.get("token_file")).map(n=>java.nio.file.Path.of(n.asText)))
+    val tls=_root_.xstream.connector.dacp.client.TlsConfig(ca=Option(connection.get("ca")).map(n=>java.nio.file.Path.of(n.asText)),tokenFile=Option(connection.get("token_file")).map(n=>java.nio.file.Path.of(n.asText)))
     cancel.active()
     val policy=Json.obj();policy.putObject("materialization").put("allowed",false).put("default","stream")
     // The client deadline bounds the call; the service keeps its own (possibly shorter) limit.
     // Sending the host's larger policy timeout would be rejected by stricter services.
-    val stream=cancel.add(dacp.client.Job.run(node,ComputePushdown.yaml(plan),tls,cancel.remainingSeconds,policy))
+    val stream=cancel.add(_root_.xstream.connector.dacp.client.Job.run(node,ComputePushdown.yaml(plan),tls,cancel.remainingSeconds,policy))
     var reported=false;var complete=false
     try {
       while(stream.hasNext){

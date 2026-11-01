@@ -57,7 +57,7 @@ def prepare():
 
 def build(runtime_catalog,destination,runtime_descriptor):
     prepare();subprocess.run(['sbt','package','verifyOperators'],cwd=HERE,check=True)
-    jar=HERE/'target/scala-2.13/dacp-common-scala_2.13-1.0.jar';assert jar.exists()
+    jar=HERE/'target/scala-2.13/xstream-common-scala_2.13-1.0.jar';assert jar.exists()
     runtime=json.loads(runtime_descriptor.read_text());blobs=destination/'blobs/sha256';blobs.mkdir(parents=True,exist_ok=True)
     def store(data,filename):
         h=hashlib.sha256(data).hexdigest();(blobs/h).write_bytes(data);return dict(sha256=h,size=len(data),filename=filename)
@@ -73,7 +73,7 @@ def build(runtime_catalog,destination,runtime_descriptor):
         m=dict(api_version=2,icon=dict(path='M3 5h18v14H3zM3 10h18M9 5v14',color='#14866b'),name='scala_'+name,version='1.0',parameters=parameter_schema(s['params']),description=s['description']+'; params='+json.dumps(s['params'],ensure_ascii=False,separators=(',',':')),
                inputs={'source':{'representations':['bytes'],'formats':[]}},
                execution={'executor':'jvm','entrypoint':'dacp.common.Op_'+name,'config':{}},runtime=runtime,artifact=artifact,
-               provenance={'source_archive':source,'source_repository':'https://github.com/rdcn-link/dacp-codex','build_instructions':'From the project root publish the plugin API and operator SDK locally, then run .venv/bin/python examples/operators/common-scala/build.py. See bundled bilingual instructions. Runtime dependencies are provided by xstream/operator-jvm:1.1.'})
+               provenance={'source_archive':source,'source_repository':'https://github.com/rdcn-link/xstream-codex','build_instructions':'From the project root publish the plugin API and operator SDK locally, then run .venv/bin/python examples/operators/common-scala/build.py. See bundled bilingual instructions. Runtime dependencies are provided by xstream/operator-jvm:1.1.'})
         p=destination/('scala_'+name)/'1.0';p.mkdir(parents=True,exist_ok=True);(p/'manifest.json').write_text(json.dumps(m,ensure_ascii=False))
     print(f'Built {len(CATALOG)} Scala operators; shared JAR {artifact["size"]} bytes; sources {source["size"]} bytes',flush=True)
 

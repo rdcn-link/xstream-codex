@@ -11,7 +11,7 @@ object PluginChecks {
       require(Set("data","folder")(item.kind),"invalid item kind")
       require(item.totalSizeBytes.forall(_ >= 0) && item.recordCount.forall(_ >= 0),"negative item properties")
       if (item.kind == "folder")
-        require(item.lastModifiedTimeMs.isEmpty && item.totalSizeBytes.isEmpty && item.recordCount.isEmpty,"folder properties must be unknown")
+        require(item.totalSizeBytes.isEmpty && item.recordCount.isEmpty,"folder size and record count must be unknown")
       require(access.describe(item.path).path == item.path,"describe changed logical path")
     }
     val byPath = all.map(i => i.path -> i).toMap

@@ -1,4 +1,4 @@
-name := "dacp-stream-benchmark"
+name := "xstream-stream-benchmark"
 scalaVersion := "2.13.16"
 lazy val sdk = RootProject(file("../../../xstream-operator-sdk/jvm"))
 dependsOn(sdk)

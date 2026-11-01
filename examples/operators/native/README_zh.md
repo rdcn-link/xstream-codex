@@ -2,47 +2,16 @@
 
 [English](README.md)
 
-此 C 程序从标准输入读取字节，并将大写转换后的字节写入标准输出，不依赖 DACP 或 Arrow。`command` 执行器在容器中桥接这些流。
-
-在项目根目录运行：
+本例 C 程序从 stdin 读取字节，将 ASCII 转为大写后写到 stdout。容器中的 `command` 执行器负责 Arrow 流桥接，C 程序无需 Arrow 依赖。
 
 ```bash
 mkdir -p examples/operators/native/build
 cc -O2 -Wall -Wextra -Werror -s \
   -o examples/operators/native/build/uppercase examples/operators/native/uppercase.c
+printf 'hello' | examples/operators/native/build/uppercase
+(cd plugins/xstream-plugin-operator-executors && sbt 'testOnly xstream.operator.executors.CommandExecutorSpec')
 ```
 
-按[算子指南](../../../docs/operator-authoring_zh.md)构建或安装共享的 `xstream/operator-python:1.0` 运行环境。该环境提供桥接所需的 Python 和 PyArrow 依赖；可执行文件必须匹配其 Linux 架构和可用 C 库。静态链接可选。
+执行定义见 `operators/native_uppercase/1.0/operator.yaml`，使用共享 `xstream/operator-python:1.0` 运行时。二进制必须匹配其操作系统、架构和 C 库。stdout 逐块转为输出，不发布结果 Dataset。原生程序的参数、资源和端口约束见[原生命令契约](../../../docs/native-commands_zh.md)。
 
-将执行服务器的 `local_operator_library` 设置为 `examples/operators/native/operators` 的绝对路径，或初始化公开仓库：
-
-```bash
-python3 scripts/package-operator-sources.py
-${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed \
-  --operators examples/operators/native/operators --root .operator-catalog
-```
-
-为执行节点配置 `remote_operator_library_urls`，以便从仓库下载。在已连接的 shell 中运行：
-
-```text
-run native_uppercase@1.0 --input source=/reports/orders
-```
-
-二进制文件单独下载，并复用 Python 运行时镜像。发布过程无需保留执行权限，适配器会创建可执行的私有副本。输出始终为流，不会注册为结果 Dataset。
-
-如果程序已安装在运行环境中，省略 `artifact`，并将 `entrypoint` 设置为其在运行环境内的绝对路径。`executor_config.args` 提供按字面值传递的参数。参见[原生命令配置与发布](../../../docs/native-commands_zh.md)。
-
-验证使用真实服务器、mTLS 和 Docker，临时端口为 18817：
-
-```bash
-(cd /path/to/dacp-codex/dacp-server && sbt -batch stage)
-.venv/bin/python scripts/test-native-execution.py
-```
-
-运行时需要 Docker 组访问权限，例如必要时将最后一条命令放入 `sg docker -c '...'`。测试会编译程序，并验证超过管道缓冲区大小的输出、部分输出后失败、增量交付、取消和恢复；结束后清理服务器与临时文件。目前尚未实现原生源码提交、记录转换和多输入输出管道。
-
-附带源码的新版本及可选的许可证、SBOM 发布方式参见[源码与审查信息](../../../docs/operator-provenance_zh.md)。初始化仓库前须先打包源码。
-
-仓库只接收源码，旧示例中的本地构建仅用于开发验证；公开发布采用[源码提交与审核流程](../../../docs/operator-submission_zh.md)。
-
-`REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/rdcn-link/xstream-operator-repository)的本地目录。
+本地开发使用[本地算子库](../../../docs/local-operators_zh.md)；公开发布采用[源码提交及审核](../../../docs/operator-submission_zh.md)，仓库构建最终二进制。

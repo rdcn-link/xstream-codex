@@ -71,7 +71,7 @@ def build(spark_home, name):
     sdk = ROOT / 'xstream-operator-sdk/jvm/target/scala-2.13/xstream-operator-sdk_2.13-0.1.0-SNAPSHOT.jar'
     if not sdk.is_file():
         raise ValueError('build xstream-operator-sdk first')
-    api = ROOT / 'dacp-plugin-api/target/scala-2.13/dacp-plugin-api_2.13-0.1.0-SNAPSHOT.jar'
+    api = ROOT / 'xstream-execution-api/target/scala-2.13/xstream-execution-api_2.13-0.1.0-SNAPSHOT.jar'
     cp = str(jars / '*') + ':' + str(sdk) + ':' + str(api)
     java = upstream / 'java/cn/piflow/bundle/FluxJavaUtil/Theleastsquaremethod.java'
     subprocess.run(['javac', '-cp', cp, '-d', str(classes), str(java)], check=True)

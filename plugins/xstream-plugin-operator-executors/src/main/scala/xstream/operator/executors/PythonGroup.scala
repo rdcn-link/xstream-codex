@@ -6,7 +6,7 @@ import java.nio.file.Files
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.zip.ZipFile
 
-/** Python fusion is explicit: a thread-safe process(ctx) callable, one shared code bundle. */
+/** Python fusion is explicit: a thread-safe process(ctx) callable, isolated code bundles in one interpreter. */
 private[executors] object PythonGroup {
   private def supported(s:OperatorGroupStep):Boolean={
     val path=s.program.artifact.get
@@ -23,7 +23,7 @@ private[executors] object PythonGroup {
   }
   private def resource(name:String):Array[Byte]={val in=getClass.getResourceAsStream("/"+name);require(in!=null,"missing group runner resource");try in.readAllBytes()finally in.close()}
   def command(group:OperatorGroup):Option[OperatorCommand]={
-    if(group.steps.flatMap(_.program.artifact).distinct.size!=1 || !group.steps.forall(s=>s.program.configuration.isEmpty && s.program.artifact.nonEmpty && s.artifactPath.exists(p=>p.endsWith(".py")||p.endsWith(".whl")||p.endsWith(".zip")) && supported(s)))return None
+    if(!group.steps.forall(s=>s.program.configuration.isEmpty && s.program.artifact.nonEmpty && s.artifactPath.exists(p=>p.endsWith(".py")||p.endsWith(".whl")||p.endsWith(".zip")) && supported(s)))return None
     Some(OperatorCommand(Some(Vector("/usr/local/bin/python","-u","/input/python-group.py")),arguments=Vector("/input"),
       environment=Map("PYTHONDONTWRITEBYTECODE"->"1","PIP_DISABLE_PIP_VERSION_CHECK"->"1"),
       files=Map("python-group.py"->resource("python-group.py"),"group-sdk.py"->resource("group-sdk.py"),"inference.py"->resource("inference.py"),"group.json"->JvmGroup.definition(group)),

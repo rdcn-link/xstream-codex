@@ -1,0 +1,10 @@
+name := "xstream-plugin-execution-file"
+organization := "io.github.rdcn-link"
+version := "0.1.0-SNAPSHOT"
+scalaVersion := "2.13.16"
+lazy val pluginApi = RootProject(file("../../xstream-execution-api"))
+dependsOn(pluginApi)
+
+libraryDependencies += "io.github.rdcn-link" %% "xstream-data-core" % "0.1.0-SNAPSHOT"
+
+libraryDependencies += "org.apache.arrow" % "arrow-memory-netty" % "18.3.0"

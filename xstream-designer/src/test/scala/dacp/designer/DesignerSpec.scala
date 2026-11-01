@@ -3,7 +3,7 @@ package xstream.designer
 import _root_.xstream.data._
 
 import org.scalatest.funsuite.AnyFunSuite
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.util.{Json,YamlDocument}
 import com.sun.net.httpserver.HttpServer
 import java.net.{InetSocketAddress,URI}
 import java.net.http.{HttpClient,HttpRequest,HttpResponse}

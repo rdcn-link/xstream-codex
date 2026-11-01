@@ -68,3 +68,28 @@ datasets:
 Optional `DataViewSupport` plugins parse/render request selections and provide bounded schema/sample presentation. Register them through `META-INF/services/xstream.data.DataViewSupport`. Their output is also ordinary Arrow; they do not encode or decode payload bytes. Built-in array and sequence support lives in `xstream-data-scientific-views`. Flight carries these typed columns directly, including descriptor metadata and empty schemas. Python `as_view`, `as_array` and `as_sequences` return an `ArrowViewReader` that iterates PyArrow RecordBatches.
 
 Contract tests cover empty schemas, stable schemas, bounds, borrowed lifetimes, explicit snapshots, failure/cancellation cleanup, dictionary IPC, selection, nested browsing and exact scientific structure. See also [designer scientific views](designer-scientific.md).
+
+Complete Scala examples: [DataView and view streams](data-view-examples.md).
+
+## From Item to stream
+
+Each view selects a representation of one Item. Every selected representation exposes the same Arrow stream contract.
+
+```mermaid
+flowchart TD
+  Catalog["DataCatalog"] --> Dataset["Dataset"] --> Item["Item"]
+  Item --> Bytes["bytes: AllBytes"]
+  Item --> Records["records: Scan"]
+  Item --> Arrays["array: ArraySelection"]
+  Item --> Sequences["sequence: SequenceSelection"]
+  Bytes --> Stream["ArrowDataStream"]
+  Records --> Stream
+  Arrays --> Stream
+  Sequences --> Stream
+  Stream --> Schema["start: schema + dictionaries"] --> Batches["accept: bounded Arrow batches"]
+  Batches --> Consumer["Operator / application"]
+```
+
+## Item timestamp metadata
+
+`Item.creationTimeMs` and `lastModifiedTimeMs` are optional UTC Unix epoch milliseconds. `None` means unknown; `Some(0L)` is the known Unix epoch. Files and physical folders use filesystem-reported values. ZIP entries retain available creation/modification times; TAR entries retain available modification times. SQL objects, scientific-file children and virtual folders depend on their plugins. Never substitute registration, extraction or current time for a source timestamp. Folder size and record count remain unknown. Timestamp queries do not read content or traverse descendants.

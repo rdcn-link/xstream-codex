@@ -2,6 +2,11 @@
 import base64
 from concurrent.futures import ThreadPoolExecutor
 import importlib.util
+import importlib.abc
+import importlib.machinery
+import builtins
+import types
+import zipfile
 import io
 import json
 import os
@@ -99,20 +104,61 @@ def main(directory):
                     value=self.events.get_nowait()
                     if value is not None:value[1].set()
                 except queue.Empty:break
-    artifact=Path(spec['steps'][0]['artifact'])
-    if artifact.suffix=='.zip':
-        sys.path.insert(0,str(artifact))
-    elif artifact.suffix=='.whl':
-        package=tempfile.mkdtemp(prefix='dacp-group-package-')
-        subprocess.run([sys.executable,'-m','pip','install','--no-index','--no-deps','--no-compile','--target',package,str(artifact)],check=True,stdout=sys.stderr)
-        sys.path.insert(0,package)
-    else:sys.path.insert(0,str(artifact.parent))
-    # Preflight all entrypoints before consuming external inputs.
-    functions={}
+    # Private module namespaces keep identical module names in independent bundles
+    # from shadowing each other, including imports performed inside process(ctx).
+    bundle_roots={}
+    original_import=builtins.__import__
+    class BundleFinder(importlib.abc.MetaPathFinder):
+        def find_spec(self,fullname,path=None,target=None):
+            prefix=fullname.split('.',1)[0]
+            if prefix not in bundle_roots or '.' not in fullname:return None
+            found=importlib.machinery.PathFinder.find_spec(fullname,path)
+            if found is None:return None
+            loader=found.loader
+            if loader is not None and hasattr(loader,'get_code'):
+                class Loader(importlib.abc.Loader):
+                    def create_module(self,spec):return None
+                    def exec_module(self,mod):
+                        def private_import(name,globals=None,locals=None,fromlist=(),level=0):
+                            root=bundle_roots[prefix]
+                            top=name.split('.',1)[0]
+                            local=(root/(top+'.py')).is_file() or (root/(top+'.pyc')).is_file() or (root/top).is_dir()
+                            if level==0 and local and top!='xstream_operator':
+                                qualified=prefix+'.'+name
+                                imported=importlib.import_module(qualified)
+                                if fromlist:
+                                    for child in fromlist:
+                                        if child!='*' and not hasattr(imported,child) and hasattr(imported,'__path__'):
+                                            try:importlib.import_module(qualified+'.'+child)
+                                            except ModuleNotFoundError as exc:
+                                                if exc.name!=qualified+'.'+child:raise
+                                    return imported
+                                return sys.modules[prefix+'.'+top]
+                            return original_import(name,globals,locals,fromlist,level)
+                        mod.__dict__['__builtins__']=dict(vars(builtins),__import__=private_import)
+                        exec(loader.get_code(fullname),mod.__dict__)
+                found.loader=Loader()
+            return found
+    sys.meta_path.insert(0,BundleFinder())
+    packages=tempfile.TemporaryDirectory(prefix='xstream-group-packages-')
+    prepared={};functions={}
     for step in spec['steps']:
-        if artifact.suffix in ('.whl','.zip'):m=__import__(step['entrypoint'],fromlist=['process'])
-        else:
-            ms=importlib.util.spec_from_file_location('dacp_group_'+step['id'],artifact);m=importlib.util.module_from_spec(ms);ms.loader.exec_module(m)
+        artifact=Path(step['artifact']).resolve()
+        if artifact not in prepared:
+            prefix='_xstream_bundle_'+str(len(prepared))
+            if artifact.suffix in ('.zip','.whl'):
+                root=Path(packages.name)/prefix;root.mkdir()
+                if artifact.suffix=='.whl':
+                    subprocess.run([sys.executable,'-m','pip','install','--no-index','--no-deps','--no-compile','--target',str(root),str(artifact)],check=True,stdout=sys.stderr)
+                else:
+                    with zipfile.ZipFile(artifact) as archive:archive.extractall(root)
+            else:root=artifact.parent
+            bundle_roots[prefix]=root
+            package=types.ModuleType(prefix);package.__path__=[str(root)];sys.modules[prefix]=package
+            prepared[artifact]=prefix
+        prefix=prepared[artifact]
+        entry=step['entrypoint'] if artifact.suffix in ('.whl','.zip') else artifact.stem
+        m=importlib.import_module(prefix+'.'+entry)
         fn=getattr(m,'process',None)
         if not callable(fn):raise ValueError('Python group requires process(ctx)')
         functions[step['id']]=fn

@@ -4,7 +4,7 @@ import _root_.xstream.data._
 
 
 import org.scalatest.funsuite.AnyFunSuite
-import dacp.union.Json
+import _root_.xstream.util.Json
 
 class ComputePushdownSpec extends AnyFunSuite {
   private val a="dacp://node-a:18861";private val b="dacp://node-b:18862"

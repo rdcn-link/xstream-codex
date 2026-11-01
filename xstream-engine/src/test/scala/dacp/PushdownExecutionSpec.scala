@@ -4,7 +4,7 @@ import _root_.xstream.data._
 
 import org.scalatest.funsuite.AnyFunSuite
 import java.nio.file.Files
-import dacp.union.Json
+import _root_.xstream.util.Json
 
 class PushdownExecutionSpec extends AnyFunSuite {
   private val script="""name: Remote filter

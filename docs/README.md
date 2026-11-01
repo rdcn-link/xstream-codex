@@ -14,3 +14,5 @@
 - [Engine and embedding](xstream.md)
 - [Plugin development](plugins.md)
 - [Build and repository boundaries](repositories.md)
+
+Complete Scala examples: [DataView and view streams](data-view-examples.md).

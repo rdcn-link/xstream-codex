@@ -78,7 +78,7 @@ SQL 适配使用 SQLite，而非 Spark SQL；标量类型与结果可能不同�
 |---|---|
 | DifferentialFiltering | 其 FluxDifference 直接返回输入，审阅版本没有实际执行差分过滤。 |
 | Trager | perform 方法为空且没有输出；执行顺序通过工作流依赖边表示。 |
-| AddCache | Spark DataFrame.cache 仅存在于 SparkSession 内；独立 DACP 算子不能通过一个原样转发算子提供跨步骤可重用缓存。 |
+| AddCache | Spark DataFrame.cache 仅存在于 SparkSession 内；独立 XStream 算子不能通过一个原样转发算子提供跨步骤可重用缓存。 |
 
 以下 20 项需要外部服务，以及执行/网络方案的决定，没有发布占位实现。目前 DACP 任务容器使用 network=none，只提供连接参数不能让它访问外部服务。DockerExecute 另外需要明确的 Docker daemon 授权；MysqlReadIncremental 依赖 Stop 实现之外的上游框架变量替换和状态管理。
 

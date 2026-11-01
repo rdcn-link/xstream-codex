@@ -16,9 +16,11 @@ target/universal/stage/bin/xstream-designer /etc/dacp/designer.yaml
 
 默认地址为 `http://127.0.0.1:8840/`。需要网络访问时设置 `host: 0.0.0.0`。服务配置由管理员维护，访问网页无需登录；配置的上游普通客户端凭据决定网页可读取的目录和可请求的推导能力。
 
+发行包为 In-context catalog 配备 `xstream-data-archives` 插件：展开 ZIP、TAR、TAR.GZ/TGZ、GZIP Item 时可浏览其子项。GZIP 展示一个解压后的子项；TAR.GZ 直接展示归档成员。嵌套压缩包不递归展开。Dataset 与 Item 行均采用紧凑间距。
+
 ## 设计流程
 
-1. 打开页面后自动加载本地目录及已配置的服务根；`target.url` 可选。设计器始终把目标视为普通 DACP 服务；Union 自行决定如何拆分和分配步骤。
+1. 打开页面后自动加载本地目录及已配置的服务根；`target.url` 可选。远程目标通过 DACP 连接器访问，步骤分配由执行服务处理。
 2. 自动从配置文件的 `repository` 读取 `/v1/operators`。可搜索算子名称和说明、选择版本、拖到画布。`read_item@1.0` 是内置数据源。
 3. 打开左侧 **Catalogs** 标签页，展开目录时加载数据集，展开数据集和文件夹时加载 Item。点击 Item 后，旁边浮动显示各个可用视图和复制路径的操作图标，悬停或键盘聚焦显示用途。选择视图后，为选中或新建的读取步骤设置 URI 和显式视图。复制路径保留数据集名称（如 `/science/climate.nc/temperature`）。仅点击文件夹左侧箭头展开或收起；点击名称显示操作图标。Union 连接使用 Union 的公开 URI。
 4. 拖动卡片调整位置，点击输出端口启动随鼠标移动的预览线，再点击输入端口建立流依赖；右键或 Esc 取消。端口不支持拖拽连线。在右侧修改标题和参数；支持删除步骤、移除连接、撤销、重做与自动排列。
@@ -188,7 +190,7 @@ nodes:
     token_file: /etc/dacp/node-a.token
 ```
 
-设计器通过与 XStream、DACP Server 相同的插件契约绑定 JVM 级 DataCatalog。可用 `local_catalog.data_catalog` 配置自定义 DataCatalogProvider，替代静态数据集。详见 [XStream 引擎](../docs/xstream_zh.md)和 [Job 读取参数](https://github.com/rdcn-link/dacp-codex/blob/main/docs/jobs_zh.md#读取路径远程服务与-sql)。
+设计器通过 XStream 插件契约绑定 JVM 级 DataCatalog。可用 `local_catalog.data_catalog` 配置自定义 DataCatalogProvider，替代静态数据集。详见 [XStream 引擎](../docs/xstream_zh.md)和 [Job 读取参数](../docs/jobs_zh.md)。
 
 目录浏览以当前实现为准：左侧 **Catalogs** 初始只加载本地目录及配置的服务根；展开后才加载数据集和文件夹。`target.url` 可选，本地 Item 使用 `context:`，远程 Item 使用完整 DACP URI。`read_item` 的结构及样例读取使用对应目录。
 

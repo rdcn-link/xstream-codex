@@ -1,8 +1,8 @@
 # PiFlow EcoFlow 对应算子
 
-将 [PiFlow EcoFlow](https://github.com/cas-bigdatalab/piflow/tree/EcoFlow) 的算子适配为 DACP 算子。审阅基线固定为提交 `84de10436a0d382e0d8d2ce1ab3a82f71ebafc29`，该分支包含 67 个 `ConfigurableStop` 派生算子。完整清单、上游类名、源文件和 SHA-256 位于 [inventory.json](inventory.json)。只有通过对应契约测试的实现才能发布；清单中的 `pending` 不是已实现能力。
+将 [PiFlow EcoFlow](https://github.com/cas-bigdatalab/piflow/tree/EcoFlow) 的算子适配为 XStream 算子。审阅基线固定为提交 `84de10436a0d382e0d8d2ce1ab3a82f71ebafc29`，该分支包含 67 个 `ConfigurableStop` 派生算子。完整清单、上游类名、源文件和 SHA-256 位于 [inventory.json](inventory.json)。只有通过对应契约测试的实现才能发布；清单中的 `pending` 不是已实现能力。
 
-上游 Scala / Java 原文保存在 `upstream/`，许可证见 [LICENSE](LICENSE)。适配实现、修改说明与输入输出契约随每个算子的源码包提供。这里不是 PiFlow 工作流文件的兼容执行器；任务使用 DACP 自己的端口和参数合同。
+上游 Scala / Java 原文保存在 `upstream/`，许可证见 [LICENSE](LICENSE)。适配实现、修改说明与输入输出契约随每个算子的源码包提供。这里不是 PiFlow 工作流文件的兼容执行器；任务使用 XStream 的端口和参数合同。
 
 当前协作部署仅发布 CSV parser、filter、execute SQL、merge、join、CSV save 这 6 个 `1.0` 算子。可直接使用的参数与工作流见[当前算子库](../../../docs/operator-catalog_zh.md)。下文描述完整源码工程和移植范围，不等于在线仓库已全部发布；实际状态以 `/v1/operators` 为准。
 

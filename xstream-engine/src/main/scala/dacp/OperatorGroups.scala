@@ -77,7 +77,7 @@ object OperatorGroups {
         case Some(cmd)=>
           val ins=external.map{case(id,port,_)=>names((id,port))->operators(id).inputs(port)}.toMap
           val outs=outputs.map{case(port,(task,name))=>port->operators(task).outputs(name)}
-          val op=ResolvedOperator(all.head.image,None,None,cmd,ins,outs)
+          val op=ResolvedOperator(all.head.image,None,None,cmd,ins,outs,all.head.executor,runtime=all.head.runtime)
           Right(PreparedOperatorGroup(Task("group",bindings,"group@1",new java.util.LinkedHashMap[String,Object]()),op,bindings,outputs.map{case(port,pair)=>port->(pair._1,labels(pair))}))
       }
   }

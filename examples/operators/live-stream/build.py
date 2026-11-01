@@ -54,7 +54,7 @@ def build(catalog, output, name="live_ticks"):
                         'interval_seconds': dict(type='number', minimum=0.01, maximum=60, default=1.0, description='Seconds between generated observations.'),
                         'max_records': dict(type='integer', minimum=0, default=0, description='Maximum record count; zero means continuous.')}), required=[], additionalProperties=False),
                     execution=dict(executor='python', entrypoint=name, config={}), runtime=runtime, artifact=artifact,
-                    provenance=dict(source_archive=source, source_repository='https://github.com/rdcn-link/dacp-codex', build_instructions='python3 examples/operators/live-stream/build.py --runtime-catalog CATALOG --output OUTPUT. Reuses piflow_csv_parser@1.0 Python runtime; embeds the DACP Python SDK.'))
+                    provenance=dict(source_archive=source, source_repository='https://github.com/rdcn-link/xstream-codex', build_instructions='python3 examples/operators/live-stream/build.py --runtime-catalog CATALOG --output OUTPUT. Reuses piflow_csv_parser@1.0 Python runtime; embeds the DACP Python SDK.'))
     directory = output / name / '1.0'
     directory.mkdir(parents=True, exist_ok=True)
     (directory / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')

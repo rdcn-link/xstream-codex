@@ -17,7 +17,7 @@ import com.github.dockerjava.api.async.ResultCallback
 
 /** Receives already-authorized named item streams; never creates/publishes an output dataset. */
 class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
-  def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None): Unit = {
+  def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,onRuntime:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None): Unit = {
     Jobs.authorizeSource(config,task)
     Jobs.readBinding(task).foreach { binding=>
       require(inputs.isEmpty,"read_item has no input ports")
@@ -49,6 +49,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
           val contract=PortContract(Set("bytes","records"),Set.empty,None)
           ResolvedOperator(docker.inspectImageCmd(runtime.image).exec().getId,Some(artifact),Some("/operator/operator.source"),command,inputs.keys.map(_->contract).toMap,Map.empty,runtime.executor,Some(OperatorProgram(code.runtime,code.entrypoint,Some(artifact))))
       })
+      onRuntime.foreach(_(OperatorLibrary.runtimeDescriptor(definition)))
       require(inputs.keySet==definition.inputs.keySet,"input ports do not match operator declaration")
       val starts=inputs.toVector.sortBy(_._1).map {case(port,source)=>
         val f=source.next().getOrElse(throw new IllegalArgumentException("missing input metadata"));val h=StreamProtocol.header(f)
@@ -83,7 +84,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
         .withLogConfig(new LogConfig(LogConfig.LoggingType.NONE))
       val create=docker.createContainerCmd(op.image).withHostConfig(host)
         .withLabels(Map("dacp.execution_mode"->(if(onEvent.nonEmpty)"shared_process"else "isolated_step"),"dacp.task"->task.id).asJava)
-        .withEnv((op.command.environment+("DACP_OPERATOR"->task.operator)).map{case(k,v)=>s"$k=$v"}.toSeq.asJava)
+        .withEnv((op.command.environment+("XSTREAM_OPERATOR"->task.operator)).map{case(k,v)=>s"$k=$v"}.toSeq.asJava)
         .withCmd(op.command.arguments.asJava)
       op.command.entrypoint.foreach(e=>create.withEntrypoint(e.asJava))
       container=create.exec().getId

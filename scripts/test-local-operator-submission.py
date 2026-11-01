@@ -6,7 +6,7 @@ import tempfile
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('submit_operator', root / 'scripts/submit-operator.py')
+spec = importlib.util.spec_from_file_location('submit_operator', root / 'xstream-operator-sdk/cli/xstream_operator_cli/cli.py')
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 with tempfile.TemporaryDirectory() as temporary:

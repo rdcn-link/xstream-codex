@@ -4,6 +4,7 @@ The SDK handles input discovery, parameter loading, Arrow IPC, output frames, en
 
 ## Layout and builds
 
+- `cli/`: installable `xstream-operator submit` source-publication command; see [CLI installation](cli/README.md).
 - `contract/`: lightweight metadata, parameter and source-analysis contracts; depends only on Jackson at runtime.
 - `jvm/`: Java/Scala stream-processing SDK and templates; published as `xstream-operator-sdk`.
 - `python/`: Python SDK and templates.
@@ -39,7 +40,7 @@ docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:
 
 ## Scala
 
-From the XStream root, run `scripts/bootstrap-local.sh /path/to/dacp-codex` to publish unreleased integration dependencies and the SDK, then build the example:
+From the XStream root, run `scripts/bootstrap-local.sh` to publish development dependencies and the SDK, then build the example:
 
 ```bash
 cd examples/operators/scala

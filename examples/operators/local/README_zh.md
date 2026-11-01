@@ -23,7 +23,7 @@ STREAMING WEATHER OBSERVATIONS
 在 `operator.yaml` 中选择真实仓库运行环境后，可以提交任一示例：
 
 ```bash
-python scripts/submit-operator.py examples/operators/local/python \
+xstream-operator submit examples/operators/local/python \
   --url https://operators.example.org --token-file /protected/submitter.token
 ```
 

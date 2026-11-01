@@ -34,45 +34,24 @@ To publish a separate executable artifact, set `artifact: path/to/program` and `
 
 ## Stream behavior
 
-The adapter unwraps Arrow IPC byte cells from the named input FIFO, writes their bytes to stdin, and closes stdin after input ends. Concurrently it reads stdout in chunks of at most 64 KiB and emits DACP `start/data/end` frames. Bounded pipes propagate backpressure; the complete input or output is never collected. Stderr remains diagnostics and does not enter the output stream.
+The adapter unwraps Arrow IPC byte cells from the named input FIFO, writes their bytes to stdin, and closes stdin after input ends. Concurrently it reads stdout in chunks of at most 64 KiB and emits XStream `start/data/end` frames. Bounded pipes propagate backpressure; the complete input or output is never collected. Stderr remains diagnostics and does not enter the output stream.
 
-Output `end` is emitted only after successful program exit and successful input delivery. A nonzero exit or broken input delivery fails the job; previously delivered data is partial. Cancellation or timeout uses the server's existing container removal lifecycle, terminating the program and its child processes. Commands should consume their complete stdin; early stdin closure is not a successful truncation/preview mechanism. Use shell preview flags to cancel a job intentionally.
+Output `end` is emitted only after successful program exit and successful input delivery. A nonzero exit or broken input delivery fails the job; previously delivered data is partial. Cancellation or timeout uses the engine's container lifecycle, terminating the program and its child processes. Commands should consume their complete stdin; early stdin closure is not a successful truncation/preview mechanism. Use shell preview flags to cancel a job intentionally.
 
 The adapter supports zero or one bytes input and zero or one bytes output. Records serialization, multiple pipes, filename arguments, seekable temporary input files, and shell pipelines are not implemented. Use a custom operator wrapper for these cases; do not implicitly flatten structured or multidimensional data.
 
 ## Publication and execution
 
-For an existing runtime executable, save the `executor_config` mapping alone as `command.yaml`, and the port declarations as `ports.yaml`:
+The operator repository accepts source-only submissions through `xstream-operator submit`, then builds and reviews them. Native programs require an administrator-provided build runtime; the published package and shared execution runtime are downloaded separately. See [submission and review](operator-submission.md). Local development can use the `command` builder in [local operator libraries](local-operators.md).
 
-```bash
-${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publish uppercase@1.0 \
-  --root .operator-catalog --image example/native-runtime:1 \
-  --executor command --entrypoint /usr/bin/tr \
-  --ports ports.yaml --executor-config command.yaml
-```
-
-For an executable artifact, also pass `--artifact path/to/program` and set `--entrypoint /operator/program`. Alternatively, use `seed --operators DIR --root .operator-catalog` with complete definitions. The repository preserves executor-owned settings in `execution.config`; execution nodes validate them through the plugin. Existing repository checksum, shared-runtime, download, and offline-cache behavior applies.
-
-In the shell, use the ordinary command:
-
-```text
-run uppercase@1.0 --input source=/reports/orders
-```
-
-No client change or native-specific job syntax is required.
+Jobs reference native operators with ordinary input bindings, without special task syntax. Run them using `xstream-runner engine.yaml job.yaml`.
 
 ## Plugin contract and verification
 
-`CommandExecutor` registers in `META-INF/services/dacp.OperatorExecutor` and ships in `plugins/xstream-plugin-operator-executors`. External launchers use the same registration: compile against `dacp-plugin-api` as Provided, package the service file, put the JAR and private dependencies in `plugin_directory`, then restart the server. `OperatorProgram.configuration` contains the generic executor-owned map; `inputs` and `outputs` map port names to allowed representation sets. Each plugin owns validation. Core only carries these settings and manages resources; it has no command-specific dispatch branch.
+`CommandExecutor` registers in `META-INF/services/dacp.OperatorExecutor` and ships in `plugins/xstream-plugin-operator-executors`. External plugins compile against `xstream-execution-api` as Provided, package their service files and install their JAR/private dependencies in the host's `plugin_directory`. Restart the host after installation. Plugins validate their own settings; the engine manages resources.
 
 ```bash
-(cd plugins/xstream-plugin-operator-executors && sbt test)
-(cd "$REPOSITORY_HOME" && sbt test)
-(cd /path/to/dacp-codex/dacp-server && sbt test stage)
-# Requires cc, certificates, Docker access, and xstream/operator-python:1.0:
-.venv/bin/python scripts/test-native-execution.py
+(cd plugins/xstream-plugin-operator-executors && sbt 'testOnly xstream.operator.executors.CommandExecutorSpec')
 ```
 
-The live test starts and stops its own server on port 18817 (`DACP_NATIVE_TEST_PORT` overrides it), compiles a C filter, and checks streaming beyond pipe capacity, artifacts without executable permission bits, partial failure, cancellation, and recovery. Unit contracts cover registration, literal arguments, unsupported ports, invalid settings, and preservation of plugin settings through publication, download, and cache reuse.
-
-`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/rdcn-link/xstream-operator-repository).
+Contract tests cover registration, literal arguments, supported ports, configuration and launch rules. See the [native example](../examples/operators/native/README.md).

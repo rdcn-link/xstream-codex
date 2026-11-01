@@ -4,7 +4,7 @@
 
 100 个 Scala 算子：50 个文本、20 个 JSON、20 个 CSV、10 个二进制算子，名称以 `scala_` 开头，版本为 `1.0`。全部使用 `jvm` 执行器、一个共享薄 JAR（内含小型 SDK，Arrow、Jackson、Scala 依赖由运行环境提供） 和 `xstream/operator-jvm:1.1` 运行环境。每个算子有独立 JVM 入口和仓库清单，源码可下载。不使用 Python 执行逻辑；Python 构建脚本只生成元数据和发布材料。
 
-每个算子输入 `source`、输出 `result`，均为 `bytes`。文本、CSV 和 JSON 使用 UTF-8。参数表给出必填参数示例，无参数时传 `{}`；未知或缺少参数会报错。输入以 Arrow 流消费至 EOS，完整 Item 在内存中转换，默认限制 16 MiB；`max_input_bytes` 可设置为 1 至 16777216 的整数，超限失败，不截断。输出通过 DACP 结果流发送，不保存服务器结果文件。这些是有大小上限的文档算子，不适用于无限流；逐批记录处理可使用 [Python 记录算子](../common/README_zh.md)。
+每个算子输入 `source`、输出 `result`，均为 `bytes`。文本、CSV 和 JSON 使用 UTF-8。参数表给出必填参数示例，无参数时传 `{}`；未知或缺少参数会报错。输入以 Arrow 流消费至 EOS，完整 Item 在内存中转换，默认限制 16 MiB；`max_input_bytes` 可设置为 1 至 16777216 的整数，超限失败，不截断。输出通过 XStream 结果流发送，不保存服务器结果文件。这些是有大小上限的文档算子，不适用于无限流；逐批记录处理可使用 [Python 记录算子](../common/README_zh.md)。
 
 CSV 要求唯一表头及一致的行宽，支持引号、转义引号、单元格内换行与 CRLF，输出使用 LF；CSV 转 JSON 保留字符串类型。列重命名和新增列应使用未占用名称。JSON 数组排序支持数值或字符串；字段缺失、类型错误或 UTF-8 无效时失败。`text_fold_german` 仅转小写并展开 ß；`text_html_unescape_basic` 仅还原 `&lt;`、`&gt;`、`&quot;`、`&#x27;`、`&amp;` 五种实体。字符反转和计数以 Unicode 码点为单位，不以字形簇为单位。摘要和计数的文本输出以 LF 结尾。
 
@@ -13,14 +13,14 @@ CSV 要求唯一表头及一致的行宽，支持引号、转义引号、单元�
 需要 JDK 17、sbt、Python 3 和 PyArrow。先在项目根目录发布本地依赖（按顺序执行，不要并行运行共享构建）。通过 `--runtime-descriptor runtime.json` 提供已注册 JVM 运行环境的描述（已审批 JVM 算子的 `runtime` 对象），并通过 `--runtime-catalog` 指定其 blob 存储；归档摘要会被校验。
 
 ```bash
-(cd /path/to/dacp-codex/dacp-plugin-api && sbt publishLocal)
+(cd xstream-execution-api && sbt publishLocal)
 (cd xstream-operator-sdk && sbt publishLocal)
 .venv/bin/python examples/operators/common-scala/build.py --runtime-descriptor runtime.json
 ```
 
 构建脚本生成独立入口，编译薄 JAR，并执行 100 个输入输出示例校验；结果在 `examples/operators/common-scala/target/catalog`。发布复用代码、运行环境和源码 blob，通过带令牌的 HTTP API 逐个发布，一条成功即可在网站看到。版本不可覆盖，变更代码应使用新版本。重复发布只接受完全相同的清单。远程发布应使用 HTTPS。下载的源码归档提供实现、构建文件、入口、测试样例与中英文说明；它依赖项目中的 SDK 及构建辅助程序，按本文命令从项目根目录构建。
 
-在现有工作流中引用 `operator: scala_text_uppercase@1.0`，输入绑定到 `source`，输出依赖使用 `port: result`；例如 `scala_text_replace@1.0` 使用 `params: {old: ",", new: ";"}`。可参照 [完整 Union 工作流](https://github.com/rdcn-link/dacp-codex/blob/main/examples/union/job.yaml) 和 [算子编写指南](../../../docs/operator-authoring_zh.md)。
+在工作流中引用 `operator: scala_text_uppercase@1.0`，输入绑定到 `source`，输出依赖使用 `port: result`；例如 `scala_text_replace@1.0` 使用 `params: {old: ",", new: ";"}`。可参照 [完整 Union 工作流](https://github.com/rdcn-link/xstream-codex/blob/main/examples/xstream/read.yaml) 和 [算子编写指南](../../../docs/operator-authoring_zh.md)。
 
 ## 参数及输入输出示例
 

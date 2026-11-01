@@ -1,8 +1,8 @@
 # PiFlow EcoFlow operator adaptations
 
-Adapt operators from [PiFlow EcoFlow](https://github.com/cas-bigdatalab/piflow/tree/EcoFlow) to DACP. The review baseline is pinned to commit `84de10436a0d382e0d8d2ce1ab3a82f71ebafc29`; this branch contains 67 operators derived from `ConfigurableStop`. [inventory.json](inventory.json) records the complete inventory, upstream classes, source files, and SHA-256 digests. Only implementations passing their individual contract tests can be published; `pending` entries are not implemented capabilities.
+Adapt operators from [PiFlow EcoFlow](https://github.com/cas-bigdatalab/piflow/tree/EcoFlow) to XStream. The review baseline is pinned to commit `84de10436a0d382e0d8d2ce1ab3a82f71ebafc29`; this branch contains 67 operators derived from `ConfigurableStop`. [inventory.json](inventory.json) records the complete inventory, upstream classes, source files, and SHA-256 digests. Only implementations passing their individual contract tests can be published; `pending` entries are not implemented capabilities.
 
-Original Scala / Java sources are retained under `upstream/`; see [LICENSE](LICENSE). Each operator's source archive includes its adaptation, change descriptions, and input/output contracts. This is not a compatibility executor for PiFlow workflow files; tasks use DACP's own port and parameter contracts.
+Original Scala / Java sources are retained under `upstream/`; see [LICENSE](LICENSE). Each operator's source archive includes its adaptation, change descriptions, and input/output contracts. This is not a compatibility executor for PiFlow workflow files; tasks use XStream's port and parameter contracts.
 
 The current collaboration deployment publishes only CSV parser, filter, execute SQL, merge, join and CSV save at version `1.0`. See the [current catalog](../../../docs/operator-catalog.md) for runnable parameters and workflows. The sections below describe the full source project and adaptation scope, not a fully published online repository; `/v1/operators` is authoritative.
 
@@ -72,7 +72,7 @@ Python publication now runs SDK contract tests, builds the package, runs package
   --spark-home /tmp/dacp-piflow-spark --docker
 ```
 
-Fixtures cover cross-batch records, empty input, Unicode, quoted CSV/newlines, multiple inputs/outputs, invalid parameters, and scientific numeric examples; coverage varies by operator's test branch. `integration_test.py` checks real Flight submission, remote operator resolution, a three-step CSV workflow, and final output. Its header documents the temporary node setup. At least three task slots are needed to connect those steps concurrently.
+Fixtures cover cross-batch records, empty input, Unicode, quoted CSV/newlines, multiple inputs/outputs, invalid parameters, and scientific numeric examples; coverage varies by operator's test branch.
 
 Container tests use a read-only root, no network, 1 GiB memory, 128 processes/threads, and 512 MiB temporary space. Spark operators may create temporary shuffle files, and Excel export may create temporary workbook files; these are neither durable results nor checkpoints. Stateful Python algorithms typically limit materialized inputs or state to 128 MiB, with additional memory overhead for intermediate objects. Scientific JARs are approximately 230 KB, sharing a Spark runtime of approximately 413 MB. Python runtimes are shared independently; Excel code includes approximately 270 KB of compressed dependencies.
 

@@ -1,4 +1,4 @@
-name := "dacp-common-scala"
+name := "xstream-common-scala"
 organization := "example"
 version := "1.0"
 scalaVersion := "2.13.16"
@@ -18,7 +18,7 @@ verifyOperators := {
 // Bundle the small SDK itself; Arrow/Jackson/Scala remain in the shared runtime.
 Compile / packageBin / mappings ++= {
   val jars = (Compile / dependencyClasspath).value.map(_.data).filter(f =>
-    f.getName.startsWith("xstream-operator-sdk_") || f.getName.startsWith("dacp-plugin-api_"))
+    f.getName.startsWith("xstream-operator-sdk_") || f.getName.startsWith("xstream-execution-api_"))
   jars.flatMap { jar =>
     val unpack = target.value / ("bundled-" + jar.getName)
     IO.delete(unpack)

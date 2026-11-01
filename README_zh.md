@@ -21,21 +21,18 @@ XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问�
 
 ## 构建
 
-使用 JDK 17 和 sbt 1.10.x。这些模块从 [DACP](https://github.com/rdcn-link/dacp-codex) 拆出。DACP 通过版本化制品依赖 XStream；XStream 引擎和设计器通过版本化制品依赖 DACP 集成库。构建不会直接引用另一个源码目录。
-
-目前尚无公开发布版本。为开发机器初始化本地制品仓库，请克隆两个项目后执行：
+使用 JDK 17 和 sbt 1.10.x。构建只需要本仓库，不需要 DACP 源码或 DACP 制品。初始化脚本按依赖顺序将 XStream 开发制品发布到本机仓库。
 
 ```bash
-git clone git@github.com:rdcn-link/dacp-codex.git
 git clone git@github.com:rdcn-link/xstream-codex.git
 cd xstream-codex
-scripts/bootstrap-local.sh ../dacp-codex
+scripts/bootstrap-local.sh
 sbt test
 (cd xstream-engine && sbt stage)
 (cd xstream-designer && sbt stage)
 ```
 
-初始化脚本按依赖顺序发布数据制品、DACP 公共集成库、XStream 算子 SDK/推导/执行器和引擎。显式的 DACP 路径仅用于初始化尚未发布的开发制品，普通构建通过 sbt 仓库解析制品。干净机器必须先取得集成制品才能构建引擎。详见[仓库边界](docs/repositories_zh.md)。
+远程 DACP 数据访问由本仓库的连接器实现，本地执行无需启动任何数据服务。详见[模块和构建](docs/repositories_zh.md)。
 
 ## 运行
 
@@ -61,8 +58,30 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
 - [插件契约和注册](xstream-data/README_zh.md)
 - [作业 YAML](docs/jobs_zh.md)
 
-## 标志与来源
+## 标志
 
-原创矢量[完整标志](assets/xstream-logo.svg)和[图形符号](assets/xstream-mark.svg)以青绿/蓝色与紫色/琥珀色交叉流构成 X。设计器使用图形符号作为 favicon。源码来源见 [ORIGIN](ORIGIN)。实现保留现有包命名空间，本次拆分不重命名 API 包。
+矢量[完整标志](assets/xstream-logo.svg)和[图形符号](assets/xstream-mark.svg)以交叉的数据流构成 X。设计器使用图形符号作为 favicon。
 
 文档归属与官网发布方式：[维护规则](docs/documentation_zh.md)。
+
+完整 Scala 示例：[DataView 与视图流](docs/data-view-examples_zh.md)。
+
+## 架构
+
+本地目录、引擎和设计器可独立使用，远程服务通过可选连接器接入。
+
+```mermaid
+flowchart LR
+  Designer["可视化设计器"] --> Job["Job YAML 与策略"]
+  Runner["Runner / 嵌入宿主"] --> Engine["XStream 引擎"]
+  Job --> Engine
+  Catalog["DataCatalog"] --> View["Item / DataView"]
+  View --> Arrow["Arrow 流"] --> Engine
+  Repository["算子仓库"] --> Engine
+  Engine --> Result["结果流"]
+  Remote["可选远程连接器"] -.-> View
+```
+
+## 视觉样式
+
+标准视觉资源为 `assets/xstream-mark.svg` 和 `assets/xstream-logo.svg`。X 图形背景包含五条平行、连续、短波长且低波幅的小波浪线。各应用应保持图标尺寸、深色底色和青蓝紫橙配色一致。

@@ -7,7 +7,7 @@ EcoFlow scientific operators retain the upstream Scala / Spark algorithms and co
 From the project root, prepare the SDK and API JARs and obtain the pinned Spark distribution contents:
 
 ```bash
-(cd /path/to/dacp-codex/dacp-plugin-api && sbt package)
+(cd xstream-execution-api && sbt package)
 (cd xstream-operator-sdk && sbt package)
 .venv/bin/python -m pip download --no-deps --dest /tmp/dacp-piflow-deps pyspark==4.0.1
 mkdir -p /tmp/dacp-piflow-spark

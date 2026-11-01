@@ -1,6 +1,6 @@
 # xstream-data
 
-为 XStream 和 DACP 提供独立于任务引擎、网络服务的类型化数据访问。公共契约位于 `xstream.data`，各实现均为独立的 ServiceLoader 插件。参见[类型化数据流](../docs/data-streams_zh.md)和[插件开发](https://github.com/rdcn-link/dacp-codex/blob/main/docs/plugins_zh.md)。
+为 JVM 应用提供独立于任务引擎、网络服务的类型化数据访问。公共契约位于 `xstream.data`，各实现均为独立的 ServiceLoader 插件。参见[类型化数据流](../docs/data-streams_zh.md)和[插件开发](../docs/plugins_zh.md)。
 
 ## 模块
 
@@ -19,7 +19,7 @@ cd xstream-data
 sbt compile
 ```
 
-应用在编译时依赖 core，在运行时加载所需实现。DACP 服务端发行包包含科学格式插件。在 `META-INF/services/xstream.data.FormatHandler` 注册格式，在 `META-INF/services/xstream.data.DataViewSupport` 注册视图支持，每行填写实现类全名。外部 JAR 及其依赖可放入既有插件目录，不需要修改核心注册表。
+应用在编译时依赖 core，在运行时加载所需实现。Runner 和 Designer 发行包包含科学格式插件。在 `META-INF/services/xstream.data.FormatHandler` 注册格式，在 `META-INF/services/xstream.data.DataViewSupport` 注册视图支持，每行填写实现类全名。外部 JAR 及其依赖可放入既有插件目录，不需要修改核心注册表。
 
 文件 Item 可配置 `format: netcdf`、`format: fits` 或 `format: fasta`。NetCDF/FITS 接受 `chunk_bytes`（8–16777216，默认 65536）；FASTA 接受 `chunk_symbols`（1–1048576，默认 65536）及 `alphabet`（`dna`、`rna`、`protein`、`unknown`）。格式参数放入 Item 的 `options` 映射。
 
@@ -49,3 +49,5 @@ datasets:
         format: fasta
         options: {alphabet: dna, chunk_symbols: 65536}
 ```
+
+完整 Scala 示例：[DataView 与视图流](../docs/data-view-examples_zh.md)。

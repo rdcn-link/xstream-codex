@@ -4,6 +4,7 @@ SDK 封装输入发现、参数读取、Arrow IPC、输出帧、结束事件和�
 
 ## 目录与构建
 
+- `cli/`：可安装的 `xstream-operator submit` 源码发布命令，参见[命令行工具安装](cli/README_zh.md)。
 - `contract/`：轻量的元数据、参数与源码分析契约；运行时仅依赖 Jackson。
 - `jvm/`：Java/Scala 流处理 SDK 与模板；发布名称为 `xstream-operator-sdk`。
 - `python/`：Python SDK 与模板。
@@ -39,7 +40,7 @@ docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:
 
 ## Scala
 
-先在 XStream 根目录执行 `scripts/bootstrap-local.sh /path/to/dacp-codex` 发布未发布的集成依赖及 SDK，再构建示例：
+先在 XStream 根目录执行 `scripts/bootstrap-local.sh` 发布开发依赖及 SDK，再构建示例：
 
 ```bash
 cd examples/operators/scala

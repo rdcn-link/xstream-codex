@@ -2,47 +2,16 @@
 
 [中文](README_zh.md)
 
-This C program reads stdin and writes uppercase bytes to stdout. It has no DACP or Arrow dependency. The `command` executor bridges those streams inside the container.
-
-From the project root:
+This C program reads bytes from stdin and writes uppercase ASCII to stdout. The container's `command` executor bridges Arrow streams; the C program needs no Arrow dependency.
 
 ```bash
 mkdir -p examples/operators/native/build
 cc -O2 -Wall -Wextra -Werror -s \
   -o examples/operators/native/build/uppercase examples/operators/native/uppercase.c
+printf 'hello' | examples/operators/native/build/uppercase
+(cd plugins/xstream-plugin-operator-executors && sbt 'testOnly xstream.operator.executors.CommandExecutorSpec')
 ```
 
-Build/install the shared `xstream/operator-python:1.0` runtime as described in the [operator guide](../../../docs/operator-authoring.md). It supplies the bridge's Python and PyArrow dependencies; the executable must match its Linux architecture and available C library. Static linking is optional.
+The execution definition is `operators/native_uppercase/1.0/operator.yaml`, using the shared `xstream/operator-python:1.0` runtime. The binary must match its OS, architecture and C library. Stdout becomes chunked output, without publishing a result Dataset. See [native command contracts](../../../docs/native-commands.md) for arguments, resources and ports.
 
-Set the execution server's `local_operator_library` to the absolute path of `examples/operators/native/operators`, or seed a public repository:
-
-```bash
-python3 scripts/package-operator-sources.py
-${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed \
-  --operators examples/operators/native/operators --root .operator-catalog
-```
-
-Configure execution nodes with `remote_operator_library_urls` for repository downloads. In the connected shell:
-
-```text
-run native_uppercase@1.0 --input source=/reports/orders
-```
-
-The binary is downloaded separately and shares the Python runtime image. No execution permissions need to survive publication: the adapter makes an executable private copy. Outputs are streams; nothing is registered as a result dataset.
-
-For a program already installed in a runtime, omit `artifact` and set `entrypoint` to its absolute runtime path. `executor_config.args` supplies literal arguments. See [native command configuration and publication](../../../docs/native-commands.md).
-
-Validation uses the real server, mTLS and Docker, on temporary port 18817:
-
-```bash
-(cd /path/to/dacp-codex/dacp-server && sbt -batch stage)
-.venv/bin/python scripts/test-native-execution.py
-```
-
-Run with Docker group access (for example, wrap the last command in `sg docker -c '...'` if needed). The test compiles the program and verifies output larger than pipe buffers, partial failure, incremental delivery, cancellation and recovery. It cleans up its server and temporary files. Native source submission, records conversion, and multiple input/output pipes are not implemented.
-
-New source-bearing versions and optional license/SBOM publication are described in [source and review information](../../../docs/operator-provenance.md). Package sources before seeding.
-
-The repository accepts source only. Local builds in these examples are for development verification; use the [source submission and review workflow](../../../docs/operator-submission.md) for public publication.
-
-`REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/rdcn-link/xstream-operator-repository).
+Use [local operator libraries](../../../docs/local-operators.md) for development and [source submission and review](../../../docs/operator-submission.md) for public publication; the repository builds the final binary.

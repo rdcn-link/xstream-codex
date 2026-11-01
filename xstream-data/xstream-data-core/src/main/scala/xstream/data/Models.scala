@@ -5,7 +5,7 @@ import org.apache.arrow.vector.types.pojo.Schema
 
 case class Item(path: String, format: String, schema: Option[Schema], kind: String = "data",
                 lastModifiedTimeMs: Option[Long] = None, totalSizeBytes: Option[Long] = None,
-                recordCount: Option[Long] = None, views: Option[Seq[String]] = None) {
+                recordCount: Option[Long] = None, views: Option[Seq[String]] = None, creationTimeMs: Option[Long] = None) {
   require(views.forall(v => v.distinct.size == v.size && v.forall(_.matches("[a-z][a-z0-9_.-]*"))), "invalid item views")
 }
 trait DataSetAdapter { def list(): Seq[Item]; def describe(item: String): Item }

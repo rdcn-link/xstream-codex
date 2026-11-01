@@ -42,3 +42,25 @@
 兼容的同进程 JVM 和 Python 算子组通过有界链路和背压交接批次。只有消费者推进后，生产者才能复用缓冲区。算子组边界和外部算子输入仍然需要编码。多路复用 Job 协议保留 `OperatorFrame` 信封：bytes 载荷为原始有界字节块，records 和科学视图载荷为 Arrow IPC 批次。这与公共 View 接口有所区别，后者始终输出 Arrow 批次。
 
 物化存储首先写入一个保留字典的零行 Arrow File 分段，之后依序保存数据分段。清单记录分段顺序、大小及 SHA-256。重放在交付每个分段之前检查完整性；失败的写入禁止提交。空字典流会显式携带字典消息。IPC Stream 写入支持切换字典提供者；每个 IPC File 分段是独立快照。
+
+## 流消费时序
+
+当前消费者回调返回后才继续下一批数据，只有显式 IPC 边界才需要序列化。
+
+```mermaid
+sequenceDiagram
+  participant A as 应用
+  participant V as DataView
+  participant S as ArrowDataStream
+  participant C as ArrowConsumer
+  A->>V: open(selection, context)
+  V-->>A: 返回流
+  A->>S: consume(consumer)
+  S->>C: start(schema, dictionaries)
+  loop 有界批次
+    S->>C: accept(batch)
+    C-->>S: 回调返回
+  end
+  S-->>A: 消费完成
+  A->>S: close()
+```

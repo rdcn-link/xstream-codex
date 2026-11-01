@@ -42,3 +42,25 @@ Array `T` is the Arrow integer or floating type matching the source numeric enco
 Compatible same-process JVM and Python operator groups hand batches through bounded links with backpressure. A producer may reuse its buffers only after the consumer advances. Group boundaries and external operator inputs still require encoding. The multiplexed Job protocol retains its `OperatorFrame` envelopes: bytes payloads are raw bounded chunks; records and scientific payloads contain Arrow IPC batches. This is distinct from the public View interface, which always emits Arrow batches.
 
 Materialization stores one initial zero-row Arrow File segment, preserving dictionaries, followed by ordered data segments. Its manifest records segment order, size and SHA-256. Replay checks integrity before exposing each segment; failed writes cannot be committed. Empty dictionary streams carry explicit dictionary messages. IPC stream writing supports changing dictionary providers; IPC File segments are independent snapshots.
+
+## Stream consumption sequence
+
+The next batch is produced after the current consumer callback returns. Serialization is required only at an explicit IPC boundary.
+
+```mermaid
+sequenceDiagram
+  participant A as Application
+  participant V as DataView
+  participant S as ArrowDataStream
+  participant C as ArrowConsumer
+  A->>V: open(selection, context)
+  V-->>A: stream
+  A->>S: consume(consumer)
+  S->>C: start(schema, dictionaries)
+  loop Bounded batches
+    S->>C: accept(batch)
+    C-->>S: callback returns
+  end
+  S-->>A: consumption complete
+  A->>S: close()
+```

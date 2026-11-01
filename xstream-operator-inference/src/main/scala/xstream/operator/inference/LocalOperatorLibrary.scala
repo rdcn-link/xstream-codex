@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.github.dockerjava.api.DockerClient
 import scala.jdk.CollectionConverters._
 import xstream.data.Data
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.util.{Json,YamlDocument}
 import xstream.operator.LocalOperatorBuilder
 
 case class PreparedLocalOperator(reference:String,definition:JsonNode,image:String,executor:String,artifact:Path)

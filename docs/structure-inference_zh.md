@@ -6,32 +6,15 @@
 
 ## 使用方式
 
-在 shell 中，先查看结构，再提交同一个工作流：
+设计器通过 `xstream-operator-inference` 在本地执行推导。嵌入式应用使用 `OperatorInferenceService`，提供插件环境、仓库与缓存配置，以及有界 worker 配置，无需数据服务器。参见[模块指南](../xstream-operator-inference/README_zh.md)。宿主从绑定的数据目录或配置的远程连接器为 `read_item` 提供元信息。
 
-```text
-infer workflow.yaml --vars variables.yaml
-submit workflow.yaml --vars variables.yaml
-```
-
-`infer` 只查询元信息，不执行数据处理，不预览实际数据。单机和 Union 均通过 Flight 提供 `dacp.infer`（单算子）及 `dacp.infer_job`（完整工作流）。普通客户端使用自己的服务器连接凭据；Union 向实际执行节点请求推导，公开结果只含任务名与结构，不返回内部成员地址。
-
-Python：
-
-```python
-from dacp import Job
-report = Job.infer("dacp://localhost:18861", workflow_text, variables={"LIMIT": 123})
-# 已连接的 Union SDK 实例：
-report = union.infer(workflow_text, variables={"LIMIT": 123})
-```
-
-Scala：
+对于已配置的远程执行服务，内置连接器提供：
 
 ```scala
-val report = dacp.client.Job.infer("dacp://localhost:18861", workflowText)
-val unionReport = union.infer(workflowText)
+val report = xstream.connector.dacp.client.Job.infer("dacp://data.example.org:18861", workflowText)
 ```
 
-结构推导仅在用户显式调用 `infer` 时执行，供工作流编制、校验和预览使用。提交、调度、重试、重放及步骤执行均不自动调用推导方法，假定提交的工作流符合要求。执行时使用实际流头中的表示、格式和 schema，保留协议完整性、端口连接、授权和资源限制检查；无输出算子无需虚构结果端口。
+推导是显式的工作流编制操作。提交、调度、重试、重放和执行均不自动调用推导。执行时检查实际流头、端口连接及资源限制；无输出算子无需虚构输出端口。
 
 ## 统一请求与响应
 
@@ -59,7 +42,7 @@ val unionReport = union.infer(workflowText)
 }
 ```
 
-`certainty` 必须为 `known` 或 `unknown`。不确定表示时可返回空的 `representations`，不确定格式时返回空的 `formats`；所有输出端口名称仍必须列出。已知 records 必须给出 `schema`，其值为 Base64 编码的 Arrow IPC schema 消息，与流头一致。不得用空 schema 假装未知。可选 `structure` 对象携带领域结构（例如多维数组的维度），不将科学数据自动展开成表格；当前执行协议仍只支持 bytes/records，扩展表示需要相应的执行协议支持。
+`certainty` 必须为 `known` 或 `unknown`。不确定表示时可返回空的 `representations`，不确定格式时返回空的 `formats`；所有输出端口名称仍必须列出。已知 records 必须给出 `schema`，其值为 Base64 编码的 Arrow IPC schema 消息，与流头一致。不得用空 schema 假装未知。可选 `structure` 对象携带领域结构（例如多维数组的维度），不将科学数据自动展开成表格；所有支持的视图均通过 Arrow 流传递，array 和 sequence 描述保留其科学数据结构。
 
 诊断为 `{"severity":"error","code":"unknown_column","message":"Unknown column: temperature"}` 或 `warning`。错误阻止执行，警告不会。清单输入契约仍用于检查算子能否接受连接进来的流。
 
@@ -116,9 +99,9 @@ object Uppercase extends Operator {
 
 推导方法只能做元信息计算，不能读实际数据、访问外部服务或产生副作用。服务端在无网络、只读根文件系统的隔离 worker 容器中调用，每个 worker 限制为 512 MiB 内存、64 个进程和一个 CPU；请求及响应各最多 1 MiB。只挂载元数据管道、worker 适配代码和只读算子制品，不挂载数据集或凭据。`read_item` 是核心传输算子，使用 Flight 元信息查询而不打开内容流；数据插件描述 Item 时也应避免扫描内容。
 
-修改 SDK 或运行时后需要重新构建相应运行环境与算子包。仓库发布不在仓库进程中执行用户代码；推导能力在执行节点实际调用时验证。旧的清单输出声明直接移除，不提供兼容路径。
+修改 SDK 或运行时后需要重新构建相应运行环境与算子包。仓库发布不在仓库进程中执行用户代码；推导能力在执行节点实际调用时验证。
 
-契约测试：`sbt test`（`xstream-operator-sdk`、`dacp-server`），以及仓库根目录 `.venv/bin/python scripts/test-operator-inference.py`。
+契约测试：`sbt test`（`xstream-operator-sdk`、`xstream-operator-inference`），以及仓库根目录 `.venv/bin/python scripts/test-operator-inference.py`。
 
 ## 按需启动与空闲回收
 
@@ -149,7 +132,7 @@ infer-worker /input/requests.fifo /input/responses.fifo
 
 Java/Scala SDK 的 `OperatorRunner.infer` 与 `Operator.main` 支持该模式；Python 的 `run_inference`、`run_operator` 和 `Operator.main` 也支持。内置 JVM、Python 和原生命令执行器提供适配器和当前 worker SDK；源码编译和 wheel 安装都只在 worker 初始化时执行。自带容器入口的算子须在镜像内提供支持 worker 模式的 SDK 或实现上述协议。原生命令由适配器推导结构，不启动底层可执行程序。
 
-验证：`InferenceWorkerPoolSpec` 覆盖复用、容量、空闲回收、异常重建、取消、超时和关闭；SDK `InferenceSpec` 与 `scripts/test-operator-inference.py` 覆盖连续请求和帧边界。`scripts/test-inference-workers.py` 使用真实容器和 Flight 验证不同参数复用同一 Python/JVM 进程、空闲回收及故障重建。
+验证：`InferenceWorkerPoolSpec` 覆盖复用、容量、空闲回收、异常重建、取消、超时和关闭；SDK `InferenceSpec` 与 `scripts/test-operator-inference.py` 覆盖连续请求和帧边界。`scripts/test-operator-inference.py` 使用真实容器和 Flight 验证不同参数复用同一 Python/JVM 进程、空闲回收及故障重建。
 
 参数类型通过[静态参数契约](operator-parameters_zh.md)声明，读取它们无需启动推导 worker。
 

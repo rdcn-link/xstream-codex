@@ -4,7 +4,7 @@ import _root_.xstream.data._
 
 import org.apache.arrow.memory.BufferAllocator
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.Json
+import _root_.xstream.util.Json
 import scala.jdk.CollectionConverters._
 
 /** Embeddable streaming engine. Catalog and runtime lifecycles belong to its host. */
@@ -51,15 +51,21 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
         case Right(group)=>
           require(permits.tryAcquire(),"node task capacity reached")
           try {
-            record.update("running",dacp.union.Json.obj().put("execution_mode","shared_process").put("runtime_image",group.operator.image).put("step_count",plan.tasks.size))
-            val children=plan.tasks.map { t=>t.id->config.executionHistory.begin("job_task",metadata=dacp.union.Json.obj().put("parent_execution_id",record.id).put("task_id",t.id).put("operator",t.operator).put("execution_mode","shared_process"),state="waiting_inputs") }.toMap
+            val execution=Json.obj().put("execution_mode","shared_process").put("runtime_image",group.operator.image).put("step_count",plan.tasks.size)
+            val units=execution.putArray("execution_units")
+            val unit=units.addObject().put("id","shared").put("mode","shared_process").put("runtime_image",group.operator.image)
+            _root_.xstream.operator.inference.OperatorLibrary.runtimeDescriptor(group.operator).fields.asScala.foreach(e=>unit.set[JsonNode](e.getKey,e.getValue))
+            val members=unit.putArray("steps");plan.tasks.filterNot(t=>group.transportSources.values.toSet(t.id)).foreach(t=>members.add(t.id))
+            group.transportSources.values.toSet.toVector.sorted.foreach { id=>val u=units.addObject().put("id",id).put("mode","host_stream_source");u.putArray("steps").add(id) }
+            record.update("running",execution)
+            val children=plan.tasks.map { t=>t.id->config.executionHistory.begin("job_task",metadata=_root_.xstream.util.Json.obj().put("parent_execution_id",record.id).put("task_id",t.id).put("operator",t.operator).put("execution_mode","shared_process"),state="waiting_inputs") }.toMap
             val counters=new java.util.concurrent.ConcurrentHashMap[String,UnionPortMetrics]()
             val completed=java.util.concurrent.ConcurrentHashMap.newKeySet[String]()
             def onEvent(h:com.fasterxml.jackson.databind.JsonNode):Unit={
               val id=h.path("task").asText;require(children.contains(id),"unknown group task")
               if(h.path("type").asText=="task_state"){
                 val state=h.path("state").asText;require(Set("running","succeeded")(state),"invalid group state")
-                val detail=dacp.union.Json.obj().put("runtime_pid",h.path("runtime_pid").asLong);val ports=detail.putObject("ports");counters.asScala.filter(_._1.startsWith(id+"/")).foreach{case(k,v)=>ports.set[com.fasterxml.jackson.databind.JsonNode](k.stripPrefix(id+"/"),v.snapshot)}
+                val detail=_root_.xstream.util.Json.obj().put("runtime_pid",h.path("runtime_pid").asLong);val ports=detail.putObject("ports");counters.asScala.filter(_._1.startsWith(id+"/")).foreach{case(k,v)=>ports.set[com.fasterxml.jackson.databind.JsonNode](k.stripPrefix(id+"/"),v.snapshot)}
                 children(id).update(state,detail);if(state=="succeeded")completed.add(id)
               }else counters.computeIfAbsent(id+"/"+h.path("direction").asText+"/"+h.path("port").asText,_=>new UnionPortMetrics(allocator)).summary(h)
             }
@@ -89,7 +95,7 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
             finally inputs.values.foreach(_.close())
           }finally permits.release()
           return true
-        case Left(reason)=>record.update("running",dacp.union.Json.obj().put("execution_mode","isolated_steps").put("fusion_reason",reason))
+        case Left(reason)=>record.update("running",_root_.xstream.util.Json.obj().put("execution_mode","isolated_steps").put("fusion_reason",reason))
       }
     false
   }

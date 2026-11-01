@@ -2,7 +2,7 @@ package xstream.designer
 
 
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.util.{Json,YamlDocument}
 import scala.jdk.CollectionConverters._
 
 /** Authoring checks only: never executes a job or invents output schemas. */

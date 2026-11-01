@@ -64,7 +64,7 @@ class GroupSpec extends AnyFunSuite {
     assert(new ContainerExecutor().groupCommand(model).isEmpty)
     assert(new xstream.operator.executors.CommandExecutor().groupCommand(model).isEmpty)
   }
-  test("Python fusion requires explicit process(ctx) and one code bundle") {
+  test("Python fusion requires explicit process(ctx) and accepts independent code bundles") {
     val dir=Files.createTempDirectory("python-group-eligibility-");val code=dir.resolve("operators.py")
     Files.writeString(code,"def process(ctx):\n    pass\n")
     val base=group(code)
@@ -74,7 +74,8 @@ class GroupSpec extends AnyFunSuite {
     Files.writeString(code,"def main():\n    pass\n")
     assert(new PythonExecutor().groupCommand(model).isEmpty)
     val other=dir.resolve("other.py");Files.writeString(other,"def process(ctx):\n    pass\n")
-    assert(new PythonExecutor().groupCommand(model.copy(steps=model.steps.updated(1,model.steps(1).copy(program=model.steps(1).program.copy(artifact=Some(other)))))).isEmpty)
+    Files.writeString(code,"def process(ctx):\n    pass\n")
+    assert(new PythonExecutor().groupCommand(model.copy(steps=model.steps.updated(1,model.steps(1).copy(program=model.steps(1).program.copy(artifact=Some(other)))))).nonEmpty)
   }
 
   test("record links preserve schemas, nulls, batch contents and row metrics") {

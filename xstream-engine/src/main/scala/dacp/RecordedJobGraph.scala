@@ -2,7 +2,7 @@ package dacp
 
 
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.{Json,YamlDocument}
+import _root_.xstream.util.{Json,YamlDocument}
 import scala.jdk.CollectionConverters._
 
 /** Read-only projection of stored scripts; never validates or executes operator parameters. */

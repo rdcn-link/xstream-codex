@@ -8,6 +8,7 @@ import java.nio.file.Path
 
 /** Host-owned configuration. Executors are discovered through the same plugin environment. */
 trait OperatorEnvironment {
+  def inferenceScope:String = "embedded"
   def localOperatorLibrary:Path
   def remoteOperatorLibraryUrls:Seq[String]
   def operatorCache:Path

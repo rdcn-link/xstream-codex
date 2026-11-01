@@ -6,6 +6,15 @@ The repository accepts **source-only submissions**. Developers cannot submit fin
 
 ## Developer workflow
 
+Install the submission command once from the XStream checkout:
+
+```bash
+python3 -m pip install ./xstream-operator-sdk/cli
+xstream-operator submit --help
+```
+
+After installation, submit from any directory. The tool does not require PyArrow, JVM or Docker on the submitting machine.
+
 1. Obtain a personal submitter Token from the repository administrator.
 2. Browse `/runtimes` or GET `/v1/runtimes`. Select a compatible pinned execution/build environment with all required dependencies already installed.
 3. Implement processing, output-schema inference and bounded output samples using the [operator SDK](operator-authoring.md).
@@ -53,7 +62,7 @@ Use an actually registered runtime name/version. For Java or Scala, set `languag
 # From weather-filter/, package raw source, not prebuilt artifacts.
 zip -r sources.zip src
 # Run the helper from the operator repository checkout; install PyYAML first.
-python scripts/submit-operator.py /path/weather-filter/submission.yaml \
+xstream-operator submit /path/weather-filter/submission.yaml \
   --source /path/weather-filter/sources.zip \
   --url https://operators.example.org \
   --token-file /secure/submitter.token
@@ -126,3 +135,23 @@ For common Python/Arrow, JVM and scientific Python environments, see [runtime ex
 Operator detail pages provide the **Operator package** and any public source, license and SBOM downloads. Shared execution and build environments are downloaded from the **Runtimes** catalog, linked from the operator details. The Docker image ID identifies the execution image; an archive SHA-256 verifies the downloaded file.
 
 An administrator can update a published operator’s icon using `POST /api/admin/submissions/{id}/icon`, with `{"icon":{"path":"M3 4h18v16H3z","color":"#2378cb"}}`. The same administrator session and CSRF checks apply. Only the validated SVG path and color change; the approved artifact, runtime and trust assessment are preserved.
+
+## Source publication flow
+
+Source submission does not make an operator public. Build and review precede publication.
+
+```mermaid
+sequenceDiagram
+  participant D as Developer
+  participant CLI as xstream-operator
+  participant R as Repository
+  participant B as Isolated builder
+  participant A as Administrator
+  D->>CLI: submit sources + token
+  CLI->>R: authenticated source archive
+  R->>R: scan and score
+  R->>B: build in selected runtime
+  B-->>R: package + diagnostics
+  A->>R: approve categories and trust score
+  R-->>D: public operator version
+```

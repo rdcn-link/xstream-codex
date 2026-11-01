@@ -2,7 +2,7 @@ organization := "io.github.rdcn-link"
 name := "xstream-designer"
 version := "0.1.0-SNAPSHOT"
 scalaVersion := "2.13.16"
-libraryDependencies += "io.github.rdcn-link" %% "dacp-client-scala" % "0.1.0"
+libraryDependencies += "io.github.rdcn-link" %% "xstream-dacp-client" % "0.1.0-SNAPSHOT"
 enablePlugins(JavaAppPackaging)
 Compile / mainClass := Some("xstream.designer.Main")
 Test / fork := true
@@ -56,3 +56,6 @@ dependsOn(dataFasta % "runtime->compile;test->compile")
 
 lazy val dataCore = RootProject(file("../xstream-data/xstream-data-core"))
 dependsOn(dataCore)
+
+lazy val archives = RootProject(file("../xstream-data/xstream-data-archives"))
+dependsOn(archives % "runtime->compile;test->compile")

@@ -2,7 +2,7 @@
 
 [中文](operator-fusion_zh.md)
 
-DACP automatically checks Job placement, operator environments and executor capabilities. When eligible, an entire node subjob uses one isolated container and one JVM or Python interpreter, running steps concurrently in the same process. Internal edges use bounded memory streams and backpressure without passing through the server or Flight and without intermediate result files. Job inputs and final results retain the existing Flight streaming protocol; submissions need no new switch.
+XStream automatically checks Job placement, operator environments and executor capabilities. When eligible, an entire node subjob uses one isolated container and one JVM or Python interpreter, running steps concurrently in the same process. Internal edges use bounded memory streams and backpressure without passing through the server or Flight and without intermediate result files. Job inputs and final results retain the existing Flight streaming protocol; submissions need no new switch.
 
 Administrators can set `operator_fusion_enabled: false` in the node configuration to force isolated execution for benchmarks or troubleshooting. It defaults to `true` and applies to both ordinary Jobs and Union sub-Jobs. Execution history reports `disabled_by_configuration`.
 
@@ -11,7 +11,7 @@ Administrators can set `operator_fusion_enabled: false` in the node configuratio
 - A subjob needs at least two steps. All resolved runtime image SHA-256 IDs must match exactly; matching tags or JDK major versions is insufficient.
 - Every step must use the same executor supporting `OperatorExecutor.groupCommand`. Mixed JVM, Python and native commands do not fuse.
 - JVM operators must implement `xstream.operator.Operator`, including Scala `BytesOperator`, `ByteStreamOperator` and `RecordsOperator` templates. Eligibility inspects JAR class metadata without loading user classes in the server JVM.
-- Python operators must explicitly define a thread-safe `process(ctx)` and share one `.py` file or wheel. Different wheel modules may provide different entrypoints. This restriction avoids packages overwriting each other's Python modules; shared dependencies remain in the common image.
+- Python operators must explicitly define a thread-safe `process(ctx)`. Steps may use different `.py`, wheel or repository ZIP code bundles. Each bundle uses a private module namespace, including imports inside `process(ctx)`, so identical entrypoint and helper module names do not overwrite one another. Repeated references to one bundle reuse its modules; runtime dependencies and the group SDK remain shared in the common image.
 - DEBUG inline source, ordinary container entrypoints and native executables do not fuse and retain their existing execution path.
 
 When all steps of an ordinary Job share one node, that node attempts fusion. If the sole target is remote, the complete Job is delegated there for the decision. Union evaluates each member's subjob independently without moving raw data or changing placement. The coordinator first checks the graph obtained by contracting node regions: A → B → A introduces a region cycle and disables fusion, preventing downstream-input waits from blocking upstream startup.

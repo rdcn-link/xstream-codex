@@ -3,7 +3,7 @@ package dacp
 import _root_.xstream.data._
 
 import com.fasterxml.jackson.databind.JsonNode
-import dacp.union.Json
+import _root_.xstream.util.Json
 import scala.jdk.CollectionConverters._
 
 /** Single-node DAG execution. Storage and operator implementations remain plugins. */
@@ -12,6 +12,9 @@ private[dacp] final class LocalJobExecution(config:EngineEnvironment,executor:Ta
   delegates:Map[String,(OperatorFrame=>Unit,StreamCancel)=>Unit]=Map.empty) {
   def run(plan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,
     replay:Option[String],emit:OperatorFrame=>Unit,root:StreamCancel):Unit={
+    val execution=Json.obj();val units=execution.putArray("execution_units")
+    plan.tasks.foreach { t=>val unit=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ReadItem)"host_stream_source"else if(delegates.contains(t.id))"remote_subjob"else "isolated_step");unit.putArray("steps").add(t.id) }
+    record.update("running",execution)
     val store=config.materializationStore.map(config.openMaterialization)
     require(policy.materialized.isEmpty || store.nonEmpty,"materialization_store is not configured")
     store.foreach(_.cleanup())
@@ -135,7 +138,7 @@ private[dacp] final class LocalJobExecution(config:EngineEnvironment,executor:Ta
                     }
                     if(delegates.contains(t.id))delegates(t.id)(output,token) else Jobs.readBinding(t) match {
                       case Some(b)=>val stream=token.add(source(b,token));try {var f=stream.next();while(f.nonEmpty){output(StreamProtocol.rename(f.get,"result"));f=stream.next()}}finally stream.close()
-                      case None=>executor.execute(t,inputs.toMap,output,token)
+                      case None=>executor.execute(t,inputs.toMap,output,token,onRuntime=Some(runtime=>child.update("running",runtime)))
                     }
                   }finally {inputs.values.foreach(_.close());if(acquired)config.taskSlots.release()}
               }

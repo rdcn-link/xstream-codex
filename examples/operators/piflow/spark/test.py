@@ -36,7 +36,7 @@ def execute(name, params, inputs, spark_home, docker=False):
                 '--add-opens=java.base/java.nio=ALL-UNNAMED', '-Dio.netty.tryReflectionSetAccessible=true',
                 '-cp', '/operator/op.jar:/opt/lib/*', 'dacp.ecoflow.Op_' + name, 'operator', '/input', '/input/params.json']
         else:
-            api = ROOT / 'dacp-plugin-api/target/scala-2.13/dacp-plugin-api_2.13-0.1.0-SNAPSHOT.jar'
+            api = ROOT / 'xstream-execution-api/target/scala-2.13/xstream-execution-api_2.13-0.1.0-SNAPSHOT.jar'
             command = ['java', '-Xmx640m', '--add-opens=java.base/java.nio=ALL-UNNAMED',
                 '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED', '-Dio.netty.tryReflectionSetAccessible=true',
                 '-cp', str(jar) + ':' + str(spark_home / 'deps/jars/*') + ':' + str(api),

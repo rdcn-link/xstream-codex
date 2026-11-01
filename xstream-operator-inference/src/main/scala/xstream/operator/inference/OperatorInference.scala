@@ -43,20 +43,20 @@ object OperatorInference {
     val command=if(source)plugin.sourceInferenceWorkerCommand(program,op.artifactPath.get)else plugin.inferenceWorkerCommand(program,op.artifactPath)
     val body=StructureInference.mapper.writeValueAsBytes(StructureInference.json(request))
     require(body.length<=StructureInference.MaxBytes,"inference request exceeds 1 MiB")
-    val key=workerKey(op,command,source)
+    val key=workerKey(op,command,source,config.inferenceScope)
     val response=config.inferenceWorkerPool.request(key,body,cancel)(()=>new DockerInferenceWorker(op,command))
     val result=StructureInference.result(StructureInference.mapper.readTree(response))
     request.preview.map(p=>OutputSamples.attach(result,result.outputs.flatMap{case(port,d)=>d.sample.map(port->_)},p))
       .getOrElse(result.copy(outputs=result.outputs.map{case(port,d)=>port->d.copy(sample=None)}))
   }
-  private[inference] def workerKey(op:ResolvedOperator,command:OperatorCommand,source:Boolean):String={
+  private[inference] def workerKey(op:ResolvedOperator,command:OperatorCommand,source:Boolean,scope:String="embedded"):String={
     val digest=java.security.MessageDigest.getInstance("SHA-256")
     def add(bytes:Array[Byte]):Unit={digest.update(java.nio.ByteBuffer.allocate(8).putLong(bytes.length.toLong).array());digest.update(bytes)}
     def text(s:String):Unit=add(s.getBytes(java.nio.charset.StandardCharsets.UTF_8))
     def file(path:Path):Unit={val hash=java.security.MessageDigest.getInstance("SHA-256");val in=Files.newInputStream(path);try {val b=new Array[Byte](65536);var n=in.read(b);while(n>=0){if(n>0)hash.update(b,0,n);n=in.read(b)}}finally in.close();add(hash.digest())}
     text(op.image);text(op.executor);text(source.toString)
     val program=op.program.get;text(program.reference);text(program.entrypoint)
-    if(dacp.union.Rpc.isAuthenticatedCall){val p=dacp.union.Rpc.principal;text("authenticated");text(p.kind);text(p.subject);text(p.unionId.getOrElse(""));text(p.certificate.getOrElse(""))}else text("embedded")
+    text(scope)
     text(op.artifactPath.getOrElse(""));text(op.artifact.isDefined.toString);op.artifact.foreach(file)
     text(command.executableScratch.toString)
     def strings(values:Seq[String]):Unit={text(values.size.toString);values.foreach(text)}

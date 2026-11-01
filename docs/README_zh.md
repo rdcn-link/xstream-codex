@@ -14,3 +14,5 @@
 - [引擎与嵌入](xstream_zh.md)
 - [插件开发](plugins_zh.md)
 - [构建与仓库边界](repositories_zh.md)
+
+完整 Scala 示例：[DataView 与视图流](data-view-examples_zh.md)。
