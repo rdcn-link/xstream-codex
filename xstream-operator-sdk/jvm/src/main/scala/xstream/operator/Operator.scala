@@ -1,5 +1,7 @@
 package xstream.operator
 
+import _root_.xstream.execution.{InferenceDiagnostic}
+
 import _root_.xstream.data._
 
 import java.io.{InputStream,OutputStream,ByteArrayOutputStream,BufferedOutputStream,IOException}
@@ -9,7 +11,7 @@ import org.apache.arrow.memory.RootAllocator
 import org.apache.arrow.vector.{VectorSchemaRoot,VarBinaryVector}
 import org.apache.arrow.vector.ipc.{ArrowStreamReader,ArrowStreamWriter}
 import org.apache.arrow.vector.types.pojo.Schema
-import dacp.{OperatorFrame,OperatorFrames,StreamDescriptor,InferenceRequest,InferenceResult,StructureInference,PreviewLimits,OutputSample,OutputSamples}
+import _root_.xstream.execution.{OperatorFrame,OperatorFrames,StreamDescriptor,InferenceRequest,InferenceResult,StructureInference,PreviewLimits,OutputSample,OutputSamples}
 import _root_.xstream.data.{PluginSchemas}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -96,7 +98,7 @@ object OperatorRunner {
     val result=method(request.inputs,request.params)
     request.preview.map{p=>
       try OutputSamples.attach(result,preview(request.inputs,request.params,p),p)
-      catch{case scala.util.control.NonFatal(e)=>result.copy(diagnostics=result.diagnostics:+dacp.InferenceDiagnostic("warning","sample_unavailable",Option(e.getMessage).getOrElse("Sample unavailable")))}
+      catch{case scala.util.control.NonFatal(e)=>result.copy(diagnostics=result.diagnostics:+xstream.execution.InferenceDiagnostic("warning","sample_unavailable",Option(e.getMessage).getOrElse("Sample unavailable")))}
     }.getOrElse(result)
   }
   def infer(args:Array[String],out:OutputStream=System.out,preview:PreviewMethod)(method:(Map[String,StreamDescriptor],JsonNode)=>InferenceResult):Unit={

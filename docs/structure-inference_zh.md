@@ -2,7 +2,7 @@
 
 [English](structure-inference.md)
 
-每个算子必须提供结构推导方法。清单声明输入及静态参数契约，不再允许 `outputs`；输出端口、表示、格式、schema 和未知信息均由方法返回。无输出算子返回空映射，数据源接受空输入。方法实现缺失、响应格式错误或超时会导致校验失败，不回退到清单。
+每个算子必须提供结构推导方法。清单声明输入及静态参数契约，不能包含 `outputs`；输出端口、表示、格式、schema 和未知信息均由方法返回。无输出算子返回空映射，数据源接受空输入。方法实现缺失、响应格式错误或超时会导致校验失败，不回退到清单。
 
 ## 使用方式
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 继承 `Operator` 时必须实现方法；字节及表格模板已经提供实现：
 
 ```scala
-import dacp.{StreamDescriptor,InferenceResult}
+import _root_.xstream.execution.{StreamDescriptor,InferenceResult}
 import xstream.operator.{Operator,OperatorContext}
 import com.fasterxml.jackson.databind.JsonNode
 
@@ -122,7 +122,7 @@ inference_workers:
 
 ## 执行器插件的 worker 协议
 
-外部执行器仍通过 `META-INF/services/dacp.OperatorExecutor` 注册，在 `plugin_directory` 中安装 JAR 和依赖。实现 `inferenceWorkerCommand(program, artifactPath)`，支持源码时再实现 `sourceInferenceWorkerCommand(program, artifactPath)`，无须修改核心注册表或客户端。默认实现将普通启动命令的参数改为：
+外部执行器仍通过 `META-INF/services/xstream.execution.OperatorExecutor` 注册，在 `plugin_directory` 中安装 JAR 和依赖。实现 `inferenceWorkerCommand(program, artifactPath)`，支持源码时再实现 `sourceInferenceWorkerCommand(program, artifactPath)`，无须修改核心注册表或客户端。默认实现将普通启动命令的参数改为：
 
 ```text
 infer-worker /input/requests.fifo /input/responses.fifo
@@ -185,7 +185,7 @@ if __name__ == '__main__':
 Scala 示例（添加到 `Operator` 或其模板子类）：
 
 ```scala
-import dacp.{StreamDescriptor, PreviewLimits, OutputSample}
+import _root_.xstream.execution.{StreamDescriptor,PreviewLimits,OutputSample}
 import com.fasterxml.jackson.databind.JsonNode
 
 override def previewOutputs(

@@ -69,7 +69,7 @@ with sync_playwright() as p:
     page.locator('#search').fill('read_item')
     page.locator('[data-operator="read_item@1.0"]').drag_to(page.locator('#canvas'),target_position={'x':110,'y':110})
     expect(page.locator('.card')).to_have_count(1)
-    assert page.evaluate('!Object.hasOwn(job.tasks[0],"node")')
+    assert page.evaluate('!Object.hasOwn(job.steps[0],"node")')
     page.locator('#library-datasets-tab').click()
     expect(page.locator('#datasets-refresh')).to_have_count(0)
     assert len(dataset_requests)==1

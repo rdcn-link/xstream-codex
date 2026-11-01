@@ -2,7 +2,7 @@
 
 [English](operator-catalog.md)
 
-当前部署的协作示例仓库包含以下 6 个算子，版本均为 `1.0`，执行器均为 `python`。它们共享 Python / Arrow 运行环境，各自的 wheel 仅包含业务代码与 SDK。此清单描述当前示例部署，不表示任意新仓库都会自动安装这些算子。
+当前协作示例部署提供以下 6 类算子，推荐版本为 `1.2`，均采用 `python` 执行器。算子包仅包含业务代码与公共业务辅助模块；Python、Arrow 和 XStream SDK 由 `python-arrow@2.0` 基础 Runtime 提供。源码包含 `pyproject.toml`，额外依赖通过 `dependencies.provider: python` 锁定，并复用相同的依赖环境。该清单描述示例部署，并非新仓库自动安装的内容。
 
 ```bash
 curl http://localhost:8820/v1/operators
@@ -16,12 +16,12 @@ curl http://localhost:8820/v1/operators
 
 | 算子 | 输入 → 输出 | 参数示例 | 执行方式与限制 |
 |---|---|---|---|
-| `piflow_csv_parser@1.0` | `source: bytes` → `records` | `{"header":true,"delimiter":","}` | 按批解析 UTF-8 CSV；列值均为字符串，不自动猜测类型。无表头示例：`{"header":false,"schema":"station_id,temperature,quality"}` |
-| `piflow_filter@1.0` | `source: records` → `records` | `{"condition":"CAST(temperature AS REAL) >= 30"}` | 逐批筛选；使用 SQLite 条件表达式，保留输入 schema |
-| `piflow_execute_sql_stop@1.0` | `source: records` → `records` | `{"viewName":"observations","sql":"SELECT station_id, COUNT(*) AS n FROM observations GROUP BY station_id"}` | 收集输入后执行 SQLite SQL；输入与输出均有限额，不是常量内存流算法 |
-| `piflow_merge@1.0` | `left: records`, `right: records` → `records` | `{}` | 先输出 left，再输出 right；两侧有序 schema 必须完全一致；不去重、不排序 |
-| `piflow_join@1.0` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | 收集两侧输入后关联；模式为 `inner`、`left`、`right`、`full_outer`；右侧同名非键列追加 `_right`，仍有歧义则报错 |
-| `piflow_csv_save@1.0` | `source: records` → `bytes`（CSV） | `{"header":true,"delimiter":","}` | 输出 CSV 字节流，**不在服务器保存 CSV 文件**；仅支持标量列 |
+| `piflow_csv_parser@1.2` | `source: bytes` → `records` | `{"header":true,"delimiter":","}` | 按批解析 UTF-8 CSV；列值均为字符串，不自动猜测类型。无表头示例：`{"header":false,"schema":"station_id,temperature,quality"}` |
+| `piflow_filter@1.2` | `source: records` → `records` | `{"condition":"CAST(temperature AS REAL) >= 30"}` | 逐批筛选；使用 SQLite 条件表达式，保留输入 schema |
+| `piflow_execute_sql_stop@1.2` | `source: records` → `records` | `{"viewName":"observations","sql":"SELECT station_id, COUNT(*) AS n FROM observations GROUP BY station_id"}` | 收集输入后执行 SQLite SQL；输入与输出均有限额，不是常量内存流算法 |
+| `piflow_merge@1.2` | `left: records`, `right: records` → `records` | `{}` | 先输出 left，再输出 right；按名称合并字段，追加右侧独有字段，缺失值填 null；拒绝不兼容类型，不去重、不排序 |
+| `piflow_join@1.2` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | 收集两侧输入后关联；模式为 `inner`、`left`、`right`、`full_outer`；右侧同名非键列追加 `_right`，仍有歧义则报错 |
+| `piflow_csv_save@1.2` | `source: records` → `bytes`（CSV） | `{"header":true,"delimiter":","}` | 输出 CSV 字节流，**不在服务器保存 CSV 文件**；仅支持标量列 |
 
 SQL 与 Join 的输入收集上限为 128 MiB（实现会估算内存占用）；实际内存还包含 Arrow、Python 对象和算法开销。SQLite SQL 不等于 Spark SQL，不能直接使用任意 Spark 函数。具体契约和源码见 [PiFlow 适配说明](../examples/operators/piflow/README_zh.md)、[specs.json](../examples/operators/piflow/specs.json) 与 [operators](../examples/operators/piflow/operators/)。
 
@@ -56,20 +56,20 @@ S001,32.5,0
 连接节点并选择包含 `/observations` 的气象数据集后：
 
 ```text
-run piflow_csv_parser@1.0 --input source=/observations --view bytes
+run piflow_csv_parser@1.2 --input source=/observations --view bytes
 ```
 
 如果 Item 已提供 records 视图，可直接过滤：
 
 ```text
-run piflow_filter@1.0 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
+run piflow_filter@1.2 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
 ```
 
 组合解析、过滤与 CSV 输出时，使用以下 Job。节点示例 URI 为 `dacp://localhost:18861/weather/observations`；提交 Union 时替换成实际目录返回的 Union 公开 URI，不使用成员内部 URI。省略 `node` 由服务器调度。
 
 ```yaml
 name: High-temperature observations
-tasks:
+steps:
 - id: read
   operator: read_item@1.0
   inputs: {}
@@ -77,17 +77,17 @@ tasks:
     uri: $INPUT_URI
     view: bytes
 - id: parse
-  operator: piflow_csv_parser@1.0
+  operator: piflow_csv_parser@1.2
   inputs:
     source: read
 - id: filter
-  operator: piflow_filter@1.0
+  operator: piflow_filter@1.2
   inputs:
     source: parse
   params:
     condition: "quality = '0' AND CAST(temperature AS REAL) >= 30"
 - id: export
-  operator: piflow_csv_save@1.0
+  operator: piflow_csv_save@1.2
   inputs:
     source: filter
 outputs:
@@ -109,3 +109,7 @@ submit weather.yaml --vars variables.yaml
 ## 发布与核对
 
 仓库浏览、下载公开；发布需要 token。各算子的构建、测试和逐个上传命令见 [PiFlow 发布说明](../examples/operators/piflow/README_zh.md#逐个验证发布)，HTTP 上传契约见[仓库手册](https://github.com/rdcn-link/xstream-operator-repository/blob/main/README_zh.md)。发布后先核对 `/v1/operators`，再核对对应版本的页面、参数、源码和许可证；源码集合的完整移植进度不能当作在线仓库清单。
+
+## 脚本算子
+
+示例仓库另提供 `script_text_replace@1.0`、`script_line_number@1.0`、`script_jsonl_project@1.0` 和 `script_records_to_jsonl@1.0`。它们使用 `python-arrow@2.0` 和同一锁定依赖环境，不包含 SDK，不调用外部命令。参数、端口、限制和完整 Job 见[脚本算子示例](../examples/operators/scripts/README_zh.md)。

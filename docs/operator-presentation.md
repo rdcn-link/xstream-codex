@@ -2,7 +2,7 @@
 
 [中文](operator-presentation_zh.md)
 
-Developers provide `icon`, `inputs` and `parameters`. Repository administrators assign **multiple category labels** during approval. Developer submissions must not contain `category` or `categories`. Approved public manifests use `categories: [Climate, Conversion]`; the singular `category` field has been removed.
+Developers provide `icon`, `inputs` and `parameters`. Repository administrators assign **multiple category labels** during approval. Developer submissions must not contain `category` or `categories`. Approved public manifests use `categories: [Climate, Conversion]`.
 
 ```yaml
 icon:

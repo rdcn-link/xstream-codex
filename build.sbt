@@ -5,10 +5,12 @@ lazy val sdk = RootProject(file("xstream-operator-sdk"))
 lazy val inference = RootProject(file("xstream-operator-inference"))
 lazy val executors = RootProject(file("plugins/xstream-plugin-operator-executors"))
 lazy val sourceAnalysis = RootProject(file("plugins/xstream-plugin-source-analysis"))
-lazy val root = (project in file(".")).aggregate(data,engine,designer,sdk,inference,executors,sourceAnalysis,executionApi,dacpProtocol,dacpClient,executionFile)
+lazy val root = (project in file(".")).aggregate(data,engine,designer,sdk,inference,executors,sourceAnalysis,dependencies,executionApi,dacpProtocol,dacpClient,executionFile)
   .settings(name := "xstream", publish / skip := true)
 
 lazy val executionApi = RootProject(file("xstream-execution-api"))
 lazy val dacpProtocol = RootProject(file("connectors/xstream-dacp-protocol"))
 lazy val dacpClient = RootProject(file("connectors/xstream-dacp-client"))
 lazy val executionFile = RootProject(file("plugins/xstream-plugin-execution-file"))
+
+lazy val dependencies = RootProject(file("plugins/xstream-plugin-dependencies"))

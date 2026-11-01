@@ -10,7 +10,7 @@ import org.apache.arrow.memory.RootAllocator
 import org.apache.arrow.vector.{VarBinaryVector,VectorSchemaRoot}
 import org.apache.arrow.vector.ipc.ArrowStreamWriter
 import org.scalatest.funsuite.AnyFunSuite
-import dacp.{OperatorFrame,OperatorFrames}
+import _root_.xstream.execution.{OperatorFrame,OperatorFrames}
 import _root_.xstream.data.{PluginSchemas}
 
 class ByteStreamSpec extends AnyFunSuite {

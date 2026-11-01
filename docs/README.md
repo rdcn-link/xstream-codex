@@ -1,18 +1,27 @@
 # XStream documentation
 
-[中文](README_zh.md)
+## For users
 
-- [Write operators](operator-authoring.md)
-- [Source submission and review](operator-submission.md)
-- [Parameter contracts](operator-parameters.md)
-- [Icons and categories](operator-presentation.md)
+- [Run and embed XStream](xstream.md)
+- [Visual Job Designer](../xstream-designer/README.md)
+- [Job YAML reference](jobs.md)
+- [Data model and compressed Items](data-model.md)
+- [Dataset, Item, and stream access](dataset-access.md)
+- [DataView examples](data-view-examples.md)
+
+- [Execution targets and physical planning](execution-targets.md)
+
+## For extension developers
+
+- [Write and publish operators](operator-authoring.md)
+- [Submit operator sources](operator-submission.md)
+- [Dependencies and execution environments](dependency-environments.md)
 - [Structure and sample inference](structure-inference.md)
-- [Stream contracts](operator-streams.md)
-- [Packages and runtimes](operator-packaging.md)
-- [In-process fusion](operator-fusion.md)
-- [Typed streams](data-streams.md)
-- [Engine and embedding](xstream.md)
-- [Plugin development](plugins.md)
-- [Build and repository boundaries](repositories.md)
+- [Dynamic data catalogs](dataset-catalogs.md)
+- [Dataset providers](dataset-providers.md)
+- [File format handlers](format-handlers.md)
+- [Plugin architecture](plugins.md)
+- [Arrow streams and scientific views](data-streams.md)
 
-Complete Scala examples: [DataView and view streams](data-view-examples.md).
+
+- [Project boundary review](boundary-review.md)

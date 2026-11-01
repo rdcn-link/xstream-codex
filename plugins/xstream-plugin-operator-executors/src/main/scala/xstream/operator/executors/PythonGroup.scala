@@ -1,7 +1,8 @@
 package xstream.operator.executors
 
+import _root_.xstream.execution.{OperatorCommand,OperatorGroup,OperatorGroupStep}
+
 import _root_.xstream.data._
-import dacp._
 import java.nio.file.Files
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.zip.ZipFile

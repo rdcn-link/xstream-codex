@@ -1,7 +1,9 @@
 package xstream.operator.executors
 
+import _root_.xstream.execution.{OperatorGroup}
 
-import dacp.{OperatorExecutor,OperatorProgram,OperatorCommand}
+
+import _root_.xstream.execution.{OperatorExecutor,OperatorProgram,OperatorCommand}
 
 
 final class ContainerExecutor extends OperatorExecutor {
@@ -15,7 +17,7 @@ final class ContainerExecutor extends OperatorExecutor {
 final class JvmExecutor extends OperatorExecutor {
   override def inferenceWorkerCommand(p:OperatorProgram,path:Option[String]):OperatorCommand=InferenceLaunch.jvm(command(p,path))
   override def sourceInferenceWorkerCommand(p:OperatorProgram,path:String):OperatorCommand=InferenceLaunch.jvm(sourceCommand(p,path))
-  override def groupCommand(group:dacp.OperatorGroup):Option[OperatorCommand]=JvmGroup.command(group)
+  override def groupCommand(group:xstream.execution.OperatorGroup):Option[OperatorCommand]=JvmGroup.command(group)
   val id = "jvm"
   override def sourceCommand(p: OperatorProgram, path: String): OperatorCommand = {
     require(p.entrypoint.matches("[A-Za-z_$][A-Za-z0-9_.$]*"),"JVM entrypoint must be a main class")
@@ -38,13 +40,13 @@ finally loader.close()
     require(p.entrypoint.matches("[A-Za-z_$][A-Za-z0-9_.$]*"), "JVM entrypoint must be a main class")
     require(path.exists(_.endsWith(".jar")), "JVM executor requires a JAR artifact")
     OperatorCommand(Some(Vector("/opt/java/bin/java", "--add-opens=java.base/java.nio=ALL-UNNAMED",
-      "-Dio.netty.tryReflectionSetAccessible=true", "-cp", path.get + ":/opt/lib/*", p.entrypoint)))
+      "-Dio.netty.tryReflectionSetAccessible=true", "-cp", path.get + ":/opt/lib/*:/opt/xstream/jars/*", p.entrypoint)))
   }
 }
 final class PythonExecutor extends OperatorExecutor {
   override def inferenceWorkerCommand(p:OperatorProgram,path:Option[String]):OperatorCommand=InferenceLaunch.python(command(p,path))
   override def sourceInferenceWorkerCommand(p:OperatorProgram,path:String):OperatorCommand=InferenceLaunch.python(sourceCommand(p,path))
-  override def groupCommand(group:dacp.OperatorGroup):Option[OperatorCommand]=PythonGroup.command(group)
+  override def groupCommand(group:xstream.execution.OperatorGroup):Option[OperatorCommand]=PythonGroup.command(group)
   val id = "python"
   override def sourceCommand(p: OperatorProgram, path: String): OperatorCommand =
     OperatorCommand(Some(Vector("/usr/local/bin/python","-c",PythonSource.launcher,path)),arguments=Vector("operator","/input","/input/params.json"),

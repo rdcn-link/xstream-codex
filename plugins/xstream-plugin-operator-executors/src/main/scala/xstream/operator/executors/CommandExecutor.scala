@@ -1,7 +1,7 @@
 package xstream.operator.executors
 
 
-import dacp.{OperatorExecutor,OperatorProgram,OperatorCommand}
+import _root_.xstream.execution.{OperatorExecutor,OperatorProgram,OperatorCommand}
 
 import scala.jdk.CollectionConverters._
 

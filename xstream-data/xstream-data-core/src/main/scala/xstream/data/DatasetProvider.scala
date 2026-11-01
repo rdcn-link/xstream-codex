@@ -17,7 +17,7 @@ trait PublishedDataset extends AutoCloseable {
   def open(check: () => Unit): DatasetAccess
 }
 case class DatasetDefinition(provider: String, source: Map[String,Object] = Map.empty,
-                             items: Map[String,Map[String,Object]] = Map.empty, description:String="{}") {
+                             items: Map[String,Map[String,Object]] = Map.empty, description:String=DatasetDescriptions.default()) {
   DatasetDescriptions.validate(description)
   override def toString: String = s"DatasetDefinition($provider,<private settings>)"
 }

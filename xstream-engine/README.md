@@ -23,12 +23,13 @@ See [the full guide](../docs/xstream.md) for Scala embedding, plugin registratio
 - `xstream-engine`: the embeddable execution engine and `xstream-runner` launcher.
 - [xstream-designer](../xstream-designer/README.md): visual YAML Job authoring, local and remote catalog browsing, schema inference and bounded samples.
 
-Local execution reads Items directly from the JVM catalog. Explicit remote URIs use configured client connections; the standalone runner automatically pushes closed processing chains to their configured remote data service. Stream connections do not require intermediate files. Materialization and replay are explicit execution-policy choices; operator packages, runtimes and execution history may still use disk.
+Local execution reads Items directly from the JVM catalog. Explicit remote URIs use configured client connections; the standalone runner uses optional execution-target plugins and explicit placement policies for remote computation. Stream connections do not require intermediate files. Materialization and replay are explicit execution-policy choices; operator packages, runtimes and execution history may still use disk.
 
 The example configures an operator repository at `http://localhost:8820`; its built-in `read_item` step needs no repository download. Jobs using repository operators require the configured repository or a verified local cache. Run the launcher from the repository root so its relative data and storage paths resolve correctly. It selects exactly one Job output and writes that stream to stdout. The embedded API supports multiple outputs.
 
 See [example configuration](../examples/xstream/engine.yaml), [example Job](../examples/xstream/read.yaml), and [Job syntax](../docs/jobs.md).
 
-See [automatic pushdown and policy boundaries](../docs/xstream.md#automatic-compute-pushdown). Disable globally with `compute_pushdown_enabled: false`, or use `nodes[].compute_pushdown: false` for a data-only connection.
 
 Execution history records the actual execution units selected by the engine. Execution units include the runtime model/version and dependency versions supplied by the repository catalog for the pinned image. Shared-process units list their member steps and runtime image; separate steps and host stream sources are recorded separately. Viewers must not infer fusion from matching runtime images.
+
+[Execution targets and physical planning](../docs/execution-targets.md).

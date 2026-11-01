@@ -27,7 +27,7 @@ The distribution bundles `xstream-data-archives` for the in-context catalog: ZIP
 5. The canvas always contains exactly one **Outlet**, which can be moved but cannot be deleted or duplicated. Click an operator output port, then click Outlet to create a Job output binding. Outlet accepts one output port from one step; a new connection replaces the existing binding. The sidebar only edits step properties and parameters; result stream names can be edited in Job YAML. Select an Outlet connection and press Delete to remove its binding; the Outlet stays on the canvas. Imported Job outputs are drawn as connections to the same Outlet. Layout is saved in the browser draft and included in optional `designer` metadata by default. Empty `outputs: {}` is allowed; each producer port has at most one consumer. Each output port displays its representation, format and known Schema fields below it; unknown structures are labeled explicitly.
 6. Edit or load a separate YAML variable file under **Variables**. Parameters support complete values such as `$INPUT_URI`, preserving numeric, boolean and compound types. Variables are not embedded in template exports; use **Export variables** separately.
 7. Output structures are inferred automatically after parameters, variables or connections change. Parameter edits trigger inference after a 650 ms pause with valid edits saved automatically into the exported Job; incomplete or invalid input stays in the form with a message. The designer uses the shared `xstream-operator-inference` module to start and reuse local inference workers on demand, obtaining code from the configured operator repository. Ordinary operators are inferred without Union or member-node requests. `read_item` queries Item metadata from the local catalog or the configured service; upstream changes also update downstream structures. Requests are serialized and coalesced; stale responses are discarded. Use the right-hand **Outputs** tab to inspect each output port’s complete structure and bounded samples. Inference does not run a Job. Schemas are displayed before a separate bounded-sample request; `read_item` can read a limited number of source rows. Opening Outputs displays existing results without repeating inference. First use may start a worker. Incomplete parameters and inference failures are reported explicitly; stale fields are cleared and unknown structures are never guessed.
-8. **Export job YAML** opens a YAML preview. **Include designer metadata** is checked by default; uncheck it to keep only the execution definition. Use **Copy**, **Print**, or **Download** for the selected content. The exported Job is accepted by Shell / SDKs. **Load YAML** loads an existing exported Job; alternatively edit the Job YAML panel and click **Apply YAML**. Imports accept the current public Job format, not internal subjob routing or superseded interfaces.
+8. **Export job YAML** opens a YAML preview. **Include designer metadata** is checked by default; uncheck it to keep only the execution definition. Use **Copy**, **Print**, or **Download** for the selected content. The exported Job is accepted by Shell / SDKs. **Load YAML** loads an existing exported Job; alternatively edit the Job YAML panel and click **Apply YAML**. Imports accept the public Job format; internal subjob routing is reserved for service execution.
 
 Browser localStorage saves a local draft. Drafts are not shared between browsers and there is no server-side job history store. Loading a historical file means uploading an existing YAML file, not retrieving dashboard execution history. Export performs graph checks without inference; design-time inference checks actual input contracts and schemas. The canvas supports scrolling, zoom and fit-to-view.
 
@@ -52,7 +52,7 @@ chat:
   token_env: XSTREAM_MODEL_API_KEY
 ```
 
-Set the named environment variable before starting the service. It supplies the Bearer credential and is never sent to the browser. Omit token_env for a model service that requires no credential. Without chat configuration, the editor works normally and Chat is disabled. There is no built-in command assistant.
+Set the named environment variable before starting the service. It supplies the Bearer credential and is never sent to the browser. Omit token_env for a model service that requires no credential. Without chat configuration, the editor works normally and Chat is disabled. Chat uses the configured language-model API to propose Jobs.
 
 For example: “Read weather observations, keep valid records above a temperature threshold supplied as a variable, merge the regional streams and produce CSV.” Include actual Item paths or expand the relevant Catalog folders first. The model receives the current draft, variables, available operator declarations, up to 100 browsed Item descriptors and the latest 12 messages. Catalog contents are loaded lazily, so this context is not a complete inventory. Data contents and output samples are not automatically sent. If paths, meanings or required operators are missing, the assistant should ask rather than invent them. Metadata and conversation are sent to the configured model service.
 
@@ -97,7 +97,7 @@ Click a stream connection to highlight it, then press Delete / Backspace while t
 
 Select a step and press Delete to remove it along with its incident connections and Outlet connections. Select a connection and press Delete to remove just that connection. Undo restores the full deleted state, and redo reapplies deletion. Typing in parameter and name fields does not trigger graph deletion.
 
-The left operator library uses collapsible categories and icon grids directly from administrator-assigned operator `categories` and developer-provided `icon` metadata. It does not infer categories or icons from input ports, and requires no Designer registry edits. Search expands matching categories and clearing it restores their previous state. Hover or focus an icon to see its version, description, input ports, parameter types and executor. Drag onto the canvas, double-click or press Enter to add a step.
+The left operator library uses collapsible categories and icon grids directly from administrator-assigned operator `categories` and developer-provided `icon` metadata. This metadata determines the library grouping and icon rendering. Search expands matching categories and clearing it restores their previous state. Hover or focus an icon to see its version, description, input ports, parameter types and executor. Drag onto the canvas, double-click or press Enter to add a step.
 
 Dragging an existing step only changes its position and does not expand a folded properties sidebar; a single click selects a step and a double-click opens its properties.
 
@@ -113,7 +113,7 @@ Dragging steps or Outlet, or adding an operator, automatically moves overlapping
 
 The top-right corner of each step card displays the operator’s declared icon and color, matching the operator library. The built-in `read_item` uses the same data-source icon. A gray placeholder appears while operator metadata is unavailable.
 
-Parameters use a compact form with fixed name labels. Declared single-type values show a type label and a small `$` variable toggle, without a redundant type selector. Descriptions, defaults and constraints are available from the info hint. Optional parameters are enabled by checkbox. Multiline strings, nested objects, arrays, enums and union types remain editable. Additional parameter names are entered only during creation; existing names are labels.
+Parameters use a compact form with fixed name labels. Declared single-type values show a type label and a small `$` variable toggle. Descriptions, defaults and constraints are available from the info hint. Optional parameters are enabled by checkbox. Multiline strings, nested objects, arrays, enums and union types remain editable. Additional parameter names are entered only during creation; existing names are labels.
 
 The left sidebar separates **Operators** and **Catalogs** into two tabs, using rounded icon buttons stacked vertically along the sidebar’s left edge, with content on the right, distinct from the horizontal right properties tabs. Operators open by default. Switching tabs retains search, category expansion, dataset expansion and each panel’s scroll position. Up/Down arrows, Home and End switch tabs.
 
@@ -131,7 +131,7 @@ Job YAML, Variables, and the read-only export preview use CodeMirror 6. Features
 
 Canvas changes synchronize to Job YAML. Once YAML is edited manually, canvas synchronization does not overwrite it before Apply YAML. Export preview is read-only; the metadata toggle, copy, print, and download use the same original YAML text without line numbers or highlighting markup.
 
-Question marks beside parameter names no longer display floating descriptions. Hovering, focusing, or clicking a question mark updates a description area below the parameter form with its description, type, required status, default, enum, and constraints. The information remains until another parameter is inspected or the step changes. Nested parameters share this area.
+Hovering, focusing, or clicking a question mark updates a description area below the parameter form with its description, type, required status, default, enum, and constraints. The information remains until another parameter is inspected or the step changes. Nested parameters share this area.
 
 Frontend sources live in `frontend/`; `package-lock.json` locks dependency versions. After changing editor sources or dependencies, use Node.js 22 or newer:
 
@@ -145,7 +145,7 @@ Commit generated `src/main/resources/web/yaml-editor.js` and `editor-licenses.tx
 
 ### Output structures and samples
 
-Output previews live in the right-hand **Outputs** tab; there is no top-level manual inference button or separate lower schema-preview tab. Parameter and connection changes update port structures automatically. Steps with incomplete inputs report their missing ports individually, preserving successful upstream and independent-branch structures.
+Output previews live in the right-hand **Outputs** tab. Parameter and connection changes update port structures automatically. Steps with incomplete inputs report their missing ports individually, preserving successful upstream and independent-branch structures.
 
 Operators supply samples through `previewOutputs` (JVM) or `preview_outputs` (Python); the UI does not synthesize samples from Schema. All operators must implement the sample interface; unavailable samples for current inputs are reported with a reason. Defaults are 10 rows and 16 KiB per port, measured as serialized UTF-8 JSON, with a 256 KiB total sample budget per graph preview. Truncation is explicitly labeled. Structure inference and sample requests are separate: a subsequent sample request adds `preview: {max_rows: 10, max_bytes: 16384}`. Sample methods do not invoke complete-job processing. `read_item` samples use bounded source reads; records preserve field structure, while bytes are shown as Base64. See [structure inference and sample interfaces](https://github.com/rdcn-link/xstream-codex/blob/main/docs/structure-inference.md).
 
@@ -194,7 +194,7 @@ The designer binds one JVM-wide DataCatalog through XStream plugin contracts. `l
 
 The Catalogs tree distinguishes host roots, datasets, folders and data Items with separate icons. Roots load at startup and children load on expansion; there is no catalog refresh button.
 
-Item rows show only their leaf names and file/folder icons, with no view badges. Hover or keyboard focus exposes the complete Item path and available views. Click an Item to reveal compact view/copy icons on an independent floating layer below its row (above when space is limited), without a popup or ⋯ button. Selecting a view sets `read_item` parameters; copying does not change the Job. Escape or clicking outside hides the icons.
+Item rows show only their leaf names and file/folder icons. Hover or keyboard focus exposes the complete Item path and available views. Click an Item to reveal compact view/copy icons on an independent floating layer below its row (above when space is limited). Selecting a view sets `read_item` parameters; copying does not change the Job. Escape or clicking outside hides the icons.
 
 [Scientific view selection, structure and samples](../docs/designer-scientific.md): plugin-defined array and sequence forms with compact previews.
 
@@ -210,3 +210,15 @@ showcase:
 ```
 
 Frontend assets and API requests use relative URLs, allowing deployment at a same-origin reverse-proxy prefix such as `/demo/`. The proxy strips that prefix, preserves the public Host/Origin pair and streams incremental responses without buffering the complete inference report. The independent XStream website supplies its own Designer distribution, sample catalog and deployment supervisor; this service does not need to connect to a production node.
+
+## Step descriptions and operator trust
+
+The Step tab provides a multiline Description, up to 8192 characters, saved automatically as the step’s `description` field. Descriptions survive duplication, undo/redo, export and reload; they do not affect inference or execution. Exporting without Designer metadata still retains them.
+
+Library and canvas operator icons display the repository administrator’s public 0–5 trust score using the same five shield-and-check icons as the repository: scored shields are teal and the rest are gray. Hover for the numeric score. Missing/invalid scores display a question mark; built-in `read_item` displays Built-in without an invented rating. Trust belongs to repository metadata, is not stored in Jobs, and is not a safety guarantee.
+
+The left operator library groups versions by name and shows only the latest public version. Numeric runs sort numerically (`1.10` follows `1.9`), and a release follows its hyphenated prerelease. Existing Jobs continue to resolve their original versions and are not upgraded automatically.
+
+Hover over a Dataset to see its description JSON’s `title` and `description`; the tree retains its addressable Dataset name.
+
+Designer only authors logical Jobs. It does not invoke a physical planner or display physical plans or execution results.

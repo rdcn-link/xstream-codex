@@ -14,15 +14,15 @@ async def main():
   errors=[];requests=[];old_started=asyncio.Event();release_old=asyncio.Event()
   page.on('pageerror',lambda e:errors.append(str(e)))
   async def infer(route):
-   n=route.request.post_data_json;draft=json.loads(n['job_yaml']);uri=draft['tasks'][0]['params']['uri'];
+   n=route.request.post_data_json;draft=json.loads(n['job_yaml']);uri=draft['steps'][0]['params']['uri'];
    if not n.get('preview'):requests.append(uri)
    if uri.endswith('/old'):
     old_started.set();await release_old.wait()
    name=uri.rsplit('/',1)[-1]
    descriptor={'representations':['records'],'formats':['arrow'],'certainty':'known','schema_json':{'fields':[{'name':name,'type':'utf8','nullable':True}]}}
-   report={'tasks':{t['id']:{'outputs':{'result':descriptor},'diagnostics':[]} for t in draft['tasks']},'outputs':{'result':descriptor}}
+   report={'steps':{t['id']:{'outputs':{'result':descriptor},'diagnostics':[]} for t in draft['steps']},'outputs':{'result':descriptor}}
    if route.request.url.endswith('/infer_stream'):
-    events=[{'event':'step','step':id,'result':result} for id,result in report['tasks'].items()]+[{'event':'complete','report':report}]
+    events=[{'event':'step','step':id,'result':result} for id,result in report['steps'].items()]+[{'event':'complete','report':report}]
     await route.fulfill(content_type='application/x-ndjson',body='\n'.join(json.dumps(e) for e in events)+'\n')
    else:await route.fulfill(json=report)
   await page.route('**/api/infer',infer)
@@ -30,7 +30,7 @@ async def main():
   await page.goto(args.url)
   await expect(page.locator('#connection')).to_contain_text('Connected',timeout=25000)
   await expect(page.locator('#repository-state')).to_contain_text('published',timeout=25000)
-  draft={'name':'Dynamic schemas','tasks':[{'id':'read','operator':'read_item@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}],'outputs':{'result':'filter'}}
+  draft={'name':'Dynamic schemas','steps':[{'id':'read','operator':'read_item@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}],'outputs':{'result':'filter'}}
   await page.evaluate('(draft)=>loadDocument(JSON.stringify(draft))',draft)
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial',timeout=15000)
   await expect(page.locator('[data-schema-port="filter:result"]')).to_contain_text('initial')
@@ -43,24 +43,24 @@ async def main():
   await page.wait_for_function('()=>!inferenceRunning',polling=100)
   count=len(requests)
   # Deleting a downstream step must not request schemas for its retained upstream.
-  await page.evaluate("job.tasks=job.tasks.filter(t=>t.id!=='filter');job.outputs={result:'read'};changed()")
+  await page.evaluate("job.steps=job.steps.filter(t=>t.id!=='filter');job.outputs={result:'read'};changed()")
   await page.wait_for_timeout(900)
   assert len(requests)==count,requests
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial')
   await page.evaluate('(draft)=>loadDocument(JSON.stringify(draft))',draft)
   await page.wait_for_function('()=>!inferenceRunning&&!inferencePending',polling=100)
   # Independent branch changes retain the other branch immediately, without flicker.
-  await page.evaluate("job.tasks.push({id:'other',operator:'read_item@1.0',inputs:{},params:{uri:'dacp://localhost:19860/example/other'}});changed()")
+  await page.evaluate("job.steps.push({id:'other',operator:'read_item@1.0',inputs:{},params:{uri:'dacp://localhost:19860/example/other'}});changed()")
   await page.wait_for_function('()=>!inferenceRunning&&!inferencePending',polling=100)
-  await page.evaluate("job.tasks.find(t=>t.id==='other').params.uri='dacp://localhost:19860/example/other2';changed()")
+  await page.evaluate("job.steps.find(t=>t.id==='other').params.uri='dacp://localhost:19860/example/other2';changed()")
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial')
   await expect(page.locator('[data-schema-port="filter:result"]')).to_contain_text('initial')
   await page.wait_for_function('()=>!inferenceRunning&&!inferencePending',polling=100)
   count=len(requests)
-  await page.evaluate("job.tasks=job.tasks.filter(t=>t.id!=='other');changed()")
+  await page.evaluate("job.steps=job.steps.filter(t=>t.id!=='other');changed()")
   await page.wait_for_timeout(900)
   assert len(requests)==count,requests
-  await page.evaluate("selected='read';selectedSteps=new Set(['read']);setInspector(true);render();inspectorTab('outputs');inspectorTab('parameters');job.name='Renamed';job.tasks[0].title='New title';positions.read={x:400,y:300};invalidate();render()")
+  await page.evaluate("selected='read';selectedSteps=new Set(['read']);setInspector(true);render();inspectorTab('outputs');inspectorTab('parameters');job.name='Renamed';job.steps[0].title='New title';positions.read={x:400,y:300};invalidate();render()")
   await page.wait_for_timeout(1000)
   assert len(requests)==count,requests
   icons=await page.locator('#properties-tab path, #parameters-tab path').evaluate_all('(paths)=>paths.map(p=>p.getAttribute("d"))')
@@ -77,17 +77,17 @@ async def main():
    await expect(page.locator(f'[data-schema-port="{step}:result"]')).not_to_contain_text('old')
   # Valid edits save automatically without replacing the focused form.
   assert await value.input_value()=='dacp://localhost:19860/example/latest'
-  assert await page.evaluate('job.tasks[0].params.uri')=='dacp://localhost:19860/example/latest'
+  assert await page.evaluate('job.steps[0].params.uri')=='dacp://localhost:19860/example/latest'
   assert requests[-2:]==['dacp://localhost:19860/example/old','dacp://localhost:19860/example/latest'],requests
   await page.wait_for_function('()=>!inferenceRunning',polling=100)
-  await page.evaluate("report={tasks:{read:{outputs:{},diagnostics:[{severity:'error',message:'A very long detailed inference failure that belongs in Outputs only'}]}}};refreshPortSchemas()")
+  await page.evaluate("report={steps:{read:{outputs:{},diagnostics:[{severity:'error',message:'A very long detailed inference failure that belongs in Outputs only'}]}}};refreshPortSchemas()")
   error_box=page.locator('[data-schema-port="read:result"]')
   await expect(error_box).to_have_text('!Inference error')
   await expect(error_box).not_to_contain_text('very long')
-  await page.evaluate("report={tasks:{read:{outputs:{result:{representations:['records'],certainty:'unknown'}},diagnostics:[]}}};refreshPortSchemas()")
+  await page.evaluate("report={steps:{read:{outputs:{result:{representations:['records'],certainty:'unknown'}},diagnostics:[]}}};refreshPortSchemas()")
   await expect(error_box).to_have_text('?Schema unknown')
   # Records samples render as a bounded table without interpreting HTML values.
-  await page.evaluate("report.tasks.read.outputs.result={representations:['records'],certainty:'known',schema_json:{fields:[{name:'value',type:'utf8'}]},sample:{representation:'records',format:'json',rows:[{value:'<script>unsafe</script>'},{value:null}]}};selected='read';selectedSteps=new Set(['read']);setInspector(true);render();inspectorTab('outputs')")
+  await page.evaluate("report.steps.read.outputs.result={representations:['records'],certainty:'known',schema_json:{fields:[{name:'value',type:'utf8'}]},sample:{representation:'records',format:'json',rows:[{value:'<script>unsafe</script>'},{value:null}]}};selected='read';selectedSteps=new Set(['read']);setInspector(true);render();inspectorTab('outputs')")
   await expect(page.locator('.output-sample-table th')).to_have_text('value')
   await expect(page.locator('.output-sample-table tbody tr')).to_have_count(2)
   await expect(page.locator('.output-sample-table td').first).to_have_text('<script>unsafe</script>')
@@ -95,10 +95,10 @@ async def main():
   # Duplication retains settings but not input bindings, and is undoable.
   await page.evaluate("selected='filter';selectedSteps=new Set(['filter']);render()")
   await page.locator('#duplicate-step').dispatch_event('click')
-  copy=await page.evaluate('job.tasks.at(-1)')
+  copy=await page.evaluate('job.steps.at(-1)')
   assert copy['id'] not in ('read','filter') and copy['operator']=='piflow_filter@1.0' and copy['inputs']=={},copy
   await page.locator('#undo').dispatch_event('click')
-  assert await page.evaluate('job.tasks.length')==2
+  assert await page.evaluate('job.steps.length')==2
   # Move the existing multi-selection using a real pointer drag.
   await page.evaluate("selectedSteps=new Set(['read','filter']);selected=null;outletSelected=false;positions={read:{x:80,y:120},filter:{x:380,y:120}};setInspector(false);render();document.getElementById('canvas').scrollTo(0,0)")
   before=await page.evaluate('JSON.parse(JSON.stringify(positions))')

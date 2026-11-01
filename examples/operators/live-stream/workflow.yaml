@@ -1,5 +1,5 @@
 name: live-weather-stream
-tasks:
+steps:
 - id: ticks
   title: 持续生成模拟气象观测
   operator: live_ticks@1.0

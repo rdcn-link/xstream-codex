@@ -92,14 +92,14 @@ Docker layers are shared locally, and the JVM builder separates the runtime laye
 
 ## Executor plugins
 
-Implement `dacp.OperatorExecutor` from `xstream-execution-api` and register the fully qualified class in `META-INF/services/dacp.OperatorExecutor`. Compile the API as `Provided`, install the plugin JAR and private dependencies in `plugin_directory`, and restart the node. No core registry or client changes are needed. Duplicate executor IDs fail explicitly. The built-in `container`, `jvm`, `python`, and `command` implementations live in `plugins/xstream-plugin-operator-executors` and use that same ServiceLoader mechanism.
+Implement `xstream.execution.OperatorExecutor` from `xstream-execution-api` and register the fully qualified class in `META-INF/services/xstream.execution.OperatorExecutor`. Compile the API as `Provided`, install the plugin JAR and private dependencies in `plugin_directory`, and restart the node. No core registry or client changes are needed. Duplicate executor IDs fail explicitly. The built-in `container`, `jvm`, `python`, and `command` implementations live in `plugins/xstream-plugin-operator-executors` and use that same ServiceLoader mechanism.
 
 ```scala
-final class CustomExecutor extends dacp.OperatorExecutor {
+final class CustomExecutor extends xstream.execution.OperatorExecutor {
   val id = "custom"
-  def command(p: dacp.OperatorProgram, artifactPath: Option[String]): dacp.OperatorCommand = {
+  def command(p: xstream.execution.OperatorProgram, artifactPath: Option[String]): xstream.execution.OperatorCommand = {
     require(p.entrypoint.nonEmpty, "entrypoint required")
-    dacp.OperatorCommand(entrypoint = Some(Vector("/opt/custom/bin/run", p.entrypoint)))
+    xstream.execution.OperatorCommand(entrypoint = Some(Vector("/opt/custom/bin/run", p.entrypoint)))
   }
 }
 ```

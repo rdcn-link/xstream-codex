@@ -2,7 +2,7 @@
 
 [English](operator-submission.md)
 
-仓库**仅接受源码提交**。开发者不能提交最终 JAR、wheel、可执行产物或分类。仓库分析源码，在隔离环境构建精简算子包，等待管理员审批。只有通过审批的算子才进入公开搜索、清单和下载。
+仓库接受源码提交，以及带包装源码的第三方二进制提交。最终 JAR、wheel 等算子产物由仓库构建；第三方可执行程序必须附带来源、版本、平台及许可证，不能单独作为算子。所有提交均需管理员审批；分类由管理员指定。详见[依赖环境与二进制包装](dependency-environments_zh.md)。
 
 ## 开发者流程
 
@@ -88,7 +88,7 @@ Review submissions 标签页展示原始清单、源码公开声明、私有源�
 
 ## 隔离构建
 
-Java/Scala 编译为 JAR，Python 完成语法检查后编译为字节码 ZIP。固定构建模板通过 `SourceBuildRecipe` 扩展，不接受开发者指定任意构建命令。管理员的构建镜像必须包含编译器和 `/opt/lib/*` 下的 SDK/依赖。JVM 镜像需要 `/opt/java/bin/java`，Java 需要 `jdk.compiler`，Scala 需要编译器库。Python 镜像需要 `/usr/local/bin/python` 和 XStream SDK 等执行依赖。构建期间不下载依赖。
+Java/Scala 编译为 JAR，Python 完成语法检查后编译为字节码 ZIP。固定构建模板通过 `SourceBuildRecipe` 扩展，不接受开发者指定任意构建命令。管理员的构建镜像必须包含编译器和 `/opt/lib/*` 下的 SDK/依赖。JVM 镜像需要 `/opt/java/bin/java`，Java 需要 `jdk.compiler`，Scala 需要编译器库。Python 镜像需要 `/usr/local/bin/python` 和 XStream SDK 等执行依赖。声明的依赖在环境准备阶段解析并锁定；编译使用已准备的环境。
 
 每次编译使用新 Docker 容器：禁止网络、只读根文件系统与源码挂载、非 root 用户、移除 capabilities、禁止新增权限、最多 64 个进程、1 CPU、512 MiB 内存。`/tmp` 与 `/output` 各为 64 MiB 临时文件系统。不挂载宿主输出目录、Docker socket 或仓库凭据。产物通过限制大小的 stdout 管道返回，诊断日志也有上限。构建超时为 120 秒，产物上限 64 MiB。同时运行一个构建，最多排队 32 个。重启后恢复排队/运行中的待审构建。环境镜像准备阶段另有最多 120 秒时限。构建失败的算子保持私有且不能批准，可由管理员拒绝后重新提交修正版。
 
@@ -103,7 +103,7 @@ Java/Scala 编译为 JAR，Python 完成语法检查后编译为字节码 ZIP。
 | GET `/v1/build-languages` | 公开 | 已安装构建插件的语言/执行器/产物元数据 |
 | GET `/v1/runtimes`、`/v1/categories` | 公开 | 环境目录与管理员分类 |
 | PUT `/v1/blobs/sha256/{hash}` | 提交 Token | 私有源码/许可证/SBOM，最大 64 MiB |
-| POST `/v1/submissions` | 提交 Token | 仅源码清单，最大 64 KiB |
+| POST `/v1/submissions` | 提交 Token | 源码或二进制包装清单，最大 64 KiB |
 | GET `/v1/submissions[/{id}]` | 提交 Token | 本人提交状态 |
 | POST `/api/admin/login` | 密码 | 创建八小时管理会话 |
 | GET `/api/admin/session` | 管理会话 | 会话与 CSRF Token |

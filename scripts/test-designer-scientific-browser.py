@@ -24,15 +24,15 @@ def route(req):
   elif name=='items':data={'items':[{'path':'/genome','kind':'folder','views':['bytes'],'format':'fasta'}]} if n['path']=='/' else {'items':[{'path':'/genome/sequences','kind':'data','views':['sequence','bytes'],'format':'fasta'}]}
   elif name=='document':data={'job':json.loads(n['job_yaml']),'job_yaml':n['job_yaml'],'variables_yaml':n.get('variables_yaml','{}')}
   elif name in ('infer','infer_stream'):
-   job=json.loads(n['job_yaml']);tasks={}
-   for t in job['tasks']:
+   job=json.loads(n['job_yaml']);steps={}
+   for t in job['steps']:
     view=t['params'].get('view','sequence');structure={'sequence':{'view':'sequence','alphabet':'dna'},'array':{'view':'array','data_type':'float32','dimensions':[{'name':'time','length':4},{'name':'lat','length':180}]}}.get(view)
     d={'representations':[view],'formats':['fasta'],'certainty':'known','structure':structure}
     if n.get('preview'):d['sample']={'representation':view,'format':'fasta','rows':[{'id':'chr1','offset':2,'symbols':'GTAC','last':True}],'truncated':False}
-    tasks[t['id']]={'outputs':{'result':d},'diagnostics':[]}
-   data={'tasks':tasks,'outputs':next(iter(tasks.values()),{}).get('outputs',{})}
+    steps[t['id']]={'outputs':{'result':d},'diagnostics':[]}
+   data={'steps':steps,'outputs':next(iter(steps.values()),{}).get('outputs',{})}
    if name=='infer_stream':
-    events=[{'event':'step','step':k,'result':v} for k,v in tasks.items()]+[{'event':'complete','report':data}]
+    events=[{'event':'step','step':k,'result':v} for k,v in steps.items()]+[{'event':'complete','report':data}]
     req.fulfill(content_type='application/x-ndjson',body='\n'.join(json.dumps(x) for x in events)+'\n');return
   else:data={}
   req.fulfill(json=data);return
@@ -67,24 +67,24 @@ with sync_playwright() as p:
  assert page.evaluate('window.copiedItemPath')=='/science/genome'
  page.keyboard.press('Escape')
  expect(page.get_by_role('toolbar',name='Item actions')).to_have_count(0)
- assert page.evaluate('job.tasks.length')==0
+ assert page.evaluate('job.steps.length')==0
  expect(page.locator('.item[data-kind=folder]')).to_have_attribute('aria-expanded','false')
  page.locator('.item-chevron').click()
  expect(page.locator('.item[data-kind=folder]')).to_have_attribute('aria-expanded','true')
  expect(page.locator('.item[data-kind=item] .item-label')).to_have_text('sequences')
  page.locator('.item[data-kind=item]').click()
  expect(page.get_by_role('button',name='Use bytes view',exact=True)).to_be_visible()
- assert page.evaluate('job.tasks.length')==0
+ assert page.evaluate('job.steps.length')==0
  page.get_by_role('button',name='Use sequence view',exact=True).click()
- assert page.evaluate('job.tasks[0].params')=={'uri':'context:/science/genome/sequences','view':'sequence'}
- assert page.evaluate('executionDocument().tasks[0].params.view')=='sequence'
+ assert page.evaluate('job.steps[0].params')=={'uri':'context:/science/genome/sequences','view':'sequence'}
+ assert page.evaluate('executionDocument().steps[0].params.view')=='sequence'
  page.locator('.item[data-kind=item]').click()
  page.get_by_role('button',name='Use bytes view',exact=True).click()
- assert page.evaluate('job.tasks.length')==1
- assert page.evaluate('executionDocument().tasks[0].params.view')=='bytes'
+ assert page.evaluate('job.steps.length')==1
+ assert page.evaluate('executionDocument().steps[0].params.view')=='bytes'
  page.locator('.item[data-kind=item]').click()
  page.get_by_role('button',name='Use sequence view',exact=True).click()
- assert page.evaluate('job.tasks.length')==1
+ assert page.evaluate('job.steps.length')==1
  expect(page.locator('[data-schema-port="step_1:result"]')).to_contain_text('dna')
  assert page.locator('#datasets .item-capability').count()==0
  page.evaluate("job.outputs={result:'step_1'};selected='step_1';setInspector(true);render();inspectorTab('parameters')")
@@ -95,7 +95,7 @@ with sync_playwright() as p:
  length.get_by_label('Set length',exact=True).check()
  length.get_by_label('Parameter value',exact=True).fill('4')
  expect(page.locator('#step-save-status')).to_have_text('')
- assert page.evaluate('job.tasks[0].params.selection.length')==4
+ assert page.evaluate('job.steps[0].params.selection.length')==4
  page.get_by_role('group',name='view',exact=True).get_by_label('Parameter value',exact=True).select_option(label='"array"')
  page.get_by_label('Set selection',exact=True).check()
  expect(page.locator('[data-parameter-path="params.selection.stride"]')).to_be_visible()

@@ -1,7 +1,6 @@
 package xstream.operator.inference
 
-import dacp._
-
+import _root_.xstream.execution.{InferenceRequest,InferenceResult,OperatorCommand,OperatorExecutor,OutputSamples,PortContract,StreamCancel,StreamDescriptor,StructureInference}
 
 import java.nio.file.{Files,Path}
 import com.github.dockerjava.api.DockerClient

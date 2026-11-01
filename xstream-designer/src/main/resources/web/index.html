@@ -17,7 +17,7 @@
 <div id="properties" hidden>
 
 <section id="properties-panel" role="tabpanel" aria-labelledby="properties-tab">
-<label>Step ID<input id="step-id" readonly></label><label>Title<input id="step-title"></label><label>Operator<input id="step-operator" readonly></label>
+<label>Step ID<input id="step-id" readonly></label><label>Title<input id="step-title"></label><label>Description<textarea id="step-description" rows="4" maxlength="8192" placeholder="Describe this step’s purpose, assumptions or processing notes…"></textarea></label><label>Operator<input id="step-operator" readonly></label>
 <h3>Input connections</h3><div id="inputs"></div><p class="muted">Connect an output port to Outlet to return it as a Job result.</p>
 </section>
 <section id="parameters-panel" role="tabpanel" aria-labelledby="parameters-tab" hidden><p class="muted">Enable optional parameters to include them. Use $ for variables; hover ? to read help below.</p><div id="step-params"></div></section>

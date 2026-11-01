@@ -48,7 +48,7 @@ Jobs reference native operators with ordinary input bindings, without special ta
 
 ## Plugin contract and verification
 
-`CommandExecutor` registers in `META-INF/services/dacp.OperatorExecutor` and ships in `plugins/xstream-plugin-operator-executors`. External plugins compile against `xstream-execution-api` as Provided, package their service files and install their JAR/private dependencies in the host's `plugin_directory`. Restart the host after installation. Plugins validate their own settings; the engine manages resources.
+`CommandExecutor` registers in `META-INF/services/xstream.execution.OperatorExecutor` and ships in `plugins/xstream-plugin-operator-executors`. External plugins compile against `xstream-execution-api` as Provided, package their service files and install their JAR/private dependencies in the host's `plugin_directory`. Restart the host after installation. Plugins validate their own settings; the engine manages resources.
 
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt 'testOnly xstream.operator.executors.CommandExecutorSpec')

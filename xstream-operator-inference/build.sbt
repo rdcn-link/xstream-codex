@@ -18,3 +18,6 @@ Test / javaOptions ++= Seq("--add-opens=java.base/java.nio=ALL-UNNAMED", "-Dio.n
 
 lazy val dataCore = RootProject(file("../xstream-data/xstream-data-core"))
 dependsOn(dataCore)
+
+lazy val dependencyProviders = RootProject(file("../plugins/xstream-plugin-dependencies"))
+dependsOn(dependencyProviders % "runtime->compile;test->compile")

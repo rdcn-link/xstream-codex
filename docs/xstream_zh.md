@@ -49,7 +49,9 @@ nodes:
 ## Scala 嵌入
 
 ```scala
-import dacp._
+import xstream.engine._
+import xstream.execution._
+import xstream.data._
 import xstream.util.YamlDocument
 import java.nio.file.{Files, Path}
 
@@ -94,32 +96,9 @@ data_catalog:
 
 本地选择生成 `context:/dataset/item`，节点选择保留完整 DACP URI。本地结构和样例预览使用设计器目录。在别处执行导出的 Job 时，需要提供匹配的上下文目录，或显式更改 Item URI。
 
-## 自动计算下推
+## 执行目标与物理规划
 
-独立的 `LocalEngine` 默认启用自动下推。YAML Job 保持逻辑定义，不指定执行节点。服务地址及普通客户端凭据配置在宿主：
-
-```yaml
-compute_pushdown_enabled: true
-nodes:
-  - url: dacp://node-a.example.org:18861
-    ca: /etc/dacp/ca.crt
-    token_file: /etc/dacp/node-a.token
-    compute_pushdown: true
-```
-
-设置 `compute_pushdown_enabled: false` 可保留本地计算。节点的 `compute_pushdown: false` 表示仅访问数据；省略时允许尝试提交计算，目标服务器仍检查授权、资源、算子仓库及运行环境。配置本身不授予权限。引擎不要求 Union 组网或专用凭据，规划也不调用结构推导。
-
-对于 `read(A) → filter → aggregate`，将封闭处理链作为普通 Job 提交到 A，远程读取改成 A 目录中的 `context:` 引用。对于 `read(A) → filterA` 和 `read(B) → filterB` 两条分支再合并，各分支下推到其数据源，合并留在本地。返回输出通过有界队列和背压接入本地，不需要中间数据文件。保留多个边界端口以及用户定义的 Job 输出名称。同一服务上的多个不相连封闭区域可以共用一个子作业。
-
-规划基于数据就近原则，不是通用成本优化器。只下推全部输入依赖均在同一已配置远程服务、且至少包含一个处理步骤的区域。单独的远程读取仍直接获取数据。本地 `context:` 读取、无远程 Item 依赖的源算子、本地与远程数据汇合及其后续处理保留在本地。不向任意远程 worker 上传本地输入，也不安排 A 到 B 的直传；需要集中协调跨节点分配时仍使用 Union。独立远程分支会并发消费。
-
-执行策略只要选择了任何物化输出，或者是显式重放，就保留原本地图和持久化归属。普通流式重试和超时策略仍作用于物理执行。远程子作业自身不独立重试、不物化输出；重试由发起引擎协调，消费者须按流协议丢弃失败尝试的部分输出。远程请求受发起引擎客户端剩余时限约束；接收服务保留自身可能更短的执行时限。取消会关闭远程结果流，并取消服务器端执行。远程失败直接传播，不自动回退本地以免重复副作用。
-
-执行历史保存原 Job、`placements`、带下发 YAML 的 `remote_subjobs`，以及包含 `remote_execution_id` 和最终状态的 `remote_job` 子记录。包下载、运行环境缓存和执行元数据可能使用磁盘；流边不物化数据。嵌入宿主可以通过 `EngineEnvironment.computePushdown` 提供自己的 `ComputePushdown` 适配器；`LocalEngine` 也接受可选的 `remoteCompute` 适配器。嵌入宿主自行决定是否启用下推，并协调自身调度。
-
-另见[下推 Job 示例](../examples/xstream/pushdown.yaml)。修改远程 URI 和宿主配置后，使用 `xstream-runner` 执行。
-
-接收服务为 Union 时，`context:/公开数据集名/Item` 通过其公开数据集到成员的映射解析。显式使用该 Union 配置公布的服务地址具有相同含义。若使用可识别的成员节点 URI，读取步骤则定位到对应的数据归属成员。
+默认本地执行。可通过宿主安装的 `ExecutionTargetProvider` 配置远程目标，并通过独立执行策略启用候选计划选择。数据读取与计算权限彼此独立；引擎不直接依赖 DACP 客户端。配置、成本估算、权限查询与生命周期见[执行目标指南](execution-targets_zh.md)。Designer 只负责 Job 设计，不规划或展示物理计划。
 
 ## 执行路径
 

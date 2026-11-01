@@ -92,14 +92,14 @@ Docker 层在本地共享，JVM 构建器把运行环境层与可选完整镜像
 
 ## 执行器插件
 
-实现 `xstream-execution-api` 的 `dacp.OperatorExecutor`，在 `META-INF/services/dacp.OperatorExecutor` 注册完整类名。API 依赖为 `Provided`，插件和私有依赖放到 `plugin_directory` 后重启。无需修改核心注册表或客户端。重复执行器 ID 明确失败。内置 `container`、`jvm`、`python`、`command` 位于 `plugins/xstream-plugin-operator-executors`，使用相同 ServiceLoader 机制。
+实现 `xstream-execution-api` 的 `xstream.execution.OperatorExecutor`，在 `META-INF/services/xstream.execution.OperatorExecutor` 注册完整类名。API 依赖为 `Provided`，插件和私有依赖放到 `plugin_directory` 后重启。无需修改核心注册表或客户端。重复执行器 ID 明确失败。内置 `container`、`jvm`、`python`、`command` 位于 `plugins/xstream-plugin-operator-executors`，使用相同 ServiceLoader 机制。
 
 ```scala
-final class CustomExecutor extends dacp.OperatorExecutor {
+final class CustomExecutor extends xstream.execution.OperatorExecutor {
   val id = "custom"
-  def command(p: dacp.OperatorProgram, artifactPath: Option[String]): dacp.OperatorCommand = {
+  def command(p: xstream.execution.OperatorProgram, artifactPath: Option[String]): xstream.execution.OperatorCommand = {
     require(p.entrypoint.nonEmpty, "entrypoint required")
-    dacp.OperatorCommand(entrypoint = Some(Vector("/opt/custom/bin/run", p.entrypoint)))
+    xstream.execution.OperatorCommand(entrypoint = Some(Vector("/opt/custom/bin/run", p.entrypoint)))
   }
 }
 ```

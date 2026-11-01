@@ -1,7 +1,7 @@
 package xstream.operator.executors
 
 
-import dacp.OperatorCommand
+import xstream.execution.OperatorCommand
 
 /** Worker adapters are runtime-specific; the core only manages bounded metadata channels. */
 private[executors] object InferenceLaunch {

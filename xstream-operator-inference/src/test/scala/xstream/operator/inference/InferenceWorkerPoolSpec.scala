@@ -1,6 +1,6 @@
 package xstream.operator.inference
 
-import dacp._
+import _root_.xstream.execution.{OperatorCommand,OperatorProgram,StreamCancel}
 
 import _root_.xstream.data._
 

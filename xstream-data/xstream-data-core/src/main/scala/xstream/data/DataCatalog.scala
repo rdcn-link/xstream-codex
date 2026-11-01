@@ -2,16 +2,23 @@ package xstream.data
 
 /** Public, user-defined JSON object text. Never include credentials or storage settings. */
 object DatasetDescriptions {
-  private val reader=new com.fasterxml.jackson.databind.ObjectMapper().reader()
+  private val mapper=new com.fasterxml.jackson.databind.ObjectMapper().enable(com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
+  private val reader=mapper.reader()
     .`with`(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+  def default(title:String="Dataset"):String=mapper.writeValueAsString(mapper.createObjectNode().put("title",title).put("description",""))
   def validate(value:String):Unit={
     require(value!=null && value.length<=32768,"dataset description must be JSON object text of at most 32768 characters")
     val node=try reader.readTree(value)
       catch {case scala.util.control.NonFatal(_)=>throw new IllegalArgumentException("dataset description must be valid JSON object text")}
     require(node!=null && node.isObject,"dataset description must be a JSON object")
+    require(node.path("title").isTextual && node.path("title").asText.trim.nonEmpty,"dataset description requires a nonempty string title")
+    require(node.path("description").isTextual,"dataset description requires a string description")
   }
 }
-case class DatasetInfo(name:String,description:String="{}") {
+object DatasetInfo {
+  def apply(name:String):DatasetInfo=new DatasetInfo(name,DatasetDescriptions.default(name))
+}
+case class DatasetInfo(name:String,description:String) {
   DatasetDescriptions.validate(description)
 }
 object DatasetNames {

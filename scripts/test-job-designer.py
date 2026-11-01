@@ -21,7 +21,7 @@ def main():
     def api(path, value):
         with urlopen(Request(args.url.rstrip('/')+'/api/'+path, json.dumps(value).encode(), {'Content-Type': 'application/json'}), timeout=130) as response:
             return json.load(response)
-    job = {'name': 'Designer cross-node preview', 'tasks': [
+    job = {'name': 'Designer cross-node preview', 'steps': [
         {'id': 'read', 'title': 'Read observations', 'operator': 'read_item@1.0', 'inputs': {}, 'params': {'uri': '$INPUT_URI', 'view': 'records'}},
         {'id': 'filter', 'title': 'Filter observations', 'operator': 'piflow_filter@1.0', 'inputs': {'source': 'read'}, 'params': {'condition': '$CONDITION'}},
         {'id': 'export', 'title': 'CSV result', 'operator': 'piflow_csv_save@1.0', 'inputs': {'source': 'filter'}}
@@ -313,7 +313,7 @@ def main():
         assert 'outlet' not in actual.lower(), 'Outlet is editor layout, not an execution step'
         assert 'node:' not in actual
         page.locator('#export-close').dispatch_event('click')
-        page.evaluate('()=>{selected=job.tasks[1].id;inspect();setInspector(true);inspectorTab("outputs")}')
+        page.evaluate('()=>{selected=job.steps[1].id;inspect();setInspector(true);inspectorTab("outputs")}')
         expect(page.locator('#step-output-preview table').first).to_be_visible(timeout=130000)
         page.locator('[data-tab="chat"]').click()
         page.locator('#chat-input').fill('rename Updated weather workflow')

@@ -6,7 +6,7 @@ Standalone XStream, DACP Server and Union share the same Job format. Steps conne
 
 ```yaml
 name: weather-filter
-tasks:
+steps:
   - id: read
     title: Read weather observations
     operator: read_item@1.0
@@ -42,3 +42,11 @@ Upstream and downstream steps run concurrently with bounded buffering. Failure, 
 
 See the [operator catalog](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-catalog.md) for currently published collaboration operators, parameters and complete input/output examples.
 
+
+An optional step `description` contains up to 8192 characters of multiline documentation. It is retained in saved and dispatched Jobs and does not affect execution. Example:
+
+```yaml
+description: |
+  Read weather observations.
+  Preserve the source units.
+```

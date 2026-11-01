@@ -1,0 +1,33 @@
+name: script_text_replace
+version: '1.0'
+description: Replace literal text in bounded UTF-8 lines, preserving line endings.
+icon:
+  path: M4 6h9M8.5 6v12M4 18h9M16 9l4 3-4 3
+  color: '#167b9c'
+inputs:
+  source:
+    representations:
+    - bytes
+    formats: []
+parameters:
+  type: object
+  properties:
+    find:
+      type: string
+      description: Literal text to replace within each line; no CR or LF.
+      minLength: 1
+      maxLength: 4096
+    replacement:
+      type: string
+      description: Replacement text; empty text deletes matches.
+      default: ''
+      maxLength: 4096
+  required:
+  - find
+  additionalProperties: false
+language: python
+entrypoint: script_text_replace
+runtime: python-arrow@2.0
+source_public: true
+dependencies:
+  provider: python

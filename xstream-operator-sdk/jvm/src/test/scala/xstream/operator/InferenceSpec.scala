@@ -1,8 +1,9 @@
 package xstream.operator
 
+import _root_.xstream.execution.{InferenceDiagnostic,InferenceRequest,InferenceResult,OutputSample,OutputSamples,PreviewLimits,StreamDescriptor,StructureInference}
+
 import _root_.xstream.data._
 
-import dacp._
 import java.nio.file.Files
 import org.scalatest.funsuite.AnyFunSuite
 import com.fasterxml.jackson.databind.JsonNode

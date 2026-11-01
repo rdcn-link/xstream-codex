@@ -68,7 +68,7 @@ main,main.inspector-open{grid-template-columns:var(--library-width) 18px minmax(
 
 .history-controls{display:flex;align-items:center;gap:0;border:1px solid #d6e0ed;border-radius:6px;overflow:hidden;flex-shrink:0;background:#fff}.canvas-toolbar .history-controls button{display:flex;align-items:center;gap:5px;border:0;border-radius:0;padding:5px 8px;min-height:28px;font-size:11px}.history-controls button+button{border-left:1px solid #e1e8f1!important}.history-controls svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.history-controls button:disabled{opacity:.4;background:#f6f8fb}
 
-.card-head{position:relative;padding-right:46px}.step-icon{position:absolute;right:10px;top:10px;width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}.step-heading{min-width:0}
+.card-head{position:relative;padding-right:46px}.step-heading{min-width:0}
 
 /* Compact, schema-driven parameter rows. Names are labels, not value editors. */
 .inspector .parameter-row{margin:0;padding:8px 0;border:0;border-bottom:1px solid #edf1f6;border-radius:0}
@@ -168,3 +168,17 @@ header{min-height:40px;padding:4px 12px;gap:7px}header img{width:26px;height:26p
 
 .item-quick-actions .item-symbol,.item-quick-actions .item-capabilities{display:inline-flex;align-items:center}
 .item-quick-actions .item-capability{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Keep repository trust beside both library and canvas operator icons. */
+.operator-mark{display:inline-flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;min-width:38px}
+.operator-rating{display:flex;justify-content:center;gap:1px;font-size:8px;line-height:10px;white-space:nowrap}
+.operator-rating .rated{color:#159785}.operator-rating .unrated{color:#c9d1d7}
+.operator-rating.unscored{color:#77879c;font-size:8px}
+.step-mark{position:absolute;right:8px;top:9px}
+.step-mark>svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.card-head{padding-right:54px;min-height:52px}
+#step-description{display:block;width:100%;min-height:78px;max-height:240px;resize:vertical;font:inherit;line-height:1.5}
+
+.dataset-tooltip p{white-space:pre-wrap;overflow-wrap:anywhere}.dataset-tooltip strong{display:block;font-weight:700}
+
+.operator-rating .trust-icon{width:10px;height:10px;display:block;fill:currentColor;stroke:none;flex:none}.operator-rating .trust-check{fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}

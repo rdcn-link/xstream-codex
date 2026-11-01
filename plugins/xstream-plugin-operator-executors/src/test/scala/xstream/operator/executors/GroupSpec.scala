@@ -1,8 +1,9 @@
 package xstream.operator.executors
 
+import _root_.xstream.execution.{OperatorFrames,OperatorGroup,OperatorGroupBinding,OperatorGroupContract,OperatorGroupStep,OperatorProgram,PreviewLimits,StreamDescriptor}
+
 import _root_.xstream.data._
 
-import dacp._
 import xstream.operator.{BytesOperator,RecordsOperator}
 import com.fasterxml.jackson.databind.JsonNode
 import java.io.{ByteArrayInputStream,ByteArrayOutputStream}
@@ -20,7 +21,7 @@ object GroupUpper extends BytesOperator {
 object GroupCopy extends BytesOperator {override def outputFormat="text";def transform(b:Array[Byte],p:JsonNode)=b}
 object GroupRecords extends RecordsOperator {
   val borrowed=new java.util.concurrent.ConcurrentLinkedQueue[VectorSchemaRoot]()
-  override def previewOutputs(inputs:Map[String,dacp.StreamDescriptor],params:JsonNode,limits:dacp.PreviewLimits)=inputs.get("source").flatMap(_.sample).map(s=>Map("result"->s.bounded(limits))).getOrElse(Map.empty)
+  override def previewOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode,limits:xstream.execution.PreviewLimits)=inputs.get("source").flatMap(_.sample).map(s=>Map("result"->s.bounded(limits))).getOrElse(Map.empty)
   def transform(batch:VectorSchemaRoot,p:JsonNode):Option[VectorSchemaRoot]={borrowed.add(batch);Some(batch)}
 }
 class GroupSpec extends AnyFunSuite {

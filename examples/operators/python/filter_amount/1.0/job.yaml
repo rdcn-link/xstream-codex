@@ -1,5 +1,5 @@
 name: filter-amount-demo
-tasks:
+steps:
 - id: read_filter_source
   operator: read_item@1.0
   inputs: {}

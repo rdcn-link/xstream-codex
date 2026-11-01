@@ -1,5 +1,7 @@
 package dacp.common
 
+import _root_.xstream.execution.{InferenceResult,OutputSample,PreviewLimits,StreamDescriptor}
+
 
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
@@ -15,17 +17,17 @@ import scala.jdk.CollectionConverters._
 
 /** Document operators explicitly buffer at most 16 MiB; Arrow transport remains streamed. */
 abstract class DocumentOperator(val operation:String) extends Operator {
-  final def inferOutputs(inputs:Map[String,dacp.StreamDescriptor],params:JsonNode):dacp.InferenceResult={
+  final def inferOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode):xstream.execution.InferenceResult={
     require(inputs.keySet==Set("source"),"expected source input")
     require(inputs("source").representations.isEmpty || inputs("source").representations==Set("bytes"),"bytes input required")
     val spec=Common.specs.get(operation)
     require(params.fieldNames.asScala.toSet--Set("max_input_bytes")==spec.get("params").fieldNames.asScala.toSet,"unexpected or missing parameters")
-    dacp.InferenceResult(Map("result"->dacp.StreamDescriptor(Set("bytes"),Set(spec.get("format").asText),certainty="known")))
+    xstream.execution.InferenceResult(Map("result"->xstream.execution.StreamDescriptor(Set("bytes"),Set(spec.get("format").asText),certainty="known")))
   }
-  override def previewOutputs(inputs:Map[String,dacp.StreamDescriptor],params:JsonNode,limits:dacp.PreviewLimits):Map[String,dacp.OutputSample]={
+  override def previewOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode,limits:xstream.execution.PreviewLimits):Map[String,xstream.execution.OutputSample]={
     val sample=inputs.get("source").flatMap(_.sample).getOrElse(throw new IllegalArgumentException("Upstream sample unavailable: source"))
     require(sample.representation=="bytes","bytes sample required")
-    Map("result"->dacp.OutputSample("bytes",Common.specs.get(operation).path("format").asText,data=Common.transform(operation,sample.bounded(limits).data.toArray,params).toVector,truncated=sample.truncated).bounded(limits))
+    Map("result"->xstream.execution.OutputSample("bytes",Common.specs.get(operation).path("format").asText,data=Common.transform(operation,sample.bounded(limits).data.toArray,params).toVector,truncated=sample.truncated).bounded(limits))
   }
   final def process(ctx:OperatorContext):Unit={
     val p=ctx.params

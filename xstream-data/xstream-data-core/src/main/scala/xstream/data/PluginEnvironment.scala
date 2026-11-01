@@ -62,7 +62,7 @@ final class PluginEnvironment(directory: Option[Path] = None,
   lazy val containers=new Containers(this)
   lazy val formats=new Formats(this)
   def views(item:Item):Seq[String]=item.views.getOrElse(if(item.format.isEmpty)Seq.empty else formats.views(item.format))
-  def datasetDefinition(raw:Map[String,Object]):DatasetDefinition={
+  def datasetDefinition(raw:Map[String,Object],name:String="Dataset"):DatasetDefinition={
     require(raw.get("provider").exists(_.isInstanceOf[String]),"dataset provider is required")
     val provider=raw("provider").toString
     val key=byId(classOf[DatasetProvider],provider).itemSettingsKey
@@ -77,7 +77,7 @@ final class PluginEnvironment(directory: Option[Path] = None,
     val description=raw.get("description").map { value=>
       require(value.isInstanceOf[String],"dataset description must be a JSON string")
       value.toString
-    }.getOrElse("{}")
+    }.getOrElse(DatasetDescriptions.default(name))
     DatasetDefinition(provider,source,items,description)
   }
   def close():Unit=synchronized {

@@ -1,4 +1,4 @@
-dacp.ZipContainerReader
-dacp.GzipContainerReader
-dacp.TarContainerReader
-dacp.TarGzipContainerReader
+xstream.data.archives.ZipContainerReader
+xstream.data.archives.GzipContainerReader
+xstream.data.archives.TarContainerReader
+xstream.data.archives.TarGzipContainerReader

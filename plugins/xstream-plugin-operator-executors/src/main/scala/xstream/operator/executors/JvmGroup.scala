@@ -1,7 +1,8 @@
 package xstream.operator.executors
 
+import _root_.xstream.execution.{OperatorCommand,OperatorFrame,OperatorGroup,OperatorGroupContract,OperatorProgram}
 
-import dacp._
+
 import xstream.operator.{Operator,OperatorRunner}
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import java.io.{ByteArrayOutputStream,DataInputStream}
@@ -62,7 +63,7 @@ private[executors] object JvmGroup {
   }
   def command(group:OperatorGroup):Option[OperatorCommand]={
     if(!group.steps.forall(s=>s.program.configuration.isEmpty && eligible(s.program)))return None
-    Some(OperatorCommand(Some(Vector("/opt/java/bin/java","--add-opens=java.base/java.nio=ALL-UNNAMED","-Dio.netty.tryReflectionSetAccessible=true","-cp","/input/group-worker.jar:/opt/lib/*","xstream.operator.executors.JvmGroupWorker")),
+    Some(OperatorCommand(Some(Vector("/opt/java/bin/java","--add-opens=java.base/java.nio=ALL-UNNAMED","-Dio.netty.tryReflectionSetAccessible=true","-cp","/input/group-worker.jar:/opt/lib/*:/opt/xstream/jars/*","xstream.operator.executors.JvmGroupWorker")),
       arguments=Vector("/input"),files=Map("group-worker.jar"->worker,"group.json"->definition(group)),
       mounts=group.steps.flatMap(s=>s.program.artifact.zip(s.artifactPath).map{case(file,path)=>path->file}).toMap))
   }

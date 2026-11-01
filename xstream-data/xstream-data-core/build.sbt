@@ -6,3 +6,5 @@ libraryDependencies ++= Seq(
   "org.apache.arrow" % "arrow-vector" % "18.3.0",
   "org.apache.arrow" % "arrow-memory-core" % "18.3.0",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.18.2")
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test

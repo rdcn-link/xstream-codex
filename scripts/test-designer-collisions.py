@@ -15,7 +15,7 @@ with sync_playwright() as p:
     page.goto(args.url)
     expect(page.locator('#connection')).to_contain_text('Connected', timeout=25000)
     expect(page.locator('#repository-state')).to_contain_text('published', timeout=25000)
-    job = {'name': 'Placement checks', 'tasks': [dict(id=id, operator='read_item@1.0', inputs={}, params={'uri': '$INPUT_URI'}) for id in ['a', 'b', 'c']], 'outputs': {}}
+    job = {'name': 'Placement checks', 'steps': [dict(id=id, operator='read_item@1.0', inputs={}, params={'uri': '$INPUT_URI'}) for id in ['a', 'b', 'c']], 'outputs': {}}
     page.evaluate('job=>loadDocument(JSON.stringify(job))', job)
 
     def layout(points, scale=1):

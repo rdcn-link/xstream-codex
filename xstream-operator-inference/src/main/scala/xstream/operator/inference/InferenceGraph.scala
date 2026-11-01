@@ -1,7 +1,6 @@
 package xstream.operator.inference
 
-import dacp._
-
+import _root_.xstream.execution.{InferenceDiagnostic,InferenceResult,StreamDescriptor,StructureInference}
 
 import com.fasterxml.jackson.databind.JsonNode
 import scala.collection.mutable
@@ -16,7 +15,7 @@ object InferenceGraph {
     val byId=nodes.map(n=>n.id->n).toMap
     val visiting=mutable.Set.empty[String]
     val inferred=mutable.Map.empty[String,InferenceResult]
-    val report=StructureInference.mapper.createObjectNode();val tasks=report.putObject("tasks")
+    val report=StructureInference.mapper.createObjectNode();val steps=report.putObject("steps")
     // Structural errors remain fatal, including when collecting per-step diagnostics.
     val checked=mutable.Set.empty[String]
     def check(id:String):Unit=if(!checked(id)){
@@ -44,7 +43,7 @@ object InferenceGraph {
         case NonFatal(e) if collectErrors=>InferenceResult(Map.empty,
           Vector(InferenceDiagnostic("error","inference_failed",Option(e.getMessage).getOrElse(e.getClass.getSimpleName))))
       }
-      visiting-=id;tasks.set[JsonNode](id,StructureInference.json(result));onStep(id,result);result
+      visiting-=id;steps.set[JsonNode](id,StructureInference.json(result));onStep(id,result);result
     })
     nodes.foreach(n=>visit(n.id))
     val selected=outputs.flatMap{case(name,(step,port))=>visit(step).outputs.get(port) match{

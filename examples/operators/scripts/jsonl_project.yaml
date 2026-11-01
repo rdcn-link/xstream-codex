@@ -1,0 +1,40 @@
+name: script_jsonl_project
+version: '1.0'
+description: Select top-level fields from JSONL objects without buffering the complete
+  stream.
+icon:
+  path: M3 4h18v16H3zM3 9h18M9 4v16M15 4v16M18 12v5
+  color: '#d19029'
+inputs:
+  source:
+    representations:
+    - bytes
+    formats: []
+parameters:
+  type: object
+  properties:
+    fields:
+      type: array
+      description: Ordered top-level keys to retain.
+      items:
+        type: string
+        minLength: 1
+        maxLength: 256
+      minItems: 1
+      maxItems: 128
+    missing:
+      type: string
+      description: Emit null or fail when a selected field is missing.
+      enum:
+      - 'null'
+      - error
+      default: 'null'
+  required:
+  - fields
+  additionalProperties: false
+language: python
+entrypoint: script_jsonl_project
+runtime: python-arrow@2.0
+source_public: true
+dependencies:
+  provider: python

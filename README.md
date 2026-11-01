@@ -14,7 +14,7 @@ XStream is a Scala toolkit for stream-oriented computation: typed data access, a
 | [xstream-operator-sdk](xstream-operator-sdk/README.md) | JVM/Python operator templates and metadata contracts |
 | [xstream-operator-inference](xstream-operator-inference/README.md) | Reusable on-demand structure and sample workers |
 | [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository) | Source submissions, isolated builds, review, public operator and runtime downloads |
-| [xstream-engine](xstream-engine/README.md) | Embedded execution, cancellation, execution policies, automatic remote compute pushdown and the `xstream-runner` launcher |
+| [xstream-engine](xstream-engine/README.md) | Embedded execution, cancellation, execution policies, physical planning and execution-target plugins and the `xstream-runner` launcher |
 | [xstream-designer](xstream-designer/README.md) | Visual Job editing, catalogs, variables, schema and sample previews, chat proposals and YAML import/export |
 
 `context:/dataset/item` resolves through the catalog bound to the current JVM. Explicit `dacp://host:port/dataset/item` URIs use configured remote connections. Scientific arrays, images and sequences keep their structures rather than being flattened into records. Format and backend implementations register through plugin contracts.
@@ -85,3 +85,5 @@ flowchart LR
 ## Visual identity
 
 The canonical visual assets are `assets/xstream-mark.svg` and `assets/xstream-logo.svg`. The X symbol sits above five parallel, continuous small waves with short wavelengths and low amplitude. Keep the symbol geometry, dark background and cyan/blue/purple/amber palette consistent across applications.
+
+Dependency declarations, locked environments, execution units and binary wrappers: [dependency environment guide](docs/dependency-environments.md).

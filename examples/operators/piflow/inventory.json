@@ -197,7 +197,7 @@
       "sha256": "f6aebb1087f80c691592108d807373a078faaf019940974f4fd90dac124a8e32",
       "operator": "piflow_add_cache",
       "status": "engine_specific",
-      "note": "Spark DataFrame.cache is process-local; no reusable cache across isolated DACP tasks"
+      "note": "Spark DataFrame.cache is process-local; no reusable cache across isolated DACP steps"
     },
     {
       "upstream_class": "cn.piflow.bundle.generic.common.AddUUIDStop",

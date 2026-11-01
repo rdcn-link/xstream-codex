@@ -24,7 +24,7 @@ XStream 会自动检查 Job 的执行位置、算子环境和执行器能力。�
 
 ```yaml
 name: clean-text
-tasks:
+steps:
 - id: read_uppercase_source
   operator: read_item@1.0
   inputs: {}
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
 取消或任一步骤失败会终止整个共享执行环境，关闭管道并停止其他未完成步骤，不重试已运行的算子，避免重复副作用。隔离、无网络、只读文件系统、容器资源限制仍由服务器负责。Union 的授权和任务槽预留仍按步骤计数，不因合并放宽权限或并发配额。
 
-插件贡献者可实现 `OperatorExecutor.groupCommand(OperatorGroup)`；返回 `None` 表示该组合不具备同进程能力。返回命令可附带只读启动资源 `files` 和 `/operator/` 下的代码挂载 `mounts`。核心负责位置、固定环境身份、生命周期、外部端口校验和取消；插件负责语言加载、内部端口契约、背压和步骤事件。注册仍使用 `META-INF/services/dacp.OperatorExecutor`，无需修改核心执行器注册表。
+插件贡献者可实现 `OperatorExecutor.groupCommand(OperatorGroup)`；返回 `None` 表示该组合不具备同进程能力。返回命令可附带只读启动资源 `files` 和 `/operator/` 下的代码挂载 `mounts`。核心负责位置、固定环境身份、生命周期、外部端口校验和取消；插件负责语言加载、内部端口契约、背压和步骤事件。注册仍使用 `META-INF/services/xstream.execution.OperatorExecutor`，无需修改核心执行器注册表。
 
 ## 验证
 

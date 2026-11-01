@@ -1,7 +1,7 @@
 # Configure this service and its ordinary client token in engine.yaml nodes.
 # A plain remote read followed by processing is automatically placed at the data service.
 name: Remote weather screening
-tasks:
+steps:
   - id: read
     operator: read_item@1.0
     inputs: {}

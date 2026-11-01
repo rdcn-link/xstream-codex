@@ -24,7 +24,7 @@ Existing SDK templates work directly. After building and publishing the Scala co
 
 ```yaml
 name: clean-text
-tasks:
+steps:
 - id: read_uppercase_source
   operator: read_item@1.0
   inputs: {}
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         process(ctx)
 ```
 
-Steps can pass `params: {mode: upper}` and `params: {mode: lower}`. Each function receives its own context, fully consumes named inputs, and declares all output metadata before writing data. Output interfaces maintain successful end events. Package imports must have no execution side effects or launch tasks. Packages exposing only command-line `main` are not forced into fusion; publish a new version with `process(ctx)` to enable it. Repository versions cannot be overwritten, so regenerated bundles require a new version identifier.
+Steps can pass `params: {mode: upper}` and `params: {mode: lower}`. Each function receives its own context, fully consumes named inputs, and declares all output metadata before writing data. Output interfaces maintain successful end events. Package imports must have no execution side effects or launch steps. Packages exposing only command-line `main` are not forced into fusion; publish a new version with `process(ctx)` to enable it. Repository versions cannot be overwritten, so regenerated bundles require a new version identifier.
 
 ## Status, limits and resources
 
@@ -81,7 +81,7 @@ Fusion does not promise zero-copy execution: the SDK input adapter still uses Ar
 
 Cancellation or any step failure terminates the entire shared environment, closes pipes and stops unfinished steps. Already executed operators are not retried, avoiding duplicate side effects. The server retains isolation, disabled networking, read-only filesystems and container resource limits. Union authorization and task-slot reservations still count steps; fusion does not loosen permissions or concurrency quotas.
 
-Plugin contributors can implement `OperatorExecutor.groupCommand(OperatorGroup)`. Returning `None` declines fusion for that combination. A command may carry read-only startup resources in `files` and code `mounts` under `/operator/`. Core handles placement, pinned environment identity, lifecycle, external-port checks and cancellation. Plugins own language loading, internal port contracts, backpressure and step events. Registration still uses `META-INF/services/dacp.OperatorExecutor`, without core registry changes.
+Plugin contributors can implement `OperatorExecutor.groupCommand(OperatorGroup)`. Returning `None` declines fusion for that combination. A command may carry read-only startup resources in `files` and code `mounts` under `/operator/`. Core handles placement, pinned environment identity, lifecycle, external-port checks and cancellation. Plugins own language loading, internal port contracts, backpressure and step events. Registration still uses `META-INF/services/xstream.execution.OperatorExecutor`, without core registry changes.
 
 ## Validation
 

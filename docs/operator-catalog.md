@@ -2,7 +2,7 @@
 
 [中文](operator-catalog_zh.md)
 
-The current collaboration-example deployment publishes the following 6 operators, all at version `1.0` using the `python` executor. They share a Python / Arrow runtime; each wheel contains business code and the SDK. This list describes the example deployment, not operators automatically installed in every new repository.
+The collaboration-example deployment provides these 6 operators at recommended version `1.2`, all using the `python` executor. Packages contain business code and shared business helpers only; Python, Arrow and the XStream SDK come from the `python-arrow@2.0` base Runtime. Sources include `pyproject.toml`; additional dependencies are locked using `dependencies.provider: python`, and matching dependency environments are reused. This describes the example deployment, not operators automatically installed in new repositories.
 
 ```bash
 curl http://localhost:8820/v1/operators
@@ -16,12 +16,12 @@ All operators below use the output port `result`. Output descriptions come from 
 
 | Operator | Input → output | Example parameters | Execution and limitations |
 |---|---|---|---|
-| `piflow_csv_parser@1.0` | `source: bytes` → `records` | `{"header":true,"delimiter":","}` | Parses UTF-8 CSV in batches; all columns are strings, without automatic type inference. Headerless example: `{"header":false,"schema":"station_id,temperature,quality"}` |
-| `piflow_filter@1.0` | `source: records` → `records` | `{"condition":"CAST(temperature AS REAL) >= 30"}` | Filters each batch using a SQLite predicate; preserves the input schema |
-| `piflow_execute_sql_stop@1.0` | `source: records` → `records` | `{"viewName":"observations","sql":"SELECT station_id, COUNT(*) AS n FROM observations GROUP BY station_id"}` | Collects input before executing SQLite SQL; input and output are bounded, not a constant-memory streaming algorithm |
-| `piflow_merge@1.0` | `left: records`, `right: records` → `records` | `{}` | Emits left followed by right; ordered schemas must match exactly. Does not deduplicate or sort |
-| `piflow_join@1.0` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | Collects both inputs before joining. Modes: `inner`, `left`, `right`, `full_outer`. Duplicate right-side non-key columns receive `_right`; remaining ambiguity is rejected |
-| `piflow_csv_save@1.0` | `source: records` → `bytes` (CSV) | `{"header":true,"delimiter":","}` | Emits a CSV byte stream; **does not save a CSV file on the server**. Scalar columns only |
+| `piflow_csv_parser@1.2` | `source: bytes` → `records` | `{"header":true,"delimiter":","}` | Parses UTF-8 CSV in batches; all columns are strings, without automatic type inference. Headerless example: `{"header":false,"schema":"station_id,temperature,quality"}` |
+| `piflow_filter@1.2` | `source: records` → `records` | `{"condition":"CAST(temperature AS REAL) >= 30"}` | Filters each batch using a SQLite predicate; preserves the input schema |
+| `piflow_execute_sql_stop@1.2` | `source: records` → `records` | `{"viewName":"observations","sql":"SELECT station_id, COUNT(*) AS n FROM observations GROUP BY station_id"}` | Collects input before executing SQLite SQL; input and output are bounded, not a constant-memory streaming algorithm |
+| `piflow_merge@1.2` | `left: records`, `right: records` → `records` | `{}` | Emits left followed by right; merges fields by name, appends right-only fields and fills absent values with null. Rejects incompatible types; does not deduplicate or sort |
+| `piflow_join@1.2` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | Collects both inputs before joining. Modes: `inner`, `left`, `right`, `full_outer`. Duplicate right-side non-key columns receive `_right`; remaining ambiguity is rejected |
+| `piflow_csv_save@1.2` | `source: records` → `bytes` (CSV) | `{"header":true,"delimiter":","}` | Emits a CSV byte stream; **does not save a CSV file on the server**. Scalar columns only |
 
 SQL and Join input collection is limited to 128 MiB using estimated memory usage; actual memory also includes Arrow, Python objects and algorithm overhead. SQLite SQL is not Spark SQL and does not support arbitrary Spark functions. See the [PiFlow adaptation guide](../examples/operators/piflow/README.md), [specs.json](../examples/operators/piflow/specs.json) and [operator sources](../examples/operators/piflow/operators/) for the contracts.
 
@@ -56,20 +56,20 @@ For numeric columns, explicitly cast in SQL, for example `SELECT station_id, CAS
 After connecting and selecting a weather dataset containing `/observations`:
 
 ```text
-run piflow_csv_parser@1.0 --input source=/observations --view bytes
+run piflow_csv_parser@1.2 --input source=/observations --view bytes
 ```
 
 If the Item already offers a records view, filter it directly:
 
 ```text
-run piflow_filter@1.0 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
+run piflow_filter@1.2 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
 ```
 
 Use this Job to combine parsing, filtering and CSV output. The node example URI is `dacp://localhost:18861/weather/observations`. For Union submission, replace it with the Union public URI returned by the actual catalog, not a member-internal URI. Omit `node` for server scheduling.
 
 ```yaml
 name: High-temperature observations
-tasks:
+steps:
 - id: read
   operator: read_item@1.0
   inputs: {}
@@ -77,17 +77,17 @@ tasks:
     uri: $INPUT_URI
     view: bytes
 - id: parse
-  operator: piflow_csv_parser@1.0
+  operator: piflow_csv_parser@1.2
   inputs:
     source: read
 - id: filter
-  operator: piflow_filter@1.0
+  operator: piflow_filter@1.2
   inputs:
     source: parse
   params:
     condition: "quality = '0' AND CAST(temperature AS REAL) >= 30"
 - id: export
-  operator: piflow_csv_save@1.0
+  operator: piflow_csv_save@1.2
   inputs:
     source: filter
 outputs:
@@ -109,3 +109,7 @@ Results stream to the client by default. Materialization at selected boundaries,
 ## Publication and verification
 
 Browsing and downloads are public; publication requires a token. Build, test and publish operators individually using the [PiFlow publication guide](../examples/operators/piflow/README.md#verify-and-publish-individually); see the [repository manual](https://github.com/rdcn-link/xstream-operator-repository) for the HTTP upload contract. After publication, check `/v1/operators`, then the version page, parameters, sources and license. The complete source-adaptation inventory is not an online publication list.
+
+## Script operators
+
+The example repository also provides `script_text_replace@1.0`, `script_line_number@1.0`, `script_jsonl_project@1.0` and `script_records_to_jsonl@1.0`. They use `python-arrow@2.0` and the same locked dependency environment, with no bundled SDK or external commands. See [script examples](../examples/operators/scripts/README.md) for parameters, ports, limits and a complete Job.

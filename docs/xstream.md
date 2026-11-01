@@ -49,7 +49,9 @@ Credentials stay in the host configuration. The Job contains only the Item URI. 
 ## Embed in Scala
 
 ```scala
-import dacp._
+import xstream.engine._
+import xstream.execution._
+import xstream.data._
 import xstream.util.YamlDocument
 import java.nio.file.{Files, Path}
 
@@ -96,30 +98,9 @@ When the receiving service is a Union, `context:/public-dataset/item` resolves t
 
 Local selections become `context:/dataset/item`; node selections retain their full DACP URI. Local schema/sample previews run against the designer's catalog. When running the exported Job elsewhere, provide a matching context catalog or explicitly change the Item URI.
 
-## Automatic compute pushdown
+## Execution targets and physical planning
 
-The standalone `LocalEngine` enables automatic pushdown by default. The YAML Job remains logical: it contains no execution-node assignments. Configure services and ordinary client credentials on the host:
-
-```yaml
-compute_pushdown_enabled: true
-nodes:
-  - url: dacp://node-a.example.org:18861
-    ca: /etc/dacp/ca.crt
-    token_file: /etc/dacp/node-a.token
-    compute_pushdown: true
-```
-
-`compute_pushdown_enabled: false` keeps computation local. A node with `compute_pushdown: false` is used for data access only. An omitted node option means it is eligible for execution, subject to the receiving server's normal authorization, available resources, repository and runtime support. Configuration is not an access grant. The engine does not require Union membership or special Union credentials and does not call schema inference to plan execution.
-
-For `read(A) → filter → aggregate`, the closed chain is sent to A as one ordinary Job. Its remote reads become `context:` references to A's catalog. For two branches `read(A) → filterA` and `read(B) → filterB`, followed by a merge, each closed branch runs at its source; the merge runs locally. Returned outputs feed bounded local queues with backpressure, without intermediate data files. Multiple boundary ports and user-facing Job output names are preserved. Disconnected closed regions on the same service can share one submitted sub-job.
-
-The planner follows data locality, not a general cost optimizer. It pushes only regions whose complete input dependencies are on one configured remote service and that contain at least one processing step. A raw remote read alone is fetched normally. Local `context:` reads, source operators without a remote Item dependency, mixed local/remote merges, and subsequent steps stay local. The engine does not send local input streams to arbitrary remote workers or arrange direct A-to-B transfers; Union remains the option for centrally coordinated multi-node placement. Independent remote branches are consumed concurrently.
-
-A policy selecting any materialized output, or an explicit replay, retains the original local graph and persistence ownership. Ordinary streaming retry and timeout policies still apply to the physical execution. Remote sub-jobs do not retry independently or materialize output; retries are coordinated by the originating engine and require consumers to discard failed-attempt output according to the stream protocol. The original engine's client deadline bounds remote requests; each receiving service retains its own potentially shorter execution limit. Cancellation closes remote result streams and cancels their server-side executions. A remote failure propagates; there is no automatic local fallback that could repeat side effects.
-
-Execution history stores the original Job, `placements`, `remote_subjobs` with submitted YAML, and `remote_job` child records with `remote_execution_id` and terminal state. Package downloads, runtime caches and execution metadata may use disk; stream edges do not materialize payloads. Embedded hosts can provide their own `ComputePushdown` adapter through `EngineEnvironment.computePushdown`; `LocalEngine` also accepts an optional `remoteCompute` adapter. Embedding hosts decide whether to enable pushdown and coordinate it with their own scheduling.
-
-See [pushdown Job example](../examples/xstream/pushdown.yaml). Adjust the remote URI and host configuration before running it with `xstream-runner`.
+Execution defaults to local. Install an `ExecutionTargetProvider` to configure remote targets, then enable candidate selection through an independent execution policy. Data access and compute permissions are independent; the engine does not directly depend on a DACP client. See [execution targets](execution-targets.md) for configuration, cost estimates, capability queries and lifecycle. Designer only designs Jobs; it does not plan or display physical execution.
 
 ## Execution path
 

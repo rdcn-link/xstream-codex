@@ -1,0 +1,7 @@
+placement:
+  mode: auto
+  targets: [east]
+  objective: latency
+materialization:
+  allowed: false
+  default: stream

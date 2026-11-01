@@ -2,7 +2,7 @@
 
 [中文](operator-submission_zh.md)
 
-The repository accepts **source-only submissions**. Developers cannot submit final JARs, wheels, executable artifacts or classifications. The repository analyzes source, builds a small operator artifact in an isolated environment, and waits for administrator approval. Only approved operators appear in public search, manifests and downloads.
+The repository accepts source submissions and third-party binary submissions with wrapper source. Final operator JARs and wheels are built by the repository. A third-party executable requires provenance, version, platform and license metadata and cannot stand alone as an operator. All submissions require administrator approval; categories are assigned by administrators. See [dependency environments and binary wrappers](dependency-environments.md).
 
 ## Developer workflow
 
@@ -88,7 +88,7 @@ The bundled analyzer performs bounded lexical triage on Python, Java, Scala and 
 
 ## Isolated builds
 
-Java and Scala compile to JARs; Python is syntax-checked and compiled into a bytecode ZIP. Fixed build recipes are contributed through `SourceBuildRecipe`; arbitrary developer-provided build commands are not accepted. The administrator's build image must include the selected compiler and `/opt/lib/*` SDK/dependency classpath. JVM build images need `/opt/java/bin/java`; Java needs `jdk.compiler`, and Scala needs its compiler libraries. Python images need `/usr/local/bin/python` and execution dependencies such as the XStream SDK. No dependencies are downloaded during the build.
+Java and Scala compile to JARs; Python is syntax-checked and compiled into a bytecode ZIP. Fixed build recipes are contributed through `SourceBuildRecipe`; arbitrary developer-provided build commands are not accepted. The administrator's build image must include the selected compiler and `/opt/lib/*` SDK/dependency classpath. JVM build images need `/opt/java/bin/java`; Java needs `jdk.compiler`, and Scala needs its compiler libraries. Python images need `/usr/local/bin/python` and execution dependencies such as the XStream SDK. Declared dependencies are resolved and locked during environment preparation; compilation uses that prepared environment.
 
 Each compiler runs in a fresh Docker container with no network, a read-only root filesystem and source mount, a non-root user, no capabilities, no additional privileges, a 64-process limit, one CPU and 512 MiB RAM. `/tmp` and `/output` each have a 64 MiB temporary filesystem. No host output directory, Docker socket or repository credentials are mounted. Artifacts return through a size-limited stdout pipe, with bounded diagnostics. Builds have a 120-second timeout and a 64 MiB artifact limit. One build runs at a time; 32 submissions may wait. Pending queued/running builds resume after repository restart. Runtime-image preparation may take up to 120 seconds separately. Failed builds remain private and cannot be approved. Administrators can reject and developers resubmit corrected sources.
 

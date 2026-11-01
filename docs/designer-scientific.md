@@ -15,7 +15,7 @@ Enable **selection**, then enable the individual fields to restrict a scientific
 
 ```yaml
 name: Read a climate slice
-tasks:
+steps:
   - id: read
     operator: read_item@1.0
     inputs: {}
@@ -40,7 +40,7 @@ Inference follows upstream dependencies and updates changed steps and their desc
 
 ## Execution and extensions
 
-`read_item` carries the selection into local and remote reads, including Union member reads. Scientific Job frames retain the representation name and `start.structure` descriptor. Their data payload is ordinary Arrow IPC: coordinates and sequence identity are typed columns, not a separate JSON block envelope. They can connect to Outlet. Downstream operators must explicitly support the representation; byte/record templates do not automatically consume scientific views. The designer's compatibility validation reports mismatches. Scala output events expose `arrow(allocator)` for Arrow data; Python events provide `batch`.
+`read_item` carries the selection into local and remote reads, including Union member reads. Scientific Job frames retain the representation name and `start.structure` descriptor. Their data payload is ordinary Arrow IPC: coordinates and sequence identity are represented as typed columns. They can connect to Outlet. Downstream operators must explicitly support the representation; byte/record templates do not automatically consume scientific views. The designer's compatibility validation reports mismatches. Scala output events expose `arrow(allocator)` for Arrow data; Python events provide `batch`.
 
 Implement a `DataViewSupport` and register it under `META-INF/services/xstream.data.DataViewSupport`. `selectionSchema` declares the typed form; `validateSelection(selection, schema)` checks descriptor-dependent bounds. `preview(batch, maxRows, maxValues)` returns bounded sample objects directly from Arrow columns. Honor both limits and avoid whole-object reads; the host applies the final byte budget. The plugin has no wire encoding methods. File-format dependencies belong to format plugins. See [data stream contracts](data-streams.md) and [xstream-data](../xstream-data/README.md) for format support and random-access staging limits.
 

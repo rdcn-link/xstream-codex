@@ -1,8 +1,9 @@
 package xstream.operator.executors
 
+import _root_.xstream.execution.{OperatorFrame,OperatorFrames}
+
 import _root_.xstream.data._
 
-import dacp._
 import xstream.operator.{Operator,OperatorRunner,OperatorBatchInput}
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import java.io._
@@ -136,7 +137,7 @@ private[executors] final class JvmGroupExecution(input:Path,output:OutputStream=
         require(instance.isInstanceOf[Operator],"group operator must implement the SDK Operator contract")
         s.path("id").asText->instance.asInstanceOf[Operator]
       }.toMap
-      val tasks=steps.map { step=>thread {
+      val workers=steps.map { step=>thread {
         val id=step.path("id").asText;val directory=Files.createDirectory(work.resolve(id));val manifest=mapper.createArrayNode()
         val batchInputs=scala.collection.mutable.Map.empty[String,OperatorBatchInput]
         val streams=step.path("bindings").fields.asScala.flatMap { e=>
@@ -192,7 +193,7 @@ private[executors] final class JvmGroupExecution(input:Path,output:OutputStream=
         require(ended==begun && ports.subsetOf(ended),"incomplete group output")
         state(id,"succeeded")
       }}
-      tasks.foreach(t=>{while(t.isAlive){active();t.join(100)}})
+      workers.foreach(t=>{while(t.isAlive){active();t.join(100)}})
       threads.asScala.foreach(t=>while(t.isAlive){active();t.join(100)})
       active()
     }catch{case t:Throwable=>fail(t);throw t}

@@ -1,6 +1,6 @@
 package xstream.operator.inference
 
-import dacp._
+import _root_.xstream.execution.{InferenceDiagnostic,InferenceResult,StreamDescriptor}
 
 import _root_.xstream.data._
 
@@ -30,10 +30,10 @@ class InferenceGraphSpec extends AnyFunSuite {
       if(name=="broken")throw new IllegalArgumentException("missing input source")
       InferenceResult(Map("result"->bytes))
     }
-    assert(result.path("tasks").path("read").path("outputs").has("result"))
-    assert(result.path("tasks").path("independent").path("outputs").has("result"))
-    assert(result.path("tasks").path("broken").path("diagnostics").get(0).path("message").asText.contains("missing input source"))
-    assert(result.path("tasks").path("dependent").path("diagnostics").get(0).path("code").asText=="upstream_failed")
+    assert(result.path("steps").path("read").path("outputs").has("result"))
+    assert(result.path("steps").path("independent").path("outputs").has("result"))
+    assert(result.path("steps").path("broken").path("diagnostics").get(0).path("message").asText.contains("missing input source"))
+    assert(result.path("steps").path("dependent").path("diagnostics").get(0).path("code").asText=="upstream_failed")
     assert(!called.contains("dependent") && result.path("outputs").has("good") && !result.path("outputs").has("bad"))
     intercept[java.util.concurrent.CancellationException](InferenceGraph.propagate(nodes.take(1),Map.empty[String,(String,String)],collectErrors=true){(_,_)=>throw new java.util.concurrent.CancellationException("cancelled")})
   }
@@ -56,7 +56,7 @@ class InferenceGraphSpec extends AnyFunSuite {
   test("sinks remain valid and graph errors do not produce invented schemas") {
     val nodes=Vector(InferenceNode("read",Map.empty[String,(String,String)],"read"),InferenceNode("sink",Map("source"->("read","result")),"sink"))
     val result=InferenceGraph.propagate(nodes,Map.empty[String,(String,String)]){(id,_)=>InferenceResult(if(id=="read")Map("result"->bytes)else Map.empty)}
-    assert(result.path("tasks").path("sink").path("outputs").size==0 && result.path("outputs").size==0)
+    assert(result.path("steps").path("sink").path("outputs").size==0 && result.path("outputs").size==0)
     intercept[IllegalArgumentException](InferenceGraph.propagate(nodes,Map("result"->("sink","result")))((_,_)=>InferenceResult(Map.empty)))
     val cycle=Vector(InferenceNode("a",Map("source"->("b","result")),"a"),InferenceNode("b",Map("source"->("a","result")),"b"))
     intercept[IllegalArgumentException](InferenceGraph.propagate(cycle,Map.empty[String,(String,String)])((_,_)=>InferenceResult(Map("result"->bytes))))

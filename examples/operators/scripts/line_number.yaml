@@ -1,0 +1,33 @@
+name: script_line_number
+version: '1.0'
+description: Prefix each UTF-8 line with a consecutive line number.
+icon:
+  path: M3 5h2v4M3 13h3l-3 4h3M10 6h11M10 15h11
+  color: '#9a64c5'
+inputs:
+  source:
+    representations:
+    - bytes
+    formats: []
+parameters:
+  type: object
+  properties:
+    start:
+      type: integer
+      description: First line number.
+      default: 1
+      minimum: 0
+      maximum: 9223372036854775807
+    separator:
+      type: string
+      description: Text between the number and original line.
+      default: "\t"
+      maxLength: 64
+  required: []
+  additionalProperties: false
+language: python
+entrypoint: script_line_number
+runtime: python-arrow@2.0
+source_public: true
+dependencies:
+  provider: python

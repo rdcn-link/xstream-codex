@@ -3,7 +3,7 @@ package xstream.operator.executors
 import _root_.xstream.data._
 
 
-import dacp.OperatorProgram
+import xstream.execution.OperatorProgram
 import java.nio.file.Path
 import scala.jdk.CollectionConverters._
 import org.scalatest.funsuite.AnyFunSuite

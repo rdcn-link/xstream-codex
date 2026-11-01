@@ -1,5 +1,7 @@
 package example
 
+import _root_.xstream.execution.{InferenceResult}
+
 
 import java.io.{DataOutputStream, FileInputStream}
 import java.nio.file.{Files, Paths}
@@ -13,7 +15,7 @@ object ScalaIdentity {
     if(args.headOption.contains("infer")) {
       xstream.operator.OperatorRunner.infer(args,preview=(inputs,params,limits)=>inputs.get("source").flatMap(_.sample).map(s=>Map("result"->s.bounded(limits))).getOrElse(throw new IllegalArgumentException("Upstream sample unavailable")))((inputs,params)=>{
         require(inputs.keySet==Set("source") && params.isEmpty,"expected source and no params")
-        dacp.InferenceResult(Map("result"->inputs("source")))
+        xstream.execution.InferenceResult(Map("result"->inputs("source")))
       });return
     }
     val mapper = new ObjectMapper()

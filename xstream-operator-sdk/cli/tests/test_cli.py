@@ -68,6 +68,26 @@ class CommandTests(unittest.TestCase):
                 self.assertEqual(status.exception.code,2)
         finally:server.shutdown();server.server_close();thread.join()
 
+    def test_templates_check_and_include_dependency_declarations(self):
+        from xstream_operator_cli.cli import create_template, check_directory, package_directory
+        import ast
+        for language in ('python', 'java', 'shell'):
+            with tempfile.TemporaryDirectory() as temp:
+                root=Path(temp)/'sample'
+                create_template(root, language)
+                check_directory(root)
+                for path in (root/'src').glob('*.py'):
+                    ast.parse(path.read_text())
+                archive=package_directory(root,Path(temp)/'sources.zip')
+                with zipfile.ZipFile(archive) as z:
+                    self.assertNotIn('local.yaml',z.namelist())
+                    self.assertIn('pyproject.toml' if language!='java' else 'pom.xml',z.namelist())
+                with contextlib.redirect_stdout(io.StringIO()):
+                    main(['check',str(root)])
+                (root/'lib').mkdir();(root/'lib/escape').symlink_to('/etc/passwd')
+                with self.assertRaises(ValueError):
+                    package_directory(root,Path(temp)/'unsafe.zip')
+
     def test_remote_plain_http_is_rejected_before_upload(self):
         with self.assertRaisesRegex(ValueError,'HTTPS'):
             submit(Path('/unused'),Path('/unused'),'http://operators.example.org','test-token')

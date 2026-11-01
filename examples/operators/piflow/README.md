@@ -2,9 +2,9 @@
 
 Adapt operators from [PiFlow EcoFlow](https://github.com/cas-bigdatalab/piflow/tree/EcoFlow) to XStream. The review baseline is pinned to commit `84de10436a0d382e0d8d2ce1ab3a82f71ebafc29`; this branch contains 67 operators derived from `ConfigurableStop`. [inventory.json](inventory.json) records the complete inventory, upstream classes, source files, and SHA-256 digests. Only implementations passing their individual contract tests can be published; `pending` entries are not implemented capabilities.
 
-Original Scala / Java sources are retained under `upstream/`; see [LICENSE](LICENSE). Each operator's source archive includes its adaptation, change descriptions, and input/output contracts. This is not a compatibility executor for PiFlow workflow files; tasks use XStream's port and parameter contracts.
+Original Scala / Java sources are retained under `upstream/`; see [LICENSE](LICENSE). Each operator's source archive includes its adaptation, change descriptions, and input/output contracts. This is not a compatibility executor for PiFlow workflow files; steps use XStream's port and parameter contracts.
 
-The current collaboration deployment publishes only CSV parser, filter, execute SQL, merge, join and CSV save at version `1.0`. See the [current catalog](../../../docs/operator-catalog.md) for runnable parameters and workflows. The sections below describe the full source project and adaptation scope, not a fully published online repository; `/v1/operators` is authoritative.
+The current collaboration deployment publishes only CSV parser, filter, execute SQL, merge, join and CSV save at version `1.2`. See the [current catalog](../../../docs/operator-catalog.md) for runnable parameters and workflows. The sections below describe the full source project and adaptation scope, not a fully published online repository; `/v1/operators` is authoritative.
 
 ## Authoring and usage
 
@@ -18,7 +18,7 @@ For example, `piflow_select_field@1.0` accepts:
 
 Its `records` input contains columns such as `station_id` and `temperature`; its `records` output contains only the selected columns, in the requested order. Processing is incremental by batch, and empty inputs retain an output schema. Column names must be unique and present. `piflow_drop_field@1.0` uses the same parameter structure to remove columns; like upstream, absent columns are ignored, but removing every column is rejected.
 
-Pure Python operators reuse the pinned image digest of `xstream/operator-python:1.0`. The SDK is bundled with the code, so older node runtimes need not have it preinstalled. Runtime blobs are stored separately and shared by digest; operator wheels contain only business logic and the small SDK, without duplicating Python or Arrow. Operators requiring additional dependencies must use an appropriate runtime rather than install packages over the network during execution.
+Pure Python operators reuse the pinned image digest of `xstream/operator-python:1.0`. The SDK is installed in the shared Runtime; current repository packages contain only business code. Sources declare dependencies in `pyproject.toml` and select the Python dependency provider. The repository locks additional dependencies before execution and caches environments by content fingerprint. No dependencies are installed during Job execution. See the [dependency environment guide](../../../docs/dependency-environments.md).
 
 ## Verify and publish individually
 
@@ -87,3 +87,5 @@ All Python adapters explicitly register `preview_outputs`. The six operators in 
 The repository accepts source only. Local builds in these examples are for development verification; use the [source submission and review workflow](../../../docs/operator-submission.md) for public publication.
 
 `piflow_merge@1.1` infers and combines left/right schemas by field name: retain left field order, append right-only fields, and fill absent fields with null while marking them nullable. Shared fields require identical types, except null types may adopt the other type; nested structures are preserved without implicit incompatible conversions. Execution appends left then right batches, and previews use the same logic; this is not a key-based join. If either input schema is unknown, the complete output schema remains unknown.
+
+For packaged checks use `DACP_PIFLOW_CATALOG=/path/to/catalog XSTREAM_PIFLOW_VERSION=1.2 python container_test.py merge`; the verifier loads the locked environment image when present.

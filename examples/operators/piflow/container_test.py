@@ -21,7 +21,7 @@ def execute(name, params, inputs):
     specification = json.loads((HERE / 'specs.json').read_text())[name]
     inventory = json.loads((HERE / 'inventory.json').read_text())
     operator = next(i['operator'] for i in inventory['operators'] if i['upstream_class'].endswith('.' + specification['class']))
-    manifest = json.loads((catalog / operator / '1.0/manifest.json').read_text())
+    manifest = json.loads((catalog / operator / os.environ.get('XSTREAM_PIFLOW_VERSION', '1.0') / 'manifest.json').read_text())
     with tempfile.TemporaryDirectory(prefix='dacp-piflow-contract-') as tmp:
         directory = Path(tmp)
         directory.chmod(0o755)
@@ -43,8 +43,8 @@ def execute(name, params, inputs):
         (directory / 'params.json').write_text(json.dumps(params))
         command = ['sudo', '-n', '-u', 'cnic', '-g', 'docker', 'docker', 'run', '--rm', '--network', 'none',
             '--read-only', '--memory', '1g', '--pids-limit', '128', '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=512m',
-            '-v', str(directory) + ':/input:ro', '-e', 'PYTHONPATH=/input/code:/opt/python/lib/python3.12/site-packages', '--entrypoint', 'python',
-            manifest['runtime']['image'], '-m', manifest['execution']['entrypoint'], 'operator', '/input', '/input/params.json']
+            '-v', str(directory) + ':/input:ro', '-e', 'PYTHONPATH=/input/code:/opt/xstream/python:/opt/xstream-sdk:/opt/python/lib/python3.12/site-packages', '--entrypoint', 'python',
+            manifest.get('environment', manifest['runtime'])['image'], '-m', manifest['execution']['entrypoint'], 'operator', '/input', '/input/params.json']
         result = subprocess.run(command, capture_output=True, timeout=120)
         if result.returncode:
             error = result.stderr.decode(errors='replace')[-8000:]

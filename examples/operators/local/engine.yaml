@@ -8,4 +8,3 @@ remote_operator_library_urls: []
 operator_cache: .xstream-operators
 execution_directory: .xstream-executions
 max_concurrent_tasks: 4
-compute_pushdown_enabled: false

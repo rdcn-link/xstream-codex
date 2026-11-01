@@ -1,6 +1,6 @@
 package xstream.operator.executors
 
-import dacp._
+import _root_.xstream.execution.{OperatorExecutor,OperatorFrames,OperatorProgram}
 
 import _root_.xstream.data._
 

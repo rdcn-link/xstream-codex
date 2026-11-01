@@ -8,6 +8,6 @@
 (cd xstream-execution-api && sbt publishLocal)
 ```
 
-插件以 `Provided` 依赖 `io.github.rdcn-link:xstream-execution-api_2.13:0.1.0-SNAPSHOT`，由嵌入宿主提供 API。在对应 `META-INF/services/` 文件中注册 `dacp.OperatorExecutor`、`dacp.ExecutionStoreProvider` 或 `dacp.MaterializationStoreProvider`。实现负责参数验证和资源清理。参见[插件开发](../docs/plugins_zh.md)、[算子打包](../docs/operator-packaging_zh.md)和[物化](../docs/materialization_zh.md)。
+插件以 `Provided` 依赖 `io.github.rdcn-link:xstream-execution-api_2.13:0.1.0-SNAPSHOT`，由嵌入宿主提供 API。在对应 `META-INF/services/` 文件中注册 `xstream.execution.OperatorExecutor`、`xstream.execution.ExecutionStoreProvider` 或 `xstream.execution.MaterializationStoreProvider`。实现负责参数验证和资源清理。参见[插件开发](../docs/plugins_zh.md)、[算子打包](../docs/operator-packaging_zh.md)和[物化](../docs/materialization_zh.md)。
 
 目录、Dataset、Item 和数据视图接口属于 [xstream-data](../xstream-data/README_zh.md)。

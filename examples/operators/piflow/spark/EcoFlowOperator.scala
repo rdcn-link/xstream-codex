@@ -1,5 +1,7 @@
 package org.apache.spark.sql.dacp
 
+import _root_.xstream.execution.{InferenceDiagnostic,InferenceResult,OutputSample,PreviewLimits,StreamDescriptor}
+
 
 import cn.piflow.{JobContext,JobInputStream,JobOutputStream}
 import cn.piflow.conf.ConfigurableStop
@@ -19,13 +21,13 @@ import scala.jdk.CollectionConverters._
 
 /** Shared Spark environment, thin wrappers, explicit bounded input materialization. */
 abstract class EcoFlowOperator(className:String,ports:Map[String,String],required:Set[String]) extends Operator {
-  final def inferOutputs(inputs:Map[String,dacp.StreamDescriptor],params:JsonNode):dacp.InferenceResult={
+  final def inferOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode):xstream.execution.InferenceResult={
     require(required.subsetOf(params.fieldNames.asScala.toSet),"missing required parameters")
-    dacp.InferenceResult(Map("result"->dacp.StreamDescriptor(Set("records"),Set("arrow"),certainty="unknown")),
-      Vector(dacp.InferenceDiagnostic("warning","spark_dynamic_schema","Spark output schema requires execution")))
+    xstream.execution.InferenceResult(Map("result"->xstream.execution.StreamDescriptor(Set("records"),Set("arrow"),certainty="unknown")),
+      Vector(xstream.execution.InferenceDiagnostic("warning","spark_dynamic_schema","Spark output schema requires execution")))
   }
 
-  override def previewOutputs(inputs:Map[String,dacp.StreamDescriptor],params:JsonNode,limits:dacp.PreviewLimits):Map[String,dacp.OutputSample]=
+  override def previewOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode,limits:xstream.execution.PreviewLimits):Map[String,xstream.execution.OutputSample]=
     throw new IllegalArgumentException("This Spark adapter cannot safely preview arbitrary upstream EcoFlow programs")
 
   def process(ctx:OperatorContext):Unit={

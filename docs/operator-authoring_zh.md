@@ -102,7 +102,7 @@ Token 由仓库管理员分配。提交成功返回 submission ID，不意味着
 
 ```yaml
 name: Uppercase observations
-tasks:
+steps:
 - id: read
   operator: read_item@1.0
   inputs: {}

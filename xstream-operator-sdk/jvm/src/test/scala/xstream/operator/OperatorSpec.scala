@@ -5,7 +5,7 @@ import _root_.xstream.data._
 import java.io.{ByteArrayInputStream,ByteArrayOutputStream}
 import java.nio.file.Files
 import org.scalatest.funsuite.AnyFunSuite
-import dacp.OperatorFrames
+import xstream.execution.OperatorFrames
 
 class OperatorSpec extends AnyFunSuite {
   test("zero-output operators finish without emitting protocol frames") {

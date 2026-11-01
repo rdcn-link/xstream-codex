@@ -102,7 +102,7 @@ The repository administrator issues the Token. Submission returns a submission I
 
 ```yaml
 name: Uppercase observations
-tasks:
+steps:
 - id: read
   operator: read_item@1.0
   inputs: {}

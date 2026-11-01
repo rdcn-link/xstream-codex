@@ -1,2 +1,4 @@
 xstream.operator.executors.PythonLocalBuilder
 xstream.operator.executors.CommandLocalBuilder
+
+xstream.operator.executors.JvmLocalBuilder

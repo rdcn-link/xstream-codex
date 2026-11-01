@@ -11,7 +11,7 @@ final class ConfiguredDataCatalog(settings:JsonNode,val plugins:PluginEnvironmen
   def countFileRecordsOnStartup:Boolean=false
   private def mapping(n:JsonNode):Map[String,Object]=if(n.isMissingNode)Map.empty else Data.mapper.convertValue(n,classOf[java.util.LinkedHashMap[String,Object]]).asScala.toMap
   val sources:Map[String,SourceDefinition]=settings.path("sources").fields.asScala.map(e=>e.getKey->SourceDefinition(e.getValue.path("provider").asText,mapping(e.getValue.path("settings")))).toMap
-  val configuredDatasets:Map[String,DatasetDefinition]=settings.path("datasets").fields.asScala.map(e=>e.getKey->plugins.datasetDefinition(mapping(e.getValue))).toMap
+  val configuredDatasets:Map[String,DatasetDefinition]=settings.path("datasets").fields.asScala.map(e=>e.getKey->plugins.datasetDefinition(mapping(e.getValue),e.getKey)).toMap
   require(!settings.has("data_catalog") || configuredDatasets.isEmpty,"datasets and data_catalog are mutually exclusive")
   def createDataset(d:DatasetDefinition):PublishedDataset=plugins.byId(classOf[DatasetProvider],d.provider).create(d,this)
   private val definition=settings.path("data_catalog")

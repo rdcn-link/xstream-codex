@@ -10,7 +10,7 @@ timeout_seconds: 300
 materialization:
   allowed: true
   default: stream
-  tasks:
+  steps:
     filter:
       outputs:
         result: materialize

@@ -1,0 +1,39 @@
+name: Script-based weather stream transformation
+steps:
+  - id: read
+    title: Read weather observations
+    operator: read_item@1.0
+    inputs: {}
+    params:
+      uri: context:/weather/observations
+      view: records
+  - id: encode
+    title: Serialize records as JSONL
+    operator: script_records_to_jsonl@1.0
+    inputs:
+      source: read
+  - id: project
+    title: Select station and temperature
+    operator: script_jsonl_project@1.0
+    inputs:
+      source: encode
+    params:
+      fields: [station_id, temperature]
+  - id: replace
+    title: Rename the station key in the text stream
+    operator: script_text_replace@1.0
+    inputs:
+      source: project
+    params:
+      find: '"station_id":'
+      replacement: '"station":'
+  - id: number
+    title: Number output lines
+    operator: script_line_number@1.0
+    inputs:
+      source: replace
+    params:
+      start: 1
+      separator: ': '
+outputs:
+  result: number

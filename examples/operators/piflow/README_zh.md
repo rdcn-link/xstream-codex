@@ -4,7 +4,7 @@
 
 上游 Scala / Java 原文保存在 `upstream/`，许可证见 [LICENSE](LICENSE)。适配实现、修改说明与输入输出契约随每个算子的源码包提供。这里不是 PiFlow 工作流文件的兼容执行器；任务使用 XStream 的端口和参数合同。
 
-当前协作部署仅发布 CSV parser、filter、execute SQL、merge、join、CSV save 这 6 个 `1.0` 算子。可直接使用的参数与工作流见[当前算子库](../../../docs/operator-catalog_zh.md)。下文描述完整源码工程和移植范围，不等于在线仓库已全部发布；实际状态以 `/v1/operators` 为准。
+当前协作部署仅发布 CSV parser、filter、execute SQL、merge、join、CSV save 这 6 类算子的推荐版本 `1.2`。可直接使用的参数与工作流见[当前算子库](../../../docs/operator-catalog_zh.md)。下文描述完整源码工程和移植范围，不等于在线仓库已全部发布；实际状态以 `/v1/operators` 为准。
 
 ## 编写和使用
 
@@ -18,7 +18,7 @@
 
 输入为 `records`，包含 `station_id`、`temperature` 等列；输出仍为 `records`，仅保留指定列并按指定顺序排列。它逐批处理，保留空输入的输出模式。列名必须唯一且存在。`piflow_drop_field@1.0` 使用相同参数结构，删除指定列；与上游一样忽略不存在的列，但不允许删除全部列。
 
-纯 Python 算子复用 `xstream/operator-python:1.0` 的固定镜像摘要。SDK 随代码包提供，不要求节点的旧运行环境预先安装 SDK。运行环境独立存储并按摘要共享；算子 wheel 只包含业务代码和小型 SDK，不重复携带 Python 或 Arrow。需要附加依赖的算子必须使用相应运行环境，不能依赖执行时联网安装。
+纯 Python 算子复用 `xstream/operator-python:1.0` 的固定镜像摘要。SDK 安装于共享 Runtime，当前算子包只包含业务代码。源码通过 `pyproject.toml` 声明依赖并选择 Python 依赖提供器；仓库在执行前锁定额外依赖，按内容指纹缓存环境。Job 执行期间不安装依赖。参见[依赖环境指南](../../../docs/dependency-environments_zh.md)。
 
 ## 逐个验证、发布
 
@@ -87,3 +87,5 @@ Python 发布现在依次执行 SDK 契约测试、构建、打包后容器测�
 仓库只接收源码，旧示例中的本地构建仅用于开发验证；公开发布采用[源码提交与审核流程](../../../docs/operator-submission_zh.md)。
 
 `piflow_merge@1.1` 按字段名推导并合并左右输入结构：保留左侧字段顺序，追加右侧独有字段，缺失字段补 null 并标为可空。同名字段类型须一致（null 类型可提升到另一侧类型），嵌套结构保留，不隐式转换不兼容类型。执行按先左后右逐批追加记录，样例复用相同逻辑；它不是按键 Join。任一输入结构未知时，完整输出结构仍标为未知。
+
+当前公开算子推荐版本为 `1.2`，使用 `python-arrow@2.0`；SDK 由共享 Runtime 提供，算子包包含业务代码。源码包含 `pyproject.toml` 并选择 Python 依赖提供器。额外依赖在构建阶段锁定，执行时不安装包。使用 `DACP_PIFLOW_CATALOG=/path/to/catalog XSTREAM_PIFLOW_VERSION=1.2 python container_test.py merge` 可验证实际包与环境。

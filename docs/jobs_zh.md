@@ -6,7 +6,7 @@
 
 ```yaml
 name: weather-filter
-tasks:
+steps:
   - id: read
     title: Read weather observations
     operator: read_item@1.0
@@ -42,3 +42,11 @@ outputs:
 
 当前协作示例已发布的算子、参数和完整输入输出示例见[算子库清单](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-catalog_zh.md)。
 
+
+步骤可选 `description` 为最多 8192 个字符的多行说明，随 Job 保存及下发，不影响执行。示例：
+
+```yaml
+description: |
+  Read weather observations.
+  Preserve the source units.
+```

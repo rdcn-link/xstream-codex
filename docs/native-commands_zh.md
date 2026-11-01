@@ -42,7 +42,7 @@ Job 使用普通输入连接引用该算子，通过 `xstream-runner engine.yaml
 
 ## 插件契约与验证
 
-`CommandExecutor` 注册于 `META-INF/services/dacp.OperatorExecutor`，位于 `plugins/xstream-plugin-operator-executors`。外部插件以 Provided 依赖 `xstream-execution-api`，打包 service 文件，将 JAR 和私有依赖放入宿主 `plugin_directory` 后重启。插件验证自身配置，引擎管理资源。
+`CommandExecutor` 注册于 `META-INF/services/xstream.execution.OperatorExecutor`，位于 `plugins/xstream-plugin-operator-executors`。外部插件以 Provided 依赖 `xstream-execution-api`，打包 service 文件，将 JAR 和私有依赖放入宿主 `plugin_directory` 后重启。插件验证自身配置，引擎管理资源。
 
 ```bash
 (cd plugins/xstream-plugin-operator-executors && sbt 'testOnly xstream.operator.executors.CommandExecutorSpec')

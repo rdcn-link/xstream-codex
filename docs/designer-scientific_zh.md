@@ -15,7 +15,7 @@
 
 ```yaml
 name: Read a climate slice
-tasks:
+steps:
   - id: read
     operator: read_item@1.0
     inputs: {}
@@ -40,7 +40,7 @@ outputs:
 
 ## 执行与扩展
 
-`read_item` 会将 selection 传递到本地和远程读取，包括 Union 成员节点读取。科学数据 Job 帧保留表示名及 `start.structure` 描述信息。数据载荷是普通 Arrow IPC：坐标和序列身份是有类型的列，不再是单独的 JSON 分块封装。它们可以连至 Outlet。下游算子必须显式支持对应表示，bytes/records 模板不会自动处理科学视图；设计器的兼容性校验会报告不匹配。Scala 输出事件通过 `arrow(allocator)` 读取 Arrow 数据，Python 事件提供 `batch`。
+`read_item` 会将 selection 传递到本地和远程读取，包括 Union 成员节点读取。科学数据 Job 帧保留表示名及 `start.structure` 描述信息。数据载荷是普通 Arrow IPC：坐标和序列身份以有类型的列表示。它们可以连至 Outlet。下游算子必须显式支持对应表示，bytes/records 模板不会自动处理科学视图；设计器的兼容性校验会报告不匹配。Scala 输出事件通过 `arrow(allocator)` 读取 Arrow 数据，Python 事件提供 `batch`。
 
 实现 `DataViewSupport`，在 `META-INF/services/xstream.data.DataViewSupport` 注册。`selectionSchema` 声明类型化表单，`validateSelection(selection, schema)` 按描述校验边界。`preview(batch, maxRows, maxValues)` 直接从 Arrow 列返回有界样例对象。必须遵守两个上限，避免读取完整对象；宿主执行最终字节预算。插件没有网络编码方法。格式专有依赖属于格式插件。格式支持范围及随机访问暂存限制见[数据流契约](data-streams_zh.md)与 [xstream-data](../xstream-data/README_zh.md)。
 

@@ -7,7 +7,7 @@ import java.nio.file.Path
 import java.util.ServiceLoader
 import scala.jdk.CollectionConverters._
 import org.scalatest.funsuite.AnyFunSuite
-import dacp.{OperatorExecutor,OperatorProgram}
+import _root_.xstream.execution.{OperatorExecutor,OperatorProgram}
 
 
 class ExecutorSpec extends AnyFunSuite {
@@ -18,7 +18,7 @@ class ExecutorSpec extends AnyFunSuite {
   test("JAR launch selects the main class and shared dependencies without loading code") {
     val p = OperatorProgram("sum@1","example.Sum",Some(Path.of("/cache/digest")))
     val c = new JvmExecutor().command(p,Some("/operator/ops.jar"))
-    assert(c.entrypoint.get.takeRight(3) == Vector("-cp","/operator/ops.jar:/opt/lib/*","example.Sum"))
+    assert(c.entrypoint.get.takeRight(3) == Vector("-cp","/operator/ops.jar:/opt/lib/*:/opt/xstream/jars/*","example.Sum"))
     assert(c.arguments == Vector("operator","/input","/input/params.json"))
     intercept[IllegalArgumentException](new JvmExecutor().command(p.copy(entrypoint="bad main"),Some("/operator/ops.jar")))
     intercept[IllegalArgumentException](new JvmExecutor().command(p,Some("/operator/ops.py")))

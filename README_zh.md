@@ -14,7 +14,7 @@ XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问�
 | [xstream-operator-sdk](xstream-operator-sdk/README_zh.md) | JVM/Python 算子模板及元数据契约 |
 | [xstream-operator-inference](xstream-operator-inference/README_zh.md) | 按需启动并复用的结构及样例推导 worker |
 | [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository/blob/main/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
-| [xstream-engine](xstream-engine/README_zh.md) | 嵌入式执行、取消、执行策略、自动远程计算下推及 `xstream-runner` 启动程序 |
+| [xstream-engine](xstream-engine/README_zh.md) | 嵌入式执行、取消、执行策略、物理规划及执行目标插件及 `xstream-runner` 启动程序 |
 | [xstream-designer](xstream-designer/README_zh.md) | 图形化作业编辑、目录、变量、结构和样例预览、聊天草案及 YAML 导入导出 |
 
 `context:/dataset/item` 在当前 JVM 绑定的目录中解析；显式 `dacp://host:port/dataset/item` URI 使用配置的远程连接。科学数组、图像和序列保留自身结构，不会被隐式展平成记录。格式和后端实现通过插件契约注册。
@@ -85,3 +85,5 @@ flowchart LR
 ## 视觉样式
 
 标准视觉资源为 `assets/xstream-mark.svg` 和 `assets/xstream-logo.svg`。X 图形背景包含五条平行、连续、短波长且低波幅的小波浪线。各应用应保持图标尺寸、深色底色和青蓝紫橙配色一致。
+
+依赖声明、锁定环境、执行单元和二进制包装：[依赖环境指南](docs/dependency-environments_zh.md).

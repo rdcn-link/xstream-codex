@@ -77,7 +77,7 @@ if __name__ == "__main__":
 Extending `Operator` requires the method; byte and records templates already implement it:
 
 ```scala
-import dacp.{StreamDescriptor,InferenceResult}
+import _root_.xstream.execution.{StreamDescriptor,InferenceResult}
 import xstream.operator.{Operator,OperatorContext}
 import com.fasterxml.jackson.databind.JsonNode
 
@@ -122,7 +122,7 @@ This reuses runtime resources, never task execution containers. Submission, sche
 
 ## Worker protocol for executor plugins
 
-External executors register through `META-INF/services/dacp.OperatorExecutor`, with JARs and dependencies installed in `plugin_directory`. Implement `inferenceWorkerCommand(program, artifactPath)` and, for source support, `sourceInferenceWorkerCommand(program, artifactPath)` without core registry or client changes. The default implementation replaces ordinary launch arguments with:
+External executors register through `META-INF/services/xstream.execution.OperatorExecutor`, with JARs and dependencies installed in `plugin_directory`. Implement `inferenceWorkerCommand(program, artifactPath)` and, for source support, `sourceInferenceWorkerCommand(program, artifactPath)` without core registry or client changes. The default implementation replaces ordinary launch arguments with:
 
 ```text
 infer-worker /input/requests.fifo /input/responses.fifo
@@ -185,7 +185,7 @@ Python `Operator` subclasses override `preview_outputs`; `main()` registers it a
 Scala example (add to an `Operator` or template subclass):
 
 ```scala
-import dacp.{StreamDescriptor, PreviewLimits, OutputSample}
+import _root_.xstream.execution.{StreamDescriptor,PreviewLimits,OutputSample}
 import com.fasterxml.jackson.databind.JsonNode
 
 override def previewOutputs(

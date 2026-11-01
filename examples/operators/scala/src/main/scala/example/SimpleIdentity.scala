@@ -3,7 +3,7 @@ package example
 
 import com.fasterxml.jackson.databind.JsonNode
 import xstream.operator.BytesOperator
-import dacp.{StreamDescriptor,PreviewLimits,OutputSample}
+import _root_.xstream.execution.{StreamDescriptor,PreviewLimits,OutputSample}
 
 
 /** The SDK owns protocol, input discovery and stream cleanup. */

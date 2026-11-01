@@ -17,10 +17,9 @@ dependsOn(testDatasets % "test->compile", testStatic % "test->compile", testForm
 libraryDependencies += "io.github.rdcn-link" %% "xstream-plugin-execution-file" % "0.1.0-SNAPSHOT" % "test"
 
 enablePlugins(JavaAppPackaging)
-Compile / mainClass := Some("dacp.xstream.Main")
+Compile / mainClass := Some("xstream.runner.Main")
 executableScriptName := "xstream-runner"
 Universal / javaOptions ++= Seq("-J--add-opens=java.base/java.nio=ALL-UNNAMED", "-J-Dio.netty.tryReflectionSetAccessible=true")
-libraryDependencies += "io.github.rdcn-link" %% "xstream-dacp-client" % "0.1.0-SNAPSHOT"
 
 lazy val bundledDatasets = RootProject(file("../xstream-data/xstream-data-files"))
 lazy val bundledCatalog = RootProject(file("../xstream-data/xstream-data-catalog-static"))

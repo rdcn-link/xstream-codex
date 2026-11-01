@@ -9,7 +9,7 @@ parser.add_argument('--url', default='http://localhost:8840')
 parser.add_argument('--chromium', required=True)
 args = parser.parse_args()
 workflow = '''name: Editor test
-tasks:
+steps:
   - id: read
     operator: read_item@1.0
     inputs: {}
@@ -35,7 +35,7 @@ with sync_playwright() as playwright:
         if not request.url.startswith((args.url, 'blob:')) else None)
     page.route('**/api/operators', lambda route: route.fulfill(json=[]))
     page.route('**/api/infer', lambda route: route.fulfill(json={
-        'tasks': {'read': {'outputs': {'result': {
+        'steps': {'read': {'outputs': {'result': {
             'certainty': 'unknown', 'representations': ['bytes'], 'formats': []}}, 'diagnostics': []}},
         'outputs': {}}))
     page.goto(args.url)
@@ -64,7 +64,7 @@ with sync_playwright() as playwright:
     assert page.evaluate('jobYamlEditor.getText()') == draft
     page.locator('#apply-yaml').dispatch_event('click')
     page.wait_for_function('()=>!yamlEdited && job.name==="Draft kept"', polling=100)
-    assert len(page.evaluate('job.tasks')) == 1
+    assert len(page.evaluate('job.steps')) == 1
 
     content.press('Control+f')
     expect(page.locator('#yaml .cm-search')).to_be_visible()

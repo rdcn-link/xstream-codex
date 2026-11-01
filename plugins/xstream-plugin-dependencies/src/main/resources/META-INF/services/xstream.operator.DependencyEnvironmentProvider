@@ -1,0 +1,3 @@
+xstream.dependencies.PythonDependencies
+xstream.dependencies.JvmDependencies
+xstream.dependencies.NativeDependencies

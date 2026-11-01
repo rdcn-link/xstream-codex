@@ -1,5 +1,5 @@
 name: split-orders-demo
-tasks:
+steps:
 - id: read_split_left
   operator: read_item@1.0
   inputs: {}

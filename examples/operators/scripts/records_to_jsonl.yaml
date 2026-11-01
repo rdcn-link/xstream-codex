@@ -1,0 +1,23 @@
+name: script_records_to_jsonl
+version: '1.0'
+description: Serialize Arrow records as UTF-8 JSONL with at most 1 MiB per output
+  row.
+icon:
+  path: M8 4H5v6l-2 2 2 2v6h3M16 4h3v6l2 2-2 2v6h-3M10 8h4M10 12h4M10 16h4
+  color: '#258b6e'
+inputs:
+  source:
+    representations:
+    - records
+    formats: []
+parameters:
+  type: object
+  properties: {}
+  required: []
+  additionalProperties: false
+language: python
+entrypoint: script_records_to_jsonl
+runtime: python-arrow@2.0
+source_public: true
+dependencies:
+  provider: python

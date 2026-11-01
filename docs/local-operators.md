@@ -18,7 +18,7 @@ A step references a source directory explicitly:
 
 ```yaml
 name: Local analysis
-tasks:
+steps:
   - id: read
     operator: read_item@1.0
     inputs: {}

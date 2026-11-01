@@ -1,6 +1,6 @@
 package xstream.operator.inference
 
-import dacp._
+import _root_.xstream.execution.{OperatorCommand,OperatorExecutor,OperatorPorts,OperatorProgram,PortContract}
 
 import _root_.xstream.data._
 
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.yaml.snakeyaml.Yaml
 import scala.jdk.CollectionConverters._
 
-case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None)
+case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None,dependencyEnvironment:Option[JsonNode]=None)
 
 /** Immutable operator metadata plus globally shared, content-addressed runtime/code artifacts. */
 object OperatorLibrary {
@@ -40,7 +40,12 @@ object OperatorLibrary {
     op.runtime.foreach { r=>
       n.put("runtime_name",r.path("name").asText).put("runtime_version",r.path("version").asText)
       if(r.has("dependencies"))n.set[JsonNode]("runtime_dependencies",r.path("dependencies").deepCopy[JsonNode]())
-    };n
+    }
+    val lock=op.dependencyEnvironment
+    n.put("dependency_environment",lock.map(_.path("fingerprint").asText).getOrElse(xstream.operator.DependencyEnvironments.fingerprint(op.image,Data.mapper.createObjectNode().put("provider","runtime"))))
+    n.put("process_count",1)
+    lock.foreach(e=>n.set[JsonNode]("dependency_lock",e.path("lock")))
+    n
   }
   private class MissingOperator extends RuntimeException
   private def fetch(url: String, file: Path, limit: Long, manifest: Boolean = false): Unit = {
@@ -134,16 +139,22 @@ object OperatorLibrary {
           val archive = blob(runtime.path("archive"))
           val artifact = Option(m.get("artifact")).map(blob)
           val execution = m.path("execution")
-          val image = runtime.path("image").asText
+          val environment=Option(m.get("environment"))
+          environment.foreach { e=>
+            require(e.path("fingerprint").asText==xstream.operator.DependencyEnvironments.fingerprint(runtime.path("image").asText,e.path("lock")),"dependency environment fingerprint mismatch")
+            require(e.path("image").asText.matches("sha256:[a-f0-9]{64}"),"dependency image must be pinned")
+          }
+          val image = environment.map(_.path("image").asText).getOrElse(runtime.path("image").asText)
+          val executableArchive=environment.map(e=>blob(e.path("archive"))).getOrElse(archive)
           val resolved = plan(config,reference, image, execution.path("executor").asText, execution.path("entrypoint").asText,
             artifact, Option(m.get("artifact")).map(_.path("filename").asText), m, Option(execution.get("config")).getOrElse(Data.mapper.createObjectNode()))
           try docker.inspectImageCmd(image).exec() catch {
             case _: com.github.dockerjava.api.exception.NotFoundException =>
-              val in = Files.newInputStream(archive)
+              val in = Files.newInputStream(executableArchive)
               try docker.loadImageCmd(in).exec() finally in.close()
               docker.inspectImageCmd(image).exec()
           }
-          resolved.copy(runtime=runtimeInfo(base,image,execution.path("executor").asText))
+          resolved.copy(runtime=runtimeInfo(base,runtime.path("image").asText,execution.path("executor").asText),dependencyEnvironment=environment)
         }
         if (Files.exists(entry)) prepare(metadata(entry))
         else {

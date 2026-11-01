@@ -51,3 +51,7 @@ datasets:
 ```
 
 完整 Scala 示例：[DataView 与视图流](../docs/data-view-examples_zh.md)。
+
+## 数据集公开描述
+
+`DatasetInfo.description` 和 `DatasetDefinition.description` 为 JSON 对象字符串，必须包含非空字符串 `title` 和字符串 `description`，其他字段可自由扩展。`DatasetInfo("weather")` 自动生成 `{"title":"weather","description":""}`；静态配置省略时同样使用数据集名称作为标题。显式描述不会被重写或重新序列化；聚合宿主重命名数据集时应原样保留该字符串。
