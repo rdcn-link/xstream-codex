@@ -10,5 +10,4 @@ operator_cache: .xstream-operators
 execution_directory: .xstream-executions
 max_concurrent_tasks: 8
 nodes: []
-# Remote Item reads use an installed connector; computation is configured separately.
-# See docs/execution-targets.md for execution_targets and placement policy.
+# Remote Items are read locally. Submit remote Jobs using the DACP client.

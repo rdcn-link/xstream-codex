@@ -80,7 +80,7 @@ Original files remain unchanged in `upstream/`; Scala build adaptations are expl
 | Trager | Empty perform method, with no output. Workflow dependency edges express execution order. |
 | AddCache | Spark DataFrame.cache is local to a SparkSession; isolated XStream operators cannot provide reusable downstream cache semantics through an identity operator. |
 
-The following 20 operators require external services and an execution/network decision. They are not published as placeholders. Current DACP task containers use network=none; endpoint parameters alone cannot enable access. DockerExecute additionally requires explicit Docker daemon access, and MysqlReadIncremental depends on upstream framework substitution/state behavior outside its Stop implementation.
+The following 20 operators require external services and an execution/network decision. They are not published as placeholders. Current DACP step containers use network=none; endpoint parameters alone cannot enable access. DockerExecute additionally requires explicit Docker daemon access, and MysqlReadIncremental depends on upstream framework substitution/state behavior outside its Stop implementation.
 
 | Category | Operators |
 |---|---|

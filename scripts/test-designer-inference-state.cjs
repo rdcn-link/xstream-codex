@@ -20,3 +20,9 @@ draft=structuredClone(job);draft.name='Renamed';draft.steps.reverse();for(const 
 assert.deepEqual(keys(request(job,'UNUSED: 5')),before);
 draft=structuredClone(job);draft.steps[1].params.condition='$CONDITION';const a=keys(request(draft,'CONDITION: true')),b=keys(request(draft,'CONDITION: false'));assert.equal(a.read,b.read);assert.equal(a.other,b.other);assert.notEqual(a.filter,b.filter);assert.notEqual(a.tail,b.tail);
 console.log('PASS: step deletion, branch-local changes, descendants, metadata, reordering, default ports, output rebinding and variables');
+
+const context=structuredClone(job);context.steps[0].params.uri='context:/weather/observations';
+const left=keys({...request(context),target:'local'}),right=keys({...request(context),target:'dacp://node-a:18861'});
+assert.notEqual(left.read,right.read);assert.notEqual(left.filter,right.filter);assert.notEqual(left.tail,right.tail);assert.equal(left.other,right.other);
+assert.deepEqual(keys({...request(job),target:'local'}),keys({...request(job),target:'dacp://node-a:18861'}));
+console.log('PASS: Target changes invalidate context reads and descendants while explicit remote reads remain stable');

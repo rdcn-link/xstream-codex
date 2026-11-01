@@ -1,0 +1,2 @@
+NODE_A_ITEM: dacp://node-a.example.org:18861/weather/weather-observations.jsonl
+NODE_B_ITEM: dacp://node-b.example.org:18862/weather/weather-observations.jsonl

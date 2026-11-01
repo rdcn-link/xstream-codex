@@ -9,7 +9,7 @@
 - [Dataset, Item, and stream access](dataset-access.md)
 - [DataView examples](data-view-examples.md)
 
-- [Execution targets and physical planning](execution-targets.md)
+- [Local execution and remote data](execution-targets.md)
 
 ## For extension developers
 
@@ -22,6 +22,3 @@
 - [File format handlers](format-handlers.md)
 - [Plugin architecture](plugins.md)
 - [Arrow streams and scientific views](data-streams.md)
-
-
-- [Project boundary review](boundary-review.md)

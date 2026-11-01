@@ -1,6 +1,6 @@
 # XStream execution engine
 
-XStream executes YAML Jobs with bounded, backpressured streams. `xstream-engine` is an embeddable Scala module containing the `xstream-runner` launcher. Local execution needs no data server; remote access and automatic compute pushdown use configured connectors.
+XStream executes YAML Jobs with bounded, backpressured streams. `xstream-engine` is an embeddable Scala module containing the `xstream-runner` launcher. Local execution needs no data server; remote Item access uses optional data connectors. All Job steps execute locally.
 
 ## DataCatalog lifecycle
 
@@ -44,7 +44,7 @@ nodes:
     token_file: /etc/dacp/node-a.token
 ```
 
-Credentials stay in the host configuration. The Job contains only the Item URI. Remote reads followed by processing can be submitted as a sub-job to that service when automatic pushdown is enabled.
+Credentials stay in the host configuration. The Job contains only the Item URI. Remote Item streams feed local operators. Remote Job submission is provided by the DACP client; Union owns automatic placement.
 
 ## Embed in Scala
 
@@ -92,15 +92,15 @@ Versioned references use approved public repository operators and verified artif
 
 ## Designer
 
-The `xstream-designer` module starts a browser-based editor. Its `local_catalog` section uses the same `datasets`/`data_catalog` settings. `nodes` supplies additional DACP connections; the configured execution `target` is also listed. The sidebar initially fetches only catalog roots. Expanding a root loads datasets; expanding a Dataset or Folder Item loads its direct children. Errors affect only the expanded branch and can be retried by collapsing and reopening it.
+The `xstream-designer` module starts a browser-based editor. Its `local_catalog` section uses the same `datasets`/`data_catalog` settings. `nodes` supplies available remote DACP connections. Target defaults to Local; choosing a configured node makes its catalog the in-context catalog and removes its duplicate root. The sidebar initially fetches only catalog roots. Expanding a root loads datasets; expanding a Dataset or Folder Item loads its direct children. Errors affect only the expanded branch and can be retried by collapsing and reopening it.
 
 When the receiving service is a Union, `context:/public-dataset/item` resolves through its public dataset-to-member mapping. An explicit URI using that Union's configured public origin has the same meaning. A recognized member URI instead pins the read to its data-owning member.
 
-Local selections become `context:/dataset/item`; node selections retain their full DACP URI. Local schema/sample previews run against the designer's catalog. When running the exported Job elsewhere, provide a matching context catalog or explicitly change the Item URI.
+Selections in the in-context catalog become `context:/dataset/item`; other catalog selections retain their full DACP URI. Schema/sample previews resolve context against the selected Target. When running the exported Job elsewhere, provide a matching context catalog or explicitly change the Item URI.
 
-## Execution targets and physical planning
+## Local execution and remote data
 
-Execution defaults to local. Install an `ExecutionTargetProvider` to configure remote targets, then enable candidate selection through an independent execution policy. Data access and compute permissions are independent; the engine does not directly depend on a DACP client. See [execution targets](execution-targets.md) for configuration, cost estimates, capability queries and lifecycle. Designer only designs Jobs; it does not plan or display physical execution.
+XStream executes Jobs locally, including downstream processing of remote Item streams. Use the DACP client for explicit remote Job submission. Union owns automatic member placement. See [execution boundaries](execution-targets.md). Designer designs Jobs and selects their context Target; execution services plan and execute them.
 
 ## Execution path
 
@@ -109,7 +109,7 @@ Execution units reflect actual executor capabilities and matching runtime images
 ```mermaid
 flowchart LR
   Job["Job YAML + variables"] --> Resolve["Resolve operators and context Items"]
-  Resolve --> Plan["Plan local / remote execution"]
+  Resolve --> Plan["Construct local execution units"]
   Plan --> Units["Execution units"]
   Units --> Source["read_item"] --> Process["Operators"] --> Result["Result stream"]
   Policy["Execution policy"] -.-> Units

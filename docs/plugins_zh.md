@@ -23,6 +23,6 @@ XStream 的内置实现和外部插件使用同一套扩展契约。核心负责
 
 `DependencyEnvironmentProvider` 通过 ServiceLoader 发现。内置 `python`、`jvm`、`native` 实现位于 `plugins/xstream-plugin-dependencies`。注册、配置和契约测试见[依赖环境指南](dependency-environments_zh.md)。本地构建器另提供 `jvm` 实现。
 
-## 远程数据与执行目标
+## 远程数据插件
 
-`RemoteItemProvider` 与 `ExecutionTargetProvider` 是独立的 ServiceLoader 扩展点，定义于 `xstream-execution-api`。注册、配置、资源契约与测试见[执行目标](execution-targets_zh.md)。
+`RemoteItemProvider` 是 `xstream-execution-api` 中用于远程数据访问的 ServiceLoader 扩展点。注册、配置、资源契约与测试见[本地执行与远程数据](execution-targets_zh.md)。

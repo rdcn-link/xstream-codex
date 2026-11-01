@@ -32,7 +32,7 @@ materialization_store:
     retention_seconds: 86400
 ```
 
-The standard distribution includes `xstream-plugin-execution-file`. Each storage directory has one writer host. A task commits its selected Arrow IPC File segments atomically after successful execution and valid output termination; failures discard uncommitted data. Manifests retain schema, dictionaries, batch boundaries, lengths and checksums. Leases protect active readers from retention cleanup. Missing configuration, quota exhaustion, corruption and expiration fail explicitly. Materialization creates no Dataset and does not checkpoint internal operator state.
+The standard distribution includes `xstream-plugin-execution-file`. Each storage directory has one writer host. A step commits its selected Arrow IPC File segments atomically after successful execution and valid output termination; failures discard uncommitted data. Manifests retain schema, dictionaries, batch boundaries, lengths and checksums. Leases protect active readers from retention cleanup. Missing configuration, quota exhaustion, corruption and expiration fail explicitly. Materialization creates no Dataset and does not checkpoint internal operator state.
 
 ## Submit and consume
 
@@ -44,7 +44,7 @@ Use `{}` in `variables.yaml` when no variables are needed. Embedding application
 
 ## Replay
 
-Embedding applications request replay through `JobEngine.execute` with a source execution ID, its original parsed Job/policy, the same owner and a new execution record. The source execution must be terminated. Only complete, unexpired outputs matching the task signature and owner are reusable. Every connected output of a reused step must be materialized. The engine prunes upstream work when its output can be supplied from committed streams; other steps run again. Replay produces a new execution and is not byte-offset resume, process restoration or exactly-once execution. The standalone launcher accepts policy files but does not expose a replay command.
+Embedding applications request replay through `JobEngine.execute` with a source execution ID, its original parsed Job/policy, the same owner and a new execution record. The source execution must be terminated. Only complete, unexpired outputs matching the step signature and owner are reusable. Every connected output of a reused step must be materialized. The engine prunes upstream work when its output can be supplied from committed streams; other steps run again. Replay produces a new execution and is not byte-offset resume, process restoration or exactly-once execution. The standalone launcher accepts policy files but does not expose a replay command.
 
 Storage implementations use `MaterializationStoreProvider` and ServiceLoader. See [plugins](plugins.md) and the [execution API](../xstream-execution-api/README.md).
 

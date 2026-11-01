@@ -12,21 +12,8 @@ import org.apache.arrow.memory.{BufferAllocator,RootAllocator}
 
 /** Standalone engine host. Remote Item access is supplied as an adapter, never a server dependency. */
 final class LocalEngine(settings:JsonNode,val plugins:PluginEnvironment,
-  remote:(InputBinding,BufferAllocator,StreamCancel)=>FrameSource=(_,_,_)=>throw new IllegalArgumentException("No remote Item adapter configured"),
-  suppliedTargets:Seq[_root_.xstream.execution.ExecutionTarget]=Seq.empty) extends EngineEnvironment with AutoCloseable {
-  require(!settings.has("compute_pushdown_enabled"),"use execution_targets and placement policy instead of compute_pushdown_enabled")
-  override val executionTargets:Seq[_root_.xstream.execution.ExecutionTarget]={
-    import scala.jdk.CollectionConverters._
-    val raw=settings.path("execution_targets")
-    require(raw.isMissingNode || raw.isArray,"execution_targets must be a list")
-    val configured=raw.elements.asScala.map { n=>
-      _root_.xstream.util.Json.fields(n,Set("name","provider","settings"))
-      plugins.byId(classOf[_root_.xstream.execution.ExecutionTargetProvider],n.path("provider").asText).create(n.path("name").asText,n.path("settings"))
-    }.toVector
-    val all=suppliedTargets++configured
-    require(all.map(_.id).distinct.size==all.size,"duplicate execution target name")
-    all
-  }
+  remote:(InputBinding,BufferAllocator,StreamCancel)=>FrameSource=(_,_,_)=>throw new IllegalArgumentException("No remote Item adapter configured")) extends EngineEnvironment with AutoCloseable {
+  require(!settings.has("execution_targets") && !settings.has("compute_pushdown_enabled"),"XStream executes Jobs locally; remote Job submission belongs to DACP")
   private val catalogHost=new ConfiguredDataCatalog(settings,plugins)
   val allocator=new RootAllocator(Long.MaxValue)
   val engine=new JobEngine(this,allocator)
@@ -57,5 +44,5 @@ final class LocalEngine(settings:JsonNode,val plugins:PluginEnvironment,
       val op=LocalOperatorLibrary.resolve(this,localOperatorBase.get,reference,docker,()=>cancel.active())
       OperatorInference.run(this,op,request,cancel)
     }
-  def close():Unit={try {engine.close();executionTargets.foreach(_.close());inferenceWorkerPool.close();stores.values.foreach(_.close());executionHistory.close()}finally {try allocator.close()finally catalogHost.close()}}
+  def close():Unit={try {engine.close();inferenceWorkerPool.close();stores.values.foreach(_.close());executionHistory.close()}finally {try allocator.close()finally catalogHost.close()}}
 }

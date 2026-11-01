@@ -23,6 +23,6 @@ The standalone engine supports source-directory references, reusable builds and 
 
 `DependencyEnvironmentProvider` is discovered through ServiceLoader. Built-in `python`, `jvm` and `native` implementations live in `plugins/xstream-plugin-dependencies`. See the [dependency environment guide](dependency-environments.md) for registration, configuration and contract tests. The local builder also provides a `jvm` implementation.
 
-## Remote data and execution targets
+## Remote data plugins
 
-`RemoteItemProvider` and `ExecutionTargetProvider` are independent ServiceLoader extension points defined in `xstream-execution-api`. See [execution targets](execution-targets.md) for registration, configuration, resource contracts and tests.
+`RemoteItemProvider` is a ServiceLoader extension point in `xstream-execution-api` for remote data access. See [local execution and remote data](execution-targets.md) for registration, configuration, resource contracts and tests.

@@ -1,6 +1,6 @@
 # XStream 执行引擎
 
-XStream 使用有界、支持背压的数据流执行 YAML Job。`xstream-engine` 是可嵌入的 Scala 模块，内含 `xstream-runner` 启动程序。本地执行不需要数据服务器；需要远程数据时，可配置连接器并启用自动计算下推。
+XStream 使用有界、支持背压的数据流执行 YAML Job。`xstream-engine` 是可嵌入的 Scala 模块，内含 `xstream-runner` 启动程序。本地执行不需要数据服务器；需要远程数据时，可配置数据连接器，Job 的所有步骤仍在本地执行。
 
 ## DataCatalog 生命周期
 
@@ -44,7 +44,7 @@ nodes:
     token_file: /etc/dacp/node-a.token
 ```
 
-凭据留在宿主配置中，Job 只包含 Item URI。启用自动下推后，远程读取及其后续处理可作为子作业提交到该服务。
+凭据留在宿主配置中，Job 只包含 Item URI。远程 Item 流交给本地算子处理。远程 Job 提交由 DACP 客户端提供，自动放置由 Union 提供。
 
 ## Scala 嵌入
 
@@ -92,13 +92,13 @@ data_catalog:
 
 ## 设计器
 
-`xstream-designer` 模块提供浏览器编辑器。`local_catalog` 使用相同的 `datasets`/`data_catalog` 配置；`nodes` 配置额外 DACP 连接，执行目标 `target` 也列入目录。侧栏初始只获取目录入口，展开入口加载 Dataset，展开 Dataset 或 Folder Item 加载直接子项。失败仅影响当前分支，折叠后重新展开可重试。
+`xstream-designer` 模块提供浏览器编辑器。`local_catalog` 使用相同的 `datasets`/`data_catalog` 配置；`nodes` 配置可用的远程 DACP 连接。Target 默认为 Local；选择配置节点后，其目录成为上下文目录，其他目录入口不重复显示该节点。侧栏初始只获取目录入口，展开入口加载 Dataset，展开 Dataset 或 Folder Item 加载直接子项。失败仅影响当前分支，折叠后重新展开可重试。
 
-本地选择生成 `context:/dataset/item`，节点选择保留完整 DACP URI。本地结构和样例预览使用设计器目录。在别处执行导出的 Job 时，需要提供匹配的上下文目录，或显式更改 Item URI。
+上下文目录中的选择生成 `context:/dataset/item`，其他目录的选择保留完整 DACP URI。结构和样例预览根据所选 Target 解析上下文。在别处执行导出的 Job 时，需要提供匹配的上下文目录，或显式更改 Item URI。
 
-## 执行目标与物理规划
+## 本地执行与远程数据
 
-默认本地执行。可通过宿主安装的 `ExecutionTargetProvider` 配置远程目标，并通过独立执行策略启用候选计划选择。数据读取与计算权限彼此独立；引擎不直接依赖 DACP 客户端。配置、成本估算、权限查询与生命周期见[执行目标指南](execution-targets_zh.md)。Designer 只负责 Job 设计，不规划或展示物理计划。
+XStream 在本地执行 Job，包括远程 Item 流的后续处理。显式远程提交使用 DACP 客户端，自动成员放置由 Union 提供。见[执行职责](execution-targets_zh.md)。Designer 负责 Job 设计和上下文 Target 选择，执行服务负责规划与执行。
 
 ## 执行路径
 
@@ -107,7 +107,7 @@ data_catalog:
 ```mermaid
 flowchart LR
   Job["Job YAML 与变量"] --> Resolve["解析算子和 context Item"]
-  Resolve --> Plan["规划本地 / 远程执行"]
+  Resolve --> Plan["构建本地执行单元"]
   Plan --> Units["执行单元"]
   Units --> Source["read_item"] --> Process["处理算子"] --> Result["结果流"]
   Policy["执行策略"] -.-> Units

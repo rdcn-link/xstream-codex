@@ -1,0 +1,2 @@
+LOCAL_ITEM: context:/weather/weather-observations.jsonl
+REMOTE_ITEM: dacp://node-b.example.org:18861/weather/weather-observations.jsonl

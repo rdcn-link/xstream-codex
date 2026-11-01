@@ -6,6 +6,8 @@
 
 XStream is a Scala toolkit for stream-oriented computation: typed data access, an embeddable Job engine and a browser-based visual designer. Steps consume and produce streams; intermediate data need not be saved as files. Explicit execution policies enable materialization and replay when required.
 
+XStream executes every Job step locally. Remote `read_item` URIs provide data streams to local operators. DACP clients submit Jobs to remote servers; Union owns automatic placement across its members.
+
 ## Components
 
 | Module | Purpose |
@@ -14,7 +16,7 @@ XStream is a Scala toolkit for stream-oriented computation: typed data access, a
 | [xstream-operator-sdk](xstream-operator-sdk/README.md) | JVM/Python operator templates and metadata contracts |
 | [xstream-operator-inference](xstream-operator-inference/README.md) | Reusable on-demand structure and sample workers |
 | [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository) | Source submissions, isolated builds, review, public operator and runtime downloads |
-| [xstream-engine](xstream-engine/README.md) | Embedded execution, cancellation, execution policies, physical planning and execution-target plugins and the `xstream-runner` launcher |
+| [xstream-engine](xstream-engine/README.md) | Local embedded execution, cancellation, execution policies and the `xstream-runner` launcher |
 | [xstream-designer](xstream-designer/README.md) | Visual Job editing, catalogs, variables, schema and sample previews, chat proposals and YAML import/export |
 
 `context:/dataset/item` resolves through the catalog bound to the current JVM. Explicit `dacp://host:port/dataset/item` URIs use configured remote connections. Scientific arrays, images and sequences keep their structures rather than being flattened into records. Format and backend implementations register through plugin contracts.
@@ -32,7 +34,7 @@ sbt test
 (cd xstream-designer && sbt stage)
 ```
 
-Remote DACP data access is implemented by the connector in this repository. Local execution needs no running data service. See [modules and builds](docs/repositories.md).
+Read remote Items using DACP URIs, or use `context:` for the configured local catalog. See [local execution and remote data](docs/execution-targets.md).
 
 ## Run
 
@@ -62,7 +64,6 @@ Edit configuration paths, service addresses and credentials first. The runner pr
 
 The vector [logo](assets/xstream-logo.svg) and [symbol](assets/xstream-mark.svg) depict crossing streams forming an X. The designer uses the symbol as its favicon.
 
-Documentation ownership and website publishing: [maintenance policy](docs/documentation.md).
 
 Complete Scala examples: [DataView and view streams](docs/data-view-examples.md).
 

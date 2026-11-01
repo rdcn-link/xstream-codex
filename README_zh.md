@@ -6,6 +6,8 @@
 
 XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问、可嵌入的作业引擎和浏览器图形设计器。步骤消费和生成数据流，中间数据无需保存为文件；需要时可通过显式执行策略启用物化和重放。
 
+XStream 在本地执行 Job 的每个步骤。远程 `read_item` URI 为本地算子提供数据流。DACP 客户端负责向远程服务提交 Job，Union 负责成员之间的自动放置。
+
 ## 组成
 
 | 模块 | 用途 |
@@ -13,8 +15,8 @@ XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问�
 | [xstream-data](xstream-data/README_zh.md) | DataCatalog → Dataset → Item、类型化 DataView/DataStream 契约、插件发现、文件及科学格式实现和网络编码 |
 | [xstream-operator-sdk](xstream-operator-sdk/README_zh.md) | JVM/Python 算子模板及元数据契约 |
 | [xstream-operator-inference](xstream-operator-inference/README_zh.md) | 按需启动并复用的结构及样例推导 worker |
-| [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository/blob/main/README_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
-| [xstream-engine](xstream-engine/README_zh.md) | 嵌入式执行、取消、执行策略、物理规划及执行目标插件及 `xstream-runner` 启动程序 |
+| [xstream-operator-repository](https://github.com/rdcn-link/xstream-operator-repository/blob/main/docs/browsing_zh.md) | 源码提交、隔离构建、审核、公开算子和运行环境下载 |
+| [xstream-engine](xstream-engine/README_zh.md) | 本地嵌入式执行、取消、执行策略及 `xstream-runner` 启动程序 |
 | [xstream-designer](xstream-designer/README_zh.md) | 图形化作业编辑、目录、变量、结构和样例预览、聊天草案及 YAML 导入导出 |
 
 `context:/dataset/item` 在当前 JVM 绑定的目录中解析；显式 `dacp://host:port/dataset/item` URI 使用配置的远程连接。科学数组、图像和序列保留自身结构，不会被隐式展平成记录。格式和后端实现通过插件契约注册。
@@ -32,7 +34,7 @@ sbt test
 (cd xstream-designer && sbt stage)
 ```
 
-远程 DACP 数据访问由本仓库的连接器实现，本地执行无需启动任何数据服务。详见[模块和构建](docs/repositories_zh.md)。
+使用 DACP URI 读取远程 Item，使用 `context:` 访问已配置的本地目录。详见[本地执行与远程数据](docs/execution-targets_zh.md)。
 
 ## 运行
 
@@ -62,7 +64,6 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
 
 矢量[完整标志](assets/xstream-logo.svg)和[图形符号](assets/xstream-mark.svg)以交叉的数据流构成 X。设计器使用图形符号作为 favicon。
 
-文档归属与官网发布方式：[维护规则](docs/documentation_zh.md)。
 
 完整 Scala 示例：[DataView 与视图流](docs/data-view-examples_zh.md)。
 

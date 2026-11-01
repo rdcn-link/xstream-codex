@@ -1,0 +1,100 @@
+- id: read-records
+  title: Read a record stream
+  description: Read JSONL observations through the Target catalog. A one-step
+    starting point for browsing records.
+  job: read-records.yaml
+  variables: read-records-variables.yaml
+  tags:
+  - Records
+  - Local target
+- id: filter-csv
+  title: Filter and export CSV
+  description: Screen warm observations, then emit a CSV byte stream. Three connected
+    steps with no intermediate files.
+  job: filter-csv.yaml
+  variables: filter-csv-variables.yaml
+  tags:
+  - Filtering
+  - CSV output
+  - Local target
+- id: variables
+  title: A parameterized workflow
+  description: Use variables for the Item URI, filter expression and a boolean CSV
+    option. Edit their values in Variables.
+  job: variables.yaml
+  variables: variables-variables.yaml
+  tags:
+  - Variables
+  - Filtering
+  - Local target
+- id: merge
+  title: Merge two input streams
+  description: Combine two compatible record streams and export CSV. Both reads use
+    the sample Item; change either URI to use another source.
+  job: merge.yaml
+  variables: merge-variables.yaml
+  tags:
+  - Multi-input
+  - Records
+  - Local target
+- id: scientific-array
+  title: Explore a scientific array
+  description: Read the NetCDF temperature variable as an array view, preserving dimensions
+    and structure.
+  job: scientific-array.yaml
+  variables: scientific-array-variables.yaml
+  tags:
+  - Scientific array
+  - Local target
+- id: remote-streams
+  title: Combine local and remote streams
+  description: Read context and remote DACP records, then merge and export CSV. Set
+    REMOTE_ITEM to an accessible service. Computation runs at the submission target.
+  job: remote-streams.yaml
+  variables: remote-streams-variables.yaml
+  tags:
+  - Cross-node
+  - Variables
+  - Local target
+- id: remote-target
+  title: Design for a remote service
+  description: Demonstrate a saved design target. Loading asks for confirmation; select
+    a configured service and adapt the context Item path.
+  job: remote-target.yaml
+  variables: remote-target-variables.yaml
+  tags:
+  - Remote target
+  - Records
+- id: two-nodes
+  title: Merge two remote nodes
+  description: Read records from nodes A and B into one stream. Local design target;
+    configure both Item URI variables before inference or execution.
+  job: two-nodes.yaml
+  variables: two-nodes-variables.yaml
+  tags:
+  - Cross-node
+  - Two nodes
+  - Variables
+  - Local target
+- id: three-nodes
+  title: Merge three remote nodes
+  description: Combine A, B and C through two merge steps, then output CSV. Local
+    design target; remote reads do not push computation to source nodes.
+  job: three-nodes.yaml
+  variables: three-nodes-variables.yaml
+  tags:
+  - Cross-node
+  - Three nodes
+  - Variables
+  - Local target
+- id: union-collaboration
+  title: Union collaboration
+  description: Saved Union design target with two context Items from different members.
+    Set their public Union paths; Union chooses the execution placement on submission.
+  job: union-collaboration.yaml
+  variables: union-collaboration-variables.yaml
+  tags:
+  - Cross-node
+  - Union
+  - Variables
+  - Remote target

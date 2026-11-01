@@ -11,11 +11,11 @@ import scala.jdk.CollectionConverters._
 /** Single-node DAG execution. Storage and operator implementations remain plugins. */
 final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
   source:(InputBinding,StreamCancel)=>FrameSource,allocator:org.apache.arrow.memory.BufferAllocator,
-  delegates:Map[String,(OperatorFrame=>Unit,StreamCancel)=>Unit]=Map.empty,preparedUnits:ExecutionUnits=ExecutionUnits(JobPlan(Vector.empty,Map.empty),Map.empty,Json.obj())) {
+  preparedUnits:ExecutionUnits=ExecutionUnits(JobPlan(Vector.empty,Map.empty),Map.empty,Json.obj())) {
   def run(plan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,
     replay:Option[String],emit:OperatorFrame=>Unit,root:StreamCancel):Unit={
     val execution=Json.obj();val units=execution.putArray("execution_units")
-    plan.steps.foreach { t=>val unit=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ReadItem)"host_stream_source"else if(delegates.contains(t.id))"remote_subjob"else "isolated_step");unit.putArray("steps").add(t.id) }
+    plan.steps.foreach { t=>val unit=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ReadItem)"host_stream_source"else "isolated_step");unit.putArray("steps").add(t.id) }
     record.update("running",if(preparedUnits.groups.nonEmpty)preparedUnits.description else execution)
     val store=config.materializationStore.map(config.openMaterialization)
     require(policy.materialized.isEmpty || store.nonEmpty,"materialization_store is not configured")
@@ -73,7 +73,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
         val edges=plan.steps.filter(t=>needed(t.id) && !attemptReuse.contains(t.id)).flatMap(t=>t.inputs.toVector.flatMap{case(p,b)=>b.task.map(up=>(up,b.port,t.id,p))})
         require(edges.map(e=>e._1->e._2).distinct.size==edges.size,"fan-out requires an explicit duplicating operator")
         require(plan.outputs.values.toSet.size==plan.outputs.size && !plan.outputs.values.exists(p=>edges.exists(e=>(e._1,e._2)==p)),"output is consumed more than once")
-        require(plan.steps.count(t=>needed(t.id) && t.operator!=Jobs.ReadItem && !delegates.contains(t.id))<=config.maxConcurrentTasks,"pipeline needs more local task slots; increase max_concurrent_tasks")
+        require(plan.steps.count(t=>needed(t.id) && t.operator!=Jobs.ReadItem)<=config.maxConcurrentTasks,"pipeline needs more local task slots; increase max_concurrent_tasks")
         val queues=edges.map(e=>(e._3,e._4)->new FrameQueue(token)).toMap
         val terminal=new FrameQueue(token)
         val completed=java.util.concurrent.ConcurrentHashMap.newKeySet[String]()
@@ -128,7 +128,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
                   }finally a.close()
                 case None=>
                   val inputs=scala.collection.mutable.Map.empty[String,FrameSource]
-                  val acquired=t.operator!=Jobs.ReadItem && !delegates.contains(t.id)
+                  val acquired=t.operator!=Jobs.ReadItem
                   if(acquired)require(config.taskSlots.tryAcquire(),"node task capacity reached")
                   try {
                     t.inputs.foreach{case(p,b)=>
@@ -138,7 +138,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
                         def close():Unit=raw.close()
                       }
                     }
-                    if(delegates.contains(t.id))delegates(t.id)(output,token) else Jobs.readBinding(t) match {
+                    Jobs.readBinding(t) match {
                       case Some(b)=>val stream=token.add(source(b,token));try {var f=stream.next();while(f.nonEmpty){output(StreamProtocol.rename(f.get,"result"));f=stream.next()}}finally stream.close()
                       case None=>
                         val group=preparedUnits.groups.get(t.id)

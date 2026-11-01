@@ -13,7 +13,7 @@ with sync_playwright() as p:
     errors=[]
     page.on('pageerror',lambda error:errors.append(str(error)))
     dataset_requests=[]
-    page.route('**/api/catalogs',lambda route:route.fulfill(json=[{'name':'In-context catalog','uri':'context:/'}]))
+    page.route('**/api/catalogs',lambda route:route.fulfill(json=[{'name':'Target catalog','uri':'context:/'}]))
     page.route('**/api/datasets',lambda route:(dataset_requests.append(True),route.fulfill(json={'complete':True,'unavailable_sources':0,'datasets':[{'name':'Climate','uri':'dacp://localhost:19860/climate','description':'{}'}]})))
     page.route('**/api/items',lambda route:route.fulfill(json={'items':[{'path':'/observations','kind':'item','views':['records']}]}))
     page.goto(args.url)
@@ -36,7 +36,7 @@ with sync_playwright() as p:
     expect(page.locator('#library-operators-panel')).to_be_hidden()
     expect(page.locator('#library-datasets-tab')).to_be_focused()
     expect(page.locator('#library-datasets-panel')).to_be_visible()
-    page.get_by_role('button',name='In-context catalog',exact=True).click()
+    page.get_by_role('button',name='Target catalog',exact=True).click()
     expect(page.get_by_role('button',name='Climate',exact=True)).to_be_visible()
     assert len(dataset_requests)==1
     expect(page.locator('.dataset-button svg')).to_have_count(2)

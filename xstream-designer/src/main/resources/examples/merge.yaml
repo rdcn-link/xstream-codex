@@ -1,0 +1,33 @@
+name: Merge weather record streams
+steps:
+- id: left
+  title: Read observations
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/weather/weather-observations.jsonl
+    view: records
+- id: right
+  title: Read observations
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/weather/weather-observations.jsonl
+    view: records
+- id: merge
+  operator: piflow_merge@1.2
+  inputs:
+    left: left
+    right: right
+  params: {}
+- id: csv
+  operator: piflow_csv_save@1.2
+  inputs:
+    source: merge
+  params:
+    header: true
+outputs:
+  result: csv
+designer:
+  version: 1
+  target: local

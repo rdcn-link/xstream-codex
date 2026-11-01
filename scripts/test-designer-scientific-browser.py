@@ -19,7 +19,7 @@ def route(req):
   if name=='config':data={'chat_provider':'disabled','generator':{'name':'XStream Designer','version':'test'}}
   elif name=='views':data=views
   elif name=='operators':data=[]
-  elif name=='catalogs':data=[{'name':'In-context catalog','uri':'context:/'}]
+  elif name=='catalogs':data=[{'name':'Target catalog','uri':'context:/'}]
   elif name=='datasets':data={'complete':True,'datasets':[{'name':'science','uri':'context:/science'}]}
   elif name=='items':data={'items':[{'path':'/genome','kind':'folder','views':['bytes'],'format':'fasta'}]} if n['path']=='/' else {'items':[{'path':'/genome/sequences','kind':'data','views':['sequence','bytes'],'format':'fasta'}]}
   elif name=='document':data={'job':json.loads(n['job_yaml']),'job_yaml':n['job_yaml'],'variables_yaml':n.get('variables_yaml','{}')}
@@ -48,7 +48,7 @@ with sync_playwright() as p:
  page.goto('http://designer.test/')
  expect(page.locator('#connection')).to_have_text('Connected')
  page.locator('#library-datasets-tab').click()
- page.get_by_role('button',name='In-context catalog',exact=True).click()
+ page.get_by_role('button',name='Target catalog',exact=True).click()
  page.get_by_role('button',name='science',exact=True).click()
  expect(page.locator('.item-label')).to_have_text('genome')
  folder_height=page.locator('.item[data-kind=folder]').bounding_box()['height']

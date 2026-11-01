@@ -46,7 +46,7 @@ Building requires a local catalog containing the `piflow_csv_parser@1.0` manifes
 
 See the source-only repository submission guide linked below.
 
-The source archive includes code, build script, tests and bilingual instructions. No additional third-party dependencies are introduced. Validate streaming by recording first-output and completion times, canceling continuous generation, and checking released task slots. An animated graph or small output file alone does not prove streaming. Operators can implement blocking algorithms; stream interfaces do not guarantee immediate output from every algorithm.
+The source archive includes code, build script, tests and bilingual instructions. No additional third-party dependencies are introduced. Validate streaming by recording first-output and completion times, canceling continuous generation, and checking released step slots. An animated graph or small output file alone does not prove streaming. Operators can implement blocking algorithms; stream interfaces do not guarantee immediate output from every algorithm.
 
 ## Multi-step streaming workflow
 

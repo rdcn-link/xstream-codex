@@ -8,6 +8,7 @@ import com.sun.net.httpserver.HttpServer
 import java.net.{InetSocketAddress,URI}
 import java.net.http.{HttpClient,HttpRequest,HttpResponse}
 import java.nio.charset.StandardCharsets.UTF_8
+import scala.jdk.CollectionConverters._
 
 class DesignerSpec extends AnyFunSuite {
   val workflow="""name: Weather
@@ -21,6 +22,57 @@ class DesignerSpec extends AnyFunSuite {
                   |    inputs: {source: read}
                   |outputs: {result: parse}
                   |""".stripMargin
+  test("packaged examples are complete, variable-resolved Jobs with one Outlet") {
+    val examples=ExampleJobs.all
+    assert(examples.size>=5)
+    val ids=examples.elements.asScala.map(_.path("id").asText).toVector
+    assert(ids.distinct==ids)
+    examples.elements.asScala.foreach { e=>
+      val source=e.path("job_yaml").asText;val variables=Documents.variables(e.path("variables_yaml").asText)
+      val doc=Documents.job(xstream.util.WorkflowVariables.resolve(source,variables))
+      assert(doc.path("outputs").size==1 && doc.path("steps").size==e.path("step_count").asInt)
+      assert(!doc.has("designer") || doc.path("designer").has("target"))
+    }
+    assert(examples.elements.asScala.find(_.path("id").asText=="variables").get.path("variables_yaml").asText.contains("INCLUDE_HEADER: true"))
+  }
+  test("deployment examples load from a bounded directory and validate resource names") {
+    val dir=java.nio.file.Files.createTempDirectory("designer-examples-")
+    try {
+      java.nio.file.Files.writeString(dir.resolve("index.yaml"),"- id: actual\n  title: Actual catalog\n  description: Deployment data\n  job: actual.yaml\n  variables: values.yaml\n")
+      java.nio.file.Files.writeString(dir.resolve("actual.yaml"),workflow.replace("$INPUT_URI","context:/actual/observations"))
+      java.nio.file.Files.writeString(dir.resolve("values.yaml"),"{}")
+      val result=ExampleJobs.load(Some(dir))
+      assert(result.size==1 && result.get(0).path("job_yaml").asText.contains("context:/actual/observations"))
+      val index=java.nio.file.Files.readString(dir.resolve("index.yaml"))
+      java.nio.file.Files.writeString(dir.resolve("index.yaml"),index+"  tags: [Variables, Variables, ' Remote target ']\n")
+      assert(ExampleJobs.load(Some(dir)).get(0).path("tags").elements.asScala.map(_.asText).toVector==Vector("Variables","Remote target"))
+      java.nio.file.Files.writeString(dir.resolve("index.yaml"),index+"  tags: [123]\n")
+      intercept[IllegalArgumentException](ExampleJobs.load(Some(dir)))
+      java.nio.file.Files.writeString(dir.resolve("index.yaml"),"- id: bad\n  title: Bad\n  description: Bad\n  job: ../outside.yaml\n  variables: values.yaml\n")
+      intercept[IllegalArgumentException](ExampleJobs.load(Some(dir)))
+    } finally {
+      val files=java.nio.file.Files.list(dir);try files.iterator.asScala.foreach(java.nio.file.Files.delete(_))finally files.close()
+      java.nio.file.Files.delete(dir)
+    }
+  }
+  test("cross-node examples include two and three sources and saved design targets") {
+    val examples=ExampleJobs.all.elements.asScala.map(e=>e.path("id").asText->e).toMap
+    def resolved(id:String)={val e=examples(id);Documents.job(xstream.util.WorkflowVariables.resolve(e.path("job_yaml").asText,Documents.variables(e.path("variables_yaml").asText)))}
+    for((id,count)<-Seq("two-nodes"->2,"three-nodes"->3)){
+      val j=resolved(id)
+      val sources=j.path("steps").elements.asScala.filter(_.path("operator").asText=="read_item@1.0").toVector
+      assert(sources.size==count)
+      assert(sources.map(s=>URI.create(s.path("params").path("uri").asText).getHost).distinct.size==count)
+      assert(j.path("designer").path("target").asText=="local")
+    }
+    assert(examples("three-nodes").path("tags").elements.asScala.map(_.asText).toSet.contains("Cross-node"))
+    assert(examples("variables").path("tags").elements.asScala.map(_.asText).toSet.contains("Variables"))
+    assert(examples("remote-target").path("tags").elements.asScala.map(_.asText).toSet.contains("Remote target"))
+    val union=resolved("union-collaboration")
+    assert(union.path("designer").path("target").asText=="dacp://union.example.org:19860")
+    assert(union.path("steps").elements.asScala.filter(_.path("operator").asText=="read_item@1.0").forall(_.path("params").path("uri").asText.startsWith("context:/")))
+    assert(resolved("remote-target").path("designer").path("target").asText=="dacp://node-a.example.org:18861")
+  }
   test("step descriptions are multiline job metadata and round-trip through YAML") {
     val annotated=workflow.replace("    operator: read_item@1.0", "    description: |\n      Read local observations.\n      Keep original units.\n    operator: read_item@1.0")
     val document=Documents.job(annotated)
@@ -98,13 +150,22 @@ class DesignerSpec extends AnyFunSuite {
     assert(!preview.path("outputs").path("unknown").has("schema_json"))
     assert(!report.path("outputs").path("result").has("schema_json"))
   }
+  test("design Target is validated designer metadata, retained on export") {
+    val job=Documents.mapping(workflow).asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode]
+    val metadata=job.putObject("designer").put("version",1).put("target","dacp://node-a:18861")
+    assert(Documents.job(job.toString).path("designer").path("target").asText=="dacp://node-a:18861")
+    metadata.put("target","local");Documents.job(job.toString)
+    for(value<-Seq("https://example.com","dacp://user:secret@node-a:18861","dacp://node-a:18861/weather","")){
+      metadata.put("target",value);intercept[IllegalArgumentException](Documents.job(job.toString))
+    }
+  }
   test("public HTTP editor, export and unconfigured model chat without leaking credentials"){
     val repo=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
     repo.createContext("/v1/operators",x=>{val bytes="""[{"name":"piflow_csv_parser","version":"1.0","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["bytes"]}}},{"name":"piflow_filter","version":"1.0","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["records"]}}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()});repo.start()
     val config=Documents.mapping(s"""host: 127.0.0.1
                                   |port: 0
-                                  |target:
-                                  |  {url: 'dacp://localhost:18861', token_file: '/private/secret.token'}
+                                  |nodes:
+                                  |  - {url: 'dacp://localhost:18861', token_file: '/private/secret.token'}
                                   |repository:
                                   |  {url: 'http://127.0.0.1:${repo.getAddress.getPort}'}
                                   |""".stripMargin)
@@ -133,6 +194,15 @@ class DesignerSpec extends AnyFunSuite {
       val response=post("/api/chat",request);assert(response.statusCode()==400,response.body())
       assert(response.body().contains("Chat is not configured"))
       assert(get("/api/config").body().contains("disabled"))
+      val targets=Json.mapper.readTree(get("/api/config").body()).path("targets")
+      assert(targets.get(0).path("value").asText=="local" && targets.size==2)
+      val roots=post("/api/catalogs",Json.obj().put("target","local"))
+      assert(roots.statusCode()==200 && Json.mapper.readTree(roots.body()).size==2)
+      val selected=post("/api/catalogs",Json.obj().put("target","dacp://localhost:18861"))
+      assert(selected.statusCode()==200 && Json.mapper.readTree(selected.body()).size==1)
+      assert(post("/api/catalogs",Json.obj().put("target","dacp://unconfigured:1234")).statusCode()==400)
+      assert(post("/api/catalogs",Json.obj().set[com.fasterxml.jackson.databind.JsonNode]("target",Json.obj().put("token","secret"))).statusCode()==400)
+
       assert(post("/api/nodes",Json.obj()).statusCode()==400)
       assert(post("/api/connect",Json.obj()).statusCode()==400)
       assert(post("/api/operators",Json.obj().put("repository","ops")).statusCode()==400)

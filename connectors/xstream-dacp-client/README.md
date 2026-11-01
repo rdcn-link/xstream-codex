@@ -2,7 +2,7 @@
 
 [中文](README_zh.md)
 
-The runner and designer use this self-contained connector for DACP remote catalogs, Item views and Job result streams. Its public package is `xstream.connector.dacp.client`. It depends on XStream libraries and the bundled [wire schema](../proto/dacp.proto), without a DACP checkout or server artifact.
+The runner and designer use this self-contained connector for DACP remote catalogs and Item views. Its public package is `xstream.connector.dacp.client`. It depends on XStream libraries and the bundled [wire schema](../proto/dacp.proto), without a DACP checkout or server artifact.
 
 ```scala
 import xstream.connector.dacp.client.{Source, TlsConfig}
@@ -17,9 +17,9 @@ Using.resource(Source.open("dacp://data.example.org:8815/weather", tls)) { datas
 }
 ```
 
-Anonymous public metadata can be listed without credentials. Protected reads use the configured token; CA trust uses `TlsConfig.ca` or system roots. Client certificates, when supplied, require both certificate and key. Close datasets, Item readers and Job streams, including on early exit. Arrow roots are borrowed and reused: consume or copy batches before advancing.
+Anonymous public metadata can be listed without credentials. Protected reads use the configured token; CA trust uses `TlsConfig.ca` or system roots. Client certificates, when supplied, require both certificate and key. Close datasets and Item readers, including on early exit. Arrow roots are borrowed and reused: consume or copy batches before advancing.
 
-`Job.run` returns a closeable `OutputEvent` iterator. It supports variables, policies, retry notifications and replay requests to remote services. Transport failures become `DacpException` with stable error codes. Failed streams must be reopened; closing early cancels the active exchange. Local Jobs use the embedded engine directly.
+Transport failures become `DacpException` with stable error codes. Failed reads must be reopened. The DACP SDK and Shell provide remote Job submission; the local engine uses this connector only for data access.
 
 ```bash
 (cd connectors/xstream-dacp-client && sbt test)

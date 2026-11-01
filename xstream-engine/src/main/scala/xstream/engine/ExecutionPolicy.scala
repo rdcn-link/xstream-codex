@@ -10,14 +10,7 @@ final case class ExecutionPolicy(submitted:JsonNode,effective:JsonNode,materiali
 object ExecutionPolicy {
   def connected(plan:JobPlan):Set[(String,String)]=plan.outputs.values.toSet++plan.steps.flatMap(_.inputs.values.flatMap(b=>b.task.map(_->b.port)))
   def parse(raw:JsonNode,plan:JobPlan):ExecutionPolicy={
-    Json.fields(raw,Set.empty,Set("materialization","max_retries","timeout_seconds","placement"))
-    val placement=Option(raw.get("placement")).getOrElse(Json.obj())
-    Json.fields(placement,Set.empty,Set("mode","targets","objective"))
-    require(!placement.has("mode") || placement.path("mode").isTextual,"placement.mode must be text")
-    require(Set("local","auto")(placement.path("mode").asText("local")),"placement.mode must be local or auto")
-    require(!placement.has("objective") || placement.path("objective").isTextual,"placement.objective must be text")
-    require(Set("latency","transfer")(placement.path("objective").asText("latency")),"placement.objective must be latency or transfer")
-    require(!placement.has("targets") || placement.path("targets").isArray && placement.path("targets").elements.asScala.forall(n=>n.isTextual && n.asText.nonEmpty),"placement.targets must be a list of target names")
+    Json.fields(raw,Set.empty,Set("materialization","max_retries","timeout_seconds"))
     val maxRetries=if(raw.has("max_retries"))Json.number(raw,"max_retries",0,10).toInt else 0
     val timeout=if(raw.has("timeout_seconds"))Some(Json.number(raw,"timeout_seconds",1,86400))else None
     val m=Option(raw.get("materialization")).getOrElse(Json.obj())
@@ -36,7 +29,7 @@ object ExecutionPolicy {
     }.toMap
     val selected=ports.filter(p=>overrides.getOrElse(p,default)=="materialize")
     require(allowed || selected.isEmpty,"workflow forbids materialization")
-    val effective=Json.obj().put("max_retries",maxRetries);effective.set[JsonNode]("placement",placement.deepCopy[JsonNode]());timeout.foreach(effective.put("timeout_seconds",_));val em=effective.putObject("materialization").put("allowed",allowed).put("default",default);val ts=em.putObject("steps")
+    val effective=Json.obj().put("max_retries",maxRetries);timeout.foreach(effective.put("timeout_seconds",_));val em=effective.putObject("materialization").put("allowed",allowed).put("default",default);val ts=em.putObject("steps")
     ports.toVector.sorted.groupBy(_._1).toVector.sortBy(_._1).foreach {case(task,ps)=>val out=ts.putObject(task).putObject("outputs");ps.foreach(p=>out.put(p._2,if(selected(p))"materialize"else "stream"))}
     ExecutionPolicy(raw.deepCopy[JsonNode](),effective,selected,maxRetries,timeout)
   }

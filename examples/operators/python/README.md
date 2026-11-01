@@ -12,7 +12,7 @@ python3 scripts/package-operator-sources.py
 ${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository seed --operators examples/operators/python --root .operator-catalog
 ```
 
-Reference `operator: identity_python@1.0` in a task and configure its node's `remote_operator_library_urls` to reach the repository. Alternatively, set `local_operator_library: ../examples/operators/python` when starting the node from `dacp-server`. This optional example is not included in the default starter catalog. Building this environment needs network access to obtain the Python image and pinned PyArrow dependency; task execution uses no network.
+Reference `operator: identity_python@1.0` in a step and configure its node's `remote_operator_library_urls` to reach the repository. Alternatively, set `local_operator_library: ../examples/operators/python` when starting the node from `dacp-server`. This optional example is not included in the default starter catalog. Building this environment needs network access to obtain the Python image and pinned PyArrow dependency; step execution uses no network.
 
 The included `pyproject.toml` builds the same source as an installable `identity` module. With setuptools and wheel installed in the build environment, build and publish:
 

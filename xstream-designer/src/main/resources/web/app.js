@@ -1,3 +1,4 @@
+let selectedTarget="local",catalogGeneration=0;
 'use strict';
 const $=id=>document.getElementById(id),colors=['#356ce1','#c45b16','#168464','#9252cb','#be3769'];
 let config,operators=[],connected=null,job={name:'Untitled job',steps:[],outputs:{}},positions={},selected=null,pendingPort=null,scale=1,report=null,revision=0,proposal=null;
@@ -8,7 +9,7 @@ let undo=[],redo=[],chatHistory=[],yamlEdited=false,yamlTimer=null,docSequence=0
 let automaticReadViews=new Set();
 let inferenceTimer=null,inferenceRunning=false,inferenceSequence=0,inferencePending=false,inferenceState='Not inferred',inferenceSignature=null,inferenceDraftKey=null;
 let inferenceDraftSteps={};
-const inferenceSession=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
+let inferenceSession=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
 const clone=x=>JSON.parse(JSON.stringify(x));
 function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}
 const logEntries=[],logLimit=1000;
@@ -31,7 +32,7 @@ function renderLogs(resetView=false){
 }
 function logMessage(text,level='info',source='Designer'){level=logLevel(level);text=String(text);logEntries.push({id:++logSequence,text,level,source,time:new Date().toLocaleTimeString([], {hour12:false})});if(logEntries.length>logLimit)logEntries.shift();setStatus(text,level);renderLogs();}
 function notice(text,error=false){logMessage(text,error?'error':'info');}
-async function api(path,body){const started=performance.now();logMessage('Request started: '+path,'info','API');try{const r=await fetch('api/'+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const n=await r.json();if(!r.ok)throw Error(n.error||'Request failed (HTTP '+r.status+')');logMessage('Request completed: '+path+' ('+Math.round(performance.now()-started)+' ms)','info','API');return n;}catch(e){logMessage(path+': '+e.message,'error','API');e.designerLogged=true;throw e;}}
+async function api(path,body){const started=performance.now();logMessage('Request started: '+path,'info','API');try{const r=await fetch('api/'+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target:selectedTarget,...body})});const n=await r.json();if(!r.ok)throw Error(n.error||'Request failed (HTTP '+r.status+')');logMessage('Request completed: '+path+' ('+Math.round(performance.now()-started)+' ms)','info','API');return n;}catch(e){logMessage(path+': '+e.message,'error','API');e.designerLogged=true;throw e;}}
 function guard(fn){return async(...args)=>{try{return await fn(...args);}catch(e){if(!e.designerLogged)notice(e.message,true);}};}
 window.addEventListener('error',e=>logMessage(e.message||'Unexpected browser error','error','Browser'));
 window.addEventListener('unhandledrejection',e=>{if(!e.reason?.designerLogged)logMessage(e.reason?.message||String(e.reason),'error','Browser');});
@@ -39,13 +40,13 @@ const jobYamlEditor=YamlEditors.create($('yaml'),{label:'Job YAML',onChange:()=>
 const variablesEditor=YamlEditors.create($('variables'),{label:'Variables YAML',text:'{}',onChange:()=>{invalidate();persist();}});
 const exportYamlEditor=YamlEditors.create($('export-preview'),{label:'Job YAML preview',readOnly:true});
 function viewport(){return{zoom:scale,scroll_left:$('canvas').scrollLeft,scroll_top:$('canvas').scrollTop};}
-function designLayout(){return{version:1,generator:clone(config.generator),exported_at:new Date().toISOString(),positions:Object.fromEntries(job.steps.map(t=>[t.id,clone(point(t))])),outlet:clone(outletPosition||defaultOutletPosition()),viewport:viewport()};}
+function designLayout(){return{version:1,target:selectedTarget,generator:clone(config.generator),exported_at:new Date().toISOString(),positions:Object.fromEntries(job.steps.map(t=>[t.id,clone(point(t))])),outlet:clone(outletPosition||defaultOutletPosition()),viewport:viewport()};}
 function executionDocument(){const doc=clone(job);for(const t of doc.steps)if(automaticReadViews.has(t.id)&&t.operator==='read_item@1.0')delete t.params.view;return doc;}
-function payload(includeLayout=true){const doc=executionDocument();return{job_yaml:JSON.stringify(includeLayout?{...doc,designer:designLayout()}:doc),variables_yaml:variablesEditor.getText()};}
+function payload(includeLayout=true){const doc=executionDocument();return{target:selectedTarget,job_yaml:JSON.stringify(includeLayout?{...doc,designer:designLayout()}:doc),variables_yaml:variablesEditor.getText()};}
 function layoutChanged(){persist();clearTimeout(yamlTimer);yamlTimer=setTimeout(()=>guard(syncYaml)(),250);}
 function restoreViewport(view){scale=view?.zoom||1;$('world').style.transform=`scale(${scale})`;$('zoom').value=Math.round(scale*100)+'%';$('canvas').scrollLeft=view?.scroll_left||0;$('canvas').scrollTop=view?.scroll_top||0;}
 
-function snapshot(){return{job:clone(job),positions:clone(positions),outletPosition:clone(outletPosition),viewport:viewport(),automaticReadViews:[...automaticReadViews],variables:variablesEditor.getText()};}
+function snapshot(){return{designTarget:selectedTarget,job:clone(job),positions:clone(positions),outletPosition:clone(outletPosition),viewport:viewport(),automaticReadViews:[...automaticReadViews],variables:variablesEditor.getText()};}
 function recordSnapshot(state){undo.push(state);if(undo.length>60)undo.shift();redo=[];}
 function remember(){recordSnapshot(snapshot());}
 function invalidate(){revision++;proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;scheduleInference();}
@@ -63,12 +64,15 @@ function operatorTrust(o,builtin=false){
  Number.isInteger(score)&&score>=0&&score<=5?{score,label:'Repository administrator trust: '+score+' / 5'}:
  {label:'Repository trust rating unavailable',text:'?'};
 }
-function operatorMark(o,builtin=false){
- const mark=el('span',undefined,'operator-mark');mark.append(operatorIcon(o?.icon||{path:'M4 5h16v14H4zM8 9h8M8 13h5',color:'#77879c'}));
+function operatorRating(o,builtin=false){
  const trust=operatorTrust(o,builtin),rating=el('span',undefined,'operator-rating');rating.setAttribute('role','img');rating.setAttribute('aria-label',trust.label);rating.title=trust.label;
- if(trust.score!==undefined){rating.dataset.score=trust.score;for(let i=0;i<5;i++){const shield=document.createElementNS('http://www.w3.org/2000/svg','svg');shield.setAttribute('viewBox','0 0 24 24');shield.setAttribute('class','trust-icon '+(i>=5-trust.score?'rated is-colored':'unrated is-gray'));shield.setAttribute('aria-hidden','true');for(const [d,cls] of [['M12 2.5 20 6v5.5c0 4.7-3.3 8-8 10-4.7-2-8-5.3-8-10V6z',''],['m8.5 12 2.3 2.3 4.8-5','trust-check']]){const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);if(cls)path.setAttribute('class',cls);shield.append(path);}rating.append(shield);}}
+ if(trust.score!==undefined){rating.dataset.score=trust.score;for(let i=0;i<5;i++){const shield=document.createElementNS('http://www.w3.org/2000/svg','svg');shield.setAttribute('viewBox','3 2 18 20');shield.setAttribute('class','trust-icon '+(i>=5-trust.score?'rated is-colored':'unrated is-gray'));shield.setAttribute('aria-hidden','true');for(const [d,cls] of [['M12 2.5 20 6v5.5c0 4.7-3.3 8-8 10-4.7-2-8-5.3-8-10V6z',''],['m8.5 12 2.3 2.3 4.8-5','trust-check']]){const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);if(cls)path.setAttribute('class',cls);shield.append(path);}rating.append(shield);}}
  else{rating.textContent=trust.text;rating.classList.add('unscored');}
- mark.append(rating);return mark;
+ return rating;
+}
+function operatorMark(o,builtin=false,showRating=true){
+ const mark=el('span',undefined,'operator-mark');mark.append(operatorIcon(o?.icon||{path:'M4 5h16v14H4zM8 9h8M8 13h5',color:'#77879c'}));
+ if(showRating)mark.append(operatorRating(o,builtin));return mark;
 }
 function parameterSchema(t){
  if(t.operator!=='read_item@1.0')return manifest(t)?.parameters;
@@ -88,7 +92,7 @@ function addOperator(op,x,y){const before=snapshot();let i=1;while(job.steps.som
 const libraryExpanded=new Map();
 let operatorTipTimer;
 function hideOperatorTip(){clearTimeout(operatorTipTimer);document.querySelectorAll('[aria-describedby=operator-tooltip]').forEach(e=>e.removeAttribute('aria-describedby'));$('operator-tooltip')?.remove();}
-function showOperatorTip(card,o,group){hideOperatorTip();const tip=el('div',undefined,'operator-tooltip');tip.id='operator-tooltip';tip.setAttribute('role','tooltip');tip.append(el('strong',o.name),el('small','Version '+o.version+' · '+group.category),el('p',o.description||'No description supplied.'));const ports=Object.entries(o.inputs||{}).map(([name,p])=>name+' ('+(p.representations||[]).join(' / ')+')');tip.append(el('div','Inputs: '+(ports.join(', ')||'None — source operator'),'tooltip-detail'));const params=Object.entries(o.parameters?.properties||{}).map(([name,p])=>name+': '+(Array.isArray(p.type)?p.type.join(' / '):p.type||'any')+((o.parameters?.required||[]).includes(name)?' *':''));tip.append(el('div',operatorTrust(o,o.name==='read_item'&&o.version==='1.0').label,'tooltip-detail'));tip.append(el('div','Parameters: '+(params.join(', ')||'None'),'tooltip-detail'),el('div','Executor: '+(o.execution?.executor||'Built-in'),'tooltip-detail'),el('small','Drag onto canvas or double-click to add.'));document.body.append(tip);card.setAttribute('aria-describedby',tip.id);const r=card.getBoundingClientRect(),height=tip.getBoundingClientRect().height;tip.style.left=Math.min(r.right+12,Math.max(8,innerWidth-tip.offsetWidth-8))+'px';tip.style.top=Math.max(8,Math.min(r.top,innerHeight-height-8))+'px';}
+function showOperatorTip(card,o,group){hideOperatorTip();const tip=el('div',undefined,'operator-tooltip');tip.id='operator-tooltip';tip.setAttribute('role','tooltip');tip.append(el('strong',o.name),el('small','Version '+o.version+' · '+group.category),el('p',o.description||'No description supplied.'));const ports=Object.entries(o.inputs||{}).map(([name,p])=>name+' ('+(p.representations||[]).join(' / ')+')');tip.append(el('div','Inputs: '+(ports.join(', ')||'None — source operator'),'tooltip-detail'));const params=Object.entries(o.parameters?.properties||{}).map(([name,p])=>name+': '+(Array.isArray(p.type)?p.type.join(' / '):p.type||'any')+((o.parameters?.required||[]).includes(name)?' *':''));const builtin=o.name==='read_item'&&o.version==='1.0',trustRow=el('div',undefined,'tooltip-detail tooltip-rating');trustRow.append(el('span','Trust'),operatorRating(o,builtin));const score=operatorTrust(o,builtin).score;if(score!==undefined)trustRow.append(el('span',score+' / 5'));tip.append(trustRow,el('div','Downloads: '+(builtin?'Not applicable':Number.isSafeInteger(o.download_count)&&o.download_count>=0?o.download_count.toLocaleString():'Unavailable'),'tooltip-detail tooltip-downloads'));tip.append(el('div','Parameters: '+(params.join(', ')||'None'),'tooltip-detail'),el('div','Executor: '+(o.execution?.executor||'Built-in'),'tooltip-detail'),el('small','Drag onto canvas or double-click to add.'));document.body.append(tip);card.setAttribute('aria-describedby',tip.id);const r=card.getBoundingClientRect(),height=tip.getBoundingClientRect().height;tip.style.left=Math.min(r.right+12,Math.max(8,innerWidth-tip.offsetWidth-8))+'px';tip.style.top=Math.max(8,Math.min(r.top,innerHeight-height-8))+'px';}
 // Match repository natural version ordering, including numeric runs and prereleases.
 function compareVersions(a,b){
  if(a===b)return 0;if(a.startsWith(b+'-'))return -1;if(b.startsWith(a+'-'))return 1;
@@ -103,7 +107,7 @@ function compareVersions(a,b){
 function latestOperators(){const latest=new Map();for(const o of operators){const previous=latest.get(o.name);if(!previous||compareVersions(o.version,previous.version)>0)latest.set(o.name,o);}return [...latest.values()];}
 function renderLibrary(){hideOperatorTip();const query=$('search').value.trim().toLowerCase(),host=$('operators');host.replaceChildren();const source={name:'read_item',version:'1.0',description:'Read an Item through its records, bytes or scientific view.',inputs:{},parameters:readParameters,categories:['Data sources'],icon:readIcon};const libraryGroups=[...new Set([source,...latestOperators()].flatMap(o=>o.categories||[]))].sort().map(category=>({category,id:category}));let count=0;
  for(const group of libraryGroups){const entries=[source,...latestOperators()].filter(o=>(o.categories||[]).includes(group.category)&&(o.name+' '+(o.description||'')+' '+group.category).toLowerCase().includes(query));if(!entries.length)continue;count+=entries.length;const section=el('details',undefined,'operator-category');section.dataset.category=group.id;section.open=query?true:libraryExpanded.get(group.id)!==false;const heading=el('summary');heading.append(el('span',group.category),el('small',String(entries.length)));section.append(heading);section.addEventListener('toggle',()=>{if(!query)libraryExpanded.set(group.id,section.open);hideOperatorTip();});const grid=el('div',undefined,'operator-grid');
- for(const o of entries){const card=el('button',undefined,'operator');card.type='button';card.draggable=true;card.dataset.operator=o.name+'@'+o.version;card.setAttribute('aria-label',o.name+' @ '+o.version+' · '+operatorTrust(o,o.name==='read_item'&&o.version==='1.0').label);const mark=operatorMark(o,o.name==='read_item'&&o.version==='1.0');card.append(mark,el('span',o.name,'operator-name'),el('small','v'+o.version));card.addEventListener('mouseenter',()=>{operatorTipTimer=setTimeout(()=>showOperatorTip(card,o,group),250);});card.addEventListener('mouseleave',hideOperatorTip);card.addEventListener('focus',()=>showOperatorTip(card,o,group));card.addEventListener('blur',hideOperatorTip);card.addEventListener('dragstart',e=>{hideOperatorTip();e.dataTransfer.setData('application/xstream-operator',card.dataset.operator);});const add=()=>{hideOperatorTip();addOperator(o,job.steps.length?Math.max(...job.steps.map(t=>point(t).x))+310:65,85);};card.addEventListener('dblclick',add);card.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();add();}});grid.append(card);}section.append(grid);host.append(section);
+ for(const o of entries){const card=el('button',undefined,'operator');card.type='button';card.draggable=true;card.dataset.operator=o.name+'@'+o.version;card.setAttribute('aria-label',o.name+' @ '+o.version+' · '+operatorTrust(o,o.name==='read_item'&&o.version==='1.0').label);const mark=operatorMark(o,o.name==='read_item'&&o.version==='1.0',false);card.append(mark,el('span',o.name,'operator-name'),el('small','v'+o.version));card.addEventListener('mouseenter',()=>{operatorTipTimer=setTimeout(()=>showOperatorTip(card,o,group),250);});card.addEventListener('mouseleave',hideOperatorTip);card.addEventListener('focus',()=>showOperatorTip(card,o,group));card.addEventListener('blur',hideOperatorTip);card.addEventListener('dragstart',e=>{hideOperatorTip();e.dataTransfer.setData('application/xstream-operator',card.dataset.operator);});const add=()=>{hideOperatorTip();addOperator(o,job.steps.length?Math.max(...job.steps.map(t=>point(t).x))+310:65,85);};card.addEventListener('dblclick',add);card.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();add();}});grid.append(card);}section.append(grid);host.append(section);
  }if(!count)host.append(el('p','No matching operators.','muted'));}
 
 
@@ -184,7 +188,7 @@ function render(){
  if(graphInteraction)return;
  $('job-name').value=job.name;$('empty').hidden=job.steps.length>0;$('undo').disabled=!undo.length;$('redo').disabled=!redo.length;
  const cards=$('cards');cards.replaceChildren();
- for(const t of job.steps){const p=point(t),card=el('article',undefined,'card'+(t.id===selected||selectedSteps.has(t.id)?' selected':''));card.dataset.task=t.id;card.style.left=p.x+'px';card.style.top=p.y+'px';card.style.setProperty('--accent',color(t));const head=el('div',undefined,'card-head');const icon=operatorMark(t.operator==='read_item@1.0'?{icon:readIcon}:manifest(t),t.operator==='read_item@1.0');icon.classList.add('step-mark');const text=el('div',undefined,'step-heading');text.append(el('strong',t.title||t.id),el('small',t.id+' · '+t.operator));head.append(icon,text);head.addEventListener('pointerdown',e=>startDrag(e,t,card));card.append(head);const ports=el('div',undefined,'ports'),ins=el('div'),outs=el('div',undefined,'out');
+ for(const t of job.steps){const p=point(t),card=el('article',undefined,'card'+(t.id===selected||selectedSteps.has(t.id)?' selected':''));card.dataset.task=t.id;card.style.left=p.x+'px';card.style.top=p.y+'px';card.style.setProperty('--accent',color(t));const head=el('div',undefined,'card-head');const icon=operatorMark(t.operator==='read_item@1.0'?{icon:readIcon}:manifest(t),t.operator==='read_item@1.0',false);icon.classList.add('step-mark');const text=el('div',undefined,'step-heading');text.append(el('strong',t.title||t.id),el('small',t.id+' · '+t.operator));head.append(icon,text);head.addEventListener('pointerdown',e=>startDrag(e,t,card));card.append(head);const ports=el('div',undefined,'ports'),ins=el('div'),outs=el('div',undefined,'out');
  for(const port of inputPorts(t)){const b=el('button',port);b.dataset.input=t.id+':'+port;b.title=(t.inputs||{})[port]||'Unconnected input';b.addEventListener('click',e=>{e.stopPropagation();if(pendingPort)connectPort(t,port);else{selectedSteps=new Set([t.id]);outletSelected=false;selected=t.id;render();}});ins.append(b);}
  renderOutputPorts(t,outs);
 
@@ -195,7 +199,7 @@ function selectStep(t,append=false){if(append){if(selectedSteps.has(t.id))select
 // Dragged steps and Outlet push neighboring elements aside.
 function dragLayout(){return job.steps.map(t=>{const card=[...$('cards').children].find(c=>c.dataset.task===t.id);return{id:t.id,...clone(point(t)),width:card.offsetWidth,height:card.offsetHeight,card};});}
 function overlaps(a,b){return a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;}
-function outletRect(){return{...outletPosition,width:$('outlet').offsetWidth,height:$('outlet').offsetHeight};}
+function outletRect(){if(!outletPosition||!Number.isFinite(outletPosition.x)||!Number.isFinite(outletPosition.y))outletPosition=defaultOutletPosition();return{...outletPosition,width:$('outlet').offsetWidth,height:$('outlet').offsetHeight};}
 // Rebuild each preview from the drag-start layout, so moving back never leaves displaced neighbors behind.
 function avoidRectangles(rects,direction=1){
  const queue=rects.filter(r=>r.fixed),gap=18;
@@ -303,7 +307,7 @@ function refreshStepOutputs(){
  if(result&&!outputPorts(t).length)host.append(el('p','This step has no output ports.','muted'));
 }
 
-async function loadDocument(text,vars=variablesEditor.getText()){const n=await api('document',{job_yaml:text,variables_yaml:vars});remember();cancelConnection();selectedEdge=null;job=n.job;automaticReadViews=new Set(job.steps.filter(t=>t.operator==='read_item@1.0'&&!Object.hasOwn(t.params||{},'view')).map(t=>t.id));for(const t of job.steps)if(automaticReadViews.has(t.id))t.params.view='records';const layout=job.designer;delete job.designer;positions=layout?.positions?Object.fromEntries(job.steps.filter(t=>Object.hasOwn(layout.positions,t.id)).map(t=>[t.id,clone(layout.positions[t.id])])):{};outletPosition=layout?.outlet?clone(layout.outlet):null;outletSelected=false;selected=null;selectedSteps.clear();variablesEditor.setText(n.variables_yaml);yamlEdited=false;invalidate();if(layout)render();else arrange();restoreViewport(layout?.viewport);await syncYaml();persist();notice('Loaded '+job.steps.length+' steps'+(layout?' with saved layout.':'.'));}
+async function loadDocument(text,vars=variablesEditor.getText()){const n=await api('document',{job_yaml:text,variables_yaml:vars});await offerDesignTarget(n.job.designer?.target);remember();cancelConnection();selectedEdge=null;job=n.job;automaticReadViews=new Set(job.steps.filter(t=>t.operator==='read_item@1.0'&&!Object.hasOwn(t.params||{},'view')).map(t=>t.id));for(const t of job.steps)if(automaticReadViews.has(t.id))t.params.view='records';const layout=job.designer;delete job.designer;positions=layout?.positions?Object.fromEntries(job.steps.filter(t=>Object.hasOwn(layout.positions,t.id)).map(t=>[t.id,clone(layout.positions[t.id])])):{};outletPosition=layout?.outlet?clone(layout.outlet):null;outletSelected=false;selected=null;selectedSteps.clear();variablesEditor.setText(n.variables_yaml);yamlEdited=false;invalidate();if(layout)render();else arrange();restoreViewport(layout?.viewport);await syncYaml();persist();notice('Loaded '+job.steps.length+' steps'+(layout?' with saved layout.':'.'));}
 
 let exportDocuments=null,exportFilename='job.yaml',exportBlobUrl=null;
 function selectedExport(){return exportDocuments[$('export-designer').checked?'withLayout':'execution'];}
@@ -331,7 +335,7 @@ $('export-print').addEventListener('click',()=>{
  const pre=page.document.createElement('pre');pre.textContent=selectedExport();pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.5 monospace';page.document.body.append(pre);page.document.close();page.focus();page.print();
 });
 function download(name,text){const a=el('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/yaml'}));a.download=name;($('export-dialog').open?$('export-dialog'):document.body).append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
-async function connect(){connected=null;$('connection').textContent='Connecting…';try{connected=true;await datasets();$('connection').textContent='Connected';$('connection').title='Configured data catalogs';render();notice('Connected to the configured DACP service.');scheduleInference();}catch(e){connected=false;$('connection').textContent='Server unavailable · reload to retry';throw e;}}
+async function connect(){connected=null;$('connection').textContent='Connecting…';try{connected=true;await datasets();$('connection').textContent='Connected';$('connection').title='Configured data catalogs';render();notice('Catalog connections are ready for the selected Target.');scheduleInference();}catch(e){connected=false;$('connection').textContent='Server unavailable · reload to retry';throw e;}}
 function requireConnected(){if(!connected)throw Error('Configured server is unavailable. Reload after recovery.');}
 let datasetRequest=null,datasetsLoaded=false;
 function ensureDatasets(){if(datasetsLoaded||datasetRequest)return;if(!connected){$('datasets').textContent=connected===false?'Configured server unavailable. Reload after recovery.':'Waiting for the configured server…';return;}guard(datasets)();}
@@ -373,15 +377,15 @@ function catalogBranch(label,load,kind='dataset',description){
  }));box.append(button,children);return box;
 }
 async function datasets(){if(datasetRequest)return datasetRequest;
- datasetRequest=(async()=>{try{
-  const catalogs=await api('catalogs',{});$('datasets').replaceChildren();
+ const generation=catalogGeneration,target=selectedTarget;datasetRequest=(async()=>{try{
+  const catalogs=await api('catalogs',{});if(generation!==catalogGeneration)return;$('datasets').replaceChildren();
   for(const catalog of catalogs)$('datasets').append(catalogBranch(catalog.name,async host=>{
-   const data=await api('datasets',{uri:catalog.uri});host.replaceChildren();
+   if(target!==selectedTarget)return;const data=await api('datasets',{uri:catalog.uri});if(target!==selectedTarget)return;host.replaceChildren();
    if(!data.complete)host.append(el('p','Partial directory: '+data.unavailable_sources+' sources unavailable.','muted'));
    for(const d of data.datasets)host.append(catalogBranch(d.name,children=>browseItems(d.uri,'/',children),'dataset',d.description));
    if(!data.datasets.length)host.append(el('p','No datasets available.','muted'));
   },'host'));datasetsLoaded=true;
- }finally{datasetRequest=null;}})();return datasetRequest;
+ }finally{if(generation===catalogGeneration)datasetRequest=null;}})();return datasetRequest;
 }
 let itemActions=null;
 function closeItemActions(restoreFocus=false){
@@ -421,7 +425,7 @@ function openItemActions(uri,item,row){
 }
 
 async function browseItems(uri,path,host){
- host.textContent='Loading…';const result=await api('items',{uri,path});host.replaceChildren();
+ const generation=catalogGeneration;host.textContent='Loading…';const result=await api('items',{uri,path});if(generation!==catalogGeneration)return;host.replaceChildren();
  for(const item of result.items){
   const itemUri=uri.replace(/\/$/,'')+'/'+item.path.replace(/^\//,'');
   if(chatCatalogItems.size<100||chatCatalogItems.has(itemUri))chatCatalogItems.set(itemUri,{uri:itemUri,kind:item.kind,views:item.views,schema:item.schema});
@@ -445,10 +449,10 @@ async function browseItems(uri,path,host){
 }
 $('canvas').addEventListener('dragover',e=>e.preventDefault());$('canvas').addEventListener('drop',e=>{e.preventDefault();const rect=$('world').getBoundingClientRect(),x=(e.clientX-rect.left)/scale,y=(e.clientY-rect.top)/scale;const ref=e.dataTransfer.getData('application/xstream-operator');const op=ref==='read_item@1.0'?{name:'read_item',version:'1.0'}:operators.find(o=>o.name+'@'+o.version===ref);if(!op)return;addOperator(op,x,y);});
 $('search').addEventListener('input',renderLibrary);$('job-name').addEventListener('change',()=>{remember();job.name=$('job-name').value;changed();});
-async function loadOperators(){$('repository-state').textContent='Loading operators…';try{operators=await api('operators',{});renderLibrary();render();$('repository-state').textContent=latestOperators().length+' operators';}catch(e){$('repository-state').textContent='Repository unavailable · reload to retry';throw e;}}
+async function loadOperators(){$('repository-state').textContent='Loading operators…';try{operators=await api('operators',{});renderLibrary();renderExamples();render();$('repository-state').textContent=latestOperators().length+' operators';}catch(e){$('repository-state').textContent='Repository unavailable · reload to retry';throw e;}}
 
-function libraryTab(name){for(const key of ['operators','datasets']){const active=key===name;const button=$('library-'+key+'-tab');$('library-'+key+'-panel').hidden=!active;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}hideOperatorTip();if(name==='datasets')ensureDatasets();}
-for(const button of document.querySelectorAll('[data-library-tab]')){button.addEventListener('click',()=>libraryTab(button.dataset.libraryTab));button.addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();const keys=['operators','datasets'],index=keys.indexOf(button.dataset.libraryTab),name=keys[e.key==='Home'?0:e.key==='End'?keys.length-1:(index+(e.key==='ArrowDown'?1:keys.length-1))%keys.length];libraryTab(name);$('library-'+name+'-tab').focus();});}
+function libraryTab(name){for(const key of ['operators','datasets','examples']){const active=key===name;const button=$('library-'+key+'-tab');$('library-'+key+'-panel').hidden=!active;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}hideOperatorTip();if(name==='datasets')ensureDatasets();if(name==='examples')guard(loadExamples)();}
+for(const button of document.querySelectorAll('[data-library-tab]')){button.addEventListener('click',()=>libraryTab(button.dataset.libraryTab));button.addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();const keys=['operators','datasets','examples'],index=keys.indexOf(button.dataset.libraryTab),name=keys[e.key==='Home'?0:e.key==='End'?keys.length-1:(index+(e.key==='ArrowDown'?1:keys.length-1))%keys.length];libraryTab(name);$('library-'+name+'-tab').focus();});}
 function inspectorTab(name){for(const key of ['properties','parameters','outputs']){const active=key===name;$(key+'-panel').hidden=!active;$(key+'-tab').setAttribute('aria-selected',String(active));$(key+'-tab').tabIndex=active?0:-1;}if(name==='outputs')refreshStepOutputs();}
 for(const button of document.querySelectorAll('[data-inspector-tab]')){button.addEventListener('click',()=>inspectorTab(button.dataset.inspectorTab));button.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const keys=['properties','parameters','outputs'],i=keys.indexOf(button.dataset.inspectorTab),name=keys[e.key==='Home'?0:e.key==='End'?2:(i+(e.key==='ArrowRight'?1:2))%3];inspectorTab(name);$(name+'-tab').focus();}});}
 function setInspector(open){$('inspector').hidden=!open;document.querySelector('main').classList.toggle('inspector-open',open);const toggle=$('toggle-inspector-panel');toggle.textContent=open?'>':'<';toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Collapse properties sidebar':'Expand properties sidebar');}
@@ -523,8 +527,8 @@ $('chat-form').addEventListener('submit',guard(async e=>{
 $('apply-chat').addEventListener('click',guard(async()=>{if(proposal){await loadDocument(proposal.job_yaml,proposal.variables_yaml);proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;notice('Chat proposal applied. Review connections and preview schemas.');}}));$('discard-chat').addEventListener('click',()=>{proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;notice('Proposal discarded.');});
 $('canvas').addEventListener('keydown',e=>{if(e.key==='Escape'){cancelConnection();selectedEdge=null;render();}});
 $('load-showcase').addEventListener('click',guard(async()=>{if(config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);}));
-guard(async()=>{config=await api('config');viewDefinitions=await api('views',{});$('chat-mode').textContent=config.chat_provider==='disabled'?'Chat is unavailable until a model API is configured on the Designer server.':'Describe your complete analysis goal. The assistant will ask questions or propose a complete Job for review.';
-$('chat-send').disabled=config.chat_provider==='disabled';$('chat-input').disabled=config.chat_provider==='disabled';let restored=false;if(config.showcase){$('load-showcase').hidden=false;$('load-showcase').textContent=config.showcase.label||'Load demo';}try{const saved=JSON.parse(localStorage.getItem(config?.draft_key||'xstream-designer'));if(saved){await api('document',{job_yaml:JSON.stringify(saved.job),variables_yaml:saved.variables||'{}'});job=saved.job;automaticReadViews=new Set(saved.automaticReadViews||[]);positions=saved.positions||{};outletPosition=saved.outletPosition||null;restoreViewport(saved.viewport);variablesEditor.setText(saved.variables||'{}');restored=true;}}catch(e){notice('Saved draft could not be restored: '+e.message,true);}renderLibrary();render();await Promise.allSettled([guard(syncYaml)(),guard(connect)(),guard(loadOperators)()]);if(!restored&&config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);})();
+guard(async()=>{config=await api('config');$('target').replaceChildren(...config.targets.map(t=>{const o=document.createElement('option');o.value=t.value;o.textContent=t.label;return o;}));viewDefinitions=await api('views',{});$('chat-mode').textContent=config.chat_provider==='disabled'?'Chat is unavailable until a model API is configured on the Designer server.':'Describe your complete analysis goal. The assistant will ask questions or propose a complete Job for review.';
+$('chat-send').disabled=config.chat_provider==='disabled';$('chat-input').disabled=config.chat_provider==='disabled';let restored=false;if(config.showcase){$('load-showcase').hidden=false;$('showcase-label').textContent=config.showcase.label||'Load demo';}try{const saved=JSON.parse(localStorage.getItem(config?.draft_key||'xstream-designer'));if(saved){await api('document',{job_yaml:JSON.stringify(saved.job),variables_yaml:saved.variables||'{}'});const savedTarget=saved.designTarget||saved.job.designer?.target;if(savedTarget&&config.targets.some(t=>t.value===savedTarget))applyTarget(savedTarget);else if(savedTarget&&savedTarget!==selectedTarget)notice('Saved target is no longer configured. Restored the draft using Local; review context: Item paths.');job=saved.job;automaticReadViews=new Set(saved.automaticReadViews||[]);positions=saved.positions||{};outletPosition=saved.outletPosition||null;restoreViewport(saved.viewport);variablesEditor.setText(saved.variables||'{}');restored=true;}}catch(e){notice('Saved draft could not be restored: '+e.message,true);}renderLibrary();render();await Promise.allSettled([guard(syncYaml)(),guard(connect)(),guard(loadOperators)()]);if(!restored&&config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);})();
 
 window.addEventListener('resize',hideOperatorTip);document.querySelector('.library').addEventListener('scroll',hideOperatorTip);
 
@@ -561,3 +565,68 @@ $('validate').addEventListener('click',guard(async()=>{
  for(const issue of issues){const row=el('div',undefined,'validation-issue '+issue.severity);row.append(el('span',issue.severity==='error'?'!':'?','schema-status-icon'));if(issue.step){const step=job.steps.find(t=>t.id===issue.step),button=el('button',step?.title||issue.step);button.addEventListener('click',()=>{if(step){selectStep(step);setInspector(true);inspectorTab('outputs');[...$('cards').children].find(c=>c.dataset.task===step.id)?.scrollIntoView({block:'nearest',inline:'nearest'});}});row.append(button);}row.append(el('span',issue.message));host.append(row);}
  logMessage('Validation: '+errors+' errors, '+warnings+' warnings',errors?'warning':'info','Validation');
 }));
+
+function targetLabel(value){return config.targets.find(t=>t.value===value)?.label||value;}
+function updateTargetLabel(){
+ $('target-label').textContent=targetLabel(selectedTarget);
+ $('change-target').title='Design context: '+targetLabel(selectedTarget)+'. Click to change with confirmation.';
+}
+function applyTarget(value){
+ if(value===selectedTarget)return;
+ selectedTarget=value;updateTargetLabel();catalogGeneration++;datasetRequest=null;datasetsLoaded=false;chatCatalogItems.clear();closeItemActions();hideOperatorTip();
+ inferenceSession=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
+ report=null;inferenceDraftKey=null;inferenceDraftSteps={};inferenceSignature=null;inferenceSequence++;revision++;proposal=null;
+ $('apply-chat').disabled=true;$('discard-chat').disabled=true;
+}
+let targetChoice=null;
+function chooseTarget(preferred=selectedTarget,imported=false){
+ if(targetChoice)return targetChoice.promise;
+ const available=config.targets.some(t=>t.value===preferred);
+ $('target').value=available?preferred:selectedTarget;
+ $('target-message').textContent=imported
+  ?(available?'This Job specifies the design target '+targetLabel(preferred)+'. Choose which catalog context to use.':'This Job specifies an unavailable design target ('+preferred+'). Choose a configured target or keep the current context.')
+  :'Changing Target changes what every context: Item URI refers to. Existing steps and Item paths are preserved; their schemas and samples will be refreshed.';
+ $('target-current').textContent='Current target: '+targetLabel(selectedTarget);
+ let resolve;const promise=new Promise(r=>resolve=r);targetChoice={promise,resolve};$('target-dialog').showModal();return promise;
+}
+function finishTargetChoice(value){const choice=targetChoice;targetChoice=null;$('target-dialog').close();choice?.resolve(value);}
+async function offerDesignTarget(value){
+ if(!value||value===selectedTarget)return;
+ const choice=await chooseTarget(value,true);if(choice){applyTarget(choice);if(connected)await datasets();}
+}
+$('target-cancel').addEventListener('click',()=>finishTargetChoice(null));
+$('target-dialog').addEventListener('cancel',e=>{e.preventDefault();finishTargetChoice(null);});
+$('target-confirm').addEventListener('click',()=>finishTargetChoice($('target').value));
+$('change-target').addEventListener('click',guard(async()=>{
+ saveStepEdits();const value=await chooseTarget();if(!value||value===selectedTarget)return;
+ applyTarget(value);await datasets();scheduleInference();render();await syncYaml();persist();
+ notice('Target: '+targetLabel(selectedTarget)+'. context: refers to this target.');
+}));
+
+let exampleJobs=null,exampleRequest=null;
+function renderExamples(){
+ if(!exampleJobs)return;
+ const host=$('example-jobs');host.replaceChildren();
+ const available=new Set(operators.map(o=>o.name+'@'+o.version));
+ for(const [index,example] of exampleJobs.entries()){
+  const card=el('article',undefined,'example-job');card.dataset.example=example.id;
+  const heading=el('div',undefined,'example-heading');const title=el('div',undefined,'example-title');const number=el('span',String(index+1).padStart(2,'0'),'example-number');number.setAttribute('aria-label','Example '+(index+1));title.append(number,el('strong',example.title));heading.append(title,el('span',example.step_count+' '+(example.step_count===1?'step':'steps'),'example-count'));
+  card.append(heading);
+  if(example.tags?.length){const tags=el('div',undefined,'example-tags');tags.setAttribute('aria-label','Example features');for(const label of example.tags)tags.append(el('span',label,'example-tag'));card.append(tags);}
+  card.append(el('p',example.description));
+  const missing=example.requires.filter(ref=>!available.has(ref));
+  if(missing.length)card.append(el('p','Requires: '+missing.join(', '),'example-requirements'));
+  const button=el('button','Load example');button.type='button';button.disabled=missing.length>0;
+  button.addEventListener('click',guard(async()=>{
+   if((job.steps.length||yamlEdited||variablesEditor.getText().trim()!=='{}')&&!window.confirm('Replace the current Job and variables with “'+example.title+'”? You can Undo to restore the previous design.'))return;
+   button.disabled=true;
+   try{await loadDocument(example.job_yaml,example.variables_yaml);notice('Loaded example: '+example.title+'. Review Item paths for '+targetLabel(selectedTarget)+'.');}
+   finally{button.disabled=missing.length>0;}
+  }));card.append(button);host.append(card);
+ }
+}
+async function loadExamples(){
+ if(exampleJobs){renderExamples();return;}if(exampleRequest)return exampleRequest;
+ $('example-jobs').textContent='Loading examples…';
+ exampleRequest=(async()=>{try{exampleJobs=await api('examples',{});renderExamples();}catch(e){$('example-jobs').textContent='Examples unavailable. Reopen this tab to retry.';throw e;}finally{exampleRequest=null;}})();return exampleRequest;
+}

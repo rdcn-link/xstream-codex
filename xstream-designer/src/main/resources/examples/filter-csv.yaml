@@ -1,0 +1,26 @@
+name: Filter warm observations and stream CSV
+steps:
+- id: read
+  title: Read observations
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/weather/weather-observations.jsonl
+    view: records
+- id: filter
+  operator: piflow_filter@1.2
+  inputs:
+    source: read
+  params:
+    condition: CAST(temperature_c AS REAL) >= 25
+- id: csv
+  operator: piflow_csv_save@1.2
+  inputs:
+    source: filter
+  params:
+    header: true
+outputs:
+  result: csv
+designer:
+  version: 1
+  target: local

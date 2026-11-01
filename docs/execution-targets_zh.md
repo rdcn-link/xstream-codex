@@ -1,91 +1,42 @@
-# 执行目标与物理规划
+# 本地执行与远程数据
 
-XStream 负责 Job 执行及与协议无关的规划。宿主提供 DataCatalog 和可用执行目标。DACP 通过可选连接器提供远程数据与执行服务。本地引擎通过 XStream 执行和数据插件运行。
-
-## 相互独立的能力
-
-`RemoteItemProvider` 读取远程 Item 流。`ExecutionTarget` 提交 Job，返回支持结果流、状态和取消的 `ExecutionHandle`。读取权限不等于提交 Job 的权限。配置远程 Item URI 不会自动注册执行目标。
-
-`ExecutionTarget`、`ExecutionTargetProvider`、`RemoteItemProvider`、`ExecutionRequest`、`ExecutionStatus`、`TargetDescription`、`PlacementOptimizer` 和 `GraphPlacement` 位于 `xstream-execution-api` 的 `xstream.execution` 包。`LocalExecutionTarget` 包装内嵌 JobEngine。`DacpExecutionTarget` 位于 `connectors/xstream-dacp-client`，不属于引擎编译依赖。
+XStream 在本地引擎中执行 Job 的每个步骤。`context:/dataset/item` 引用宿主 JVM 的 DataCatalog。`read_item` 使用远程 `dacp:` URI 时，以流读取该 Item；后续算子仍在本地执行。远程读取权限不代表提交 Job 的权限。
 
 ```mermaid
-flowchart TD
-    J[逻辑 Job 与执行策略] --> P[XStream 物理规划器]
-    H[宿主提供目标、能力与估算] --> P
-    P --> L[本地执行]
-    P --> T[ExecutionTarget]
-    T --> D[可选 DACP 连接器]
-    D --> S[DACP 服务]
+flowchart LR
+  R[远程 Item 服务] -->|Item 流| Read[本地 read_item]
+  Read --> Process[本地算子] --> Result[结果流]
 ```
 
-## Runner 配置
+## 远程 Item 插件
 
-默认本地执行。读取本地 context 不需要连接器。读取 DACP Item 或使用 DACP 执行目标时，将 `xstream-dacp-client`、`xstream-dacp-protocol` 及运行依赖安装到宿主 classpath 或 `plugin_directory`。加入宿主尚未提供的依赖 JAR，不要重复安装 XStream 公共 API JAR。基础 Runner 分发包不捆绑连接器。
+`RemoteItemProvider` 和 `RemoteItemRequest` 位于 `xstream.execution`。将可选的 `xstream-dacp-client` 连接器、`xstream-dacp-protocol` 及运行依赖安装到宿主类路径或 `plugin_directory`。普通 Runner 发行包不打包该连接器。不要重复安装宿主已提供的 XStream API JAR。
 
 ```yaml
-plugin_directory: /opt/xstream/plugins
 nodes:
-  - url: dacp://compute.example.org:18861
-    ca: /etc/xstream/ca.crt
-    token_file: /etc/xstream/reader.token
-execution_targets:
-  - name: east
-    provider: dacp
-    settings:
-      url: dacp://compute.example.org:18861
-      ca: /etc/xstream/ca.crt
-      token_file: /etc/xstream/runner.token
-      startup_millis: 100
-      transfer_bytes_per_second: 100000000
-      estimated_input_bytes: 67108864
-      estimated_output_bytes: 1048576
+  - url: dacp://node-a.example.org:18861
+    ca: /etc/dacp/ca.crt
+    token_file: /etc/dacp/node-a.token
 ```
 
-`nodes` 配置 DACP 数据适配器，`execution_targets` 独立配置计算。名称是宿主内的引用，不是公开数据集名称。凭据只保存在宿主配置，不进入 Job YAML 或物理计划记录。字节数是宿主针对本 Job 中该目标源端区域提供的估算，不是实际测量或结构推导结果。必须按工作负载设置；错误估算可能选出更慢的计划。
+插件实现 `RemoteItemProvider`，校验自身配置，并在 `META-INF/services/xstream.execution.RemoteItemProvider` 注册具有公开无参构造器的实现类。DACP 实现为 `xstream.connector.dacp.DacpRemoteItemProvider`。`supports(uri)` 选择适配器；`open` 返回由调用者关闭的 `FrameSource`。失败时释放已打开的资源，遵守取消信号并限制帧大小。PluginEnvironment 负责发现和关闭提供者。
 
-## 执行策略
+## 执行职责
 
-作为 Runner 的第四个参数提交，前面需要变量文件（没有变量时使用 `{}`）：
+| 组件 | 职责 |
+| --- | --- |
+| XStream | 本地执行单元、流处理、同进程合并、取消、超时、重试和物化/重放 |
+| DACP 客户端 | 连接远程 DACP 服务器，提交、消费、取消或重放 Job |
+| DACP 服务器 | 授权请求，在内嵌的本地 XStream 引擎执行接受的 Job，并共享 DataCatalog |
+| Union | 解析公开数据集、选择成员放置位置并下发子 Job；自动计算下推仅由 Union 提供 |
+| Designer | 编辑逻辑 Job、浏览选定上下文、推导结构/样例并导出 YAML |
 
-```yaml
-placement:
-  mode: auto
-  targets: [east]
-  objective: latency
-materialization:
-  allowed: false
-  default: stream
-```
+显式远程执行使用 DACP SDK 或 Shell 连接节点 A，将完整 Job 提交给 A，此时 `context:` 指向 A 的目录。本地 XStream 执行策略包含 `materialization`、`max_retries` 和 `timeout_seconds`。
 
-`placement.mode` 为 `local`（默认）或 `auto`。提供 `targets` 时，只能缩小宿主配置的目标范围，不授予额外权限。空列表表示不允许远程目标。`objective` 为 `latency`（默认）或 `transfer`。
+## Designer Target
 
-规划器先排除不可达、不可用或无权限的目标，再构建本地候选和符合条件的远程源端封闭区域。远程区域必须包含处理步骤，不能依赖本地输入或引用本地/源码算子。目标自身负责 URI 本地化；核心不将 URI 主机直接认作执行节点。只有连接器确认映射后，远程读取才改为该目标的 `context:` 路径。
+Target 默认为 **Local**，可选择配置的 `nodes`。选择 A 后，**In-context catalog** 展示 A 的目录，其他目录入口不重复显示 A。在该上下文选择 Item 生成 `context:/dataset/item`；其他目录入口生成完整 DACP URI。Target 属于当前浏览器会话，不执行或提交 Job，也不是导出 Job YAML 中的放置字段。使用 DACP 将 YAML 提交给所选服务。普通结构推导 worker 在 Designer 服务器本地运行，上下文的元信息和样例来自所选目标。
 
-优化器比较估算传输字节数与启动、网络延迟。缺少输入或输出估算时保留本地执行，不虚构选择率。成本与选中候选写入执行历史的 `planning`。这是有限候选策略，不是穷举全局优化。尚未实现 CPU 成本预测、任意远程放置和运行中重新规划。兼容步骤通过执行单元/融合机制执行。
+测试覆盖本地执行、远程读取后继续本地处理、拒绝 placement 策略、Target 选择和凭据隔离。运行 `(cd xstream-engine && sbt test)`、`(cd xstream-designer && sbt test)` 和 `(cd connectors/xstream-dacp-client && sbt test)`。
 
-选择了任一物化边界或显式重放时，保留原始本地图和持久化所有权。远程区域将输出流送入有界本地队列。重试由发起引擎协调；接收端本地引擎收到本地执行要求，不独立重试或物化输出。远程失败直接传播，不自动本地重跑。取消会关闭结果流并取消未完成计算。句柄 `status()` 跟踪当前订阅，不是断开后查询持久 Job 的接口。
-
-## 扩展注册
-
-提供公开无参构造器的 provider 类，实现 `ExecutionTargetProvider` 和/或 `RemoteItemProvider`，分别注册：
-
-```text
-META-INF/services/xstream.execution.ExecutionTargetProvider
-META-INF/services/xstream.execution.RemoteItemProvider
-```
-
-DACP 对应文件内容分别为 `xstream.connector.dacp.DacpExecutionTargetProvider` 和 `xstream.connector.dacp.DacpRemoteItemProvider`。提供器校验私有设置。宿主负责关闭目标，PluginEnvironment 负责发现的提供器。每次提交返回由调用方持有的句柄，关闭未完成句柄即取消；成功流应消费完成再关闭。打开失败时释放部分资源，并检查取消状态。借用的 Arrow 批次只在回调中有效；帧载荷保持有界。
-
-契约测试包括无连接器本地执行、本地目标生命周期、权限拒绝、不同优化目标、通用图放置、远程区域路由、失败尝试输出重置及取消。执行 `(cd xstream-engine && sbt test)` 和 `(cd connectors/xstream-dacp-client && sbt test)`。
-
-## DACP 与 Union
-
-DACP 提供 `dacp.capabilities`，分别返回 `service` 与当前调用身份的 `permissions`。连接器在规划/提交前查询，每次实际服务调用仍照常授权。匿名身份可以查看元数据，但不能提交 Job。即使具备通用提交权限，也可能因算子、依赖、容量或策略无法执行具体 Job。
-
-Union 管理成员、命名空间映射、凭据、观测信息及成员流路由协议。其宿主解析公开源名称，将拓扑和容量交给 XStream 的 `GraphPlacement`；通用步骤排名由 XStream 实现。成员分发由 DACP 服务适配器实现。Runner 的封闭区域成本策略与 Union 的受约束图放置复用公共优化契约，但宿主约束不同；Runner 不实现成员间直接传输。
-
-DACP 服务与可选连接器共用 `xstream-dacp-protocol` 中的 Flight 客户端、证书、流量统计和 Arrow 视图传输实现。这些实现由传输模块统一维护，通用 API 定义协议无关的契约。
-
-## Designer 边界
-
-Designer 只负责逻辑 Job 创建编辑、目录浏览、设计时变量解析、设计校验、结构/样例预览及 YAML 导入导出，不调用物理规划器，也不展示物理计划、执行位置或执行结果。执行信息由 Runner 历史和 DACP/Union 看板展示。
+切换 Target 需要打开修改窗口并明确确认。Job 可将 `designer.target` 保存为 `local` 或 DACP 服务源地址。加载设计目标时会根据配置节点提示确认；不会访问不可用的目标。该字段属于执行时忽略的编排元信息。参见[Designer Target](../xstream-designer/README_zh.md#确认及记住-target)。

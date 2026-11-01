@@ -7,7 +7,7 @@ Operators consist of an immutable `name@version` manifest, a shared runtime imag
 
 ## Runtime and dependency ownership
 
-Build dependencies into a versioned runtime image once. Published manifests pin its Docker image ID and the SHA-256/size of its Docker-save archive. Dependencies are not installed from the internet during a task. A new dependency set produces a new runtime image; a code-only release can reuse the existing runtime descriptor. Runtime images are platform-specific: publish a runtime matching the execution node's OS/architecture. Automatic platform selection is not implemented.
+Build dependencies into a versioned runtime image once. Published manifests pin its Docker image ID and the SHA-256/size of its Docker-save archive. Dependencies are not installed from the internet during a step. A new dependency set produces a new runtime image; a code-only release can reuse the existing runtime descriptor. Runtime images are platform-specific: publish a runtime matching the execution node's OS/architecture. Automatic platform selection is not implemented.
 
 The JVM environment supplies `/opt/java/bin/java` and dependencies under `/opt/lib/*`. The Python environment supplies `/usr/local/bin/python`, pip, and all operator dependencies. Wheels install offline with `--no-index --no-deps` into temporary storage; pip checks platform/Python tags. A single `.py` file requires no installation. Prefer wheels for multiple modules or native extensions. Package native libraries in platform-compatible wheels or the shared environment. Raw source support is for a single script, not automatic dependency resolution.
 
@@ -86,7 +86,7 @@ Execution node layout:
 
 Metadata stays scoped to the repository URL; verified blobs are shared across names, versions, and repositories. Locks protect concurrent publishers/downloaders and atomic moves prevent partial cache entries. Every remote/cached artifact is checked before execution; a corrupt blob fails explicitly. Remove that blob to download it again. `operator_max_bytes` applies to each artifact, not the sum or extracted container size. Caches currently have no automatic garbage collection.
 
-Local definitions and installed images take precedence. Completed cached manifests are tried before network requests, then configured remote URLs in order. Only a manifest 404 tries the next repository; checksum, HTTP, and validation errors fail the task. Cached manifests and blobs allow offline execution. The runtime image is loaded only when its pinned ID is absent from Docker.
+Local definitions and installed images take precedence. Completed cached manifests are tried before network requests, then configured remote URLs in order. Only a manifest 404 tries the next repository; checksum, HTTP, and validation errors fail the step. Cached manifests and blobs allow offline execution. The runtime image is loaded only when its pinned ID is absent from Docker.
 
 Docker layers are shared locally, and the JVM builder separates the runtime layer from the optional complete-image code layer. Repository transport currently transfers whole content-addressed image archives; OCI registry layer-by-layer delivery and cross-runtime layer transfer deduplication remain future work.
 

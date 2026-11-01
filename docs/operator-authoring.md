@@ -50,7 +50,7 @@ object Identity extends ByteStreamOperator {
 
 ## Inputs, parameters and outputs
 
-`inputs` declares named input ports and representations; `parameters` declares JSON parameter types, defaults and constraints. Do not declare `outputs` in a manifest: `inferOutputs`/`infer_outputs` returns output ports and structures. Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
+`inputs` declares named input ports and representations; `parameters` declares JSON parameter types, defaults and constraints. Implement `inferOutputs`/`infer_outputs` to return output ports and structures. Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
 
 Record templates process Arrow RecordBatch/VectorSchemaRoot tables with field types intact; implement `output_schema`/`outputSchema` when changing fields. General contexts provide `ctx.input(name)`, `ctx.records_output`/`ctx.recordsOutput` and byte equivalents. Fully consume multiple inputs one at a time in lexical port-name order; declare all outputs before writing data.
 

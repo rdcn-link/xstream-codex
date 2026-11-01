@@ -52,23 +52,6 @@ class LocalEngineSpec extends AnyFunSuite {
     }finally {host.close();plugins.close()}
     intercept[IllegalArgumentException](DataCatalogRuntime.catalog)
   }
-  test("local execution target exposes result stream, status and completion through the shared contract") {
-    val dir=Files.createTempDirectory("local-target-");Files.writeString(dir.resolve("input.txt"),"target stream")
-    val settings=Data.mapper.createObjectNode().put("execution_directory",dir.resolve("history").toString)
-    settings.putObject("datasets").putObject("files").put("provider","directory").putObject("source").put("root",dir.toString)
-    val plugins=new PluginEnvironment();val host=new LocalEngine(settings,plugins);val token=new StreamCancel()
-    val yaml="name: Target\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/files/input.txt', view: bytes}\noutputs: {result: read}\n"
-    try {
-      val target=new LocalExecutionTarget(host.engine)
-      val handle=target.submit(_root_.xstream.execution.ExecutionRequest(yaml,_root_.xstream.util.Json.obj(),30),token)
-      try {
-        val bytes=new java.io.ByteArrayOutputStream();var f=handle.next()
-        while(f.nonEmpty){if(StreamProtocol.header(f.get).path("type").asText=="data")bytes.write(f.get.data);f=handle.next()}
-        assert(bytes.toString("UTF-8")=="target stream")
-        assert(handle.status().state=="succeeded" && handle.status().id.nonEmpty)
-      }finally handle.close()
-    }finally {token.close();host.close();plugins.close();Data.deleteTree(dir)}
-  }
   test("local references are explicit, preserve parameters and reject conflicting declarations") {
     val text="name: Local\nsteps:\n- id: filter\n  operator: {local: ./filter}\n  inputs: {}\n  params: {limit: 123}\noutputs: {result: filter}\n"
     val task=Jobs.parse(text).steps.head

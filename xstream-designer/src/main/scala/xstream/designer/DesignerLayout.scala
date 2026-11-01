@@ -23,7 +23,14 @@ object DesignerLayout {
     def fields(value:JsonNode,allowed:Set[String]):Unit=require(value.isObject && value.fieldNames.asScala.toSet.subsetOf(allowed),"invalid designer layout fields")
     def number(value:JsonNode,min:Double,max:Double):Unit=require(value.isNumber && java.lang.Double.isFinite(value.asDouble) && value.asDouble>=min && value.asDouble<=max,"invalid designer layout coordinate")
     def point(value:JsonNode):Unit={fields(value,Set("x","y"));number(value.path("x"),0,100000);number(value.path("y"),0,100000)}
-    fields(n,Set("version","positions","outlet","viewport","generator","exported_at"))
+    fields(n,Set("version","positions","outlet","viewport","generator","exported_at","target"))
+    Option(n.get("target")).foreach { t=>
+      require(t.isTextual && t.asText.nonEmpty && t.asText.length<=2048,"invalid designer target")
+      if(t.asText!="local"){
+        val uri=java.net.URI.create(t.asText)
+        require(uri.getScheme=="dacp" && uri.getHost!=null && uri.getUserInfo==null && uri.getQuery==null && uri.getFragment==null && Set("","/")(Option(uri.getPath).getOrElse("")),"design target must be local or a DACP origin")
+      }
+    }
     require(n.path("version").isIntegralNumber && n.path("version").asInt==1,"unsupported designer layout version")
     Option(n.get("generator")).foreach { g=>
       fields(g,Set("name","version"))

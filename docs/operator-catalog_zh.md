@@ -23,7 +23,7 @@ curl http://localhost:8820/v1/operators
 | `piflow_join@1.2` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | 收集两侧输入后关联；模式为 `inner`、`left`、`right`、`full_outer`；右侧同名非键列追加 `_right`，仍有歧义则报错 |
 | `piflow_csv_save@1.2` | `source: records` → `bytes`（CSV） | `{"header":true,"delimiter":","}` | 输出 CSV 字节流，**不在服务器保存 CSV 文件**；仅支持标量列 |
 
-SQL 与 Join 的输入收集上限为 128 MiB（实现会估算内存占用）；实际内存还包含 Arrow、Python 对象和算法开销。SQLite SQL 不等于 Spark SQL，不能直接使用任意 Spark 函数。具体契约和源码见 [PiFlow 适配说明](../examples/operators/piflow/README_zh.md)、[specs.json](../examples/operators/piflow/specs.json) 与 [operators](../examples/operators/piflow/operators/)。
+SQL 与 Join 的输入收集上限为 128 MiB（实现会估算内存占用）；实际内存还包含 Arrow、Python 对象和算法开销。SQLite SQL 不等于 Spark SQL，不能直接使用任意 Spark 函数。具体契约和源码见 [算子开发指南](operator-authoring_zh.md)、[specs.json](../examples/operators/piflow/specs.json) 与 [operators](../examples/operators/piflow/operators/)。
 
 ## 输入输出范例
 
@@ -65,7 +65,7 @@ run piflow_csv_parser@1.2 --input source=/observations --view bytes
 run piflow_filter@1.2 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
 ```
 
-组合解析、过滤与 CSV 输出时，使用以下 Job。节点示例 URI 为 `dacp://localhost:18861/weather/observations`；提交 Union 时替换成实际目录返回的 Union 公开 URI，不使用成员内部 URI。省略 `node` 由服务器调度。
+组合解析、过滤与 CSV 输出时，使用以下 Job。节点示例 URI 为 `dacp://localhost:18861/weather/observations`；提交 Union 时替换成实际目录返回的 Union 公开 URI，不使用成员内部 URI。Union 规划步骤的执行位置。
 
 ```yaml
 name: High-temperature observations
@@ -108,7 +108,7 @@ submit weather.yaml --vars variables.yaml
 
 ## 发布与核对
 
-仓库浏览、下载公开；发布需要 token。各算子的构建、测试和逐个上传命令见 [PiFlow 发布说明](../examples/operators/piflow/README_zh.md#逐个验证发布)，HTTP 上传契约见[仓库手册](https://github.com/rdcn-link/xstream-operator-repository/blob/main/README_zh.md)。发布后先核对 `/v1/operators`，再核对对应版本的页面、参数、源码和许可证；源码集合的完整移植进度不能当作在线仓库清单。
+仓库浏览、下载公开；发布需要 token。各算子的构建、测试和逐个上传命令见 [算子发布指南](operator-submission_zh.md)，HTTP 上传契约见[仓库手册](https://github.com/rdcn-link/xstream-operator-repository/blob/main/docs/browsing_zh.md)。发布后先核对 `/v1/operators`，再核对对应版本的页面、参数、源码和许可证。
 
 ## 脚本算子
 

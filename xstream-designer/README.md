@@ -16,14 +16,14 @@ target/universal/stage/bin/xstream-designer /etc/dacp/designer.yaml
 
 The default address is `http://127.0.0.1:8840/`. Set `host: 0.0.0.0` for network access. Administrators maintain configuration; visitors do not log in. Configured ordinary upstream client credentials determine the catalogs and inference capabilities available to the website.
 
-The distribution bundles `xstream-data-archives` for the in-context catalog: ZIP, TAR, TAR.GZ/TGZ and GZIP Items expose their children when expanded. GZIP exposes one decompressed child; TAR.GZ exposes archive members directly. Nested archives are not recursively expanded. Dataset and Item rows use compact spacing.
+The distribution bundles `xstream-data-archives` for the Target catalog: ZIP, TAR, TAR.GZ/TGZ and GZIP Items expose their children when expanded. GZIP exposes one decompressed child; TAR.GZ exposes archive members directly. Nested archives are not recursively expanded. Dataset and Item rows use compact spacing.
 
 ## Design workflow
 
-1. Opening the page loads the local catalog and configured service roots automatically; `target.url` is optional. Remote targets use the DACP connector; placement is handled by the execution service.
+1. Target defaults to **Local** and can select a configured remote node. The Target catalog follows Target and generates `context:` Item URIs; other catalog roots exclude that target. Catalog branches load on expansion. Target selects the authoring context; DACP provides remote Job submission and Union owns automatic placement.
 2. The configured `repository` loads automatically through `/v1/operators`. Search names and descriptions, choose versions and drag operators onto the canvas. `read_item@1.0` is a built-in data source.
 3. Open the left **Catalogs** tab. Expand a catalog to load its datasets, then expand datasets and folders to browse Items. Click an Item to reveal floating action icons at the lower right of the end of its name: one per available view and one for **Copy path**. Hover or keyboard focus identifies each icon. Choosing a view sets its URI and explicit view on the selected or a new read step. Copying preserves the complete path including dataset name, such as `/science/climate.nc/temperature`. Folders expand or collapse only through their left arrow; clicking a folder name reveals its actions without expanding. Item rows use compact spacing. Union connections use public Union URIs.
-4. Drag cards, click an output to start a pointer-following preview line, then click an input to establish the stream dependency. Right-click or press Esc to cancel. Port drag-to-connect is not supported. Edit titles and parameters in the inspector. Delete steps, remove connections, undo, redo and arrange automatically.
+4. Drag cards, click an output to start a pointer-following preview line, then click an input to establish the stream dependency. Right-click or press Esc to cancel. Edit titles and parameters in the inspector. Delete steps, remove connections, undo, redo and arrange automatically.
 5. The canvas always contains exactly one **Outlet**, which can be moved but cannot be deleted or duplicated. Click an operator output port, then click Outlet to create a Job output binding. Outlet accepts one output port from one step; a new connection replaces the existing binding. The sidebar only edits step properties and parameters; result stream names can be edited in Job YAML. Select an Outlet connection and press Delete to remove its binding; the Outlet stays on the canvas. Imported Job outputs are drawn as connections to the same Outlet. Layout is saved in the browser draft and included in optional `designer` metadata by default. Empty `outputs: {}` is allowed; each producer port has at most one consumer. Each output port displays its representation, format and known Schema fields below it; unknown structures are labeled explicitly.
 6. Edit or load a separate YAML variable file under **Variables**. Parameters support complete values such as `$INPUT_URI`, preserving numeric, boolean and compound types. Variables are not embedded in template exports; use **Export variables** separately.
 7. Output structures are inferred automatically after parameters, variables or connections change. Parameter edits trigger inference after a 650 ms pause with valid edits saved automatically into the exported Job; incomplete or invalid input stays in the form with a message. The designer uses the shared `xstream-operator-inference` module to start and reuse local inference workers on demand, obtaining code from the configured operator repository. Ordinary operators are inferred without Union or member-node requests. `read_item` queries Item metadata from the local catalog or the configured service; upstream changes also update downstream structures. Requests are serialized and coalesced; stale responses are discarded. Use the right-hand **Outputs** tab to inspect each output port’s complete structure and bounded samples. Inference does not run a Job. Schemas are displayed before a separate bounded-sample request; `read_item` can read a limited number of source rows. Opening Outputs displays existing results without repeating inference. First use may start a worker. Incomplete parameters and inference failures are reported explicitly; stale fields are cleared and unknown structures are never guessed.
@@ -91,7 +91,7 @@ The properties panel is a docked right sidebar, initially hidden, and opens when
 
 The inspector has **Step**, **Parameters**, and **Outputs** tabs. Parameters are generated from the operator’s required static `parameters` contract: names and types come from the declaration, alongside descriptions, defaults, enums and bounds. Enable optional fields to set them explicitly; omitted fields stay omitted. Nested objects, arrays and whole-value variables (`$VAR_NAME`) use forms. Valid property and parameter edits save automatically and synchronize YAML while preserving types. Consecutive edits are grouped for undo. See [parameter contracts](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-parameters.md).
 
-The local catalog, service connections and operator repository are selected only in startup configuration (`local_catalog`, `target`, `nodes` and `repository`). The browser offers no manual connection, switching or reload controls. Both services load independently when opening the page. The compact header shows status and failures; reload the page after service recovery.
+Startup configuration supplies `local_catalog`, `nodes` and `repository`. The browser Target selector defaults to Local and can select a configured node; arbitrary service addresses and credentials cannot be entered. Both services load independently when opening the page. The compact header shows status and failures; reload the page after service recovery.
 
 Click a stream connection to highlight it, then press Delete / Backspace while the canvas has focus. Selection highlights only the connection, without a rectangular frame or extra toolbar button. Deletion supports undo and redo. Keyboard deletion never edits a connection while typing in a form field. A port already consumed by another step cannot simultaneously be a Job output; remove the connection first. Imported output bindings also appear as connections to Outlet.
 
@@ -173,9 +173,9 @@ Select one step and click **Duplicate step** or press **Ctrl/⌘+D** to create a
 
 Editing-session reuse stays in memory, is isolated between browser sessions and expires after 30 minutes without inference requests. At most 32 sessions are retained, each holding up to 2 MiB of the latest step results. This does not add a persistent result cache to node or Union inference APIs. Reload the page to refresh source metadata independently of a parameter edit.
 
-The left sidebar contains only **Operators** and **Catalogs**. The canvas has no member nodes or node regions. Job steps do not contain `node`, and layout metadata does not contain `node_areas`. Local reads use context URIs; remote reads use public service URIs, including public names when the service is a Union.
+The left sidebar contains **Operators**, **Catalogs** and **Examples**. The canvas displays processing steps, stream connections and Outlet. Local reads use context URIs; remote reads use public service URIs, including public names when the service is a Union.
 
-The data browser displays In-context catalog and configured DACP services as a tree. Catalog roots are listed immediately, but datasets and Folder Items load only when expanded. Selecting a local Item sets `read_item.params.uri` to `context:/dataset/item`; selecting a node Item retains its complete `dacp://host:port/dataset/item` URI. A context reference belongs to the eventual execution JVM, so its catalog must match the local preview catalog. Configure node credentials in `nodes`; they stay on the designer server. Optional `sql` uses `FROM source`, and schema/sample previews reflect the query.
+The data browser displays Target catalog and configured DACP services as a tree. Catalog roots are listed immediately, but datasets and Folder Items load only when expanded. Selecting an Item in Target catalog sets `read_item.params.uri` to `context:/dataset/item`; selecting an Item in another configured catalog retains its complete `dacp://host:port/dataset/item` URI. A context reference belongs to the eventual execution JVM, so its catalog must match the local preview catalog. Configure node credentials in `nodes`; they stay on the designer server. Optional `sql` uses `FROM source`, and schema/sample previews reflect the query.
 
 ```yaml
 local_catalog:
@@ -192,7 +192,7 @@ nodes:
 
 The designer binds one JVM-wide DataCatalog through XStream plugin contracts. `local_catalog.data_catalog` can configure a custom DataCatalogProvider instead of static datasets. See [XStream engine](../docs/xstream.md) and [Job read parameters](../docs/jobs.md).
 
-The Catalogs tree distinguishes host roots, datasets, folders and data Items with separate icons. Roots load at startup and children load on expansion; there is no catalog refresh button.
+The Catalogs tree distinguishes host roots, datasets, folders and data Items with separate icons. Roots load at startup and children load on expansion.
 
 Item rows show only their leaf names and file/folder icons. Hover or keyboard focus exposes the complete Item path and available views. Click an Item to reveal compact view/copy icons on an independent floating layer below its row (above when space is limited). Selecting a view sets `read_item` parameters; copying does not change the Job. Escape or clicking outside hides the icons.
 
@@ -215,10 +215,52 @@ Frontend assets and API requests use relative URLs, allowing deployment at a sam
 
 The Step tab provides a multiline Description, up to 8192 characters, saved automatically as the step’s `description` field. Descriptions survive duplication, undo/redo, export and reload; they do not affect inference or execution. Exporting without Designer metadata still retains them.
 
-Library and canvas operator icons display the repository administrator’s public 0–5 trust score using the same five shield-and-check icons as the repository: scored shields are teal and the rest are gray. Hover for the numeric score. Missing/invalid scores display a question mark; built-in `read_item` displays Built-in without an invented rating. Trust belongs to repository metadata, is not stored in Jobs, and is not a safety guarantee.
+Operator-library hover details show public trust ratings and download counts. Ratings use five shield-check icons; canvas steps do not display ratings. Trust metadata is not part of the Job and is not a safety guarantee.
 
 The left operator library groups versions by name and shows only the latest public version. Numeric runs sort numerically (`1.10` follows `1.9`), and a release follows its hyphenated prerelease. Existing Jobs continue to resolve their original versions and are not upgraded automatically.
 
 Hover over a Dataset to see its description JSON’s `title` and `description`; the tree retains its addressable Dataset name.
 
-Designer only authors logical Jobs. It does not invoke a physical planner or display physical plans or execution results.
+Designer creates logical Jobs: select Items, connect operators, configure parameters, inspect schemas and export YAML.
+
+The operator list displays icons, names and versions. Hover or focus an operator to see its trust shields, numeric score and current-version package download count in the tooltip. Missing counts display Unavailable; built-in operators display Not applicable.
+
+Target is a browser-session selection, defaulting to Local. Every catalog, schema and sample request includes a `target` value (`local` or a configured node URL). The server validates it against `nodes` and keeps credentials private. Switching Target refreshes the catalog, schemas and output samples for the selected design context.
+
+## Confirming and remembering Target
+
+Click **Target: … Change…**, select a configured service, then click **Use selected target**. Changing the selection in the dialog has no effect until confirmed; **Keep current target** or Escape preserves the current context. Switching Target refreshes context-dependent structures and samples. Inference uses a valid browser session identifier and resolves `context:` against the confirmed Target.
+
+Job YAML can store its design target:
+
+```yaml
+designer:
+  version: 1
+  target: dacp://node-a.example.org:18861
+```
+
+Use `local` for the Designer server’s local catalog. Loading a Job offers its design target for confirmation. Refreshing restores the draft’s previously confirmed target without a dialog, provided the target remains configured; otherwise the draft opens in Local with a warning to review context Item paths. Unconfigured addresses are never contacted. An unavailable design target prompts the user to select a configured target or retain the current one. Exports save the confirmed Target, and excluding designer metadata also excludes this design target. Execution engines ignore the entire `designer` section: this field neither routes nor submits a Job and grants no permissions.
+
+## Example Jobs
+
+The left sidebar’s **Examples** tab lists ten packaged Jobs: record-stream reading, filtering to CSV, a parameterized workflow, merging two streams, and a NetCDF array view. Each card describes its purpose and step count. **Load example** loads its graph and variable values into the current Target; loading does not execute or submit a Job. Existing canvas content, unapplied YAML or variable values require replacement confirmation. Undo restores the previous graph and variables.
+
+Examples address the sample `weather` dataset through `context:`. Adjust Item paths or variables to match the chosen Target. The merge example reads the same sample Item twice so it works with one sample catalog; change either URI to combine distinct sources. Cards identify unavailable operator versions and disable loading until those versions are available from the configured repository. Built-in `read_item` examples remain available without repository operators.
+
+`/api/examples` returns the packaged YAML documents, variables, descriptions and required operator references. Example files and their index reside in `xstream-designer/src/main/resources/examples/`; all are validated as Job definitions with resolved variables. These resources contain no server credentials or execution-node assignments.
+
+Examples also include local/remote stream merging and a saved remote design target. Replace example.org addresses with configured services. Remote reads do not imply computation pushdown; only Union plans distributed execution. `designer.target` is design-only metadata, ignored during execution.
+
+Schema inference resolves complete `$VAR_NAME` parameter values using the Variables YAML before calling operators, preserving numbers, booleans and structured values. Editing variable values refreshes affected steps and their downstream schemas. Missing variables are reported by name; define them in Variables to resume inference. Variable references remain in the exported Job.
+
+Cross-node templates include two remote nodes, three remote nodes, and Union collaboration. The first two save `designer.target: local`; the Union template saves a remote Union target. Replace example addresses and public dataset paths before use. Loading asks for target confirmation. The same Job can be submitted to Union for automatic distribution; Designer does not assign steps to nodes.
+
+### Deployment-specific examples
+
+Set `examples_directory: /srv/xstream/designer-examples` in the startup configuration to supply an `index.yaml` plus the Job and variables files it names. The index uses `id`, `title`, `description`, `job` and `variables`, matching the packaged index. Files are read and validated at startup, each limited to 256 KiB; only simple YAML filenames within that directory are accepted. Without this option the packaged sample catalog examples are used.
+
+A deployment must use its actual Item paths, configured service addresses and Union public dataset names. Local examples should save `designer.target: local`, so loading them from a remote design context asks to switch back. Remote examples save their configured service target. Validate each example with its variables and target using `/api/infer`, including source schemas and downstream diagnostics. Do not publish credentials in examples.
+
+Example cards display compact feature tags such as **Cross-node**, **Variables**, **Local target**, **Remote target**, **Union**, **Multi-input** and **Scientific array**. Configure `tags: [Cross-node, Variables, Remote target]` on an index entry; labels are presentation metadata, not execution settings. Each example accepts up to eight labels of at most 40 characters each.
+
+Examples are numbered `01`, `02`, … in index order for quick reference. The number is a display position; the example’s stable identifier remains its `id`.

@@ -26,6 +26,11 @@ for module in ('xstream-engine','xstream-execution-api'):
     for path in (root/module/'src/main').rglob('*.scala'):
         if re.search(r'xstream\.connector\.dacp|org\.apache\.arrow\.flight|dacp\.union',path.read_text()):
             errors.append(f'{path.relative_to(root)}: core depends on a DACP connector or Flight transport')
+# Local execution cannot discover execution targets or plan remote regions.
+for module in ('xstream-engine','xstream-execution-api'):
+    for path in (root/module/'src/main').rglob('*.scala'):
+        if re.search(r'\b(?:ExecutionTargetProvider|ExecutionTarget|PhysicalPlanner|GraphPlacement)\b',path.read_text()):
+            errors.append(f'{path.relative_to(root)}: local engine exposes remote execution planning')
 engine_build=(root/'xstream-engine/build.sbt').read_text()
 if 'xstream-dacp-client' in engine_build or 'xstream-dacp-protocol' in engine_build:
     errors.append('engine build depends directly on a DACP connector')
@@ -51,6 +56,13 @@ for module in ('xstream-engine','xstream-execution-api'):
         with ZipFile(jar) as archive:
             if any(name.startswith('dacp/') and name.endswith('.class') for name in archive.namelist()):
                 errors.append(f'{module}: stale DACP namespace classes in artifact; clean and rebuild')
+# Removed remote-compute APIs must also be absent from packaged products.
+for module in ('xstream-engine','xstream-execution-api','connectors/xstream-dacp-client'):
+    jar=root/module/'target/scala-2.13'/f'{Path(module).name}_2.13-0.1.0-SNAPSHOT.jar'
+    if jar.is_file():
+        with ZipFile(jar) as archive:
+            stale=[name for name in archive.namelist() if re.search(r'(?:^|/)(?:ExecutionTarget(?:Provider)?|ExecutionHandle|ExecutionRequest|ExecutionStatus|TargetDescription|PlacementDecision|PlacementCandidate|PlanningTarget|PlanningStep|StepPlacement|DacpExecutionTarget(?:Provider)?|LocalExecutionTarget|PhysicalPlanner|GraphPlacement|PlacementOptimizer)(?:\$|\.|/)',name)]
+            if stale: errors.append(f'{module}: obsolete remote execution products: {stale}')
 for error in errors:
     print(error, file=sys.stderr)
 print(f'XStream independence: {len(errors)} errors')

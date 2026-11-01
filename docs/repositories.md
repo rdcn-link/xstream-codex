@@ -1,8 +1,8 @@
-# Modules and builds
+# Building XStream
 
 [中文](repositories_zh.md)
 
-XStream builds from this repository alone. It has no dependency on DACP Maven artifacts, source checkouts or running services.
+Build the runner, Designer and libraries with the commands below.
 
 | Module | Responsibility |
 |---|---|
@@ -18,7 +18,5 @@ XStream builds from this repository alone. It has no dependency on DACP Maven ar
 | `xstream-designer` | Visual authoring and previews |
 
 Use JDK 17 and sbt 1.10.x. Run `scripts/bootstrap-local.sh` to publish development dependencies, then `sbt test`. Stage applications with `(cd xstream-engine && sbt stage)` and `(cd xstream-designer && sbt stage)`. Artifacts use organization `io.github.rdcn-link` and version `0.1.0-SNAPSHOT`.
-
-The independent operator repository service consumes published XStream libraries. Remote data services are optional runtime integrations; they are not build dependencies. Core operator contracts and inference do not depend on the remote connector.
 
 Data contract tests live in `xstream-data/xstream-data-tests`. Designer browser tests in `scripts/test-designer-*.py` require Playwright and Chromium. Run `python3 scripts/check-doc-translations.py` to check translation pairs. Third-party format dependencies belong to plugins; see [plugin development](plugins.md).

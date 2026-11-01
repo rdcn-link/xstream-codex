@@ -23,7 +23,7 @@ All operators below use the output port `result`. Output descriptions come from 
 | `piflow_join@1.2` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | Collects both inputs before joining. Modes: `inner`, `left`, `right`, `full_outer`. Duplicate right-side non-key columns receive `_right`; remaining ambiguity is rejected |
 | `piflow_csv_save@1.2` | `source: records` → `bytes` (CSV) | `{"header":true,"delimiter":","}` | Emits a CSV byte stream; **does not save a CSV file on the server**. Scalar columns only |
 
-SQL and Join input collection is limited to 128 MiB using estimated memory usage; actual memory also includes Arrow, Python objects and algorithm overhead. SQLite SQL is not Spark SQL and does not support arbitrary Spark functions. See the [PiFlow adaptation guide](../examples/operators/piflow/README.md), [specs.json](../examples/operators/piflow/specs.json) and [operator sources](../examples/operators/piflow/operators/) for the contracts.
+SQL and Join input collection is limited to 128 MiB using estimated memory usage; actual memory also includes Arrow, Python objects and algorithm overhead. SQLite SQL is not Spark SQL and does not support arbitrary Spark functions. See the [operator authoring guide](operator-authoring.md), [specs.json](../examples/operators/piflow/specs.json) and [operator sources](../examples/operators/piflow/operators/) for the contracts.
 
 ## Input and output examples
 
@@ -65,7 +65,7 @@ If the Item already offers a records view, filter it directly:
 run piflow_filter@1.2 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
 ```
 
-Use this Job to combine parsing, filtering and CSV output. The node example URI is `dacp://localhost:18861/weather/observations`. For Union submission, replace it with the Union public URI returned by the actual catalog, not a member-internal URI. Omit `node` for server scheduling.
+Use this Job to combine parsing, filtering and CSV output. The node example URI is `dacp://localhost:18861/weather/observations`. For Union submission, replace it with the Union public URI returned by the actual catalog, not a member-internal URI. Union plans the execution placement.
 
 ```yaml
 name: High-temperature observations
@@ -108,7 +108,7 @@ Results stream to the client by default. Materialization at selected boundaries,
 
 ## Publication and verification
 
-Browsing and downloads are public; publication requires a token. Build, test and publish operators individually using the [PiFlow publication guide](../examples/operators/piflow/README.md#verify-and-publish-individually); see the [repository manual](https://github.com/rdcn-link/xstream-operator-repository) for the HTTP upload contract. After publication, check `/v1/operators`, then the version page, parameters, sources and license. The complete source-adaptation inventory is not an online publication list.
+Browsing and downloads are public; publication requires a token. Build, test and publish operators individually using the [operator publication guide](operator-submission.md); see the [repository manual](https://github.com/rdcn-link/xstream-operator-repository) for the HTTP upload contract. After publication, check `/v1/operators`, then the version page, parameters, sources and license.
 
 ## Script operators
 

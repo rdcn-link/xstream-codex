@@ -22,8 +22,10 @@ with sync_playwright() as playwright:
             if o['name'] in scores:
                 if scores[o['name']] is None:
                     o.pop('trust', None)
+                    o.pop('download_count', None)
                 else:
                     o['trust'] = {'score': scores[o['name']]}
+                    o['download_count'] = 1234
         template=next(o for o in data if o['name']=='script_line_number')
         for version in ['1.9', '1.10-rc.1', '1.10']:
             old=copy.deepcopy(template);old.update(name='version_test',version=version,categories=['Version test']);data.append(old)
@@ -34,20 +36,29 @@ with sync_playwright() as playwright:
     line = page.locator('.operator[data-operator="script_line_number@1.0"]').first
     expect(line).to_be_visible()
     for name, score in [('script_text_replace', 0), ('script_line_number', 3), ('script_records_to_jsonl', 5)]:
-        icon = page.locator('.operator[data-operator="'+name+'@1.0"] .operator-rating').first
+        entry = page.locator('.operator[data-operator="'+name+'@1.0"]').first
+        expect(entry.locator('.operator-rating')).to_have_count(0)
+        entry.hover()
+        icon = page.locator('#operator-tooltip .operator-rating')
+        expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: 1,234')
         expect(icon.locator('svg.trust-icon')).to_have_count(5)
         expect(icon.locator('.trust-check')).to_have_count(5)
         expect(icon.locator('.rated')).to_have_count(score)
         expect(icon.locator('.unrated')).to_have_count(5-score)
         expect(icon).to_have_attribute('aria-label', 'Repository administrator trust: '+str(score)+' / 5')
-    expect(page.locator('.operator[data-operator="script_jsonl_project@1.0"] .operator-rating').first).to_have_text('?')
-    expect(page.locator('.operator[data-operator="read_item@1.0"] .operator-rating')).to_have_text('Built-in')
+    page.locator('.operator[data-operator="script_jsonl_project@1.0"]').first.hover()
+    expect(page.locator('#operator-tooltip .operator-rating')).to_have_text('?')
+    expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: Unavailable')
+    page.locator('.operator[data-operator="read_item@1.0"]').hover()
+    expect(page.locator('#operator-tooltip .operator-rating')).to_have_text('Built-in')
+    expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: Not applicable')
+    expect(page.locator('.operator .operator-rating')).to_have_count(0)
     expect(page.locator('.operator[data-operator="version_test@1.10"]')).to_have_count(1)
     expect(page.locator('.operator[data-operator="version_test@1.9"]')).to_have_count(0)
     expect(page.locator('.operator[data-operator="version_test@1.10-rc.1"]')).to_have_count(0)
     line.dblclick()
     card = page.locator('#cards .card').last
-    expect(card.locator('.operator-rating .rated')).to_have_count(3)
+    expect(card.locator('.operator-rating')).to_have_count(0)
     card.dblclick()
     description = 'Read local observations.\nPreserve source units.\n<plain text, not HTML>'
     page.locator('#step-description').fill(description)
@@ -66,11 +77,11 @@ with sync_playwright() as playwright:
     assert json.loads(exported['job_yaml'])['steps'][0]['description'] == description
     page.evaluate('async p => { await loadDocument(p.job_yaml,p.variables_yaml); }', exported)
     assert page.evaluate('job.steps[0].description') == description
-    expect(page.locator('#cards .card').first.locator('.operator-rating .rated')).to_have_count(3)
+    expect(page.locator('#cards .card').first.locator('.operator-rating')).to_have_count(0)
     legacy=json.loads(exported['job_yaml']);legacy['steps'][0]['operator']='version_test@1.9'
     page.evaluate('async p => { await loadDocument(JSON.stringify(p)); }',legacy)
     assert page.evaluate('manifest(job.steps[0]).version')=='1.9'
     assert page.evaluate('job.steps[0].description')==description
     assert not errors, errors
     browser.close()
-print('PASS trust 0/3/5/unknown/built-in, canvas badges, latest-version library, preserved historical versions, multiline description, duplicate, undo/redo and YAML reload')
+print('PASS trust 0/3/5/unknown/built-in, no canvas trust badges, latest-version library, preserved historical versions, multiline description, duplicate, undo/redo and YAML reload')

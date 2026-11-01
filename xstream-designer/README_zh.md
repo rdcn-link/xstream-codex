@@ -16,14 +16,14 @@ target/universal/stage/bin/xstream-designer /etc/dacp/designer.yaml
 
 默认地址为 `http://127.0.0.1:8840/`。需要网络访问时设置 `host: 0.0.0.0`。服务配置由管理员维护，访问网页无需登录；配置的上游普通客户端凭据决定网页可读取的目录和可请求的推导能力。
 
-发行包为 In-context catalog 配备 `xstream-data-archives` 插件：展开 ZIP、TAR、TAR.GZ/TGZ、GZIP Item 时可浏览其子项。GZIP 展示一个解压后的子项；TAR.GZ 直接展示归档成员。嵌套压缩包不递归展开。Dataset 与 Item 行均采用紧凑间距。
+发行包为 Target catalog 配备 `xstream-data-archives` 插件：展开 ZIP、TAR、TAR.GZ/TGZ、GZIP Item 时可浏览其子项。GZIP 展示一个解压后的子项；TAR.GZ 直接展示归档成员。嵌套压缩包不递归展开。Dataset 与 Item 行均采用紧凑间距。
 
 ## 设计流程
 
-1. 打开页面后自动加载本地目录及已配置的服务根；`target.url` 可选。远程目标通过 DACP 连接器访问，步骤分配由执行服务处理。
+1. Target 默认为 **Local**，可选择配置的远程节点。Target catalog 随 Target 变化，选择 Item 生成 `context:` URI；其他目录入口不重复显示该节点。目录分支按需展开加载。Target 选择编排上下文，远程 Job 提交由 DACP 提供，自动放置由 Union 提供。
 2. 自动从配置文件的 `repository` 读取 `/v1/operators`。可搜索算子名称和说明、选择版本、拖到画布。`read_item@1.0` 是内置数据源。
 3. 打开左侧 **Catalogs** 标签页，展开目录时加载数据集，展开数据集和文件夹时加载 Item。点击 Item 后，旁边浮动显示各个可用视图和复制路径的操作图标，悬停或键盘聚焦显示用途。选择视图后，为选中或新建的读取步骤设置 URI 和显式视图。复制路径保留数据集名称（如 `/science/climate.nc/temperature`）。仅点击文件夹左侧箭头展开或收起；点击名称显示操作图标。Union 连接使用 Union 的公开 URI。
-4. 拖动卡片调整位置，点击输出端口启动随鼠标移动的预览线，再点击输入端口建立流依赖；右键或 Esc 取消。端口不支持拖拽连线。在右侧修改标题和参数；支持删除步骤、移除连接、撤销、重做与自动排列。
+4. 拖动卡片调整位置，点击输出端口启动随鼠标移动的预览线，再点击输入端口建立流依赖；右键或 Esc 取消。在右侧修改标题和参数；支持删除步骤、移除连接、撤销、重做与自动排列。
 5. 画布始终有且仅有一个 **Outlet**，可拖动位置，但不能删除或复制。点击算子输出端口，再点击 Outlet，即创建 Job 输出绑定；Outlet 最多连接一个步骤的一个输出端口，新连接替换原绑定。属性侧栏仅编辑步骤属性与参数；结果流名称可在 Job YAML 中修改。选中连到 Outlet 的线并按 Delete 可删除对应绑定，Outlet 本身始终保留。导入文件中的 Job 输出也连到同一个 Outlet。布局保存在浏览器草案中，导出时默认写入 `designer` 辅助区。允许 `outputs: {}`；每个生产者端口最多一个消费者。每个输出端口下方展示表示、格式和可确定的 Schema 字段；未知结构明确标注。
 6. 在 **Variables** 中编辑或加载独立 YAML 变量文件。参数可使用 `$INPUT_URI` 等完整变量值，保留整数、布尔和复合结构的类型。变量值不嵌入模板导出文件，使用 **Export variables** 单独导出。
 7. 参数、变量及连接变化后自动推导输出结构，参数编辑停顿 650 毫秒后触发，合法修改自动保存并同步到导出的作业；未完成或非法输入保留在表单中并提示。设计器使用公共 `xstream-operator-inference` 模块，在自身环境中按需启动并复用推导 worker，从配置的算子仓库获取代码；普通算子的推导不经 Union 或成员节点。`read_item` 从本地目录或已配置服务查询 Item 元信息，上游变化也会更新下游。推导请求串行合并，过期响应丢弃。在右侧 **Outputs** 标签页查看当前步骤各输出端口的完整结构及有界样例。推导不运行 Job；结构返回后再请求有界样例，`read_item` 可读取受限的源数据行。打开 Outputs 页直接展示已有结果，不重复推导。首次推导可能启动 worker。参数不完整或推导失败时明确提示，不保留过期字段，也不猜测未知结构。
@@ -87,11 +87,11 @@ python3 scripts/test-job-designer.py --url http://localhost:8840 \
 
 从仓库根目录执行，将 URI 换成实际 records Item，要求包含 `quality` 列。测试只推导结构，不执行作业。
 
-属性面板采用固定右侧栏，默认隐藏，双击步骤或选择 Outlet 时展开，占用独立列而不遮挡画布；关闭后空间还给画布。左右侧栏均通过边缘窄条箭头折叠与展开，不提供关闭按钮。右侧展开时显示 `>`，折叠后显示 `<`；左侧方向相反。点击画布空白处、连线或按 Esc 不会自动隐藏属性侧栏。顶部直接展示具有清晰边框和立体层次的 **Step** 与 **Parameters** 标签页。底部编辑区默认收起，点击标签展开，使用箭头按钮收起；画布优先占用窗口空间，页面本身不滚动。
+属性面板采用固定右侧栏，默认隐藏，双击步骤或选择 Outlet 时展开，占用独立列而不遮挡画布；关闭后空间还给画布。左右侧栏均通过边缘窄条箭头折叠与展开。右侧展开时显示 `>`，折叠后显示 `<`；左侧方向相反。点击画布空白处、连线或按 Esc 不会自动隐藏属性侧栏。顶部直接展示具有清晰边框和立体层次的 **Step** 与 **Parameters** 标签页。底部编辑区默认收起，点击标签展开，使用箭头按钮收起；画布优先占用窗口空间，页面本身不滚动。
 
 属性面板分为 **Step**、**Parameters** 和 **Outputs** 三个标签页。Parameters 根据算子必需的静态 `parameters` 契约生成：名称和类型来自声明，同时显示说明、默认值、枚举及范围。可选参数需显式启用，未启用的参数不写入 Job。对象、数组及完整值变量（`$VAR_NAME`）通过表单配置。属性和参数的合法修改自动保存并同步 YAML，保留类型；连续输入合并为可撤销的编辑操作。详见[参数契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-parameters_zh.md)。
 
-本地目录、服务连接和算子仓库仅通过启动配置中的 `local_catalog`、`target`、`nodes` 和 `repository` 指定，浏览器不提供手动连接、切换或重新加载连接的入口。打开页面时独立加载两个服务，精简页头显示状态及故障信息；上游恢复后刷新页面即可重试。
+启动配置提供 `local_catalog`、`nodes` 和 `repository`。浏览器 Target 默认为 Local，可切换到配置节点；不能输入任意服务地址或凭据。打开页面时独立加载两个服务，精简页头显示状态及故障信息；上游恢复后刷新页面即可重试。
 
 点击流连线后高亮选中，可在画布获得焦点时按 Delete / Backspace 删除；选中时仅高亮连线，不出现矩形框或额外的工具栏按钮，支持撤销和重做。在表单输入框中编辑文字不会触发连线删除。一个已连接到下游步骤的端口不能同时作为 Job 输出，需要先删除该连线。导入文件中的输出绑定也会显示为连到 Outlet 的线。
 
@@ -173,9 +173,9 @@ Outlet 最多连接一个步骤的一个输出端口；连接新端口会替换�
 
 编辑会话的结果复用仅保存在内存中，不同浏览器会话相互隔离，30 分钟没有推导请求后过期。最多保留 32 个会话，每个会话保存最新步骤结果，合计不超过 2 MiB。这不会为节点或 Union 的推导接口增加持久化结果缓存。如需在不修改参数的情况下刷新源数据元信息，可重新加载页面。
 
-左侧仅有 **Operators** 和 **Catalogs** 两个目录。画布不展示成员节点或节点区域；Job 步骤不包含 `node`，布局不包含 `node_areas`。本地读取使用 context URI；远程读取使用服务公开 URI，目标为 Union 时使用其公开名称。
+左侧提供 **Operators**、**Catalogs** 和 **Examples** 三个标签页。画布展示处理步骤、流连接和 Outlet。本地读取使用 context URI；远程读取使用服务公开 URI，目标为 Union 时使用其公开名称。
 
-数据浏览器以树形展示 In-context catalog 与配置的 DACP 服务。初始只列出目录入口，展开时才读取 Dataset 和 Folder Item 的直接子项。本地 Item 设置 `read_item.params.uri: context:/dataset/item`；节点 Item 保留完整的 `dacp://host:port/dataset/item` URI。context 引用属于最终执行的 JVM，因此其目录需要与本地预览目录匹配。节点凭据配置在 `nodes` 中，仅保留在设计器服务器。可选 SQL 使用 `FROM source`，结构和样例预览反映查询结果。
+数据浏览器以树形展示 Target catalog 与配置的 DACP 服务。初始只列出目录入口，展开时才读取 Dataset 和 Folder Item 的直接子项。选择 Target catalog 中的 Item 时，设置 `read_item.params.uri: context:/dataset/item`；选择其他已配置目录中的 Item 时，保留完整的 `dacp://host:port/dataset/item` URI。context 引用属于最终执行的 JVM，因此其目录需要与本地预览目录匹配。节点凭据配置在 `nodes` 中，仅保留在设计器服务器。可选 SQL 使用 `FROM source`，结构和样例预览反映查询结果。
 
 ```yaml
 local_catalog:
@@ -192,9 +192,9 @@ nodes:
 
 设计器通过 XStream 插件契约绑定 JVM 级 DataCatalog。可用 `local_catalog.data_catalog` 配置自定义 DataCatalogProvider，替代静态数据集。详见 [XStream 引擎](../docs/xstream_zh.md)和 [Job 读取参数](../docs/jobs_zh.md)。
 
-目录浏览以当前实现为准：左侧 **Catalogs** 初始只加载本地目录及配置的服务根；展开后才加载数据集和文件夹。`target.url` 可选，本地 Item 使用 `context:`，远程 Item 使用完整 DACP URI。`read_item` 的结构及样例读取使用对应目录。
+目录浏览以当前实现为准：左侧 **Catalogs** 初始只加载本地目录及配置的服务根；展开后才加载数据集和文件夹。Target 默认为 Local；上下文目录随 Target 切换，该目录的 Item 使用 `context:`，其他目录使用完整 DACP URI。`read_item` 的结构及样例读取使用对应目录。
 
-Catalogs 目录树分别用主机、数据集、文件夹和数据文件图标区分层级。启动时加载目录根，展开时加载子项；不提供目录刷新按钮。
+Catalogs 目录树分别用主机、数据集、文件夹和数据文件图标区分层级。启动时加载目录根，展开时加载子项。
 
 Item 行仅显示末级名称与文件/文件夹图标。悬停或键盘聚焦时可查看完整路径和支持的视图。点击 Item 后，在独立悬浮层中显示紧凑的视图和复制图标，默认位于名称末尾右下方，空间不足时位于上方；不扩大 Item 行的高度或高亮范围。选择视图会设置 `read_item` 参数，复制路径不修改 Job。按 Esc 或点击外部隐藏图标。
 
@@ -219,10 +219,52 @@ showcase:
 
 Step 属性页提供多行 Description，最多 8192 个字符，自动保存为步骤的 `description` 字段。描述支持复制步骤、撤销/重做、导出和重新加载；不影响结构推导或执行行为，关闭设计器辅助信息后导出仍保留。
 
-算子库和画布步骤的图标下方显示仓库管理员公开的 0–5 分可信度：采用与算子仓库一致的五个盾牌勾选图标，按分数着青绿色，其余为灰色；悬停可查看分数。未提供有效评分时显示问号；内置 `read_item` 显示 Built-in，不虚构评分。可信度属于仓库元数据，不写入 Job，也不代表安全保证。
+算子列表的悬浮详情显示仓库公开的可信度及下载次数。可信度采用五个盾牌勾选图标，按分数着色；画布步骤不显示可信度。可信度不写入 Job，也不代表安全保证。
 
 左侧算子列表按名称合并版本，仅展示最新公开版本；数字段按数值排序（`1.10` 高于 `1.9`），正式版高于其连字符预发布版本。已有 Job 使用的旧版本继续按原版本解析，不会自动升级。
 
 鼠标悬停在数据集上时，显示其描述 JSON 中的 `title` 和 `description`；目录树仍显示用于访问的数据集名称。
 
-Designer 只负责逻辑 Job 设计，不调用物理规划器，也不展示物理计划或执行结果。
+Designer 用于编制逻辑 Job：选择 Item、连接算子、配置参数、查看结构并导出 YAML。
+
+算子列表显示图标、名称和版本。悬停或聚焦算子时，浮动详情显示可信度盾牌、分数及当前版本程序包的下载次数。缺少计数时显示 Unavailable；内置算子显示 Not applicable。
+
+Target 属于浏览器会话，默认为 Local。目录、结构与样例请求携带 `target`（`local` 或配置节点 URL）。服务端根据 `nodes` 校验选择，并保密凭据。切换 Target 会更新所选设计上下文的目录、结构及输出样例。
+
+## 确认及记住 Target
+
+点击 **Target: … Change…**，选择已配置服务，再点击 **Use selected target**。仅修改窗口中的选择不会切换上下文；点击 **Keep current target** 或按 Escape 保持当前目标。切换 Target 会刷新依赖上下文的结构和样例。推导使用有效的浏览器会话标识，并根据确认的 Target 解析 `context:`。
+
+Job YAML 可保存设计目标：
+
+```yaml
+designer:
+  version: 1
+  target: dacp://node-a.example.org:18861
+```
+
+`local` 表示 Designer 服务器的本地目录。主动加载 Job 时提示确认设计目标。刷新页面时直接恢复草稿中已确认且仍在配置中的目标，不再弹窗；若该目标已从配置移除，则使用 Local 恢复草稿，并提示检查 context Item 路径。不会连接未配置的地址。设计目标不可用时，提示选择已配置目标或保留当前目标。导出保存已确认的 Target；取消包含设计器元信息时，也会去掉该设计目标。执行引擎忽略整个 `designer` 区域：此字段不路由、不提交 Job，也不授予权限。
+
+## 示例 Job
+
+左侧 **Examples** 标签页列出十个随包提供的 Job：记录流读取、筛选并导出 CSV、变量化流程、双流合并、NetCDF 数组视图。每张卡片说明用途和步骤数。**Load example** 将图和变量值加载到当前 Target，不执行或提交 Job。当前画布有内容、存在未应用的 YAML 或变量值时，需要确认替换；Undo 可恢复原来的图和变量。
+
+示例通过 `context:` 引用样例 `weather` 数据集。请根据所选 Target 修改 Item 路径或变量。合并示例将同一个样例 Item 读取两次，因此仅有一个样例目录也能使用；修改任一 URI 即可合并不同来源。卡片会提示不可用的算子版本，并在配置仓库提供对应版本前禁用加载。仅使用内置 `read_item` 的示例不依赖仓库算子。
+
+`/api/examples` 返回随包提供的 YAML、变量、描述及依赖算子引用。示例文件和索引位于 `xstream-designer/src/main/resources/examples/`；所有示例均校验 Job 定义及变量解析结果。资源中不包含服务凭据或执行节点分配。
+
+示例还包含本地与远程数据流合并，以及保存远程设计目标的 Job。请将 example.org 示例地址替换为配置的服务地址。远程读取不代表计算下推；分布式执行仅由 Union 规划。`designer.target` 是仅供设计器使用的元信息，执行时忽略。
+
+结构推导在调用算子之前，使用 Variables YAML 替换完整的 `$VAR_NAME` 参数值，并保留数值、布尔值及结构化值的类型。修改变量值会更新受影响步骤及其下游的结构。缺失变量会按名称报错；在 Variables 中补齐后可恢复推导。导出的 Job 保留变量引用。
+
+跨节点模板包括两个远程节点、三个远程节点和 Union 协作。前两者保存 `designer.target: local`，Union 模板保存远程 Union 目标。使用前替换示例地址和公开数据集路径；加载时需确认目标切换。同一个 Job 可提交给 Union 自动分配执行位置，设计器不指定步骤所在节点。
+
+### 部署专用示例
+
+在启动配置中设置 `examples_directory: /srv/xstream/designer-examples`，提供 `index.yaml` 及其引用的 Job 和变量文件。索引采用 `id`、`title`、`description`、`job` 和 `variables` 字段，与随包索引一致。启动时读取并校验所有文件，每个文件限制为 256 KiB，只接受目录内的简单 YAML 文件名。不配置时使用随包的样例目录示例。
+
+部署时必须填写实际的 Item 路径、已配置的服务地址和 Union 公开数据集名称。本地示例应保存 `designer.target: local`，确保在远程设计上下文加载时提示切回本地。远程示例保存对应的已配置服务目标。应将每个示例的变量和目标一起传给 `/api/infer` 验证，包括源结构和下游诊断。示例中不得发布凭据。
+
+示例卡片展示紧凑的特征标签，包括 **Cross-node**（跨节点）、**Variables**（含变量）、**Local target**（本地目标）、**Remote target**（远程目标）、**Union**、**Multi-input**（多输入）和 **Scientific array**（科学数组）。在索引条目中配置 `tags: [Cross-node, Variables, Remote target]`；标签仅用于展示，不影响执行设置。每个示例最多八个标签，每个标签最多 40 个字符。
+
+示例按索引顺序显示 `01`、`02`……编号，便于引用。编号表示展示位置，示例的稳定标识仍为 `id`。

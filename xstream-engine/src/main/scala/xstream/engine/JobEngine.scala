@@ -19,42 +19,14 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
   val executor=suppliedExecutor.getOrElse(new TaskExecutor(environment,allocator))
   def execute(plan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,replay:Option[String],emit:OperatorFrame=>Unit,cancel:StreamCancel):Unit={
     require(!closed.get(),"JobEngine is closed");active.add(cancel)
-    try {if(closed.get())cancel.close();cancel.active()
-    val pushed=if(replay.isEmpty)Some(PhysicalPlanner.select(plan,environment.executionTargets,policy,cancel))else None
-    pushed.filter(_.regions.nonEmpty) match {
-      case Some(placement)=>
-        val detail=Json.obj().put("execution_mode","automatic_pushdown");detail.set[JsonNode]("planning",placement.costs)
-        val decisions=detail.putObject("placements");placement.placements.toVector.sorted.foreach{case(id,node)=>decisions.put(id,node)}
-        val subjobs=detail.putArray("remote_subjobs");placement.regions.foreach(r=>subjobs.addObject().put("id",r.id).put("node",r.node).put("job_yaml",PhysicalPlanner.yaml(r.plan)))
-        record.update("running",detail)
-        val delegates=placement.regions.map { region=>region.id->((output:OperatorFrame=>Unit,token:StreamCancel)=>{
-          val child=environment.executionHistory.begin("remote_job",metadata=Json.obj().put("parent_execution_id",record.id).put("node",region.node).put("job_yaml",PhysicalPlanner.yaml(region.plan)),state="running")
-          try {
-            val target=environment.executionTargets.find(_.id==region.node).get
-            val remotePolicy=Json.obj();remotePolicy.putObject("placement").put("mode","local")
-            remotePolicy.putObject("materialization").put("allowed",false).put("default","stream")
-            val handle=token.add(target.submit(_root_.xstream.execution.ExecutionRequest(PhysicalPlanner.yaml(region.plan),remotePolicy,token.remainingSeconds),token))
-            try {
-              var next=handle.next()
-              while(next.nonEmpty){token.active();handle.status().id.foreach(id=>child.update("running",Json.obj().put("remote_execution_id",id)));output(next.get);next=handle.next()}
-              require(handle.status().state=="succeeded","remote execution did not complete successfully")
-            }finally handle.close()
-            child.update("succeeded")
-          }catch{case e:Throwable=>child.update(token.cause(e) match {case _:java.util.concurrent.TimeoutException=>"expired";case _:java.util.concurrent.CancellationException=>"cancelled";case _=>"failed"},message=Option(e.getMessage));throw e}
-        })}.toMap
-        val localSettings=Json.obj().put("max_retries",policy.maxRetries)
-        policy.timeoutSeconds.foreach(localSettings.put("timeout_seconds",_))
-        localSettings.putObject("materialization").put("allowed",policy.effective.path("materialization").path("allowed").asBoolean(true)).put("default","stream")
-        val localPolicy=ExecutionPolicy.parse(localSettings,placement.local)
-        new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,delegates).run(placement.local,localPolicy,owner,record,None,emit,cancel)
-      case None=>
-        pushed.foreach(p=>{val d=Json.obj().put("pushdown_decision",if(policy.materialized.nonEmpty)"retained_local_for_materialization"else "local_policy_or_no_beneficial_eligible_plan");d.set[JsonNode]("planning",p.costs);record.update("running",d)})
-        if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty && fused(plan,record,emit,cancel))() else {
-          val units=if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty)ExecutionUnits.prepare(environment,plan,()=>cancel.active())else ExecutionUnits(plan,Map.empty,Json.obj())
-          val effective=if(units.groups.nonEmpty)ExecutionPolicy.parse(Json.obj(),units.plan)else policy
-          new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,preparedUnits=units).run(units.plan,effective,owner,record,replay,emit,cancel)
-        }
-    }
+    try {
+      if(closed.get())cancel.close()
+      cancel.active()
+      if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty && fused(plan,record,emit,cancel))() else {
+        val units=if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty)ExecutionUnits.prepare(environment,plan,()=>cancel.active())else ExecutionUnits(plan,Map.empty,Json.obj())
+        val effective=if(units.groups.nonEmpty)ExecutionPolicy.parse(Json.obj(),units.plan)else policy
+        new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,preparedUnits=units).run(units.plan,effective,owner,record,replay,emit,cancel)
+      }
     }finally active.remove(cancel)
   }
   private def fused(plan:JobPlan,record:ExecutionHistory#Record,emit:OperatorFrame=>Unit,c:StreamCancel):Boolean={

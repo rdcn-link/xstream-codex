@@ -1,0 +1,45 @@
+name: Merge observations from three remote nodes
+steps:
+- id: left
+  title: Read observations
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: $NODE_A_ITEM
+    view: records
+- id: right
+  title: Read observations
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: $NODE_B_ITEM
+    view: records
+- id: merge
+  operator: piflow_merge@1.2
+  inputs:
+    left: left
+    right: right
+  params: {}
+- id: third
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: $NODE_C_ITEM
+    view: records
+- id: merge_all
+  operator: piflow_merge@1.2
+  inputs:
+    left: merge
+    right: third
+  params: {}
+- id: csv
+  operator: piflow_csv_save@1.2
+  inputs:
+    source: merge_all
+  params:
+    header: true
+outputs:
+  result: csv
+designer:
+  version: 1
+  target: local

@@ -50,7 +50,7 @@ object Identity extends ByteStreamOperator {
 
 ## 输入、参数与输出
 
-`inputs` 声明命名输入端口及表示；`parameters` 声明 JSON 参数类型、默认值和约束。不要在清单中声明 `outputs`，输出端口和结构由 `inferOutputs`/`infer_outputs` 返回。参数值来自 Job 的 `params`，例如 `uppercase: true`，而非输入数据流。
+`inputs` 声明命名输入端口及表示；`parameters` 声明 JSON 参数类型、默认值和约束。实现 `inferOutputs`/`infer_outputs`，返回输出端口和结构。参数值来自 Job 的 `params`，例如 `uppercase: true`，而非输入数据流。
 
 记录模板按 Arrow RecordBatch/VectorSchemaRoot 处理表格，保留字段类型；需要更改字段时实现 `output_schema`/`outputSchema`。通用上下文使用 `ctx.input(name)`、`ctx.records_output`/`ctx.recordsOutput` 或 bytes 对应方法。多输入按端口名词典序逐个完整消费；先声明所有输出，再写数据。
 

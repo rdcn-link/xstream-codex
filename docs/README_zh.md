@@ -9,7 +9,7 @@
 - [数据集、Item 与流访问](dataset-access_zh.md)
 - [DataView 与视图流示例](data-view-examples_zh.md)
 
-- [执行目标与物理规划](execution-targets_zh.md)
+- [本地执行与远程数据](execution-targets_zh.md)
 
 ## 扩展开发者
 
@@ -22,6 +22,3 @@
 - [添加格式处理器](format-handlers_zh.md)
 - [插件与模块边界](plugins_zh.md)
 - [数据视图与 Arrow 流](data-streams_zh.md)
-
-
-- [项目边界审查](boundary-review_zh.md)

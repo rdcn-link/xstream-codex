@@ -87,31 +87,6 @@ object Source {
     finally Resources.closeAll(Seq(client,allocator))
   }
 
-  /** Public Union logical execution nodes, using ordinary client credentials. */
-  /** Service features and effective permissions for this authenticated caller. Advisory only. */
-  def capabilities(origin:String,tls:TlsConfig=TlsConfig(),timeoutSeconds:Long=30):com.fasterxml.jackson.databind.JsonNode={
-    val uri=new URI(origin)
-    require(uri.getScheme=="dacp" && uri.getHost!=null && Set("","/")(Option(uri.getPath).getOrElse("")),"expected DACP origin")
-    val (client,allocator)=connection(uri,tls)
-    try {
-      val results=client.doAction(new org.apache.arrow.flight.Action("dacp.capabilities",Array.emptyByteArray),org.apache.arrow.flight.CallOptions.timeout(timeoutSeconds,java.util.concurrent.TimeUnit.SECONDS)).asScala
-      require(results.hasNext,"missing capability response");val bytes=results.next().getBody
-      require(bytes.length<=1024*1024 && !results.hasNext,"invalid capability response")
-      _root_.xstream.util.Json.mapper.readTree(bytes)
-    }finally Resources.closeAll(Seq(client,allocator))
-  }
-  def nodes(origin:String,tls:TlsConfig=TlsConfig(),timeoutSeconds:Long=30):com.fasterxml.jackson.databind.JsonNode={
-    val canonical=_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(origin)
-    require(timeoutSeconds>0,"timeoutSeconds must be positive")
-    val (client,allocator)=connection(new URI(canonical),tls)
-    try {
-      val results=client.doAction(new Action("dacp.nodes",Array.emptyByteArray),CallOptions.timeout(timeoutSeconds,TimeUnit.SECONDS)).asScala
-      require(results.hasNext,"missing node directory response");val bytes=results.next().getBody
-      require(bytes.length<=1024*1024 && !results.hasNext,"invalid node directory response")
-      _root_.xstream.util.Json.mapper.readTree(bytes)
-    }finally Resources.closeAll(Seq(client,allocator))
-  }
-
   private[client] def connection(u:URI,tls:TlsConfig):(FlightClient,RootAllocator)={
     def credential(value: Option[Path], env: String): Option[Path] = value.orElse(sys.env.get(env).map(Path.of(_)))
     val ca = credential(tls.ca, "DACP_CA")

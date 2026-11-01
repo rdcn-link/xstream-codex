@@ -1,0 +1,26 @@
+name: Parameterized weather screening
+steps:
+- id: read
+  title: Read observations
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: $INPUT_URI
+    view: records
+- id: filter
+  operator: piflow_filter@1.2
+  inputs:
+    source: read
+  params:
+    condition: $CONDITION
+- id: csv
+  operator: piflow_csv_save@1.2
+  inputs:
+    source: filter
+  params:
+    header: $INCLUDE_HEADER
+outputs:
+  result: csv
+designer:
+  version: 1
+  target: local

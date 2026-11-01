@@ -33,7 +33,8 @@ private[designer] object CatalogConnections {
 }
 
 final class Designer(config:JsonNode) extends AutoCloseable {
-  require(!config.has("targets") && !config.has("repositories"),"Configure a single target and repository")
+  require(!config.has("target") && !config.has("targets") && !config.has("repositories"),"Configure nodes and one repository")
+  private val exampleJobs=ExampleJobs.load(Option(config.get("examples_directory")).map(n=>Path.of(n.asText)))
   private val showcase = Option(config.get("showcase")).map { settings =>
     def text(key:String):String={
       val file=Path.of(settings.path(key).asText)
@@ -46,9 +47,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     Json.obj().put("job_yaml",job).put("variables_yaml",variables)
       .put("label",settings.path("label").asText("Load demo"))
   }
-  private val configuredTarget=config.path("target")
   private val configuredRepository=config.path("repository")
-  if(configuredTarget.has("url"))_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(configuredTarget.path("url").asText)
   private val repositoryUri=URI.create(configuredRepository.path("url").asText)
   require(Set("http","https")(repositoryUri.getScheme) && repositoryUri.getHost!=null,"Repository requires HTTP URL")
   private val chat=ChatPlanner.configured(config.path("chat"))
@@ -57,7 +56,6 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private val server=HttpServer.create(new InetSocketAddress(config.path("host").asText("127.0.0.1"),config.path("port").asInt(8840)),32)
   server.setExecutor(pool)
   private def tls(n:JsonNode):TlsConfig=TlsConfig(ca=Option(n.get("ca")).map(v=>Path.of(v.asText)),tokenFile=Option(n.get("token_file")).map(v=>Path.of(v.asText)))
-  private def target(n:JsonNode):JsonNode=configuredTarget
   private def fetchOperators():JsonNode={
     val repo=configuredRepository
     val response=http.send(HttpRequest.newBuilder(URI.create(repo.path("url").asText.stripSuffix("/")+"/v1/operators")).timeout(Duration.ofSeconds(15)).GET().build(),HttpResponse.BodyHandlers.ofInputStream())
@@ -70,11 +68,27 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private val workerSettings=InferenceWorkerSettings.read(Option(config.get("inference_workers")).map(n=>Json.mapper.convertValue(n,classOf[java.util.LinkedHashMap[String,Object]]).asInstanceOf[Object]))
   private val localCatalog=new xstream.data.ConfiguredDataCatalog(config.path("local_catalog"),inferencePlugins)
   private val nodeConnections=config.path("nodes").elements.asScala.toVector
-  private val connections=(Vector(configuredTarget).filter(_.has("url"))++nodeConnections).groupBy(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)).values.map(_.head).toVector.sortBy(_.path("url").asText)
+  private val connections=nodeConnections.groupBy(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)).values.map(_.head).toVector.sortBy(_.path("url").asText)
   private def connection(value:String):JsonNode=connections.find(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)==CatalogConnections.origin(value)).getOrElse(throw new IllegalArgumentException("Node is not configured"))
   private val inferenceRuntime=new OperatorInferenceService(inferenceCache.resolve("local"),Seq(configuredRepository.path("url").asText),
     inferenceCache,if(config.has("operator_max_bytes"))Json.number(config,"operator_max_bytes",1,8L*1024*1024*1024)else 8L*1024*1024*1024,inferencePlugins,workerSettings)
-  private val inference=new DesignerInference(inferenceRuntime.infer,describeItem,previewItem,Some(describeQueriedItem),Some(previewQueriedItem),None,Some(inferSource))
+  private def selectedTarget(n:JsonNode):Option[JsonNode]={
+    val value=n.path("target")
+    require(value.isMissingNode || value.isTextual,"target must be Local or a configured DACP origin")
+    if(value.isMissingNode || value.asText=="local")None else Some(connection(value.asText))
+  }
+  private def contextual(value:String,target:Option[JsonNode]):String=
+    if(value.startsWith("context:") && target.nonEmpty)target.get.path("url").asText.stripSuffix("/")+URI.create(value).getRawPath else value
+  private val inferences=new java.util.concurrent.ConcurrentHashMap[String,DesignerInference]()
+  private def inference(n:JsonNode):DesignerInference={
+    val selected=selectedTarget(n);val key=selected.map(_.path("url").asText).getOrElse("local")
+    inferences.computeIfAbsent(key,_=>new DesignerInference(inferenceRuntime.infer,
+      (v,w,c)=>describeItem(contextual(v,selected),w,c),
+      (v,w,l,c)=>previewItem(contextual(v,selected),w,l,c),
+      Some((v,w,q,c)=>describeQueriedItem(contextual(v,selected),w,q,c)),
+      Some((v,w,q,l,c)=>previewQueriedItem(contextual(v,selected),w,q,l,c)),None,
+      Some((v,w,q,l,c)=>inferSource(contextual(v,selected),w,q,l,c))))
+  }
   private def withItem[A](value:String,cancel:StreamCancel)(f:(Dataset,String)=>A):A={
     val uri=URI.create(value)
     require(uri.getScheme=="dacp" && uri.getHost!=null && uri.getUserInfo==null && uri.getQuery==null && uri.getFragment==null,"expected public Item URI")
@@ -83,7 +97,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val local=configured.nonEmpty
     val remote=config.path("remote_item_credentials").path(_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(origin))
     require(local || remote.isTextual,"Remote Item service requires configured remote_item_credentials")
-    val credentials=if(local)tls(configured.get)else TlsConfig(ca=tls(configuredTarget).ca,tokenFile=Some(Path.of(remote.asText)))
+    val credentials=if(local)tls(configured.get)else TlsConfig(tokenFile=Some(Path.of(remote.asText)))
     val parts=Option(uri.getPath).getOrElse("").stripPrefix("/").split("/",2)
     require(parts.length==2 && parts.forall(_.nonEmpty),"expected dataset and Item path")
     cancel.active()
@@ -225,7 +239,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private def publicConfig:JsonNode={
     val n=Json.obj().put("chat_provider",chat.name)
     n.putObject("generator").put("name",DesignerLayout.name).put("version",DesignerLayout.softwareVersion)
-    n.putObject("target").put("url",configuredTarget.path("url").asText)
+    val targets=n.putArray("targets");targets.addObject().put("value","local").put("label","Local")
+    connections.foreach(c=>targets.addObject().put("value",c.path("url").asText).put("label",URI.create(c.path("url").asText).getAuthority))
     showcase.foreach { value =>
       n.set[JsonNode]("showcase",value)
       n.put("draft_key", "xstream-designer-showcase")
@@ -235,24 +250,25 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private def document(n:JsonNode,empty:Boolean=false):JsonNode={val j=Documents.job(n.path("job_yaml").asText,empty);Documents.variables(n.path("variables_yaml").asText);j}
   private def api(path:String,n:JsonNode):JsonNode=path match {
     case "/api/operators"=>fetchOperators()
+    case "/api/examples"=>exampleJobs
     case "/api/views"=>
       val out=Json.obj()
       DataViewSupports.all(inferencePlugins).foreach { c=>val n=out.putObject(c.kind.name);n.set[JsonNode]("selection",c.selectionSchema) }
       out
     case "/api/catalogs"=>
-      val a=Json.mapper.createArrayNode();a.addObject().put("name","In-context catalog").put("uri","context:/")
-      connections.foreach(c=>a.addObject().put("name",URI.create(c.path("url").asText).getAuthority).put("uri",c.path("url").asText.stripSuffix("/")+"/"));a
+      val a=Json.mapper.createArrayNode();a.addObject().put("name","Target catalog").put("uri","context:/")
+      connections.filterNot(c=>selectedTarget(n).contains(c)).foreach(c=>a.addObject().put("name",URI.create(c.path("url").asText).getAuthority).put("uri",c.path("url").asText.stripSuffix("/")+"/"));a
     case "/api/datasets"=>
-      val uri=n.path("uri").asText;val out=Json.obj();val a=out.putArray("datasets")
+      val requested=n.path("uri").asText;val uri=contextual(requested,selectedTarget(n));val out=Json.obj();val a=out.putArray("datasets")
       if(uri=="context:/"){
         val directory=localCatalog.catalog.directory(()=>());out.put("complete",directory.complete).put("unavailable_sources",directory.unavailableSources)
         directory.entries.foreach(d=>a.addObject().put("name",d.name).put("uri",new URI("context",null,"/"+d.name,null).toASCIIString).put("description",d.description))
       }else {
         val t=connection(uri);val directory=Source.datasets(t.path("url").asText,tls(t),15);out.put("complete",directory.complete).put("unavailable_sources",directory.unavailableSources)
-        directory.foreach(d=>a.addObject().put("name",d.name).put("uri",d.uri).put("description",d.description))
+        directory.foreach(d=>a.addObject().put("name",d.name).put("uri",if(requested=="context:/")new URI("context",null,"/"+d.name,null).toASCIIString else d.uri).put("description",d.description))
       };out
     case "/api/items"=>
-      val uri=n.path("uri").asText;val out=Json.obj();val list=out.putArray("items");val path=n.path("path").asText("/")
+      val uri=contextual(n.path("uri").asText,selectedTarget(n));val out=Json.obj();val list=out.putArray("items");val path=n.path("path").asText("/")
       if(uri.startsWith("context:"))Using.resource(localCatalog.open(URI.create(uri).getPath.stripPrefix("/"))){ds=>ds.list(path).foreach {i=>
         val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");inferencePlugins.views(i).foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))
       }}else {val t=connection(uri);Using.resource(Source.open(uri,tls(t),15)){ds=>ds.list(path).foreach{i=>val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");i.views.foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))}}};out
@@ -262,11 +278,11 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     case "/api/infer"=>
       document(n)
       val job=Documents.job(WorkflowVariables.resolve(n.path("job_yaml").asText,Documents.variables(n.path("variables_yaml").asText)))
-      Using.resource(new StreamCancel(()=>pool.isShutdown,120)){cancel=>SchemaPreview.present(inference.infer(job,cancel,Option(n.get("preview")).map(OutputSamples.limits),editSession=Option(n.get("inference_session")).map(_.asText)))}
+      Using.resource(new StreamCancel(()=>pool.isShutdown,120)){cancel=>SchemaPreview.present(inference(n).infer(job,cancel,Option(n.get("preview")).map(OutputSamples.limits),editSession=Option(n.get("inference_session")).map(_.asText)))}
     case "/api/chat"=>
       document(n,empty=true);require(n.path("message").isTextual && n.path("message").asText.trim.nonEmpty && n.path("message").asText.length<=8000,"Enter a message of up to 8000 characters")
       val request=n.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();request.set[JsonNode]("operators",fetchOperators())
-      request.put("origin",configuredTarget.path("url").asText)
+      request.put("origin",selectedTarget(n).map(_.path("url").asText).getOrElse("context:/"))
       require(!n.has("catalog_items") || (n.path("catalog_items").isArray && n.path("catalog_items").size<=100),"At most 100 catalog items may be supplied")
       val result=chat.plan(request)
       require(result!=null && result.isObject && result.path("reply").isTextual,"Chat must return a reply")
@@ -292,7 +308,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val out=x.getResponseBody
     def event(n:JsonNode):Unit={out.write(Json.mapper.writeValueAsBytes(n));out.write(10);out.flush()}
     try Using.resource(new StreamCancel(()=>pool.isShutdown,120)){cancel=>
-      val result=inference.infer(job,cancel,preview,(id,r)=>{
+      val result=inference(n).infer(job,cancel,preview,(id,r)=>{
         val wrapper=Json.obj();wrapper.putObject("outputs");wrapper.putObject("steps").set[JsonNode](id,xstream.execution.StructureInference.json(r))
         val step=Json.obj().put("event","step").put("step",id);step.set[JsonNode]("result",SchemaPreview.present(wrapper).path("steps").path(id));event(step)
       },editSession=Option(n.get("inference_session")).map(_.asText))
@@ -316,7 +332,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         require(Option(x.getRequestHeaders.getFirst("Content-Type")).exists(_.startsWith("application/json")),"Expected application/json")
         Option(x.getRequestHeaders.getFirst("Origin")).foreach(o=>require(URI.create(o).getAuthority==x.getRequestHeaders.getFirst("Host"),"Cross-origin request denied"))
         val body=try x.getRequestBody.readNBytes(1024*1024+1)finally x.getRequestBody.close();require(body.length<=1024*1024,"Request exceeds 1 MiB")
-        val n=Json.mapper.readTree(body);require(n!=null && n.isObject,"Expected JSON object");require(!n.has("target") && !n.has("repository"),"Services are selected by server configuration")
+        val n=Json.mapper.readTree(body);require(n!=null && n.isObject,"Expected JSON object");require(!n.has("repository"),"Repository is selected by server configuration");selectedTarget(n)
         if(path=="/api/infer_stream")inferStream(x,n)else send(x,200,"application/json",Json.mapper.writeValueAsBytes(api(path,n)))
       }else if(x.getRequestMethod=="GET" && assets.contains(path)){
         val(file,mime)=assets(path);val in=getClass.getResourceAsStream("/web/"+file);require(in!=null,"Asset unavailable");val data=try in.readAllBytes()finally in.close();send(x,200,mime,data)

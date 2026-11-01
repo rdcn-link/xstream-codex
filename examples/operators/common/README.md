@@ -24,7 +24,7 @@ Build output is `examples/operators/common/target/catalog`. HTTP publication reu
 
 ## Workflow example
 
-Use this step in an existing task template, replacing `node` and `uri` with an actual node and Item, then submit through a Union or node client. `params` also supplies the parameter object for shell `run`; see the [operator authoring guide](../../../docs/operator-authoring.md) for complete commands.
+Use this step in an existing step template, replacing `node` and `uri` with an actual node and Item, then submit through a Union or node client. `params` also supplies the parameter object for shell `run`; see the [operator authoring guide](../../../docs/operator-authoring.md) for complete commands.
 
 ```yaml
 id: clean_text

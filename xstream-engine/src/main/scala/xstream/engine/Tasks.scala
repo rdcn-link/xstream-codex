@@ -10,8 +10,7 @@ import org.yaml.snakeyaml.Yaml
 
 case class InputBinding(uri: Option[String] = None, task: Option[String] = None, port: String = "result", view: String = "bytes", scan:Option[Scan]=None, selection:Option[com.fasterxml.jackson.databind.JsonNode]=None)
 case class Task(id: String, inputs: Map[String,InputBinding], operator: String, params: java.util.Map[String,Object], node: Option[String] = None, source: Option[SourceOperator] = None, title: Option[String] = None, outputPorts:Seq[String]=Seq.empty, proxyPath:Vector[String]=Vector.empty, localOperator:Option[String]=None, description:Option[String]=None)
-case class PlacementDecision(step:String,node:String,reason:String,requestedSource:Option[String]=None,resolvedSource:Option[String]=None)
-case class JobPlan(steps: Vector[Task], outputs: Map[String,(String,String)], name:String="Job",placements:Vector[PlacementDecision]=Vector.empty)
+case class JobPlan(steps: Vector[Task], outputs: Map[String,(String,String)], name:String="Job")
 case class SourceOperator(runtime: String, source: String, entrypoint: String = "Main")
 object Jobs {
   val ReadItem = "read_item@1.0"
