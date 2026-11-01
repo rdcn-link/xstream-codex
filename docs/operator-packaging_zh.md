@@ -1,7 +1,7 @@
 # 算子打包与共享运行环境
 
 算子必须在 `inputs` 之外声明静态 `parameters` 契约，详见[参数类型与表单](operator-parameters_zh.md)。输出结构仍只由推导方法给出。
-输出结构统一由必选推导方法提供，清单声明输入与参数契约；详见[结构推导](structure-inference_zh.md)。
+输出推导契约详见[结构推导](structure-inference_zh.md)。
 
 算子由不可变的 `name@version` 清单、共享运行环境镜像和可选的小型代码文件组成。多个名称和版本可以引用相同运行环境及代码包。已支持完整容器、精简 Java/Scala JAR、Python 源文件和 wheel。算子始终在独立 Docker 容器内运行，公共仓库文件不加载到服务器 JVM。
 

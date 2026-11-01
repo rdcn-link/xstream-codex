@@ -164,3 +164,5 @@ An Item is an addressable source; a View supplies its representation. A step inp
 Every View emits one schema followed by ordered batches; even an empty stream has a schema. Arrays keep their dimensions instead of silently becoming tabular rows. Same-process consumers may use Arrow batches directly; process boundaries use Arrow IPC. This common stream contract does not make every View interchangeable: the operator's input must accept the selected representation.
 
 For API ownership, backpressure and cancellation, read [Data views and Arrow streams](data-streams.md) and [Arrow stream contracts](arrow-streams.md). For complete Job syntax, see [Jobs](jobs.md).
+
+For built-in reader options, container limits and publication metadata, see the [file format and container reference](file-formats.md).

@@ -1,6 +1,6 @@
 # Dataset, Item, and stream access
 
-XStream uses `DataCatalog → PublishedDataset → DatasetAccess → DataView → ArrowDataStream`. A host supplies the catalog; the same data interfaces serve embedded engines, the Runner and Designer. DACP integrates these interfaces with its remote services; it does not own the data model.
+XStream uses `DataCatalog → PublishedDataset → DatasetAccess → DataView → ArrowDataStream`. A host supplies the catalog; the same data interfaces serve embedded engines, the Runner and Designer. Applications use these interfaces to manage and read data independently of storage backends.
 
 ## Ownership and capabilities
 

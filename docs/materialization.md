@@ -34,6 +34,8 @@ materialization_store:
 
 The standard distribution includes `xstream-plugin-execution-file`. Each storage directory has one writer host. A step commits its selected Arrow IPC File segments atomically after successful execution and valid output termination; failures discard uncommitted data. Manifests retain schema, dictionaries, batch boundaries, lengths and checksums. Leases protect active readers from retention cleanup. Missing configuration, quota exhaustion, corruption and expiration fail explicitly. Materialization creates no Dataset and does not checkpoint internal operator state.
 
+`directory` is required; quota and retention defaults are shown above and must be positive integers. `max_bytes` covers the directory and `max_task_bytes` covers one step’s selected outputs, including Arrow files and manifest overhead. Startup removes uncommitted temporary directories; append or quota failures prevent commit. Expired content cannot receive new leases, while existing leases protect files from deletion. Commit requires operator success, fully consumed inputs and complete selected outputs; downstream failure does not delete committed upstream output.
+
 ## Submit and consume
 
 ```bash
@@ -66,3 +68,9 @@ stateDiagram-v2
   Discarded --> [*]
   Expired --> [*]
 ```
+
+## Storage plugin contract
+
+Public contracts live in `xstream-execution-api`: `MaterializationStoreProvider`, `MaterializationStore`, `MaterializationWriter`, `MaterializedTask`, and `MaterializedFrames`. Register an external provider class through `META-INF/services/xstream.execution.MaterializationStoreProvider`, install its JAR and dependencies in the node `plugin_directory`, and configure `provider` to its `id`. No core registry edits are needed.
+
+Plugins own private configuration, quotas, expiration, atomic step commit, durability, leases, and read integrity. Core owns authorization, policy validation, frame protocol, cancellation, and execution resources. `append(port, OperatorFrame)` accepts typed frames; replay returns `MaterializedFrames`. Frame headers are bounded by 64 KiB and payloads by 8 MiB. Plugins must not buffer a whole step. The file plugin stores an initial zero-row Arrow File segment and independent data segments, with ordered names, sizes and checksums in a manifest. A failed append prevents commit. Closing an uncommitted writer must abort it, `get` may expose committed artifacts only, and expired artifacts cannot receive new leases. Cleanup must preserve existing leases. New implementations should test discovery, commit/abort, restart reads, quota, expiration/leases, truncation/corruption, and close cleanup. See `MaterializationSpec` for executable contract examples.

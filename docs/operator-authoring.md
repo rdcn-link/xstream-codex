@@ -132,3 +132,14 @@ Further reading: [SDK](../xstream-operator-sdk/README.md) · [Parameters](operat
 ## Local development
 
 The standalone engine supports source-directory references, reusable builds and direct source submission; see [local operator libraries](local-operators.md). `LocalOperatorBuilder` is an implemented build extension point with built-in `python` and `command` providers registered through ServiceLoader.
+
+## Development topic reference
+
+| Goal | Examples and reference |
+|---|---|
+| Set up development tools | [CLI](../xstream-operator-sdk/cli/README.md), [local operators](local-operators.md) |
+| Choose dependencies and reduce package size | [Dependency environments](dependency-environments.md), [packaging reference](operator-packaging.md), [runtimes](operator-runtimes.md) |
+| Define ports and streams | [Stream contract](operator-streams.md), [SDK](../xstream-operator-sdk/README.md) |
+| Supply parameters, structures and samples | [Parameter types](operator-parameters.md), [structure inference](structure-inference.md) |
+| Use scripts or third-party programs | [Script examples](../examples/operators/scripts/README.md), [native commands](native-commands.md) |
+| Prepare public publication | [Submission](operator-submission.md), [provenance](operator-provenance.md), [icons](operator-presentation.md) |

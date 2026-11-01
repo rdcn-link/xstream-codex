@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-XStream 是 Scala 编写的流式计算工具集，包含类型化数据访问、可嵌入的作业引擎和浏览器图形设计器。步骤消费和生成数据流，中间数据无需保存为文件；需要时可通过显式执行策略启用物化和重放。
+XStream 提供 Dataset 管理与 Job 执行，包含 Scala 数据 SDK、可嵌入的流式引擎和浏览器图形设计器。步骤消费和生成数据流，中间数据无需保存为文件；需要时可通过显式执行策略启用物化和重放。
 
 XStream 在本地执行 Job 的每个步骤。远程 `read_item` URI 为本地算子提供数据流。DACP 客户端负责向远程服务提交 Job，Union 负责成员之间的自动放置。
 
@@ -20,6 +20,8 @@ XStream 在本地执行 Job 的每个步骤。远程 `read_item` URI 为本地�
 | [xstream-designer](xstream-designer/README_zh.md) | 图形化作业编辑、目录、变量、结构和样例预览、聊天草案及 YAML 导入导出 |
 
 `context:/dataset/item` 在当前 JVM 绑定的目录中解析；显式 `dacp://host:port/dataset/item` URI 使用配置的远程连接。科学数组、图像和序列保留自身结构，不会被隐式展平成记录。格式和后端实现通过插件契约注册。
+
+先运行[第一个 Job](docs/quickstart_zh.md)，再按[文档目录](docs/README_zh.md)查找数据管理、算子开发和嵌入 API。
 
 ## 构建
 

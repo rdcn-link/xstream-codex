@@ -92,11 +92,7 @@ Versioned references use approved public repository operators and verified artif
 
 ## Designer
 
-The `xstream-designer` module starts a browser-based editor. Its `local_catalog` section uses the same `datasets`/`data_catalog` settings. `nodes` supplies available remote DACP connections. Target defaults to Local; choosing a configured node makes its catalog the in-context catalog and removes its duplicate root. The sidebar initially fetches only catalog roots. Expanding a root loads datasets; expanding a Dataset or Folder Item loads its direct children. Errors affect only the expanded branch and can be retried by collapsing and reopening it.
-
-When the receiving service is a Union, `context:/public-dataset/item` resolves through its public dataset-to-member mapping. An explicit URI using that Union's configured public origin has the same meaning. A recognized member URI instead pins the read to its data-owning member.
-
-Selections in the in-context catalog become `context:/dataset/item`; other catalog selections retain their full DACP URI. Schema/sample previews resolve context against the selected Target. When running the exported Job elsewhere, provide a matching context catalog or explicitly change the Item URI.
+For Target configuration, catalog browsing, editing steps and schema/sample previews, use the [Designer guide](../xstream-designer/README.md).
 
 ## Local execution and remote data
 
@@ -115,3 +111,5 @@ flowchart LR
   Policy["Execution policy"] -.-> Units
   Process -. "Selected boundaries" .-> Store["Materialization store"]
 ```
+
+For execution record configuration and storage interfaces, see the [execution history API](execution-history.md).

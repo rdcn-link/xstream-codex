@@ -29,7 +29,7 @@ outputs:
 
 `name` 是必填的可读工作流名称，与自动生成的执行 ID 分开；最多 256 个字符，不允许空白名称或控制字符。每个步骤包含唯一 `id`、可选说明 `title`、带版本的 `operator`、命名输入 `inputs`，以及可选的参数 `params`。输入值和 Job 输出使用 `step` 或 `step:port`，省略端口时使用 `result`。每个输出最多有一个消费者；分发数据需要显式复制算子或不同输出端口。
 
-`read_item@1.0` 是无需算子容器的内置传输源，无输入，输出端口为 `result`。只提供 `uri` 参数：`context:/dataset/item` 指向接收 Job 的 JVM 的 DataCatalog，`dacp://host:port/dataset/item` 显式指定服务。可选 `view` 选择已声明的表示，包括 `bytes`、`records`、`array`、`image`、`sequence`；未指定时按 records、bytes、首个可用科学视图的顺序选择。科学读取可通过 `selection` 映射指定范围。可选 `sql` 查询 records 视图，提供后默认选择 records，显式选择 bytes 则报错。
+`read_item@1.0` 是无需算子容器的内置传输源，无输入，输出端口为 `result`。只提供 `uri` 参数：`context:/dataset/item` 指向接收 Job 的 JVM 的 DataCatalog，`dacp://host:port/dataset/item` 显式指定服务。可选 `view` 选择已声明的表示，包括 `bytes`、`records`、`array`、`sequence`；未指定时按 records、bytes、首个可用科学视图的顺序选择。科学读取可通过 `selection` 映射指定范围。可选 `sql` 查询 records 视图，提供后默认选择 records，显式选择 bytes 则报错。
 
 向 Union 提交时，使用其公开数据项路径。Union 负责解析数据所在成员、分配步骤并下发节点子 Job；用户仅描述逻辑数据流。
 

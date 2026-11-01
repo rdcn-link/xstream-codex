@@ -1,7 +1,7 @@
 # Operator packaging and shared environments
 
 Operators must declare a static `parameters` contract alongside `inputs`; see [parameter types and forms](operator-parameters.md). Output structures remain exclusively defined by inference methods.
-Output structures come exclusively from the mandatory inference method; manifests declare input contracts only. See [structure inference](structure-inference.md).
+See [structure inference](structure-inference.md) for the output inference contract.
 
 Operators consist of an immutable `name@version` manifest, a shared runtime image, and an optional small code artifact. Multiple names and versions can reference the same runtime and code bundle. This is implemented for complete containers, thin Java/Scala JARs, Python source files, and Python wheels. Operators always execute in a separate Docker container; public repository artifacts are never loaded into the server JVM.
 

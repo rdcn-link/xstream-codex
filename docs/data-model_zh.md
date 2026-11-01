@@ -164,3 +164,5 @@ Item 是可寻址的数据来源，View 提供其表示形式。步骤输入端�
 每个 View 先输出一次结构，再输出有序批次；空流也具有结构。数组保留维度，不会被静默转换为表格行。同进程内的消费者可以直接使用 Arrow 批次；跨进程边界使用 Arrow IPC。统一的流契约不表示各种 View 可以相互替代：算子输入必须接受所选表示。
 
 API 的资源归属、背压和取消见[数据视图与 Arrow 流](data-streams_zh.md)及 [Arrow 流契约](arrow-streams_zh.md)。完整 Job 语法见 [Jobs](jobs_zh.md)。
+
+内置读取器的参数、容器限制及发布元数据见[文件格式与容器参考](file-formats_zh.md)。

@@ -1,6 +1,6 @@
 # 数据集、Item 与流访问
 
-XStream 使用 `DataCatalog → PublishedDataset → DatasetAccess → DataView → ArrowDataStream`。宿主提供目录；内嵌引擎、Runner 和 Designer 复用相同的数据接口。DACP 将这些接口接入远程服务，但不拥有数据模型本身。
+XStream 使用 `DataCatalog → PublishedDataset → DatasetAccess → DataView → ArrowDataStream`。宿主提供目录；内嵌引擎、Runner 和 Designer 复用相同的数据接口。应用通过这些接口管理和读取数据，无需依赖具体存储后端。
 
 ## 资源所有权与能力
 

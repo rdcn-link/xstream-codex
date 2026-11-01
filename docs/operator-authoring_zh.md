@@ -132,3 +132,14 @@ stdout 保留给流协议，日志写 stderr。输入须消费到 EOS；成功�
 ## 本地开发
 
 独立引擎支持源码目录引用、可复用构建和直接提交源码，详见[本地算子库](local-operators_zh.md)。其中 `LocalOperatorBuilder` 是已实现的构建扩展点，内置 `python` 与 `command` 提供者通过 ServiceLoader 注册。
+
+## 开发主题参考
+
+| 目标 | 示例与参考 |
+|---|---|
+| 配置开发工具 | [CLI](../xstream-operator-sdk/cli/README_zh.md)、[本地算子](local-operators_zh.md) |
+| 选择依赖并减小包体积 | [依赖环境](dependency-environments_zh.md)、[打包参考](operator-packaging_zh.md)、[运行时](operator-runtimes_zh.md) |
+| 定义端口和数据流 | [流契约](operator-streams_zh.md)、[SDK](../xstream-operator-sdk/README_zh.md) |
+| 提供参数、结构和样例 | [参数类型](operator-parameters_zh.md)、[结构推导](structure-inference_zh.md) |
+| 使用脚本或第三方程序 | [脚本示例](../examples/operators/scripts/README_zh.md)、[原生命令](native-commands_zh.md) |
+| 准备公开发布 | [提交](operator-submission_zh.md)、[来源材料](operator-provenance_zh.md)、[图标](operator-presentation_zh.md) |

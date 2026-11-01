@@ -34,6 +34,8 @@ materialization_store:
 
 标准发行包包含 `xstream-plugin-execution-file`。每个存储目录只由一个宿主写入。步骤成功执行且输出正常结束后，其选定 Arrow IPC File 分段才原子提交；失败会丢弃未提交数据。清单保留 schema、字典、批次边界、长度和校验值。租约保护正在读取的内容不被过期清理。缺少配置、配额耗尽、内容损坏和过期均明确失败。物化不生成 Dataset，也不保存算子内部状态。
 
+`directory` 必填；配额与保留时间的默认值如上，均须为正整数。`max_bytes` 限制整个目录，`max_task_bytes` 限制一个步骤选定输出的总量，均包含 Arrow 文件与清单开销。启动时清理未提交的临时目录；append 或配额检查失败后不可提交。过期内容不能获得新租约，已有租约结束前不能删除文件。只有算子成功、输入消费完整且选定输出完整时才提交；已提交的上游输出不因下游失败而删除。
+
 ## 提交与消费
 
 ```bash
@@ -73,3 +75,9 @@ stateDiagram-v2
   Discarded --> [*]
   Expired --> [*]
 ```
+
+## 存储插件契约
+
+公共契约在 `xstream-execution-api`：`MaterializationStoreProvider`、`MaterializationStore`、`MaterializationWriter`、`MaterializedTask` 和 `MaterializedFrames`。外部实现通过 `META-INF/services/xstream.execution.MaterializationStoreProvider` 注册提供者类，将 JAR 与依赖安装到节点 `plugin_directory`，并将 `provider` 设置为其 `id`，无须修改核心注册表。
+
+插件负责私有配置、配额、过期清理、原子任务提交、持久化、租约与读取完整性；核心负责授权、策略校验、帧协议、取消及运行资源。`append(port, OperatorFrame)` 接收类型化帧，重放返回 `MaterializedFrames`。帧头上限 64 KiB，载荷上限 8 MiB；插件不得缓存整个任务。文件插件先写零行 Arrow File 分段，再写独立的数据分段，清单记录有序文件名、大小及校验和。append 失败后禁止提交。关闭未提交 writer 必须中止，提交后才可 `get`，到期后不可新建租约；清理不得破坏现有租约。新实现应通过发现、提交/中止、重启读取、配额、过期/租约、截断/损坏和关闭清理契约测试；可参考 `MaterializationSpec` 中的契约示例。

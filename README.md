@@ -4,7 +4,7 @@
 
 [中文](README_zh.md)
 
-XStream is a Scala toolkit for stream-oriented computation: typed data access, an embeddable Job engine and a browser-based visual designer. Steps consume and produce streams; intermediate data need not be saved as files. Explicit execution policies enable materialization and replay when required.
+XStream provides Dataset management and Job execution through a Scala data SDK, an embeddable streaming engine and a browser-based visual designer. Steps consume and produce streams; intermediate data need not be saved as files. Explicit execution policies enable materialization and replay when required.
 
 XStream executes every Job step locally. Remote `read_item` URIs provide data streams to local operators. DACP clients submit Jobs to remote servers; Union owns automatic placement across its members.
 
@@ -20,6 +20,8 @@ XStream executes every Job step locally. Remote `read_item` URIs provide data st
 | [xstream-designer](xstream-designer/README.md) | Visual Job editing, catalogs, variables, schema and sample previews, chat proposals and YAML import/export |
 
 `context:/dataset/item` resolves through the catalog bound to the current JVM. Explicit `dacp://host:port/dataset/item` URIs use configured remote connections. Scientific arrays, images and sequences keep their structures rather than being flattened into records. Format and backend implementations register through plugin contracts.
+
+Run [your first Job](docs/quickstart.md), then use the [documentation index](docs/README.md) for data management, operator development and embedding APIs.
 
 ## Build
 

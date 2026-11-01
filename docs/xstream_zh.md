@@ -92,9 +92,7 @@ data_catalog:
 
 ## 设计器
 
-`xstream-designer` 模块提供浏览器编辑器。`local_catalog` 使用相同的 `datasets`/`data_catalog` 配置；`nodes` 配置可用的远程 DACP 连接。Target 默认为 Local；选择配置节点后，其目录成为上下文目录，其他目录入口不重复显示该节点。侧栏初始只获取目录入口，展开入口加载 Dataset，展开 Dataset 或 Folder Item 加载直接子项。失败仅影响当前分支，折叠后重新展开可重试。
-
-上下文目录中的选择生成 `context:/dataset/item`，其他目录的选择保留完整 DACP URI。结构和样例预览根据所选 Target 解析上下文。在别处执行导出的 Job 时，需要提供匹配的上下文目录，或显式更改 Item URI。
+配置 Target、浏览目录、编辑步骤和查看结构样例，参见 [Designer 指南](../xstream-designer/README_zh.md)。
 
 ## 本地执行与远程数据
 
@@ -113,3 +111,5 @@ flowchart LR
   Policy["执行策略"] -.-> Units
   Process -. "选定边界" .-> Store["物化存储"]
 ```
+
+执行记录配置及存储接口见[执行历史 API](execution-history_zh.md)。
