@@ -4,6 +4,16 @@
 
 每个算子必须提供结构推导方法。清单声明输入及静态参数契约，不能包含 `outputs`；输出端口、表示、格式、schema 和未知信息均由方法返回。无输出算子返回空映射，数据源接受空输入。方法实现缺失、响应格式错误或超时会导致校验失败，不回退到清单。
 
+```mermaid
+flowchart TD
+  Change["参数或输入端口改变"] --> Vars["填充 Job 变量"] --> Read{"是否为 read_item？"}
+  Read -->|是| Metadata["读取当前 Target 的 Item 元数据"]
+  Read -->|否| Worker["复用或启动推导 worker"]
+  Metadata --> Result["返回当前步骤的结构和有界样例"]
+  Worker --> Result
+  Result --> Downstream["推导受影响的下游步骤"]
+```
+
 ## 使用方式
 
 设计器通过 `xstream-operator-inference` 在本地执行推导。嵌入式应用使用 `OperatorInferenceService`，提供插件环境、仓库与缓存配置，以及有界 worker 配置，无需数据服务器。参见[模块指南](../xstream-operator-inference/README_zh.md)。宿主从绑定的数据目录或配置的远程连接器为 `read_item` 提供元信息。

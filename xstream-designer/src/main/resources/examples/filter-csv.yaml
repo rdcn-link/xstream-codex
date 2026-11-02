@@ -8,13 +8,13 @@ steps:
     uri: context:/weather/weather-observations.jsonl
     view: records
 - id: filter
-  operator: piflow_filter@1.2
+  operator: piflow_filter@2.0
   inputs:
     source: read
   params:
     condition: CAST(temperature_c AS REAL) >= 25
 - id: csv
-  operator: piflow_csv_save@1.2
+  operator: piflow_csv_save@2.0
   inputs:
     source: filter
   params:

@@ -2,41 +2,16 @@
 
 The SDK handles input discovery, parameter loading, Arrow IPC, output frames, end events and resource cleanup. Single-input templates use `source` / `result`; use `OperatorContext` for multiple ports.
 
+**Scala is the preferred language for new XStream operators.** Start with the JVM SDK templates and keep processing, structure inference and bounded samples in the same operator implementation. Java uses the same JVM contracts; Python, scripts and native commands remain supported for existing code and language-specific libraries.
+
 ## Layout and builds
 
 - `cli/`: installable `xstream-operator submit` source-publication command; see [CLI installation](cli/README.md).
 - `contract/`: lightweight metadata, parameter and source-analysis contracts; depends only on Jackson at runtime.
-- `jvm/`: Java/Scala stream-processing SDK and templates; published as `xstream-operator-sdk`.
+- `jvm/`: Scala/Java stream-processing SDK and templates; published as `xstream-operator-sdk`.
 - `python/`: Python SDK and templates.
 
 Run `sbt test` or `sbt publishLocal` here to build both JVM subprojects. Hosts needing only metadata depend on `contract/`; operator executors depend on `jvm/`. The aggregate root publishes no artifact. Operators are authored and published independently; inference workers and the repository remain separate modules.
-
-## Python
-
-Install from the repository root:
-
-```bash
-python -m pip install ./xstream-operator-sdk/python
-```
-
-```python
-from xstream_operator import BytesOperator
-
-class Identity(BytesOperator):
-    def transform(self, chunk, params):
-        return chunk
-
-if __name__ == '__main__':
-    Identity().main()
-```
-
-For tables, extend `RecordsOperator` and implement `transform(batch, params)`, returning a `pyarrow.RecordBatch` or `None`. Override `output_schema(input_schema, params)` when changing columns. Read business parameters from the dictionary, for example `params.get('min_amount', 20)`.
-
-The [two-input, two-output example](../examples/operators/python/split_orders/1.0/split_orders.py) uses the context directly. The shared Python runtime Dockerfile includes the SDK; rebuild from the repository root:
-
-```bash
-docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:1.0 .
-```
 
 ## Scala
 
@@ -84,6 +59,33 @@ object StreamGzip extends ByteStreamOperator {
 Complete file: [StreamGzip.scala](../examples/operators/scala/src/main/scala/example/StreamGzip.scala). Set the operator entry point to `example.StreamGzip`, declare input `source` with representation `bytes` and output `result` with `bytes` / `gzip`. Read parameters through `params` as usual. Programs must read input through EOF. Closing early, or stopping after a fixed number of bytes without reaching EOF, fails without successful end events. Output `flush()` publishes buffered data immediately. Successful return automatically flushes and emits end. Closing the output adapter never closes protocol stdout, so wrappers such as `GZIPOutputStream` can safely be closed. Failure does not automatically publish remaining buffered data.
 
 Multiport authors can also use `ctx.input(name).byteStream()` and `ctx.bytesOutput(name, format).byteStream()`. Declare every output before writing and fully consume each input in lexical order. `BytesOperator` is a chunked array template; it does not read the entire Item into memory or preserve business record boundaries. Table streams use the existing `RecordsOperator`, processing `VectorSchemaRoot` batches with their schema instead of converting them to bytes and parsing again.
+
+## Python
+
+Install from the repository root:
+
+```bash
+python -m pip install ./xstream-operator-sdk/python
+```
+
+```python
+from xstream_operator import BytesOperator
+
+class Identity(BytesOperator):
+    def transform(self, chunk, params):
+        return chunk
+
+if __name__ == '__main__':
+    Identity().main()
+```
+
+For tables, extend `RecordsOperator` and implement `transform(batch, params)`, returning a `pyarrow.RecordBatch` or `None`. Override `output_schema(input_schema, params)` when changing columns. Read business parameters from the dictionary, for example `params.get('min_amount', 20)`.
+
+The [two-input, two-output example](../examples/operators/python/split_orders/1.0/split_orders.py) uses the context directly. The shared Python runtime Dockerfile includes the SDK; rebuild from the repository root:
+
+```bash
+docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:1.0 .
+```
 
 ## Stream contract
 

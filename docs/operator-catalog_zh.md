@@ -2,7 +2,7 @@
 
 [English](operator-catalog.md)
 
-当前协作示例部署提供以下 6 类算子，推荐版本为 `1.2`，均采用 `python` 执行器。算子包仅包含业务代码与公共业务辅助模块；Python、Arrow 和 XStream SDK 由 `python-arrow@2.0` 基础 Runtime 提供。源码包含 `pyproject.toml`，额外依赖通过 `dependencies.provider: python` 锁定，并复用相同的依赖环境。该清单描述示例部署，并非新仓库自动安装的内容。
+协作示例部署提供以下六个算子，推荐版本为 `2.0`，使用 Scala 和 `jvm` 执行器。每份源码实现处理、结构推导和有界输出样例。Scala、Arrow 和 XStream SDK 由 `jvm-arrow@2.1` 提供；`pom.xml` 声明 Commons CSV、SQLite JDBC，由仓库通过 `dependencies.provider: jvm` 锁定到共享依赖环境。算子 JAR 仅包含业务代码。此处描述示例部署，并不表示新仓库自动安装这些算子。
 
 ```bash
 curl http://localhost:8820/v1/operators
@@ -12,18 +12,18 @@ curl http://localhost:8820/v1/operators
 
 ## 端口、参数和执行方式
 
-以下算子均使用输出端口 `result`。输出描述由 `infer_outputs(inputs, params)` 给出，清单只声明输入；执行作业时不自动调用推导方法。
+以下算子均使用输出端口 `result`。输出描述由 `inferOutputs(inputs, params)` 给出，清单只声明输入；执行作业时不自动调用推导方法。
 
 | 算子 | 输入 → 输出 | 参数示例 | 执行方式与限制 |
 |---|---|---|---|
-| `piflow_csv_parser@1.2` | `source: bytes` → `records` | `{"header":true,"delimiter":","}` | 按批解析 UTF-8 CSV；列值均为字符串，不自动猜测类型。无表头示例：`{"header":false,"schema":"station_id,temperature,quality"}` |
-| `piflow_filter@1.2` | `source: records` → `records` | `{"condition":"CAST(temperature AS REAL) >= 30"}` | 逐批筛选；使用 SQLite 条件表达式，保留输入 schema |
-| `piflow_execute_sql_stop@1.2` | `source: records` → `records` | `{"viewName":"observations","sql":"SELECT station_id, COUNT(*) AS n FROM observations GROUP BY station_id"}` | 收集输入后执行 SQLite SQL；输入与输出均有限额，不是常量内存流算法 |
-| `piflow_merge@1.2` | `left: records`, `right: records` → `records` | `{}` | 先输出 left，再输出 right；按名称合并字段，追加右侧独有字段，缺失值填 null；拒绝不兼容类型，不去重、不排序 |
-| `piflow_join@1.2` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | 收集两侧输入后关联；模式为 `inner`、`left`、`right`、`full_outer`；右侧同名非键列追加 `_right`，仍有歧义则报错 |
-| `piflow_csv_save@1.2` | `source: records` → `bytes`（CSV） | `{"header":true,"delimiter":","}` | 输出 CSV 字节流，**不在服务器保存 CSV 文件**；仅支持标量列 |
+| `piflow_csv_parser@2.0` | `source: bytes` → `records` | `{"header":true,"delimiter":","}` | 按批解析 UTF-8 CSV；列值均为字符串，不自动猜测类型。无表头示例：`{"header":false,"schema":"station_id,temperature,quality"}` |
+| `piflow_filter@2.0` | `source: records` → `records` | `{"condition":"CAST(temperature AS REAL) >= 30"}` | 逐批筛选；使用 SQLite 条件表达式，保留输入 schema |
+| `piflow_execute_sql_stop@2.0` | `source: records` → `records` | `{"viewName":"observations","sql":"SELECT station_id, COUNT(*) AS n FROM observations GROUP BY station_id"}` | 收集输入后执行 SQLite SQL；输入与输出均有限额，不是常量内存流算法 |
+| `piflow_merge@2.0` | `left: records`, `right: records` → `records` | `{}` | 先输出 left，再输出 right；按名称合并字段，追加右侧独有字段，缺失值填 null；拒绝不兼容类型，不去重、不排序 |
+| `piflow_join@2.0` | `left: records`, `right: records` → `records` | `{"joinMode":"inner","correlationColumn":"station_id"}` | 收集两侧输入后关联；模式为 `inner`、`left`、`right`、`full_outer`；右侧同名非键列追加 `_right`，仍有歧义则报错 |
+| `piflow_csv_save@2.0` | `source: records` → `bytes`（CSV） | `{"header":true,"delimiter":","}` | 输出 CSV 字节流，**不在服务器保存 CSV 文件**；仅支持标量列 |
 
-SQL 与 Join 的输入收集上限为 128 MiB（实现会估算内存占用）；实际内存还包含 Arrow、Python 对象和算法开销。SQLite SQL 不等于 Spark SQL，不能直接使用任意 Spark 函数。具体契约和源码见 [算子开发指南](operator-authoring_zh.md)、[specs.json](../examples/operators/piflow/specs.json) 与 [operators](../examples/operators/piflow/operators/)。
+SQL 与 Join 的输入收集上限为 128 MiB（实现会估算内存占用）；实际内存还包含 Arrow、JVM 对象和算法开销。SQLite SQL 不等于 Spark SQL，不能直接使用任意 Spark 函数。具体契约和源码见 [算子开发指南](operator-authoring_zh.md)、[specs.json](../examples/operators/piflow/specs.json) 与 [operators](../examples/operators/scala-piflow/)。
 
 ## 输入输出范例
 
@@ -56,13 +56,13 @@ S001,32.5,0
 连接节点并选择包含 `/observations` 的气象数据集后：
 
 ```text
-run piflow_csv_parser@1.2 --input source=/observations --view bytes
+run piflow_csv_parser@2.0 --input source=/observations --view bytes
 ```
 
 如果 Item 已提供 records 视图，可直接过滤：
 
 ```text
-run piflow_filter@1.2 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
+run piflow_filter@2.0 --input source=/observations --view records --params '{"condition":"CAST(temperature AS REAL) >= 30"}'
 ```
 
 组合解析、过滤与 CSV 输出时，使用以下 Job。节点示例 URI 为 `dacp://localhost:18861/weather/observations`；提交 Union 时替换成实际目录返回的 Union 公开 URI，不使用成员内部 URI。Union 规划步骤的执行位置。
@@ -77,17 +77,17 @@ steps:
     uri: $INPUT_URI
     view: bytes
 - id: parse
-  operator: piflow_csv_parser@1.2
+  operator: piflow_csv_parser@2.0
   inputs:
     source: read
 - id: filter
-  operator: piflow_filter@1.2
+  operator: piflow_filter@2.0
   inputs:
     source: parse
   params:
     condition: "quality = '0' AND CAST(temperature AS REAL) >= 30"
 - id: export
-  operator: piflow_csv_save@1.2
+  operator: piflow_csv_save@2.0
   inputs:
     source: filter
 outputs:
@@ -113,3 +113,5 @@ submit weather.yaml --vars variables.yaml
 ## 脚本算子
 
 示例仓库另提供 `script_text_replace@1.0`、`script_line_number@1.0`、`script_jsonl_project@1.0` 和 `script_records_to_jsonl@1.0`。它们使用 `python-arrow@2.0` 和同一锁定依赖环境，不包含 SDK，不调用外部命令。参数、端口、限制和完整 Job 见[脚本算子示例](../examples/operators/scripts/README_zh.md)。
+
+Merge 要求先解码字典列。Join、SQL 和 CSV 输出接收标量列。CSV parser 可从显式的无表头结构或上游字节样例推导字符串列；Join 推导键、重名后缀及外连接可空性。SQL 表达式的类型可能依赖实际数据，处理前保持未知。

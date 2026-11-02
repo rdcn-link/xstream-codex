@@ -42,7 +42,7 @@ Shell 默认没有结果预览上限，数据到达后逐块显示；运行过�
 
 ## 构建、发布和验证
 
-构建需要一个含 `piflow_csv_parser@1.0` 清单和运行时 blob 的本地仓库，用以复用已有 Python 环境。发布通过 token 认证 API，不包含 Web 上传功能：
+构建需要一个含 `piflow_csv_parser@2.0` 清单和运行时 blob 的本地仓库，用以复用已有 Python 环境。发布通过 token 认证 API，不包含 Web 上传功能：
 
 参见下方的仅源码仓库提交指南。
 

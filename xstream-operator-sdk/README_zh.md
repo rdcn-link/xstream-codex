@@ -2,41 +2,16 @@
 
 SDK 封装输入发现、参数读取、Arrow IPC、输出帧、结束事件和资源清理。单输入模板使用 `source` / `result`；多端口使用 `OperatorContext`。
 
+**Scala 是新建 XStream 算子的首选开发语言。** 建议从 JVM SDK 模板开始，将数据处理、结构推导和有界样例放在同一个算子实现中。Java 使用相同的 JVM 契约；Python、脚本和原生命令继续用于已有程序及特定语言生态的库。
+
 ## 目录与构建
 
 - `cli/`：可安装的 `xstream-operator submit` 源码发布命令，参见[命令行工具安装](cli/README_zh.md)。
 - `contract/`：轻量的元数据、参数与源码分析契约；运行时仅依赖 Jackson。
-- `jvm/`：Java/Scala 流处理 SDK 与模板；发布名称为 `xstream-operator-sdk`。
+- `jvm/`：Scala/Java 流处理 SDK 与模板；发布名称为 `xstream-operator-sdk`。
 - `python/`：Python SDK 与模板。
 
 在本目录执行 `sbt test` 或 `sbt publishLocal`，统一构建两个 JVM 子项目。仅需元数据的程序依赖 `contract/`，算子执行器依赖 `jvm/`。聚合根项目不发布制品。算子通过普通开发与发布流程提供；推导 worker 和算子仓库仍是独立模块。
-
-## Python
-
-在仓库根目录安装：
-
-```bash
-python -m pip install ./xstream-operator-sdk/python
-```
-
-```python
-from xstream_operator import BytesOperator
-
-class Identity(BytesOperator):
-    def transform(self, chunk, params):
-        return chunk
-
-if __name__ == '__main__':
-    Identity().main()
-```
-
-表格处理继承 `RecordsOperator`，实现 `transform(batch, params)`，返回 `pyarrow.RecordBatch` 或 `None`；改变列结构时覆盖 `output_schema(input_schema, params)`。业务参数通过字典读取，例如 `params.get('min_amount', 20)`。
-
-[双输入、双输出示例](../examples/operators/python/split_orders/1.0/split_orders.py)直接使用上下文。Python 共享运行时 Dockerfile 已包含 SDK，需要从仓库根目录重新构建：
-
-```bash
-docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:1.0 .
-```
 
 ## Scala
 
@@ -84,6 +59,33 @@ object StreamGzip extends ByteStreamOperator {
 完整文件：[StreamGzip.scala](../examples/operators/scala/src/main/scala/example/StreamGzip.scala)。将算子定义的入口设为 `example.StreamGzip`，输入声明 `source` 的 `bytes` 表示，输出由模板推导为 `result` 的 `bytes` / `gzip`。参数仍通过 `params` 读取。算子程序必须读到输入 EOF；提前关闭或读取固定长度后未到 EOF 会失败，不会产生成功 end。输出 `flush()` 立即发布缓冲数据；正常返回自动 flush 并发送 end。关闭输出适配器不会关闭协议 stdout，因此可以安全地关闭 `GZIPOutputStream` 等包装器；异常退出不自动发布残留缓冲。
 
 多端口作者也可使用 `ctx.input(name).byteStream()` 与 `ctx.bytesOutput(name, format).byteStream()`；仍需先声明全部输出，并按字典序完整消费每个输入。`BytesOperator` 是逐块数组模板，不把完整 Item 读入内存；它不保留业务记录边界。表格流使用已有的 `RecordsOperator`，按 `VectorSchemaRoot` 批处理并保留 schema，不应先转成字节再解析。
+
+## Python
+
+在仓库根目录安装：
+
+```bash
+python -m pip install ./xstream-operator-sdk/python
+```
+
+```python
+from xstream_operator import BytesOperator
+
+class Identity(BytesOperator):
+    def transform(self, chunk, params):
+        return chunk
+
+if __name__ == '__main__':
+    Identity().main()
+```
+
+表格处理继承 `RecordsOperator`，实现 `transform(batch, params)`，返回 `pyarrow.RecordBatch` 或 `None`；改变列结构时覆盖 `output_schema(input_schema, params)`。业务参数通过字典读取，例如 `params.get('min_amount', 20)`。
+
+[双输入、双输出示例](../examples/operators/python/split_orders/1.0/split_orders.py)直接使用上下文。Python 共享运行时 Dockerfile 已包含 SDK，需要从仓库根目录重新构建：
+
+```bash
+docker build -f examples/operators/python/Dockerfile -t xstream/operator-python:1.0 .
+```
 
 ## 流契约
 

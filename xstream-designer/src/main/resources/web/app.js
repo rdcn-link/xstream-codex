@@ -486,8 +486,23 @@ function duplicateStep(){
  selected=copy.id;selectedSteps=new Set([copy.id]);selectedEdge=null;outletSelected=false;render();avoidSteps(dragLayout(),new Set([copy.id]),false);recordSnapshot(before);changed();notice('Step duplicated. Reconnect its input ports.');
 }
 $('duplicate-step').addEventListener('click',duplicateStep);
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.repeat&&e.key.toLowerCase()==='d'&&!e.target.closest('input,textarea,select,[contenteditable]')){e.preventDefault();duplicateStep();}});
-function deleteSelectedStep(){const ids=new Set(selectedSteps);if(selected)ids.add(selected);if(!ids.size)return;if(ids.size>1&&!window.confirm('Delete '+ids.size+' selected steps and their connections? This can be undone.')){notice('Deletion cancelled.');return;}remember();job.steps=job.steps.filter(t=>!ids.has(t.id));for(const t of job.steps)for(const [p,v]of Object.entries(t.inputs||{}))if(ids.has(binding(v).task))delete t.inputs[p];for(const [p,v]of Object.entries(job.outputs))if(ids.has(binding(v).task))delete job.outputs[p];for(const id of ids)delete positions[id];selected=null;selectedSteps.clear();selectedEdge=null;cancelConnection();changed();$('canvas').focus({preventScroll:true});notice('Selected steps deleted. Undo to restore steps and connections.');}
+document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.repeat&&e.key.toLowerCase()==='d'&&!e.target.closest('input,textarea,select,[contenteditable]')){e.preventDefault();duplicateStep();}});
+let confirmationChoice=null;
+function confirmAction({title,message,accept='Continue',destructive=false}){
+ if(confirmationChoice)return Promise.resolve(false);
+ const dialog=$('confirmation-dialog');$('confirmation-title').textContent=title;$('confirmation-message').textContent=message;
+ $('confirmation-accept').textContent=accept;dialog.classList.toggle('destructive',destructive);dialog.returnValue='cancel';
+ return new Promise(resolve=>{confirmationChoice={resolve};dialog.showModal();$('confirmation-cancel').focus();});
+}
+function finishConfirmation(accepted){
+ const choice=confirmationChoice;confirmationChoice=null;$('confirmation-dialog').close(accepted?'accept':'cancel');choice?.resolve(accepted);
+}
+$('confirmation-cancel').addEventListener('click',()=>finishConfirmation(false));
+$('confirmation-close').addEventListener('click',()=>finishConfirmation(false));
+$('confirmation-accept').addEventListener('click',()=>finishConfirmation(true));
+$('confirmation-dialog').addEventListener('cancel',event=>{event.preventDefault();finishConfirmation(false);});
+
+async function deleteSelectedStep(){const ids=new Set(selectedSteps);if(selected)ids.add(selected);if(!ids.size)return;if(ids.size>1&&!await confirmAction({title:'Delete selected steps?',message:'Delete '+ids.size+' selected steps and their connections? You can Undo to restore them.',accept:'Delete steps',destructive:true})){notice('Deletion cancelled.');return;}remember();job.steps=job.steps.filter(t=>!ids.has(t.id));for(const t of job.steps)for(const [p,v]of Object.entries(t.inputs||{}))if(ids.has(binding(v).task))delete t.inputs[p];for(const [p,v]of Object.entries(job.outputs))if(ids.has(binding(v).task))delete job.outputs[p];for(const id of ids)delete positions[id];selected=null;selectedSteps.clear();selectedEdge=null;cancelConnection();changed();$('canvas').focus({preventScroll:true});notice('Selected steps deleted. Undo to restore steps and connections.');}
 
 
 function outputNames(task,port){return Object.entries(job.outputs).filter(([,v])=>{const b=binding(v);return b.task===task&&b.port===port;}).map(([name])=>name);}
@@ -496,13 +511,13 @@ async function connectOutlet(){const from=pendingPort;if(!from)return;const b=bi
 
 function deleteConnection(){if(!selectedEdge)return;if(selectedEdge.output){if(!Object.hasOwn(job.outputs,selectedEdge.output))return;remember();delete job.outputs[selectedEdge.output];}else{const t=job.steps.find(t=>t.id===selectedEdge.task);if(!t?.inputs?.[selectedEdge.port])return;remember();delete t.inputs[selectedEdge.port];}selectedEdge=null;changed();notice('Connection deleted.');}
 
-document.addEventListener('keydown',e=>{if(graphInteraction||e.repeat||e.target.closest('input,textarea,select,[contenteditable]')||e.ctrlKey||e.metaKey||e.altKey)return;if(outletSelected&&!selectedSteps.size&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();notice('Outlet cannot be deleted. Remove its connections to change Job outputs.');return;}if(e.key==='Delete'||e.key==='Backspace'){if(selectedEdge){e.preventDefault();deleteConnection();}else if(selected||selectedSteps.size){e.preventDefault();deleteSelectedStep();}}});
+document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;if(graphInteraction||e.repeat||e.target.closest('input,textarea,select,[contenteditable]')||e.ctrlKey||e.metaKey||e.altKey)return;if(outletSelected&&!selectedSteps.size&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();notice('Outlet cannot be deleted. Remove its connections to change Job outputs.');return;}if(e.key==='Delete'||e.key==='Backspace'){if(selectedEdge){e.preventDefault();deleteConnection();}else if(selected||selectedSteps.size){e.preventDefault();deleteSelectedStep();}}});
 
 $('arrange').addEventListener('click',()=>{remember();arrange();});$('zoom-in').addEventListener('click',()=>zoom(scale*1.15));$('zoom-out').addEventListener('click',()=>zoom(scale/1.15));$('fit').addEventListener('click',()=>{const width=Math.max(outletPosition.x+180,500,...job.steps.map(t=>point(t).x+280)),height=Math.max(outletPosition.y+150,250,...job.steps.map(t=>point(t).y+200));zoom(Math.min($('canvas').clientWidth/width,$('canvas').clientHeight/height));$('canvas').scrollTo(0,0);});
 function undoChange(){if(graphInteraction||!undo.length)return;redo.push(snapshot());restore(undo.pop());notice('Change undone.');}
 function redoChange(){if(graphInteraction||!redo.length)return;undo.push(snapshot());restore(redo.pop());notice('Change redone.');}
 $('undo').addEventListener('click',undoChange);$('redo').addEventListener('click',redoChange);
-document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable]')||e.altKey||!(e.ctrlKey||e.metaKey))return;const key=e.key.toLowerCase();if(key==='z'||(key==='y'&&e.ctrlKey&&!e.shiftKey)){e.preventDefault();if(key==='y'||e.shiftKey)redoChange();else undoChange();}});
+document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;if(e.target.closest('input,textarea,select,[contenteditable]')||e.altKey||!(e.ctrlKey||e.metaKey))return;const key=e.key.toLowerCase();if(key==='z'||(key==='y'&&e.ctrlKey&&!e.shiftKey)){e.preventDefault();if(key==='y'||e.shiftKey)redoChange();else undoChange();}});
 $('new').addEventListener('click',()=>{remember();cancelConnection();selectedEdge=null;job={name:'Untitled job',steps:[],outputs:{}};automaticReadViews.clear();positions={};outletPosition=null;outletSelected=false;selected=null;selectedSteps.clear();variablesEditor.setText('{}');yamlEdited=false;changed();});
 $('load').addEventListener('click',()=>$('file').click());$('file').addEventListener('change',guard(async()=>{const f=$('file').files[0];if(f){if(f.size>1024*1024)throw Error('YAML file exceeds 1 MiB');await loadDocument(await f.text());}$('file').value='';}));$('apply-yaml').addEventListener('click',guard(()=>loadDocument(jobYamlEditor.getText())));$('export').addEventListener('click',guard(async()=>{if(yamlEdited)throw Error('Apply the edited YAML before exporting.');await openExportPreview();}));
 $('load-vars').addEventListener('click',()=>$('vars-file').click());$('vars-file').addEventListener('change',guard(async()=>{const f=$('vars-file').files[0];if(f){if(f.size>1024*1024)throw Error('Variable file exceeds 1 MiB');const text=await f.text();await api('mapping',{yaml:text});remember();variablesEditor.setText(text);changed();}$('vars-file').value='';}));$('export-vars').addEventListener('click',guard(async()=>{const n=await api('document',payload());download('variables.yaml',n.variables_yaml);}));
@@ -618,7 +633,7 @@ function renderExamples(){
   if(missing.length)card.append(el('p','Requires: '+missing.join(', '),'example-requirements'));
   const button=el('button','Load example');button.type='button';button.disabled=missing.length>0;
   button.addEventListener('click',guard(async()=>{
-   if((job.steps.length||yamlEdited||variablesEditor.getText().trim()!=='{}')&&!window.confirm('Replace the current Job and variables with “'+example.title+'”? You can Undo to restore the previous design.'))return;
+   if((job.steps.length||yamlEdited||variablesEditor.getText().trim()!=='{}')&&!await confirmAction({title:'Load example?',message:'Replace the current Job and variables with “'+example.title+'”? You can Undo to restore the previous design.',accept:'Load example'}))return;
    button.disabled=true;
    try{await loadDocument(example.job_yaml,example.variables_yaml);notice('Loaded example: '+example.title+'. Review Item paths for '+targetLabel(selectedTarget)+'.');}
    finally{button.disabled=missing.length>0;}

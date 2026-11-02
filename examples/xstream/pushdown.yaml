@@ -9,13 +9,13 @@ steps:
       uri: dacp://node-a.example.org:18861/weather/observations
       view: records
   - id: filter
-    operator: piflow_filter@1.0
+    operator: piflow_filter@2.0
     inputs:
       source: read
     params:
       condition: CAST(temperature AS REAL) >= 30
   - id: csv
-    operator: piflow_csv_save@1.0
+    operator: piflow_csv_save@2.0
     inputs:
       source: filter
 outputs:

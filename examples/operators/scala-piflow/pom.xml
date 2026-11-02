@@ -1,0 +1,8 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.rdcn-link</groupId><artifactId>xstream-scala-piflow</artifactId><version>2.0</version>
+  <dependencies>
+    <dependency><groupId>org.apache.commons</groupId><artifactId>commons-csv</artifactId><version>1.13.0</version></dependency>
+    <dependency><groupId>org.xerial</groupId><artifactId>sqlite-jdbc</artifactId><version>3.49.1.0</version></dependency>
+  </dependencies>
+</project>

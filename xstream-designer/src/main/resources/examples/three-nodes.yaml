@@ -15,7 +15,7 @@ steps:
     uri: $NODE_B_ITEM
     view: records
 - id: merge
-  operator: piflow_merge@1.2
+  operator: piflow_merge@2.0
   inputs:
     left: left
     right: right
@@ -27,13 +27,13 @@ steps:
     uri: $NODE_C_ITEM
     view: records
 - id: merge_all
-  operator: piflow_merge@1.2
+  operator: piflow_merge@2.0
   inputs:
     left: merge
     right: third
   params: {}
 - id: csv
-  operator: piflow_csv_save@1.2
+  operator: piflow_csv_save@2.0
   inputs:
     source: merge_all
   params:

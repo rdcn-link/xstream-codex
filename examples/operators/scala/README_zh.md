@@ -1,6 +1,8 @@
 # 自定义 Scala 算子
 
-构建前，请按 [SDK 说明](../../../xstream-operator-sdk/README_zh.md)将 plugin-api 和 operator-sdk 发布到本地依赖库。新增 [SimpleIdentity](src/main/scala/example/SimpleIdentity.scala) 使用模板；原 ScalaIdentity 展示底层协议。
+**Scala 是新建 XStream 算子的首选开发语言。** 建议从 JVM SDK 模板开始，将数据处理、结构推导和有界样例放在同一个算子实现中。Java 使用相同的 JVM 契约；Python、脚本和原生命令继续用于已有程序及特定语言生态的库。
+
+按 [SDK 说明](../../../xstream-operator-sdk/README_zh.md)准备开发依赖与 JVM SDK。[SimpleIdentity](src/main/scala/example/SimpleIdentity.scala) 使用推荐的模板；ScalaIdentity 展示底层协议。
 
 [English](README.md)
 

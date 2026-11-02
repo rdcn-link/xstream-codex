@@ -73,4 +73,29 @@ class OperatorSpec extends AnyFunSuite {
       assert(OperatorFrames.read(in).nonEmpty);assert(OperatorFrames.read(in).isEmpty)
     } finally {Files.deleteIfExists(dir.resolve("manifest.json"));Files.deleteIfExists(dir.resolve("params.json"));Files.delete(dir)}
   }
+  test("multi-input schema peeking preserves lexical consumption and releases readers") {
+    val dir=Files.createTempDirectory("operator-sdk-multi-")
+    val allocator=new org.apache.arrow.memory.RootAllocator()
+    val root=org.apache.arrow.vector.VectorSchemaRoot.create(xstream.data.PluginSchemas.bytes,allocator)
+    var closes=0
+    def input=new OperatorBatchInput {
+      def getVectorSchemaRoot=root
+      def loadNextBatch()=false
+      def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null
+      def close():Unit={closes+=1}
+    }
+    try {
+      Files.writeString(dir.resolve("manifest.json"),"""[{"port":"left","representation":"bytes","file":"left.arrow"},{"port":"right","representation":"bytes","file":"right.arrow"}]""")
+      Files.writeString(dir.resolve("params.json"),"{}")
+      OperatorRunner.runBatches(dir,dir.resolve("params.json"),Map("left"->input,"right"->input),Map.empty,_=>(),(_,_)=>()){ctx=>
+        assert(ctx.input("right").schema==root.getSchema)
+        assert(ctx.input("left").schema==root.getSchema)
+        intercept[IllegalArgumentException]{ctx.input("right").foreachBytes(_=>())}
+        ctx.input("left").foreachBytes(_=>())
+        ctx.input("right").foreachBytes(_=>())
+      }
+      assert(closes==2)
+    }finally {root.close();allocator.close();Files.delete(dir.resolve("manifest.json"));Files.delete(dir.resolve("params.json"));Files.delete(dir)}
+  }
+
 }

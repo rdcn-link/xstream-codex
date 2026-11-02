@@ -150,3 +150,5 @@ Clients read `/records` without receiving `source.file`. Plugins needing per-ite
 Directory providers use `reader_overrides`, SQLDB uses `tables`, and mixed uses `items`. Directory and SQLDB reject `items`. Native backends such as a future MongoDB provider can implement `PublishedDataset` and `DatasetAccess` directly for listing, metadata, counting, and streaming without mapping to files or SQL. See the [provider development guide](https://github.com/rdcn-link/xstream-codex/blob/main/docs/dataset-providers.md) for interfaces, cancellation, and resource cleanup requirements. MongoDB is not implemented yet.
 
 For built-in reader options, container limits and publication metadata, see the [file format and container reference](file-formats.md).
+
+For database connection options, type mapping and a reading example, see [JDBC datasets](jdbc-datasets.md).

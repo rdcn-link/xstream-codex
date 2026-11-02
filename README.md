@@ -6,7 +6,11 @@
 
 XStream provides Dataset management and Job execution through a Scala data SDK, an embeddable streaming engine and a browser-based visual designer. Steps consume and produce streams; intermediate data need not be saved as files. Explicit execution policies enable materialization and replay when required.
 
+**Scala is the preferred language for new XStream operators.** Start with the JVM SDK templates and keep processing, structure inference and bounded samples in the same operator implementation. Java uses the same JVM contracts; Python, scripts and native commands remain supported for existing code and language-specific libraries.
+
 XStream executes every Job step locally. Remote `read_item` URIs provide data streams to local operators. DACP clients submit Jobs to remote servers; Union owns automatic placement across its members.
+
+[User guide](docs/usage.md) · [Development guide](docs/development.md)
 
 ## Components
 

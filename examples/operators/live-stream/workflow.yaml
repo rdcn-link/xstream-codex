@@ -28,7 +28,7 @@ steps:
     schema: temperature_c->air_temperature_c
 - id: csv
   title: 逐条输出CSV文本流
-  operator: piflow_csv_save@1.0
+  operator: piflow_csv_save@2.0
   inputs:
     source: rename
   params:

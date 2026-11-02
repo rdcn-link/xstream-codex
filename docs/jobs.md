@@ -16,7 +16,7 @@ steps:
       view: records
   - id: copy
     title: Filter valid observations
-    operator: piflow_filter@1.0
+    operator: piflow_filter@2.0
     inputs:
       source: read
     params:

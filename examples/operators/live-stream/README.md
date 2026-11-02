@@ -42,7 +42,7 @@ For Union, select a public name through `datasets` / `use`, and ensure a member 
 
 ## Build, publish and validate
 
-Building requires a local catalog containing the `piflow_csv_parser@1.0` manifest and runtime blob to reuse its Python environment. Publication uses token-authenticated APIs without a Web upload interface:
+Building requires a local catalog containing the `piflow_csv_parser@2.0` manifest and runtime blob to reuse its Python environment. Publication uses token-authenticated APIs without a Web upload interface:
 
 See the source-only repository submission guide linked below.
 

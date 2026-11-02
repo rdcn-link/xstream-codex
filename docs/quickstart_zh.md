@@ -53,7 +53,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
 
 ## 按任务继续
 
-- [可视化设计](../xstream-designer/README_zh.md)：加载此 Job、检查输出结构并导出 YAML。
+- [可视化设计](designer-guide_zh.md)：加载此 Job、检查输出结构并导出 YAML。
 - [编写 Job](jobs_zh.md)：连接步骤、传入变量。
 - [管理数据](data-model_zh.md)：Dataset、目录、归档和视图；[读取示例](data-view-examples_zh.md)。
 - [开发算子](operator-authoring_zh.md)：模板、参数、推导及本地测试。

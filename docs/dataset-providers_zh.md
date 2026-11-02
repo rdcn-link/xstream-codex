@@ -150,3 +150,5 @@ datasets:
 目录 provider 使用 `reader_overrides`，SQLDB 使用 `tables`，mixed 使用 `items`。目录和 SQLDB 不接受 `items`。原生后端（例如未来的 MongoDB provider）可直接实现 `PublishedDataset` 和 `DatasetAccess`，提供列举、元数据、计数与流式读取，无需映射成文件或 SQL。完整接口和取消、资源释放要求见 [provider 开发指南](https://github.com/rdcn-link/xstream-codex/blob/main/docs/dataset-providers_zh.md)。MongoDB 尚未实现。
 
 内置读取器的参数、容器限制及发布元数据见[文件格式与容器参考](file-formats_zh.md)。
+
+数据库连接参数、类型映射及读取示例见 [JDBC 数据集指南](jdbc-datasets_zh.md)。

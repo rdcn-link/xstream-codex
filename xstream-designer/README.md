@@ -4,6 +4,8 @@
 
 `xstream-designer` is an independent Scala HTTP module providing an English browser-based visual Job editor without login or user management. It uses the ordinary Scala SDK to access nodes or a Union, does not execute jobs, and does not depend on server internals.
 
+For editing instructions, screenshots and export examples, see the [Designer user guide](../docs/designer-guide.md).
+
 ## Start
 
 Requires JDK 17 and sbt 1.10.x. Copy and edit [example.yaml](example.yaml), setting real service addresses, CA and Token files. Credentials remain in server configuration and are not returned to browsers.

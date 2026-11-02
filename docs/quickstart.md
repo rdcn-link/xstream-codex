@@ -53,7 +53,7 @@ The terminal prints JSONL records as they arrive. A missing Item usually means t
 
 ## Continue by task
 
-- [Design visually](../xstream-designer/README.md): load this Job, inspect output schemas and export YAML.
+- [Design visually](designer-guide.md): load this Job, inspect output schemas and export YAML.
 - [Write a Job](jobs.md): connect steps and supply variables.
 - [Manage data](data-model.md): Datasets, folders, archives and views; [read examples](data-view-examples.md).
 - [Develop an operator](operator-authoring.md): templates, parameters, inference and local testing.

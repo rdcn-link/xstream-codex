@@ -4,30 +4,24 @@
 
 XStream operators run in the standalone engine or DACP nodes. Developers submit source only; the repository scans, builds in isolation and publishes after administrator approval. Administrators assign categories and the final trust score.
 
+```mermaid
+flowchart LR
+  Code["Write processing, inference and samples"] --> Test["Test locally"] --> Dependencies["Declare dependencies"] --> Submit["Submit source"] --> Review["Build and review"] --> Publish["Publish and use"]
+```
+
+## Preferred language: Scala
+
+**Scala is the preferred language for new XStream operators.** Start with the JVM SDK templates and keep processing, structure inference and bounded samples in the same operator implementation. Java uses the same JVM contracts; Python, scripts and native commands remain supported for existing code and language-specific libraries.
+
+Scala expresses typed stream transformations and shares JVM interfaces and libraries with the engine. Use `BytesOperator`, `ByteStreamOperator` and `RecordsOperator` templates to keep protocol and resource-management details out of business logic. Match dependencies, Scala and JDK versions to the selected runtime.
+
+Using the same language does not automatically provide zero-copy transfer or in-process execution. Fusion still depends on dependency compatibility, operator capabilities and execution policy. See [operator fusion](operator-fusion.md) and [dependency environments](dependency-environments.md).
+
 ## Choose an interface and runtime
 
 Select an actually registered runtime and version at `/runtimes`. Execution and build dependencies must match; JVM environments provide the XStream SDK and Scala build environments also provide the Scala compiler. Keep business code in the small operator package and dependencies in the shared runtime.
 
-Python offers `BytesOperator` and `RecordsOperator`; Java/Scala implement `Operator` or use the `BytesOperator`, `ByteStreamOperator` and `RecordsOperator` templates. Templates supply schema and bounded-sample inference; override the relevant method when changing the output structure. Low-level implementations must provide processing, structure inference and output samples.
-
-## Python
-
-Install the SDK and save this as `src/upper_ascii.py`. Input `abc\n` produces `ABC\n`; `uppercase: false` preserves the input. This example handles ASCII: byte chunks do not guarantee UTF-8 character or business-record boundaries.
-
-```bash
-python -m pip install ./xstream-operator-sdk/python
-```
-
-```python
-from xstream_operator import BytesOperator
-
-class UpperAscii(BytesOperator):
-    def transform(self, chunk, params):
-        return chunk.upper() if params.get('uppercase', True) else chunk
-
-if __name__ == '__main__':
-    UpperAscii().main()
-```
+Scala and Java implement `Operator` or use the JVM `BytesOperator`, `ByteStreamOperator` and `RecordsOperator` templates. Python offers `BytesOperator` and `RecordsOperator`. Templates supply schema and bounded-sample inference; override the relevant method when changing the output structure. Low-level implementations must provide processing, structure inference and output samples.
 
 ## Scala
 
@@ -48,6 +42,25 @@ object Identity extends ByteStreamOperator {
 }
 ```
 
+## Python
+
+Install the SDK and save this as `src/upper_ascii.py`. Input `abc\n` produces `ABC\n`; `uppercase: false` preserves the input. This example handles ASCII: byte chunks do not guarantee UTF-8 character or business-record boundaries.
+
+```bash
+python -m pip install ./xstream-operator-sdk/python
+```
+
+```python
+from xstream_operator import BytesOperator
+
+class UpperAscii(BytesOperator):
+    def transform(self, chunk, params):
+        return chunk.upper() if params.get('uppercase', True) else chunk
+
+if __name__ == '__main__':
+    UpperAscii().main()
+```
+
 ## Inputs, parameters and outputs
 
 `inputs` declares named input ports and representations; `parameters` declares JSON parameter types, defaults and constraints. Implement `inferOutputs`/`infer_outputs` to return output ports and structures. Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
@@ -58,15 +71,15 @@ See the complete [split_orders](../examples/operators/python/split_orders/1.0/sp
 
 ## Prepare a source submission
 
-Use a directory containing `submission.yaml`, `src/upper_ascii.py` and `LICENSE.txt`. Replace `python-arrow@1.0` with an available repository runtime. Declare the actual source license.
+The manifest below publishes the Scala `Identity` implementation above. Use a directory containing `submission.yaml`, `src/example/Identity.scala` and `LICENSE.txt`. Choose an available Scala-capable repository Runtime, such as `jvm-arrow@2.1`, and declare the actual source license. Python and Java use the same submission and review workflow; see the [source submission guide](operator-submission.md).
 
 ```yaml
-name: upper_ascii
+name: scala_identity
 version: '1.0'
-description: Uppercase an ASCII byte stream
-language: python
-entrypoint: upper_ascii
-runtime: python-arrow@1.0
+description: Stream bytes unchanged
+language: scala
+entrypoint: example.Identity
+runtime: jvm-arrow@2.1
 source_public: true
 icon:
   path: M4 19L12 5l8 14M7 14h10
@@ -77,11 +90,7 @@ inputs:
     formats: []
 parameters:
   type: object
-  properties:
-    uppercase:
-      type: boolean
-      default: true
-      description: Convert ASCII letters to uppercase
+  properties: {}
   required: []
   additionalProperties: false
 provenance:
@@ -101,7 +110,7 @@ The repository administrator issues the Token. Submission returns a submission I
 ## Use in a Job
 
 ```yaml
-name: Uppercase observations
+name: Stream observations
 steps:
 - id: read
   operator: read_item@1.0
@@ -109,21 +118,19 @@ steps:
   params:
     uri: context:/science/observations.csv
     view: bytes
-- id: upper
-  operator: upper_ascii@1.0
+- id: identity
+  operator: scala_identity@1.0
   inputs:
     source: read
-  params:
-    uppercase: true
 outputs:
-  result: upper
+  result: identity
 ```
 
 Replace the URI with an actual Item in the execution catalog. `context:` uses the bound catalog; a remote URI specifies its DACP address explicitly. Standalone execution uses `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`.
 
 ## Startup arguments and protocol boundaries
 
-An equivalent launcher call is `/usr/local/bin/python /operator/upper_ascii.py operator /input /input/params.json`: `operator` is the fixed mode, `/input` holds the generated input manifest and stream channels, and `/input/params.json` contains a parameter object such as `{"uppercase":true}`. Single input/output may use standard streams; the framework arranges FIFO channels for multiple ports. Use the SDK rather than managing channels in business code.
+An equivalent JVM launcher call is `/opt/java/bin/java -cp '/operator/operator.jar:/opt/lib/*:/opt/xstream/jars/*' example.Identity operator /input /input/params.json`: `operator` is the processing mode, `/input` holds the generated input manifest and stream channels, and `/input/params.json` contains the parameter object. Use the SDK to manage stream channels.
 
 stdout is reserved for the stream protocol; logs go to stderr. Consume inputs through EOS; successful completion emits end events and errors must not claim success. Byte output is chunked; record batches must fit protocol limits, and samples have additional row/byte budgets. Do not collect an entire stream in memory or create persistent files for ordinary intermediate steps.
 

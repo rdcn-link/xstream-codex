@@ -8,13 +8,13 @@ steps:
     uri: $INPUT_URI
     view: records
 - id: filter
-  operator: piflow_filter@1.2
+  operator: piflow_filter@2.0
   inputs:
     source: read
   params:
     condition: $CONDITION
 - id: csv
-  operator: piflow_csv_save@1.2
+  operator: piflow_csv_save@2.0
   inputs:
     source: filter
   params:

@@ -4,30 +4,24 @@
 
 算子由 XStream 管理，可由独立引擎或 DACP 节点执行。开发者仅提交源码；仓库完成扫描、隔离构建及管理员审核后才公开算子。分类和最终可信度由管理员指定。
 
+```mermaid
+flowchart LR
+  Code["编写处理、结构推导和样例代码"] --> Test["本地测试"] --> Dependencies["声明依赖"] --> Submit["提交源码"] --> Review["构建与审核"] --> Publish["发布与使用"]
+```
+
+## 首选语言：Scala
+
+**Scala 是新建 XStream 算子的首选开发语言。** 建议从 JVM SDK 模板开始，将数据处理、结构推导和有界样例放在同一个算子实现中。Java 使用相同的 JVM 契约；Python、脚本和原生命令继续用于已有程序及特定语言生态的库。
+
+Scala 适合表达类型化的流变换，并可与引擎共用 JVM 接口和库。使用 `BytesOperator`、`ByteStreamOperator`、`RecordsOperator` 等模板，避免在业务代码中重复编写协议和资源管理逻辑。依赖、Scala 和 JDK 版本应匹配选用的运行环境。
+
+语言相同并不自动保证零拷贝或同进程执行；执行单元合并仍取决于依赖兼容性、算子能力和执行策略。参阅[同进程合并](operator-fusion_zh.md)与[依赖环境](dependency-environments_zh.md)。
+
 ## 选择接口与运行环境
 
 先在仓库 `/runtimes` 选择实际注册的运行环境及版本。执行和构建依赖必须匹配；JVM 环境需要提供 XStream SDK，Scala 构建环境还需要 Scala 编译器。算子包仅包含业务代码，公共依赖留在共享运行环境中。
 
-Python 可继承 `BytesOperator` 或 `RecordsOperator`；Java/Scala 可实现 `Operator`，或使用 `BytesOperator`、`ByteStreamOperator`、`RecordsOperator` 模板。模板提供结构及有界样例推导，修改输出结构时应覆盖相应方法。底层接口必须实现处理、结构推导和样例输出。
-
-## Python
-
-安装 SDK，在 `src/upper_ascii.py` 保存以下代码。`abc\n` 会输出 `ABC\n`；`uppercase: false` 则原样输出。这是 ASCII 示例，任意字节块不保证 UTF-8 字符或业务记录边界。
-
-```bash
-python -m pip install ./xstream-operator-sdk/python
-```
-
-```python
-from xstream_operator import BytesOperator
-
-class UpperAscii(BytesOperator):
-    def transform(self, chunk, params):
-        return chunk.upper() if params.get('uppercase', True) else chunk
-
-if __name__ == '__main__':
-    UpperAscii().main()
-```
+Scala 和 Java 可实现 `Operator`，或使用 JVM 的 `BytesOperator`、`ByteStreamOperator`、`RecordsOperator` 模板；Python 可使用 `BytesOperator` 或 `RecordsOperator`。模板提供结构及有界样例推导，修改输出结构时应覆盖相应方法。底层接口必须实现处理、结构推导和样例输出。
 
 ## Scala
 
@@ -48,6 +42,25 @@ object Identity extends ByteStreamOperator {
 }
 ```
 
+## Python
+
+安装 SDK，在 `src/upper_ascii.py` 保存以下代码。`abc\n` 会输出 `ABC\n`；`uppercase: false` 则原样输出。这是 ASCII 示例，任意字节块不保证 UTF-8 字符或业务记录边界。
+
+```bash
+python -m pip install ./xstream-operator-sdk/python
+```
+
+```python
+from xstream_operator import BytesOperator
+
+class UpperAscii(BytesOperator):
+    def transform(self, chunk, params):
+        return chunk.upper() if params.get('uppercase', True) else chunk
+
+if __name__ == '__main__':
+    UpperAscii().main()
+```
+
 ## 输入、参数与输出
 
 `inputs` 声明命名输入端口及表示；`parameters` 声明 JSON 参数类型、默认值和约束。实现 `inferOutputs`/`infer_outputs`，返回输出端口和结构。参数值来自 Job 的 `params`，例如 `uppercase: true`，而非输入数据流。
@@ -58,15 +71,15 @@ object Identity extends ByteStreamOperator {
 
 ## 准备源码提交
 
-目录包含 `submission.yaml`、`src/upper_ascii.py` 和 `LICENSE.txt`。示例中的 `python-arrow@1.0` 需替换为仓库实际提供的运行环境。许可声明应与你的源码实际许可一致。
+以下清单发布前文的 Scala `Identity`。目录包含 `submission.yaml`、`src/example/Identity.scala` 和 `LICENSE.txt`。选择支持 Scala 构建的仓库 Runtime（如 `jvm-arrow@2.1`），并声明真实许可证。Python 和 Java 使用相同的提交及审核流程，详见[源码提交指南](operator-submission_zh.md)。
 
 ```yaml
-name: upper_ascii
+name: scala_identity
 version: '1.0'
-description: Uppercase an ASCII byte stream
-language: python
-entrypoint: upper_ascii
-runtime: python-arrow@1.0
+description: Stream bytes unchanged
+language: scala
+entrypoint: example.Identity
+runtime: jvm-arrow@2.1
 source_public: true
 icon:
   path: M4 19L12 5l8 14M7 14h10
@@ -77,11 +90,7 @@ inputs:
     formats: []
 parameters:
   type: object
-  properties:
-    uppercase:
-      type: boolean
-      default: true
-      description: Convert ASCII letters to uppercase
+  properties: {}
   required: []
   additionalProperties: false
 provenance:
@@ -101,7 +110,7 @@ Token 由仓库管理员分配。提交成功返回 submission ID，不意味着
 ## 在 Job 中使用
 
 ```yaml
-name: Uppercase observations
+name: Stream observations
 steps:
 - id: read
   operator: read_item@1.0
@@ -109,21 +118,19 @@ steps:
   params:
     uri: context:/science/observations.csv
     view: bytes
-- id: upper
-  operator: upper_ascii@1.0
+- id: identity
+  operator: scala_identity@1.0
   inputs:
     source: read
-  params:
-    uppercase: true
 outputs:
-  result: upper
+  result: identity
 ```
 
 把 URI 替换为目标执行目录中的真实 Item。`context:` 使用当前执行服务绑定的目录；远程 URI 显式指定 DACP 地址。独立执行使用 `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。
 
 ## 启动参数与协议边界
 
-启动器的等价调用为 `/usr/local/bin/python /operator/upper_ascii.py operator /input /input/params.json`；`operator` 是固定模式，`/input` 包含框架生成的输入清单及流通道，`/input/params.json` 包含如 `{"uppercase":true}` 的参数对象。单输入单输出可使用标准流，多端口由框架安排 FIFO。业务程序使用 SDK，不自行维护通道。
+启动器的等价调用为 `/opt/java/bin/java -cp '/operator/operator.jar:/opt/lib/*:/opt/xstream/jars/*' example.Identity operator /input /input/params.json`；`operator` 是固定模式，`/input` 包含框架生成的输入清单及流通道，`/input/params.json` 包含参数对象，例如此处的 `{}`。单输入单输出可使用标准流，多端口由框架安排 FIFO。业务程序使用 SDK，不自行维护通道。
 
 stdout 保留给流协议，日志写 stderr。输入须消费到 EOS；成功才发出结束事件，异常不能伪造成功。bytes 输出被分块；单条记录批次不得超过协议上限，样例还受行数和字节数预算限制。不要把流全部读入内存，也不要为普通中间步骤创建持久文件。
 

@@ -1,6 +1,8 @@
 # A user-defined Scala operator
 
-Before building, publish plugin-api and operator-sdk to the local dependency repository as described in the [SDK guide](../../../xstream-operator-sdk/README.md). The new [SimpleIdentity](src/main/scala/example/SimpleIdentity.scala) uses the template; ScalaIdentity demonstrates the lower-level protocol.
+**Scala is the preferred language for new XStream operators.** Start with the JVM SDK templates and keep processing, structure inference and bounded samples in the same operator implementation. Java uses the same JVM contracts; Python, scripts and native commands remain supported for existing code and language-specific libraries.
+
+Prepare the development dependencies and JVM SDK as described in the [SDK guide](../../../xstream-operator-sdk/README.md). [SimpleIdentity](src/main/scala/example/SimpleIdentity.scala) uses the recommended template; ScalaIdentity demonstrates the lower-level protocol.
 
 [中文](README_zh.md)
 

@@ -4,6 +4,8 @@
 
 `xstream-designer` 是独立的 Scala HTTP 模块，提供英文的浏览器图形化 Job 设计界面，无登录、无用户管理。复用普通 Scala SDK 访问节点或 Union，设计器不执行作业，不依赖服务器内部实现。
 
+逐步操作、界面截图与导出说明请参阅[Designer 使用指南](../docs/designer-guide_zh.md)。
+
 ## 启动
 
 需要 JDK 17、sbt 1.10.x。先复制并修改 [example.yaml](example.yaml)，将地址、CA 与 Token 文件设置为部署环境的实际值。凭据只保存在服务端配置中，不返回浏览器。

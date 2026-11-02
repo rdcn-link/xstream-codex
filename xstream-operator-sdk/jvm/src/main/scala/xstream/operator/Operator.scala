@@ -198,7 +198,7 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
     private var consumed=false
     private var iterating=false
     private def open():OperatorBatchInput={
-      active();require(index<names.size && names(index)==name && !consumed && !iterating,"consume inputs once in lexical port order")
+      active();require(!consumed && !iterating,"input already consumed or being read")
       if(reader==null){
         reader=batchInputs.getOrElse(name,{
           val relative=Path.of(entry.path("file").asText)
@@ -220,6 +220,7 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
     def schema:Schema=open().getVectorSchemaRoot.getSchema
     def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=open().dictionaries
     private def foreachBatch(f:VectorSchemaRoot=>Unit):Unit={
+      require(index<names.size && names(index)==name,"consume inputs once in lexical port order")
       val r=open()
       iterating=true
       try {while({active();r.loadNextBatch()})f(r.getVectorSchemaRoot);consumed=true;index+=1}finally {r.close();reader=null}
@@ -227,6 +228,7 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
     /** Read bytes continuously across IPC batches. Closing early does not consume the input. */
     def byteStream():InputStream={
       require(representation=="bytes","bytes input required")
+      require(index<names.size && names(index)==name,"consume inputs once in lexical port order")
       val r=open();iterating=true
       new InputStream {
         private var chunk=Array.emptyByteArray

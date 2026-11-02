@@ -4,6 +4,16 @@
 
 Every operator must provide an inference method. Manifests declare input and static parameter contracts; `outputs` is rejected. The method supplies output ports, representations, formats, schemas, and explicit unknowns. Sinks return an empty mapping; sources accept empty inputs. Missing methods, malformed responses, and timeouts fail validation without a manifest fallback.
 
+```mermaid
+flowchart TD
+  Change["Parameters or input ports change"] --> Vars["Resolve Job variables"] --> Read{"read_item?"}
+  Read -->|Yes| Metadata["Read Item metadata for current Target"]
+  Read -->|No| Worker["Reuse or start inference worker"]
+  Metadata --> Result["Return this step's schema and bounded sample"]
+  Worker --> Result
+  Result --> Downstream["Infer affected downstream steps"]
+```
+
 ## Usage
 
 The Designer runs inference locally through `xstream-operator-inference`. Embedding applications use `OperatorInferenceService` with their plugin environment, repository/cache settings and bounded worker settings; no data server is needed. See the [module guide](../xstream-operator-inference/README.md). The host provides `read_item` metadata from its bound catalog or configured remote connector.

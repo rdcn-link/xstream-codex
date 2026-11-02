@@ -4,7 +4,7 @@
 
 上游 Scala / Java 原文保存在 `upstream/`，许可证见 [LICENSE](LICENSE)。适配实现、修改说明与输入输出契约随每个算子的源码包提供。这里不是 PiFlow 工作流文件的兼容执行器；任务使用 XStream 的端口和参数合同。
 
-当前协作部署仅发布 CSV parser、filter、execute SQL、merge、join、CSV save 这 6 类算子的推荐版本 `1.2`。可直接使用的参数与工作流见[当前算子库](../../../docs/operator-catalog_zh.md)。下文描述完整源码工程和移植范围，不等于在线仓库已全部发布；实际状态以 `/v1/operators` 为准。
+当前协作部署仅发布 CSV parser、filter、execute SQL、merge、join、CSV save 这 6 类算子的推荐版本 `2.0`。可直接使用的参数与工作流见[当前算子库](../../../docs/operator-catalog_zh.md)。下文描述完整源码工程和移植范围，不等于在线仓库已全部发布；实际状态以 `/v1/operators` 为准。
 
 ## 编写和使用
 
@@ -88,4 +88,6 @@ Python 发布现在依次执行 SDK 契约测试、构建、打包后容器测�
 
 `piflow_merge@1.1` 按字段名推导并合并左右输入结构：保留左侧字段顺序，追加右侧独有字段，缺失字段补 null 并标为可空。同名字段类型须一致（null 类型可提升到另一侧类型），嵌套结构保留，不隐式转换不兼容类型。执行按先左后右逐批追加记录，样例复用相同逻辑；它不是按键 Join。任一输入结构未知时，完整输出结构仍标为未知。
 
-当前公开算子推荐版本为 `1.2`，使用 `python-arrow@2.0`；SDK 由共享 Runtime 提供，算子包包含业务代码。源码包含 `pyproject.toml` 并选择 Python 依赖提供器。额外依赖在构建阶段锁定，执行时不安装包。使用 `DACP_PIFLOW_CATALOG=/path/to/catalog XSTREAM_PIFLOW_VERSION=1.2 python container_test.py merge` 可验证实际包与环境。
+当前公开算子推荐版本为 `2.0`，使用 `python-arrow@2.0`；SDK 由共享 Runtime 提供，算子包包含业务代码。源码包含 `pyproject.toml` 并选择 Python 依赖提供器。额外依赖在构建阶段锁定，执行时不安装包。使用 `DACP_PIFLOW_CATALOG=/path/to/catalog XSTREAM_PIFLOW_VERSION=1.2 python container_test.py merge` 可验证实际包与环境。
+
+六个主要示例采用 [Scala 实现](../scala-piflow/README_zh.md)；本目录中的 Python 实现用于演示 Python 接入。

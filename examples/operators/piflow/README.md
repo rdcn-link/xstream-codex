@@ -4,7 +4,10 @@ Adapt operators from [PiFlow EcoFlow](https://github.com/cas-bigdatalab/piflow/t
 
 Original Scala / Java sources are retained under `upstream/`; see [LICENSE](LICENSE). Each operator's source archive includes its adaptation, change descriptions, and input/output contracts. This is not a compatibility executor for PiFlow workflow files; steps use XStream's port and parameter contracts.
 
-The current collaboration deployment publishes only CSV parser, filter, execute SQL, merge, join and CSV save at version `1.2`. See the [current catalog](../../../docs/operator-catalog.md) for runnable parameters and workflows. The sections below describe the full source project and adaptation scope, not a fully published online repository; `/v1/operators` is authoritative.
+The current collaboration deployment publishes only CSV parser, filter, execute SQL, merge, join and CSV save at version `2.0`. See the [current catalog](../../../docs/operator-catalog.md) for runnable parameters and workflows. The sections below describe the full source project and adaptation scope, not a fully published online repository; `/v1/operators` is authoritative.
+
+
+The six primary examples use [Scala implementations](../scala-piflow/README.md); the Python implementations in this directory demonstrate the Python adapter.
 
 ## Authoring and usage
 
