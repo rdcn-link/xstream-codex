@@ -45,3 +45,6 @@ node_modules/
 # Standalone XStream runtime state
 .xstream-executions/
 .xstream-operators/
+
+# Local benchmark payloads and execution state
+.benchmark-runs/

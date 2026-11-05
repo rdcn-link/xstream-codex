@@ -94,3 +94,7 @@ flowchart LR
 The canonical visual assets are `assets/xstream-mark.svg` and `assets/xstream-logo.svg`. The X symbol sits above five parallel, continuous small waves with short wavelengths and low amplitude. Keep the symbol geometry, dark background and cyan/blue/purple/amber palette consistent across applications.
 
 Dependency declarations, locked environments, execution units and binary wrappers: [dependency environment guide](docs/dependency-environments.md).
+
+## Performance benchmarks
+
+[Mixed-language Airflow, model tools and XStream benchmark](docs/orchestration-llm-benchmark.md). [Programs and reproduction](benchmarks/orchestration/README.md).

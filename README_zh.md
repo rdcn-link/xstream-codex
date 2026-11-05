@@ -92,3 +92,7 @@ flowchart LR
 标准视觉资源为 `assets/xstream-mark.svg` 和 `assets/xstream-logo.svg`。X 图形背景包含五条平行、连续、短波长且低波幅的小波浪线。各应用应保持图标尺寸、深色底色和青蓝紫橙配色一致。
 
 依赖声明、锁定环境、执行单元和二进制包装：[依赖环境指南](docs/dependency-environments_zh.md).
+
+## 性能测试
+
+[混合语言 Airflow、模型工具与 XStream 测试](docs/orchestration-llm-benchmark_zh.md)。[测试程序与复现方法](benchmarks/orchestration/README_zh.md)。

@@ -1,0 +1,8 @@
+apache-airflow==3.3.2
+pyarrow==26.0.1
+psutil==7.2.2
+PyYAML==6.0.3
+langgraph==1.2.20
+httpx==0.28.1
+
+matplotlib==3.11.2
