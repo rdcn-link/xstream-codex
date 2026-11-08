@@ -33,6 +33,9 @@ A directory Dataset maps files and folders under its configured root into logica
 
 Suppose `/srv/weather` contains these physical files:
 
+
+A browsable container root can have `kind: folder` and explicitly advertise `views: [bytes]`. Reading its `bytes` View returns the original archive or structured file, without extracting its contents. For example, `read_item@1.0` with `uri: context:/weather/stations.zip` and `view: bytes` streams the ZIP file; `context:/weather/stations.zip/metadata/stations.csv` reads an internal file. Internal folders such as `context:/weather/stations.zip/metadata` are navigable but do not expose readable content. View selection applies before readable-kind validation: a folder is readable only through its explicitly advertised `bytes` View; requesting `records` or another View on a folder is rejected. The same rule applies to remote Item URIs, inference and execution.
+
 ```text
 /srv/weather/
 ├── observations.csv

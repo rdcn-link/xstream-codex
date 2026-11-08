@@ -4,6 +4,7 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 
 ## User guide · Get started
 
+- [Frequently asked questions](faq.md)
 - [User guide](usage.md)
 - [Run your first Job](quickstart.md)
 - [Design a Job visually](designer-guide.md)

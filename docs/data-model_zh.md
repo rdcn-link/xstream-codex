@@ -33,6 +33,9 @@ flowchart LR
 
 假设 `/srv/weather` 包含以下物理文件：
 
+
+可浏览的容器根项可以具有 `kind: folder` 并明确声明 `views: [bytes]`。读取其 `bytes` 视图返回原始归档或结构化文件，不会解压其内容。例如，`read_item@1.0` 使用 `uri: context:/weather/stations.zip` 和 `view: bytes` 时传递 ZIP 原文件；`context:/weather/stations.zip/metadata/stations.csv` 则读取内部文件。`context:/weather/stations.zip/metadata` 等内部目录可浏览，但不提供可读内容。先选择视图再校验可读类型：folder 只允许读取明确声明的 `bytes` 视图，请求其 `records` 或其他视图会被拒绝。远程 Item URI、结构推导与实际执行遵循同一规则。
+
 ```text
 /srv/weather/
 ├── observations.csv

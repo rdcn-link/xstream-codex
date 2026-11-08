@@ -1,3 +1,6 @@
+// A window integration imports a caller-owned draft and never reads or writes the regular browser draft.
+const integrationContext=(()=>{const q=new URLSearchParams(location.search);if(q.get('integration')!=='window'||!window.opener)return null;try{const origin=q.get('parent_origin'),url=new URL(origin),channel=q.get('channel');if(!['http:','https:'].includes(url.protocol)||url.origin!==origin||!channel?.match(/^[a-f0-9]{32}$/))return null;return{origin,channel,parent:window.opener,label:(q.get('return_label')||'Use this job').slice(0,64)}}catch{return null}})();
+let designerIntegrationReady=false;
 let selectedTarget="local",catalogGeneration=0;
 'use strict';
 const $=id=>document.getElementById(id),colors=['#356ce1','#c45b16','#168464','#9252cb','#be3769'];
@@ -49,8 +52,8 @@ function restoreViewport(view){scale=view?.zoom||1;$('world').style.transform=`s
 function snapshot(){return{designTarget:selectedTarget,job:clone(job),positions:clone(positions),outletPosition:clone(outletPosition),viewport:viewport(),automaticReadViews:[...automaticReadViews],variables:variablesEditor.getText()};}
 function recordSnapshot(state){undo.push(state);if(undo.length>60)undo.shift();redo=[];}
 function remember(){recordSnapshot(snapshot());}
-function invalidate(){revision++;proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;scheduleInference();}
-function persist(){try{localStorage.setItem(config?.draft_key||'xstream-designer',JSON.stringify(snapshot()));}catch(e){notice('Browser draft storage is unavailable. Export YAML to keep your work.');}}
+function invalidate(){revision++;clearChatProposal();scheduleInference();}
+function persist(){if(integrationContext)return;try{localStorage.setItem(config?.draft_key||'xstream-designer',JSON.stringify(snapshot()));}catch(e){notice('Browser draft storage is unavailable. Export YAML to keep your work.');}}
 function changed(){invalidate();render();persist();clearTimeout(yamlTimer);yamlTimer=setTimeout(()=>guard(syncYaml)(),200);}
 async function syncYaml(){const version=++docSequence;const response=await api('document',payload());if(version===docSequence&&!yamlEdited){jobYamlEditor.setText(response.job_yaml);}return response;}
 function restore(s){cancelConnection();job=clone(s.job);automaticReadViews=new Set(s.automaticReadViews||[]);positions=clone(s.positions);outletPosition=s.outletPosition?clone(s.outletPosition):null;outletSelected=false;variablesEditor.setText(s.variables);selected=null;selectedSteps.clear();selectedEdge=null;yamlEdited=false;changed();restoreViewport(s.viewport);}
@@ -278,7 +281,7 @@ function inspect(){$('duplicate-step').disabled=selectedSteps.size!==1||outletSe
 async function connectPort(t,port){if(!pendingPort)return;const rev=revision;const candidate=clone(job);candidate.steps.find(x=>x.id===t.id).inputs[port]=pendingPort;const from=pendingPort;pendingPort=null;drawPreview();try{await api('document',{...payload(),job_yaml:JSON.stringify(candidate)});if(rev!==revision)throw Error('Draft changed while creating the connection. Please try again.');remember();job=candidate;changed();notice('Connected '+from+' → '+t.id+':'+port);}catch(e){notice(e.message,true);render();}}
 function arrange(){const ranks={},visiting=new Set();function rank(t){if(ranks[t.id]!==undefined)return ranks[t.id];if(visiting.has(t.id))return 0;visiting.add(t.id);const inputs=Object.values(t.inputs||{}).map(v=>job.steps.find(x=>x.id===binding(v).task)).filter(Boolean);const r=inputs.length?Math.max(...inputs.map(rank))+1:0;visiting.delete(t.id);return ranks[t.id]=r;}const slots={};for(const t of job.steps){const r=rank(t),slot=slots[r]||0;slots[r]=slot+1;positions[t.id]={x:65+r*340,y:85+slot*190};}outletPosition={x:Math.min(5800,Math.max(400,...job.steps.map(t=>point(t).x+350))),y:120};render();layoutChanged();}
 function zoom(value){scale=Math.max(.35,Math.min(1.6,value));$('world').style.transform=`scale(${scale})`;$('zoom').value=Math.round(scale*100)+'%';drawPreview();layoutChanged();}
-function showTab(name){setDetails(true);if(name==='logs')renderLogs();document.querySelectorAll('.tab').forEach(e=>e.hidden=e.id!=='tab-'+name);document.querySelectorAll('[data-tab]').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='yaml')jobYamlEditor.refresh();if(name==='variables')variablesEditor.refresh();}
+function showTab(name){if(name==='chat'){openChat();return;}setDetails(true);if(name==='logs')renderLogs();document.querySelectorAll('.tab').forEach(e=>e.hidden=e.id!=='tab-'+name);document.querySelectorAll('[data-tab]').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='yaml')jobYamlEditor.refresh();if(name==='variables')variablesEditor.refresh();}
 function readableSchema(d){let schema=d?.schema_json||d?.schema;if(typeof schema==='string'){try{return JSON.parse(schema);}catch{return null;}}return schema;}
 function showSchema(data){for(const [id,result]of Object.entries(data.steps||{}))for(const d of result.diagnostics||[])logMessage(id+': '+d.message,d.severity,'Schema');refreshStepOutputs();}
 function refreshStepOutputs(){
@@ -523,27 +526,113 @@ $('load').addEventListener('click',()=>$('file').click());$('file').addEventList
 $('load-vars').addEventListener('click',()=>$('vars-file').click());$('vars-file').addEventListener('change',guard(async()=>{const f=$('vars-file').files[0];if(f){if(f.size>1024*1024)throw Error('Variable file exceeds 1 MiB');const text=await f.text();await api('mapping',{yaml:text});remember();variablesEditor.setText(text);changed();}$('vars-file').value='';}));$('export-vars').addEventListener('click',guard(async()=>{const n=await api('document',payload());download('variables.yaml',n.variables_yaml);}));
 
 for(const b of document.querySelectorAll('[data-tab]'))b.addEventListener('click',()=>showTab(b.dataset.tab));
+function fitChatWindow(){
+ const panel=$('tab-chat');if(panel.hidden)return;
+ const margin=12,width=Math.min(panel.offsetWidth,window.innerWidth-margin*2),height=Math.min(panel.offsetHeight,window.innerHeight-margin*2),r=panel.getBoundingClientRect();
+ panel.style.width=width+'px';panel.style.height=height+'px';
+ panel.style.left=Math.max(margin,Math.min(r.left,window.innerWidth-width-margin))+'px';
+ panel.style.top=Math.max(margin,Math.min(r.top,window.innerHeight-height-margin))+'px';panel.style.right=panel.style.bottom='auto';
+}
+function openChat(){
+ $('tab-chat').hidden=false;document.querySelector('[data-tab="chat"]').setAttribute('aria-expanded','true');
+ fitChatWindow();resizeChatInput();scrollChat();$('chat-input').focus();
+}
+function closeChat(){
+ $('tab-chat').hidden=true;const launcher=document.querySelector('[data-tab="chat"]');launcher.setAttribute('aria-expanded','false');launcher.focus();
+}
+$('chat-close').addEventListener('click',closeChat);
+$('tab-chat').addEventListener('keydown',event=>{event.stopPropagation();});
+$('tab-chat').addEventListener('wheel',event=>event.stopPropagation(),{passive:true});
+window.addEventListener('resize',fitChatWindow);
+let chatDrag=null;
+$('chat-titlebar').addEventListener('pointerdown',event=>{
+ if(event.button!==0||event.target.closest('button'))return;
+ const r=$('tab-chat').getBoundingClientRect();chatDrag={x:event.clientX,y:event.clientY,left:r.left,top:r.top};
+ event.currentTarget.setPointerCapture(event.pointerId);event.preventDefault();
+});
+$('chat-titlebar').addEventListener('pointermove',event=>{
+ if(!chatDrag)return;const panel=$('tab-chat'),margin=12;
+ panel.style.left=Math.max(margin,Math.min(chatDrag.left+event.clientX-chatDrag.x,window.innerWidth-panel.offsetWidth-margin))+'px';
+ panel.style.top=Math.max(margin,Math.min(chatDrag.top+event.clientY-chatDrag.y,window.innerHeight-panel.offsetHeight-margin))+'px';
+ panel.style.right=panel.style.bottom='auto';
+});
+for(const type of ['pointerup','pointercancel','lostpointercapture'])$('chat-titlebar').addEventListener(type,()=>{chatDrag=null;});
+function clearChatProposal(){proposal=null;document.querySelectorAll('.chat-proposal-actions').forEach(node=>node.remove());}
+function appendChatProposal(candidate){
+ const detail=el('details',undefined,'chat-proposal'),summary=el('summary','Proposed Job YAML');
+ detail.append(summary,el('pre',candidate.job_yaml),el('pre',candidate.variables_yaml||''));
+ detail.addEventListener('toggle',scrollChat);
+ const actions=el('div',undefined,'chat-proposal-actions'),apply=el('button','Apply proposed changes'),discard=el('button','Discard proposal');
+ apply.type=discard.type='button';apply.classList.add('primary');
+ apply.addEventListener('click',guard(async()=>{
+  if(proposal!==candidate)return;
+  apply.disabled=discard.disabled=true;
+  try{await loadDocument(candidate.job_yaml,candidate.variables_yaml||'{}');notice('Proposed changes applied.');}
+  finally{apply.disabled=discard.disabled=false;}
+ }));
+ discard.addEventListener('click',()=>{if(proposal===candidate){clearChatProposal();notice('Proposal discarded.');}});
+ actions.append(apply,discard);$('messages').append(detail,actions);
+}
+function appendChatMessage(text,role='assistant'){
+ const row=el('div',undefined,'chat-message '+(role==='user'?'user':'assistant'));
+ const content=el('div',text,'chat-message-text');if(role!=='user')ChatMarkdown.render(content,text);
+ row.append(el('span',role==='user'?'You':'Assistant','chat-speaker'),content);
+ $('messages').append(row);return row;
+}
+function scrollChat(){requestAnimationFrame(()=>{const messages=$('messages');messages.scrollTop=messages.scrollHeight;});}
+function chatUiState(){return{
+ library_tab:document.querySelector('[data-library-tab][aria-selected="true"]')?.dataset.libraryTab,
+ details_tab:document.querySelector('.tabs [data-tab].active')?.dataset.tab,
+ inspector_tab:document.querySelector('[data-inspector-tab][aria-selected="true"]')?.dataset.inspectorTab,
+ details_open:!document.querySelector('.bottom').classList.contains('collapsed'),
+ inspector_open:!$('inspector').hidden,library_open:!$('library').hidden,unapplied_yaml:yamlEdited,
+ outlet_selected:outletSelected,edge_selected:!!selectedEdge,has_pending_proposal:!!proposal,
+ zoom_percent:Math.round(scale*100),logs_count:logEntries.length,logs_filter:$('log-filter').value,
+ catalog_status:$('connection').textContent,repository_status:$('repository-state').textContent,inference_status:inferenceState,
+ dialogs:[...document.querySelectorAll('dialog[open]')].map(node=>node.id),
+ controls:[...document.querySelectorAll('button[id],input[id],select[id],textarea[id],a[id]')].map(node=>({id:node.id,visible:!!node.getClientRects().length,enabled:!node.disabled,...(node.type==='checkbox'?{checked:node.checked}:{})})),
+ selected_steps:[...new Set([...selectedSteps,...(selected?[selected]:[])])]
+};}
+async function chatRequest(body,onProgress=()=>{},onReply=()=>{}){
+ const response=await fetch('api/chat_stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target:selectedTarget,...body})});
+ if(!response.ok){const error=await response.json();throw Error(error.error||'Chat request failed');}
+ const reader=response.body.getReader(),decoder=new TextDecoder();let buffer='',result;
+ function consume(line){if(!line.trim())return;const event=JSON.parse(line);if(event.type==='result')result=event.result;else if(event.type==='progress')onProgress(event.message);else if(event.type==='reply_delta')onReply(event.text);else if(event.type==='error')throw Error(event.error);}
+ try{while(true){const {value,done}=await reader.read();buffer+=decoder.decode(value||new Uint8Array(),{stream:!done});let newline;while((newline=buffer.indexOf('\n'))>=0){consume(buffer.slice(0,newline));buffer=buffer.slice(newline+1);}if(done)break;}consume(buffer);if(!result)throw Error('Chat response ended without a proposal');return result;}
+ finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
+}
+function resizeChatInput(){const input=$('chat-input');input.style.height='auto';const height=input.value?input.scrollHeight+2:31;input.style.height=Math.min(height,140)+'px';input.style.overflowY=height>140?'auto':'hidden';}
+$('chat-input').addEventListener('input',resizeChatInput);
+new ResizeObserver(resizeChatInput).observe($('tab-chat'));
+$('chat-input').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229){event.preventDefault();if(!$('chat-send').disabled)$('chat-form').requestSubmit();}});
 $('chat-form').addEventListener('submit',guard(async e=>{
- e.preventDefault();if(config.chat_provider==='disabled')throw Error('Configure chat.url and chat.model on the Designer server.');
+ e.preventDefault();if($('chat-send').disabled)return;if(config.chat_provider==='disabled')throw Error('Configure chat.url and chat.model on the Designer server.');
  const message=$('chat-input').value.trim();if(!message)return;
- chatHistory.push({role:'user',content:message});$('messages').append(el('div',message,'chat-message user'));
- $('chat-input').value='';$('chat-send').disabled=true;
+ chatHistory.push({role:'user',content:message});appendChatMessage(message,'user');
+ $('chat-input').value='';resizeChatInput();$('chat-send').disabled=true;
+ const activity=el('div',undefined,'chat-thinking');activity.setAttribute('role','status');activity.setAttribute('aria-label','Thinking');activity.title='Thinking';activity.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 8 8"/></svg>';const progressLabel=el('span',undefined,'chat-progress');activity.append(progressLabel);
+ const waitStarted=performance.now();let waitStage='Preparing request';
+ const updateWait=()=>{progressLabel.textContent=waitStage+' · '+Math.floor((performance.now()-waitStarted)/1000)+'s';activity.setAttribute('aria-label',progressLabel.textContent);};
+ updateWait();const waitTimer=setInterval(updateWait,1000);
+ $('messages').append(activity);$('messages').setAttribute('aria-busy','true');scrollChat();
+ let streamedReply=null,streamedText='',replyRenderFrame=null;
+ const renderReply=()=>{replyRenderFrame=null;if(streamedReply)ChatMarkdown.render(streamedReply.querySelector('.chat-message-text'),streamedText);scrollChat();};
  const version=revision,draft=proposal?{...payload(),job_yaml:proposal.job_yaml,variables_yaml:proposal.variables_yaml}:payload();
  try{
-  const result=await api('chat',{...draft,message,messages:chatHistory.slice(-12),catalog_items:[...chatCatalogItems.values()]});
+  const result=await chatRequest({...draft,message,messages:chatHistory.slice(-12),ui_state:chatUiState(),catalog_items:[...chatCatalogItems.values()]},message=>{waitStage=message;updateWait();scrollChat();},text=>{if(version!==revision)return;if(!streamedReply){streamedReply=appendChatMessage('');activity.before(streamedReply);}streamedText+=text;if(replyRenderFrame===null)replyRenderFrame=requestAnimationFrame(renderReply);});
   if(version!==revision){notice('Chat response discarded because the draft changed.');return;}
-  $('messages').append(el('div',result.reply,'chat-message'));
-  proposal=typeof result.job_yaml==='string'?result:null;
-  if(proposal){const detail=el('details'),summary=el('summary','Proposed Job YAML');detail.append(summary,el('pre',proposal.job_yaml),el('pre',proposal.variables_yaml));$('messages').append(detail);}
+  if(streamedReply){if(replyRenderFrame!==null)cancelAnimationFrame(replyRenderFrame);replyRenderFrame=null;ChatMarkdown.render(streamedReply.querySelector('.chat-message-text'),result.reply);}else appendChatMessage(result.reply);
+  clearChatProposal();proposal=typeof result.job_yaml==='string'?result:null;
+  if(proposal)appendChatProposal(proposal);
   chatHistory.push({role:'assistant',content:JSON.stringify(result)});
-  $('apply-chat').disabled=!proposal;$('discard-chat').disabled=!proposal;
- }finally{$('chat-send').disabled=false;}
+
+ }catch(error){appendChatMessage(error.message).classList.add('chat-error');throw error;}finally{clearInterval(waitTimer);if(replyRenderFrame!==null)cancelAnimationFrame(replyRenderFrame);activity.remove();$('messages').setAttribute('aria-busy','false');$('chat-send').disabled=false;scrollChat();$('chat-input').focus();}
 }));
-$('apply-chat').addEventListener('click',guard(async()=>{if(proposal){await loadDocument(proposal.job_yaml,proposal.variables_yaml);proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;notice('Chat proposal applied. Review connections and preview schemas.');}}));$('discard-chat').addEventListener('click',()=>{proposal=null;$('apply-chat').disabled=true;$('discard-chat').disabled=true;notice('Proposal discarded.');});
+
 $('canvas').addEventListener('keydown',e=>{if(e.key==='Escape'){cancelConnection();selectedEdge=null;render();}});
 $('load-showcase').addEventListener('click',guard(async()=>{if(config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);}));
 guard(async()=>{config=await api('config');$('target').replaceChildren(...config.targets.map(t=>{const o=document.createElement('option');o.value=t.value;o.textContent=t.label;return o;}));viewDefinitions=await api('views',{});$('chat-mode').textContent=config.chat_provider==='disabled'?'Chat is unavailable until a model API is configured on the Designer server.':'Describe your complete analysis goal. The assistant will ask questions or propose a complete Job for review.';
-$('chat-send').disabled=config.chat_provider==='disabled';$('chat-input').disabled=config.chat_provider==='disabled';let restored=false;if(config.showcase){$('load-showcase').hidden=false;$('showcase-label').textContent=config.showcase.label||'Load demo';}try{const saved=JSON.parse(localStorage.getItem(config?.draft_key||'xstream-designer'));if(saved){await api('document',{job_yaml:JSON.stringify(saved.job),variables_yaml:saved.variables||'{}'});const savedTarget=saved.designTarget||saved.job.designer?.target;if(savedTarget&&config.targets.some(t=>t.value===savedTarget))applyTarget(savedTarget);else if(savedTarget&&savedTarget!==selectedTarget)notice('Saved target is no longer configured. Restored the draft using Local; review context: Item paths.');job=saved.job;automaticReadViews=new Set(saved.automaticReadViews||[]);positions=saved.positions||{};outletPosition=saved.outletPosition||null;restoreViewport(saved.viewport);variablesEditor.setText(saved.variables||'{}');restored=true;}}catch(e){notice('Saved draft could not be restored: '+e.message,true);}renderLibrary();render();await Promise.allSettled([guard(syncYaml)(),guard(connect)(),guard(loadOperators)()]);if(!restored&&config.showcase)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);})();
+$('chat-send').disabled=config.chat_provider==='disabled';$('chat-input').disabled=config.chat_provider==='disabled';let restored=false;if(config.showcase){$('load-showcase').hidden=false;$('showcase-label').textContent=config.showcase.label||'Load demo';}try{const saved=integrationContext?null:JSON.parse(localStorage.getItem(config?.draft_key||'xstream-designer'));if(saved){await api('document',{job_yaml:JSON.stringify(saved.job),variables_yaml:saved.variables||'{}'});const savedTarget=saved.designTarget||saved.job.designer?.target;if(savedTarget&&config.targets.some(t=>t.value===savedTarget))applyTarget(savedTarget);else if(savedTarget&&savedTarget!==selectedTarget)notice('Saved target is no longer configured. Restored the draft using Local; review context: Item paths.');job=saved.job;automaticReadViews=new Set(saved.automaticReadViews||[]);positions=saved.positions||{};outletPosition=saved.outletPosition||null;restoreViewport(saved.viewport);variablesEditor.setText(saved.variables||'{}');restored=true;}}catch(e){notice('Saved draft could not be restored: '+e.message,true);}renderLibrary();render();await Promise.allSettled([guard(syncYaml)(),guard(connect)(),guard(loadOperators)()]);if(!restored&&config.showcase&&!integrationContext)await loadDocument(config.showcase.job_yaml,config.showcase.variables_yaml);designerIntegrationReady=true;window.dispatchEvent(new Event('xstream-designer-ready'));})();
 
 window.addEventListener('resize',hideOperatorTip);document.querySelector('.library').addEventListener('scroll',hideOperatorTip);
 
@@ -590,8 +679,8 @@ function applyTarget(value){
  if(value===selectedTarget)return;
  selectedTarget=value;updateTargetLabel();catalogGeneration++;datasetRequest=null;datasetsLoaded=false;chatCatalogItems.clear();closeItemActions();hideOperatorTip();
  inferenceSession=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
- report=null;inferenceDraftKey=null;inferenceDraftSteps={};inferenceSignature=null;inferenceSequence++;revision++;proposal=null;
- $('apply-chat').disabled=true;$('discard-chat').disabled=true;
+ report=null;inferenceDraftKey=null;inferenceDraftSteps={};inferenceSignature=null;inferenceSequence++;revision++;clearChatProposal();
+
 }
 let targetChoice=null;
 function chooseTarget(preferred=selectedTarget,imported=false){
@@ -644,4 +733,18 @@ async function loadExamples(){
  if(exampleJobs){renderExamples();return;}if(exampleRequest)return exampleRequest;
  $('example-jobs').textContent='Loading examples…';
  exampleRequest=(async()=>{try{exampleJobs=await api('examples',{});renderExamples();}catch(e){$('example-jobs').textContent='Examples unavailable. Reopen this tab to retry.';throw e;}finally{exampleRequest=null;}})();return exampleRequest;
+}
+
+if(integrationContext){
+ const context=integrationContext;let loaded=false,busy=false;
+ const send=(type,extra={})=>context.parent.postMessage({type,channel:context.channel,...extra},context.origin);
+ const use=document.createElement('button');use.id='integration-return';use.className='primary';use.type='button';use.textContent=context.label;use.disabled=true;document.querySelector('header').append(use);
+ use.addEventListener('click',guard(async()=>{if(!loaded||busy)return;if(yamlEdited)await loadDocument(jobYamlEditor.getText());const result=await api('export',{...payload(),include_designer:true});send('xstream-designer:job',{job_yaml:result.job_yaml});notice('Job returned to the calling application.');context.parent.focus();}));
+ window.addEventListener('message',async event=>{
+  if(event.source!==context.parent||event.origin!==context.origin||event.data?.channel!==context.channel||event.data?.type!=='xstream-designer:load'||!designerIntegrationReady||busy)return;
+  if(typeof event.data.job_yaml!=='string'||event.data.job_yaml.length>1024*1024){send('xstream-designer:error',{error:'Invalid Job YAML'});return}
+  busy=true;use.disabled=true;
+  try{await loadDocument(event.data.job_yaml,typeof event.data.variables_yaml==='string'?event.data.variables_yaml:'{}');loaded=true;send('xstream-designer:loaded')}catch(error){send('xstream-designer:error',{error:error.message})}finally{busy=false;use.disabled=!loaded}
+ });
+ if(designerIntegrationReady)send('xstream-designer:ready');else window.addEventListener('xstream-designer-ready',()=>send('xstream-designer:ready'),{once:true});
 }

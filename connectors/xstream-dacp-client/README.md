@@ -26,3 +26,5 @@ Transport failures become `DacpException` with stable error codes. Failed reads 
 ```
 
 Tests use local protocol fixtures; a running DACP service is not required. See [engine configuration](../../docs/xstream.md).
+
+All connections, including anonymous catalog access, verify the server certificate and hostname. Platform trust roots are used by default; configure private or self-signed CAs through `TlsConfig.ca` or `DACP_CA`. Verification cannot be disabled.

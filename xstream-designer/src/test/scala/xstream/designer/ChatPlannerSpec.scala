@@ -32,7 +32,7 @@ class ChatPlannerSpec extends AnyFunSuite {
       assert(observed.get.path("model").asText=="test-model")
       assert(observed.get.path("messages").get(0).path("role").asText=="system")
       assert(observed.get.path("messages").get(2).path("content").asText.contains("name: Old"))
-      assert(!observed.get.path("stream").asBoolean)
+      assert(observed.get.path("stream").asBoolean)
       assert(observed.get.path("messages").get(0).path("content").asText.contains("complete data-processing"))
       assert(observed.get.path("messages").get(0).path("content").asText.contains("ask focused questions"))
     }finally model.stop(0)
@@ -50,4 +50,29 @@ class ChatPlannerSpec extends AnyFunSuite {
   test("unknown external provider fails clearly"){
     intercept[IllegalArgumentException](ChatPlanner.configured(Json.obj().put("provider","not-installed")))
   }
+  test("streamed model output reports progress, preserves Unicode and excludes private reasoning"){
+    val model=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
+    val proposal=Json.obj().put("reply","可用的算子").putNull("job_yaml").putNull("variables_yaml")
+    model.createContext("/stream",x=>{
+      x.getRequestBody.readAllBytes();x.getResponseHeaders.set("Content-Type","text/event-stream");x.sendResponseHeaders(200,0)
+      val out=x.getResponseBody
+      def event(delta:JsonNode,finish:String=null):Unit={val e=Json.obj();val c=e.putArray("choices").addObject();c.set[JsonNode]("delta",delta);if(finish==null)c.putNull("finish_reason")else c.put("finish_reason",finish);out.write(("data: "+e.toString+"\n\n").getBytes(UTF_8));out.flush()}
+      event(Json.obj().put("reasoning_content","PRIVATE_REASONING"))
+      proposal.toString.grouped(7).foreach(chunk=>event(Json.obj().put("content",chunk)))
+      event(Json.obj(),"stop");out.close();x.close()
+    });model.start()
+    try{
+      val planner=new CompletionChat(Json.obj().put("url",s"http://127.0.0.1:${model.getAddress.getPort}/stream").put("model","test"))
+      val progress=scala.collection.mutable.ArrayBuffer.empty[String]
+      val replies=new StringBuilder
+      val result=planner.plan(Json.obj().put("message","List operators"),progress+=_,replies.append(_))
+      assert(result==proposal);assert(replies.toString==proposal.path("reply").asText);assert(progress.nonEmpty);assert(!progress.mkString.contains("PRIVATE_REASONING"))
+    }finally model.stop(0)
+  }
+  test("model context contains operator contracts without runtime archives or download metadata"){
+    val operators=Json.mapper.createArrayNode();operators.addObject().put("name","sample").put("version","1.0").put("archive","large").putObject("parameters").put("type","object")
+    val compact=ChatPlanner.operatorContext(operators).get(0)
+    assert(compact.path("name").asText=="sample"&&compact.has("parameters") && !compact.has("archive"))
+  }
+
 }

@@ -216,6 +216,8 @@ class DesignerSpec extends AnyFunSuite {
     val dir=java.nio.file.Files.createTempDirectory("designer-local-catalog-")
     java.nio.file.Files.createDirectories(dir.resolve("nested"))
     java.nio.file.Files.writeString(dir.resolve("nested/data.csv"),"station,temperature\nA,12\nB,15\n")
+    val archive=new java.util.zip.ZipOutputStream(java.nio.file.Files.newOutputStream(dir.resolve("geotrans-input.zip")))
+    try {archive.putNextEntry(new java.util.zip.ZipEntry("labels/points.txt"));archive.write("points".getBytes(UTF_8));archive.closeEntry()}finally archive.close()
     val config=Documents.mapping(s"""host: 127.0.0.1
       |port: 0
       |repository: {url: 'http://127.0.0.1:1'}
@@ -243,6 +245,20 @@ class DesignerSpec extends AnyFunSuite {
       assert(output.path("certainty").asText=="known",inferred.body())
       assert(output.path("schema_json").path("fields").size()==1)
       assert(output.path("sample").path("rows").size()==1,inferred.body())
+      for(path<-Seq("geotrans-input.zip","geotrans-input.zip/labels/points.txt")) {
+        val zipYaml=s"name: Archive\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: bytes}\noutputs: {result: read}\n"
+        val result=post("/api/infer",Json.obj().put("job_yaml",zipYaml).put("variables_yaml","{}").set[com.fasterxml.jackson.databind.JsonNode]("preview",Json.obj().put("max_rows",1).put("max_bytes",1024)))
+        assert(result.statusCode()==200,result.body())
+        assert(Json.mapper.readTree(result.body()).path("steps").path("read").path("outputs").path("result").path("certainty").asText=="known",result.body())
+        val exported=post("/api/export",Json.obj().put("job_yaml",zipYaml).put("variables_yaml","{}").put("include_designer",true))
+        assert(exported.statusCode()==200 && exported.body().contains(path),exported.body())
+      }
+      for((path,view)<-Seq("geotrans-input.zip/labels"->"bytes","geotrans-input.zip"->"records")) {
+        val bad=s"name: Invalid\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: $view}\noutputs: {result: read}\n"
+        val result=post("/api/infer",Json.obj().put("job_yaml",bad).put("variables_yaml","{}"))
+        assert(!Json.mapper.readTree(result.body()).path("steps").path("read").path("outputs").has("result"),result.body())
+      }
+
     }finally {site.close();xstream.data.Data.deleteTree(dir)}
   }
 
@@ -261,7 +277,10 @@ class DesignerSpec extends AnyFunSuite {
       val bytes=Json.mapper.writeValueAsBytes(response);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
     })
     model.start()
+    val data=java.nio.file.Files.createTempDirectory("chat-catalog-")
+    java.nio.file.Files.writeString(data.resolve("weather.csv"),"station,temperature\nA,12\n")
     val config=Json.obj().put("host","127.0.0.1").put("port",0)
+    config.putObject("local_catalog").putObject("datasets").putObject("weather").put("provider","directory").putObject("source").put("root",data.toString)
     val origin=s"http://127.0.0.1:${model.getAddress.getPort}"
     config.putObject("repository").put("url",origin)
     config.putObject("chat").put("url",origin+"/completions").put("model","test-model")
@@ -274,6 +293,12 @@ class DesignerSpec extends AnyFunSuite {
       val clarification=send()
       assert(clarification.statusCode()==200,clarification.body())
       assert(Json.mapper.readTree(clarification.body()).path("job_yaml").isNull)
+      val context=observed.get.path("messages").get(1).path("content").asText
+      assert(context.contains("server_catalogs") && context.contains("context:/weather/weather.csv"),context)
+      assert(context.contains("repository_url") && context.contains("records"),context)
+      assert(context.contains("designer_interface") && context.contains("Choose design target") && context.contains("Load example"),context)
+      assert(context.contains("read-records") && context.contains("available_to_load"),context)
+
       val proposal="name: Weather analysis\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: $INPUT_URI}\noutputs: {result: read}\n"
       answer.set(Json.obj().put("reply","Here is a complete Job proposal").put("job_yaml",proposal).put("variables_yaml","INPUT_URI: context:/weather/observations\nN: 123\n"))
       request.put("message","Use context:/weather/observations")
@@ -281,8 +306,17 @@ class DesignerSpec extends AnyFunSuite {
       assert(result.statusCode()==200,result.body())
       assert(Documents.job(Json.mapper.readTree(result.body()).path("job_yaml").asText).path("steps").size()==1)
       assert(observed.get.path("messages").get(1).path("content").asText.contains("context:/weather/observations"))
+      def stream()=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}/api/chat_stream")).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(request.toString)).build(),HttpResponse.BodyHandlers.ofString())
+      val streamed=stream();assert(streamed.statusCode()==200)
+      assert(streamed.headers().firstValue("Content-Type").orElse("").contains("application/x-ndjson"))
+      val events=streamed.body().linesIterator.filter(_.nonEmpty).map(Json.mapper.readTree).toVector
+      assert(events.map(_.path("type").asText)==Vector("progress","progress","progress","progress","result"))
+      assert(events.last.path("result").path("job_yaml").asText==proposal)
       answer.set(Json.obj().put("reply","Invalid operator").put("job_yaml",proposal.replace("read_item@1.0","unknown@1.0")).put("variables_yaml","{}"))
       assert(send().statusCode()==400)
-    } finally {site.close();model.stop(0)}
+      val rejected=stream().body().linesIterator.filter(_.nonEmpty).map(Json.mapper.readTree).toVector
+      assert(rejected.last.path("type").asText=="error")
+      assert(!rejected.exists(_.path("type").asText=="result"))
+    } finally {site.close();model.stop(0);xstream.data.Data.deleteTree(data)}
   }
 }

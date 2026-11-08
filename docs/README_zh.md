@@ -4,6 +4,7 @@
 
 ## 使用指南 · 快速上手
 
+- [常见问题](faq_zh.md)
 - [使用指南](usage_zh.md)
 - [运行第一个 Job](quickstart_zh.md)
 - [Designer 使用指南](designer-guide_zh.md)

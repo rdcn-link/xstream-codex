@@ -1,0 +1,191 @@
+[
+  {
+    "id": "job-lifecycle",
+    "location": "Top header",
+    "control_ids": [
+      "new",
+      "load",
+      "file",
+      "export",
+      "load-showcase",
+      "job-name",
+      "connection",
+      "repository-state",
+      "notice"
+    ],
+    "description": "New clears the Job and variables, preserves Target and can be undone. Job name edits the current Job name. Load YAML imports a local YAML file (at most 1 MiB), restoring saved layout and offering a saved Target if configured. Load demo is visible only when a showcase is configured. Catalog/repository connection indicators report readiness; the status line shows the latest log. No Job submission or execution control exists in Designer."
+  },
+  {
+    "id": "target",
+    "location": "Top header and Choose design target dialog",
+    "control_ids": [
+      "change-target",
+      "target",
+      "target-cancel",
+      "target-confirm"
+    ],
+    "description": "Click Target to open Choose design target, select Local or a configured service address, then Use selected target; Keep current target cancels. Connections are administrator-configured. Changing Target changes context: resolution, Target catalog and inference context, while retaining the Job. It neither executes nor submits the Job. Importing a different saved designer.target asks before switching; an unavailable Target is not silently selected. Explicit dacp: URIs continue to reference their explicit service."
+  },
+  {
+    "id": "resource-panels",
+    "location": "Left sidebar",
+    "control_ids": [
+      "toggle-library",
+      "library-operators-tab",
+      "library-datasets-tab",
+      "library-examples-tab",
+      "search"
+    ],
+    "description": "The side handle collapses/expands resources. Operators, Catalogs and Examples are vertical tabs; ArrowUp/ArrowDown and Home/End navigate focused tabs. Operators search filters the list; categories expand to show icons, with latest operator versions listed. Hover an operator to see description, version, trust and downloads. Drag its icon to create a step. Trust is not shown on canvas cards."
+  },
+  {
+    "id": "catalogs",
+    "location": "Left Catalogs tab",
+    "control_ids": [],
+    "description": "Target catalog represents the current Target; other configured remote catalogs are separate roots. Expand roots/datasets/folders to load metadata lazily; unavailable branches can be collapsed and expanded to retry. Dataset hover shows title and description. Folder expansion uses its triangle, not its name. Click an Item name for floating view icons and Copy path. Choosing a view updates the selected read_item, or creates one if none is selected; it replaces its source parameters with uri and view. Paths from Target catalog use context:, other sources use explicit dacp: URIs. Copy path copies the Item path and does not read data. View availability comes from Item metadata."
+  },
+  {
+    "id": "examples",
+    "location": "Left Examples tab",
+    "control_ids": [],
+    "description": "Numbered cards show title, description, feature tags and step count. Load example replaces the Job and variables, asks before replacing a nonempty draft and supports Undo. Missing required operator versions disable loading and are listed. An example may request a saved Target. Use the supplied example inventory, including number, requires and missing_operators; never invent names or availability. Review Item paths and Target after loading."
+  },
+  {
+    "id": "history-duplicate",
+    "location": "Canvas toolbar and keyboard",
+    "control_ids": [
+      "undo",
+      "redo",
+      "duplicate-step"
+    ],
+    "description": "Undo: Ctrl/Command+Z; Redo: Ctrl/Command+Shift+Z or Ctrl+Y. These operate on canvas history, while CodeMirror editor undo is separate. Duplicate step or Ctrl/Command+D requires exactly one selected step and no selected Outlet. It copies parameters and description with a new ID but no input connections; reconnect its inputs. Disabled buttons indicate unavailable operations."
+  },
+  {
+    "id": "canvas-layout",
+    "location": "Canvas toolbar",
+    "control_ids": [
+      "arrange",
+      "zoom-out",
+      "zoom-in",
+      "fit",
+      "zoom"
+    ],
+    "description": "Arrange lays steps out by upstream/downstream rank and supports Undo. Minus/plus zoom the canvas (35–160%); the percentage is a readout, not an editable input. Fit scales the entire design into view and scrolls to the origin. Canvas scrollbars navigate a large design. Drag steps or Outlet to move them. Dragging selected multiple elements moves them together; steps automatically avoid overlap."
+  },
+  {
+    "id": "selection-deletion",
+    "location": "Canvas",
+    "control_ids": [],
+    "description": "Single-click a step or curve to select; double-click a step opens its properties. Drag a rectangle on empty canvas to select fully enclosed steps and Outlet; Shift extends selection. Shift-click toggles selection. Click blank canvas to clear selection. Delete/Backspace deletes selected steps or a selected connection; deleting multiple steps asks for confirmation. Deleting a step also removes dependent connections. Text editor/input typing is excluded from canvas shortcuts. Undo restores removed elements."
+  },
+  {
+    "id": "ports-outlet",
+    "location": "Canvas ports and Outlet",
+    "control_ids": [
+      "outlet-input"
+    ],
+    "description": "Connect by clicking an output port, moving the preview line, then clicking an input port. Right-click or Escape cancels unfinished wiring on the canvas; there is no drag-to-connect gesture. Click a curve and Delete/Backspace to remove it; right-sidebar input rows also have a remove button. Connect one step output to Outlet to define the Job output. There is exactly one Outlet; it is movable but cannot be deleted or duplicated, accepts only one output port and cannot overlap a node region. A step output cannot have multiple consumers. Source steps may have empty inputs; empty Job outputs are permitted."
+  },
+  {
+    "id": "step-properties",
+    "location": "Right sidebar",
+    "control_ids": [
+      "toggle-inspector-panel",
+      "properties-tab",
+      "parameters-tab",
+      "outputs-tab",
+      "step-id",
+      "step-title",
+      "step-description",
+      "step-operator"
+    ],
+    "description": "The side handle expands/collapses properties without deleting selection. Double-click opens it; single-click or dragging does not auto-open it. Step shows read-only ID/operator, editable title and multiline description, and connected input rows with remove controls. Changes apply automatically. Parameters and Outputs are separate tabs. ArrowLeft/ArrowRight, Home/End navigate focused tabs. No execution-node placement is configured here."
+  },
+  {
+    "id": "parameter-editing",
+    "location": "Right Parameters tab",
+    "control_ids": [],
+    "description": "Parameters are typed fields from the operator declaration: text/numbers, booleans, enum choices and nested arrays/objects with add/remove controls. Required names and constraints are checked. Parameter names are labels. The $ button switches between a literal value and a whole-value $VAR_NAME reference; set its typed value in Variables. Help at the question mark is displayed in the parameter help area. There is no Apply changes button. Editing parameters or input bindings updates affected schema inference; unrelated layout changes do not require inference."
+  },
+  {
+    "id": "outputs-inference",
+    "location": "Step cards and right Outputs tab",
+    "control_ids": [],
+    "description": "Step cards show compact schema tables, short unknown/error status and output-port names. Outputs shows each expected port schema, diagnostics and operator-supplied output samples as tables when applicable, bounded to 10 rows/16 KiB per port. Inference flows upstream to downstream and results arrive step by step. Variables and the current Target are used when resolving read_item. Unknown/error is not an empty schema. These are metadata/sample previews, not Job execution. Check Parameters, Variables, Target, repository availability and Logs when inference fails; do not invent schemas or samples."
+  },
+  {
+    "id": "bottom-yaml",
+    "location": "Lower panel",
+    "control_ids": [
+      "toggle-details",
+      "apply-yaml"
+    ],
+    "description": "The chevron expands/collapses the lower panel. Job YAML is synchronized from canvas changes until manually edited; manual edits remain unapplied until Apply YAML. Apply YAML validates and replaces the canvas/variables with Undo support. Export requires pending YAML edits to be applied first. Job YAML and Variables use CodeMirror: highlighting, line numbers, folding, search/replace, Tab indentation, syntax diagnostics and editor-local undo/redo. Syntax checks do not execute Jobs."
+  },
+  {
+    "id": "variables",
+    "location": "Lower Variables tab",
+    "control_ids": [
+      "load-vars",
+      "vars-file",
+      "export-vars"
+    ],
+    "description": "Variables accepts a YAML mapping with typed scalars, arrays or objects. Parameters reference a complete value such as $INPUT_URI; it is not textual substring interpolation. Load imports a variable YAML file (at most 1 MiB); Export variables downloads it separately. Editing values affects inference. Job YAML export does not replace a separate variables file; include both when submitting through an external client."
+  },
+  {
+    "id": "validation",
+    "location": "Canvas toolbar and lower Validation tab",
+    "control_ids": [
+      "validate"
+    ],
+    "description": "Validate checks disconnected/stray steps, missing paths to Outlet, input/operator/parameter mismatches and unapplied edits. It displays error/warning counts and per-issue messages. Click a step link in an issue to select, locate and open that step. It neither executes a Job nor guarantees an unavailable external service will work."
+  },
+  {
+    "id": "logs",
+    "location": "Lower Logs tab",
+    "control_ids": [
+      "log-filter",
+      "log-follow",
+      "log-clear"
+    ],
+    "description": "Logs lists current-browser-session INFO/WARNING/ERROR entries, newest first, retaining at most 1000. Level filters entries; Auto-scroll follows the newest entries at the top; Clear clears local log display only. API/inference/browser diagnostics appear here; the upper status line shows only the latest message. It is not the remote Job execution log."
+  },
+  {
+    "id": "export",
+    "location": "Export job YAML preview dialog",
+    "control_ids": [
+      "export-close",
+      "export-designer",
+      "export-copy",
+      "export-print",
+      "export-download"
+    ],
+    "description": "Export job YAML opens a read-only syntax-highlighted preview. Include designer metadata is checked by default and preserves positions, viewport, Outlet, designer name/version/time and preferred Target; execution ignores presentation metadata. Uncheck it to export only the Job definition. Copy copies text, Print opens browser printing, Download saves YAML. The close button closes preview; copying may require clipboard permissions. Export never submits or runs a Job."
+  },
+  {
+    "id": "confirmations",
+    "location": "Application dialogs",
+    "control_ids": [
+      "confirmation-close",
+      "confirmation-cancel",
+      "confirmation-accept"
+    ],
+    "description": "Destructive/bulk delete and replacing examples use application confirmation dialogs. Cancel/close leaves the draft intact; the labeled primary action confirms the stated operation. Target and export use their own dialogs. Browser file-picker, print and clipboard prompts remain native browser functions."
+  },
+  {
+    "id": "chat",
+    "location": "Floating Chat window, opened from lower Chat button",
+    "control_ids": [
+      "chat-close",
+      "chat-input",
+      "chat-send"
+    ],
+    "description": "Chat opens at one quarter of the Designer viewport width. Drag its header to move, bottom-right corner to resize. Close button hides it and preserves conversation; Escape never closes Chat. Input starts one line, grows for multiline text up to 140px, then scrolls. Enter/Send submits, Shift+Enter inserts a newline, IME confirmation does not submit. While pending, Send is disabled; stage, elapsed time and receiving progress remain visible. Public reply text streams; no private reasoning is shown. Follow-up questions can refine a proposal. Apply proposed changes and Discard proposal appear only after a complete validated proposal; Apply updates Job+variables with Undo, Discard preserves the draft. Draft/Target changes invalidate proposal buttons. Metadata from configured catalogs/operators is cached (default 300s), not read afresh each turn; no data contents are automatically read. UI guidance alone must not create or replace a Job. Chat supplies instructions/proposals, not UI automation or execution."
+  },
+  {
+    "id": "dynamic-controls",
+    "location": "Generated components",
+    "control_ids": [],
+    "description": "Lower tabs: Job YAML, Variables, Chat, Validation, Logs. Runtime-generated controls include operator category toggles and hover cards; catalog branch toggles and Item view/Copy path popovers; Examples Load example buttons; canvas step/input/output/edge selection; parameter add/remove, literal/variable toggles and help controls; input disconnect buttons; validation step links; CodeMirror search/fold controls; and proposal Apply/Discard buttons. Availability depends on selection, permissions/metadata and request state; use supplied UI state rather than guessing."
+  }
+]

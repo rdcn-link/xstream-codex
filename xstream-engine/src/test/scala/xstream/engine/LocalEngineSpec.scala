@@ -6,6 +6,28 @@ import _root_.xstream.data._
 import org.scalatest.funsuite.AnyFunSuite
 import java.nio.file.Files
 class LocalEngineSpec extends AnyFunSuite {
+  test("read_item@1.0 executes archive bytes and rejects directory or records requests") {
+    val dir=Files.createTempDirectory("xstream-zip-read-")
+    val file=dir.resolve("geotrans-input.zip")
+    val zip=new java.util.zip.ZipOutputStream(Files.newOutputStream(file))
+    try {zip.putNextEntry(new java.util.zip.ZipEntry("labels/points.txt"));zip.write("points".getBytes("UTF-8"));zip.closeEntry()}finally zip.close()
+    Files.writeString(dir.resolve("plain.txt"),"plain")
+    val settings=Data.mapper.createObjectNode();settings.put("execution_directory",dir.resolve("history").toString)
+    settings.putObject("datasets").putObject("files").put("provider","directory").putObject("source").put("root",dir.toString)
+    val plugins=new PluginEnvironment();val host=new LocalEngine(settings,plugins)
+    def run(path:String,view:String):Array[Byte]={
+      val yaml=s"name: ZIP read\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/files/$path', view: $view}\noutputs: {result: read}\n"
+      val out=new java.io.ByteArrayOutputStream();val cancel=new StreamCancel()
+      try {host.engine.run(yaml,f=>if(StreamProtocol.header(f).path("type").asText=="data")out.write(f.data),cancel);out.toByteArray}finally cancel.close()
+    }
+    try {
+      assert(run("plain.txt","bytes").sameElements("plain".getBytes("UTF-8")))
+      assert(run("geotrans-input.zip","bytes").sameElements(Files.readAllBytes(file)))
+      assert(run("geotrans-input.zip/labels/points.txt","bytes").sameElements("points".getBytes("UTF-8")))
+      intercept[IllegalArgumentException](run("geotrans-input.zip/labels","bytes"))
+      intercept[IllegalArgumentException](run("geotrans-input.zip","records"))
+    }finally {host.close();plugins.close();Data.deleteTree(dir)}
+  }
   test("read_item selection emits scientific structure and block metadata through a complete Job") {
     val dir=Files.createTempDirectory("xstream-scientific-");Files.writeString(dir.resolve("genome.fa"),">chr1\nACGTACGT\n")
     val settings=Data.mapper.createObjectNode();settings.put("execution_directory",dir.resolve("history").toString)

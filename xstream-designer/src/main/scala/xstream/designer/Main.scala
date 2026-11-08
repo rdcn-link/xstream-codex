@@ -53,6 +53,11 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private val chat=ChatPlanner.configured(config.path("chat"))
   private val http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()
   private val pool=new ThreadPoolExecutor(8,8,0L,TimeUnit.MILLISECONDS,new ArrayBlockingQueue[Runnable](64),new ThreadPoolExecutor.AbortPolicy())
+  private val chatCatalogPool=new ThreadPoolExecutor(4,4,0L,TimeUnit.MILLISECONDS,new ArrayBlockingQueue[Runnable](32),new ThreadPoolExecutor.AbortPolicy())
+  private val chatPreparationPool=java.util.concurrent.Executors.newFixedThreadPool(2)
+  private val chatContextTtl=config.path("chat").path("context_ttl_seconds").asLong(300)
+  private val chatOperatorCache=new ChatContextCache(chatContextTtl)
+  private val chatDataCache=new ChatContextCache(chatContextTtl)
   private val server=HttpServer.create(new InetSocketAddress(config.path("host").asText("127.0.0.1"),config.path("port").asInt(8840)),32)
   server.setExecutor(pool)
   private def tls(n:JsonNode):TlsConfig=TlsConfig(ca=Option(n.get("ca")).map(v=>Path.of(v.asText)),tokenFile=Option(n.get("token_file")).map(v=>Path.of(v.asText)))
@@ -107,7 +112,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val base=if(value.startsWith("context:")){
       val parts=URI.create(value).getPath.stripPrefix("/").split("/",2)
       Using.resource(localCatalog.open(parts(0),()=>cancel.active())) {ds=>
-        val item=ds.describe("/"+parts(1));val view=ItemViews.select(requested,inferencePlugins.views(item))
+        val item=ds.describe("/"+parts(1));val view=ItemViews.selectForRead(requested,item,inferencePlugins)
         if(Set("records","bytes")(view))describeItem(value,view,cancel)
         else {
           val codec=DataViewSupports.named(inferencePlugins,view)
@@ -119,7 +124,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         }
       }
     }else withItem(value,cancel){(dataset,path)=>
-      val metadata=dataset.describe(path);val view=ItemViews.select(requested,metadata.views)
+      val metadata=dataset.describe(path);val view=ItemViews.selectForRead(requested,metadata.kind,metadata.views)
       if(Set("records","bytes")(view))describeItem(value,view,cancel)
       else {
         val codec=DataViewSupports.named(inferencePlugins,view)
@@ -138,13 +143,13 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     if(value.startsWith("context:")){
       val parts=URI.create(value).getPath.stripPrefix("/").split("/",2)
       Using.resource(localCatalog.open(parts(0),()=>cancel.active())){ds=>
-        val item=ds.describe("/"+parts(1));require(item.kind!="folder","input must be a data item")
-        val selected=ItemViews.select(view,inferencePlugins.views(item));val schema=if(selected=="records")item.schema else None
+        val item=ds.describe("/"+parts(1))
+        val selected=ItemViews.selectForRead(view,item,inferencePlugins);val schema=if(selected=="records")item.schema else None
         StreamDescriptor(Set(selected),Set(item.format),schema,if(selected=="bytes" || schema.nonEmpty)"known"else "unknown")
       }
     }else withItem(value,cancel){(dataset,path)=>
-      val metadata=dataset.describe(path);require(metadata.kind=="data","input must be a data item")
-      val selected=ItemViews.select(view,metadata.views);val schema=if(selected=="records")metadata.schema else None
+      val metadata=dataset.describe(path)
+      val selected=ItemViews.selectForRead(view,metadata.kind,metadata.views);val schema=if(selected=="records")metadata.schema else None
       StreamDescriptor(Set(selected),Set(metadata.format),schema,if(selected=="bytes" || schema.nonEmpty)"known"else "unknown")
     }
   }
@@ -280,11 +285,35 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       val job=Documents.job(WorkflowVariables.resolve(n.path("job_yaml").asText,Documents.variables(n.path("variables_yaml").asText)))
       Using.resource(new StreamCancel(()=>pool.isShutdown,120)){cancel=>SchemaPreview.present(inference(n).infer(job,cancel,Option(n.get("preview")).map(OutputSamples.limits),editSession=Option(n.get("inference_session")).map(_.asText)))}
     case "/api/chat"=>
+      planChat(n,_=>())
+    case _=>throw new IllegalArgumentException("Unknown endpoint")
+  }
+  private def planChat(n:JsonNode,progress:String=>Unit,replyDelta:String=>Unit=_=>()):JsonNode={
       document(n,empty=true);require(n.path("message").isTextual && n.path("message").asText.trim.nonEmpty && n.path("message").asText.length<=8000,"Enter a message of up to 8000 characters")
-      val request=n.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]();request.set[JsonNode]("operators",fetchOperators())
+      progress("Preparing data and operator catalogs")
+      val request=n.deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]()
+      val contextKey=selectedTarget(n).map(_.path("url").asText).getOrElse("local")
+      val catalogs=chatPreparationPool.submit(new java.util.concurrent.Callable[(JsonNode,Boolean)] {
+        def call()=chatDataCache.get(contextKey){
+          val roots=api("/api/catalogs",n).elements.asScala.toVector
+          val collected=ChatCatalogContext.collect(roots,(path,body)=>{body.asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].put("target",n.path("target").asText("local"));api(path,body)},chatCatalogPool)
+          collected.asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].put("collected_at",java.time.Instant.now.toString);collected
+        }
+      })
+      try {
+        val(operators,operatorsCached)=chatOperatorCache.get(configuredRepository.path("url").asText){ChatPlanner.operatorContext(fetchOperators())}
+        request.set[JsonNode]("operators",operators)
+        val(catalogContext,dataCached)=catalogs.get(20,TimeUnit.SECONDS)
+        request.set[JsonNode]("server_catalogs",catalogContext)
+        progress(if(operatorsCached&&dataCached)"Reusing cached data and operator catalogs"else "Data and operator catalogs ready")
+      }finally catalogs.cancel(true)
+      request.remove("ui_state");request.set[JsonNode]("designer_interface",ChatInterfaceContext.build(publicConfig.path("targets"),exampleJobs,request.path("operators"),n))
+      request.put("repository_url",configuredRepository.path("url").asText)
       request.put("origin",selectedTarget(n).map(_.path("url").asText).getOrElse("context:/"))
       require(!n.has("catalog_items") || (n.path("catalog_items").isArray && n.path("catalog_items").size<=100),"At most 100 catalog items may be supplied")
-      val result=chat.plan(request)
+      progress("Waiting for the model response")
+      val result=chat.plan(request,progress,replyDelta)
+      progress("Checking the returned Job proposal")
       require(result!=null && result.isObject && result.path("reply").isTextual,"Chat must return a reply")
       if(result.path("job_yaml").isNull || result.path("job_yaml").isMissingNode) {
         require(result.path("variables_yaml").isNull || result.path("variables_yaml").isMissingNode,"Clarification cannot change variables")
@@ -295,7 +324,20 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         Documents.job(result.path("job_yaml").asText,true).path("steps").elements.asScala.foreach(t=>require(available(t.path("operator").asText),"Chat proposed an operator outside the connected repository"))
       }
       result
-    case _=>throw new IllegalArgumentException("Unknown endpoint")
+  }
+  private def chatStream(x:HttpExchange,n:JsonNode):Unit={
+    x.getResponseHeaders.set("Content-Type","application/x-ndjson; charset=utf-8")
+    x.getResponseHeaders.set("Cache-Control","no-store");x.getResponseHeaders.set("X-Content-Type-Options","nosniff")
+    x.getResponseHeaders.set("X-Accel-Buffering","no");x.sendResponseHeaders(200,0)
+    val out=x.getResponseBody
+    def event(value:JsonNode):Unit={out.write(Json.mapper.writeValueAsBytes(value));out.write(10);out.flush()}
+    try {
+      val result=planChat(n,message=>event(Json.obj().put("type","progress").put("message",message)),text=>event(Json.obj().put("type","reply_delta").put("text",text)))
+      val done=Json.obj().put("type","result");done.set[JsonNode]("result",result);event(done)
+    }catch{
+      case e:IllegalArgumentException=>event(Json.obj().put("type","error").put("error",Option(e.getMessage).getOrElse("Invalid chat request")))
+      case scala.util.control.NonFatal(_)=>event(Json.obj().put("type","error").put("error","Model request failed; check Designer logs and model configuration"))
+    }finally x.close()
   }
   private def inferStream(x:HttpExchange,n:JsonNode):Unit={
     document(n)
@@ -318,7 +360,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       case scala.util.control.NonFatal(e)=>try event(Json.obj().put("event","error").put("message",Option(e.getMessage).getOrElse("Inference failed")))catch{case _:java.io.IOException=>()}
     }finally x.close()
   }
-  private val assets=Map("/scientific-views.js"->("scientific-views.js","application/javascript"),"/inference-state.js"->("inference-state.js","application/javascript"),"/validation.js"->("validation.js","application/javascript"),"/schema-types.js"->("schema-types.js","application/javascript"),"/yaml-editor.js"->("yaml-editor.js","application/javascript"),"/editor-licenses.txt"->("editor-licenses.txt","text/plain; charset=utf-8"),"/parameters.js"->("parameters.js","application/javascript"),"/"->("index.html","text/html; charset=utf-8"),"/app.js"->("app.js","application/javascript"),"/style.css"->("style.css","text/css"),"/xstream-logo.svg"->("xstream-logo.svg","image/svg+xml"),"/favicon.svg"->("xstream-mark.svg","image/svg+xml"))
+  private val assets=Map("/vendor/markdown-it-15.0.3.min.js"->("vendor/markdown-it-15.0.3.min.js","application/javascript"),"/vendor/markdown-it-LICENSE.txt"->("vendor/markdown-it-LICENSE.txt","text/plain; charset=utf-8"),"/chat-markdown.js"->("chat-markdown.js","application/javascript"),"/scientific-views.js"->("scientific-views.js","application/javascript"),"/inference-state.js"->("inference-state.js","application/javascript"),"/validation.js"->("validation.js","application/javascript"),"/schema-types.js"->("schema-types.js","application/javascript"),"/yaml-editor.js"->("yaml-editor.js","application/javascript"),"/editor-licenses.txt"->("editor-licenses.txt","text/plain; charset=utf-8"),"/parameters.js"->("parameters.js","application/javascript"),"/"->("index.html","text/html; charset=utf-8"),"/app.js"->("app.js","application/javascript"),"/style.css"->("style.css","text/css"),"/xstream-logo.svg"->("xstream-logo.svg","image/svg+xml"),"/favicon.svg"->("xstream-mark.svg","image/svg+xml"))
   private def send(x:HttpExchange,status:Int,mime:String,data:Array[Byte]):Unit={
     x.getResponseHeaders.set("Content-Type",mime);x.getResponseHeaders.set("Cache-Control","no-store");x.getResponseHeaders.set("X-Content-Type-Options","nosniff")
     x.getResponseHeaders.set("Content-Security-Policy","default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")
@@ -333,7 +375,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         Option(x.getRequestHeaders.getFirst("Origin")).foreach(o=>require(URI.create(o).getAuthority==x.getRequestHeaders.getFirst("Host"),"Cross-origin request denied"))
         val body=try x.getRequestBody.readNBytes(1024*1024+1)finally x.getRequestBody.close();require(body.length<=1024*1024,"Request exceeds 1 MiB")
         val n=Json.mapper.readTree(body);require(n!=null && n.isObject,"Expected JSON object");require(!n.has("repository"),"Repository is selected by server configuration");selectedTarget(n)
-        if(path=="/api/infer_stream")inferStream(x,n)else send(x,200,"application/json",Json.mapper.writeValueAsBytes(api(path,n)))
+        if(path=="/api/chat_stream")chatStream(x,n)else if(path=="/api/infer_stream")inferStream(x,n)else send(x,200,"application/json",Json.mapper.writeValueAsBytes(api(path,n)))
       }else if(x.getRequestMethod=="GET" && assets.contains(path)){
         val(file,mime)=assets(path);val in=getClass.getResourceAsStream("/web/"+file);require(in!=null,"Asset unavailable");val data=try in.readAllBytes()finally in.close();send(x,200,mime,data)
       }else send(x,404,"application/json","{\"error\":\"Not found\"}".getBytes(UTF_8))
@@ -348,7 +390,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   })
   def start():Unit=server.start()
   def address:InetSocketAddress=server.getAddress
-  def close():Unit={server.stop(0);pool.shutdownNow();try inferenceRuntime.close()finally {try localCatalog.close()finally inferencePlugins.close()}}
+  def close():Unit={server.stop(0);pool.shutdownNow();chatPreparationPool.shutdownNow();chatCatalogPool.shutdownNow();try inferenceRuntime.close()finally {try localCatalog.close()finally inferencePlugins.close()}}
 }
 object Main {
   def main(args:Array[String]):Unit={

@@ -26,3 +26,5 @@ Using.resource(Source.open("dacp://data.example.org:8815/weather", tls)) { datas
 ```
 
 测试使用本地协议桩，不需要运行 DACP 服务。参见[引擎配置](../../docs/xstream_zh.md)。
+
+所有连接（包括匿名目录访问）均验证服务器证书和主机名。默认使用平台信任根；私有 CA 或自签名 CA 必须通过 `TlsConfig.ca` 或 `DACP_CA` 配置，不提供跳过验证的选项。

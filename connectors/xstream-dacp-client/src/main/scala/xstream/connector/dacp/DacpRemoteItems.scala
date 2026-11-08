@@ -39,7 +39,7 @@ final class DacpRemoteItemProvider extends RemoteItemProvider {
     val parts=uri.getPath.stripPrefix("/").split("/",2);require(parts.length==2,"remote URI must address an Item")
     val dataset=cancel.add(Source.open(origin+"/"+parts(0),tls,math.min(30L,cancel.remainingSeconds)))
     try {
-      val path="/"+parts(1);val metadata=dataset.describe(path);val view=ItemViews.select(binding.view,metadata.views)
+      val path="/"+parts(1);val metadata=dataset.describe(path);val view=ItemViews.selectForRead(binding.view,metadata.kind,metadata.views)
       val item=cancel.add(dataset.open(path,predicate=binding.scan.flatMap(_.predicate).map(predicate),columns=binding.scan.flatMap(_.columns),limit=binding.scan.flatMap(_.limit)))
       try {
         if(!Set("records","bytes")(view)){

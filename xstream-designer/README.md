@@ -43,7 +43,7 @@ The lower **Logs** panel records operation messages, API request start/completio
 
 ## Chat composition
 
-Chat connects to a Chat Completions-compatible model API. Describe a complete processing or analysis requirement, then answer follow-up questions. The assistant proposes a complete Job YAML and typed variables when enough information is available. It does not execute Jobs. Review the proposal and click **Apply proposed changes** to update the canvas; Undo remains available.
+Chat connects to a Chat Completions-compatible model API. It receives the full interface feature guide, current control visibility/availability, selection, open panels/dialogs, zoom, inference and connection status, configured Targets and numbered Examples. It can explain all interface areas: Job lifecycle and naming; resource search/categories and catalog actions; canvas gestures, wiring, Outlet, selection, duplication and shortcuts; step properties, typed parameters and output previews; YAML/variable editors; validation, logs, dialogs and export; and Chat itself. Chat provides instructions and Job proposals; interface actions remain under your control. Describe a complete processing or analysis requirement, then answer follow-up questions. The assistant proposes a complete Job YAML and typed variables when enough information is available. It does not execute Jobs. Proposals show **Apply proposed changes** and **Discard proposal** buttons. Apply updates the canvas and variables together and supports Undo; discard leaves the draft unchanged. Buttons are removed when the proposal is applied, discarded, superseded, or the draft changes. Chat opens in a nonmodal floating window whose default width is one quarter of the Designer viewport. Drag its title bar to move it or its bottom-right corner to resize it; closing and reopening preserves the conversation. The full-width message input starts at one line and grows with multiline content up to 140 pixels. Enter sends, Shift+Enter inserts a new line, and IME composition does not submit. Assistant replies appear incrementally as the model generates them, with Markdown formatting for emphasis, lists, links, tables, inline code and fenced code blocks. Job YAML and apply/discard actions appear only after the complete proposal passes validation. While waiting, the spinner shows the current stage, elapsed time and streamed response character count. Private model reasoning is not displayed. Your messages appear as blue bubbles on the right, and assistant replies as pale neutral bubbles on the left, with explicit speaker labels. New messages automatically scroll the conversation upward to keep the latest content visible; the input stays at the bottom.
 
 Configure the full API endpoint and model on the Designer server:
 
@@ -51,12 +51,15 @@ Configure the full API endpoint and model on the Designer server:
 chat:
   url: https://model.example/v1/chat/completions
   model: your-model
+  context_ttl_seconds: 300
   token_env: XSTREAM_MODEL_API_KEY
 ```
 
 Set the named environment variable before starting the service. It supplies the Bearer credential and is never sent to the browser. Omit token_env for a model service that requires no credential. Without chat configuration, the editor works normally and Chat is disabled. Chat uses the configured language-model API to propose Jobs.
 
-For example: “Read weather observations, keep valid records above a temperature threshold supplied as a variable, merge the regional streams and produce CSV.” Include actual Item paths or expand the relevant Catalog folders first. The model receives the current draft, variables, available operator declarations, up to 100 browsed Item descriptors and the latest 12 messages. Catalog contents are loaded lazily, so this context is not a complete inventory. Data contents and output samples are not automatically sent. If paths, meanings or required operators are missing, the assistant should ask rather than invent them. Metadata and conversation are sent to the configured model service.
+For example: “Read weather observations, keep valid records above a temperature threshold supplied as a variable, merge the regional streams and produce CSV.” The server automatically browses metadata from the current Target catalog and configured remote catalogs before each model request; manually expanding the sidebar is not required. The model receives dataset descriptions, Item URIs, kinds, advertised views and available schemas, the current draft and variables, freshly fetched repository operator declarations (descriptions, input ports and parameter schemas), up to 100 additionally browsed Item descriptors, and the latest 12 messages. Automatic browsing uses an eight-second total budget, at most eight catalogs, twelve datasets and eighty Items per catalog, two nested folder levels beyond the root listing, and approximately 64 KiB per catalog. Large schemas may be omitted. Completeness, unavailable and timeout flags explicitly identify partial inventories; the model must not invent omitted data. Data contents and output samples are not automatically sent. If paths, meanings or required operators are missing, the assistant should ask rather than invent them. Metadata and conversation are sent to the configured model service.
+
+Data and operator catalogs are cached on the server for 300 seconds by default, configured through `chat.context_ttl_seconds` (1–3600). Data snapshots are isolated by Target and include their collection time; switching Target uses its own snapshot. Cache misses load both catalogs in parallel. Ordinary follow-up messages reuse these snapshots. Responses use Chat Completions streaming when the provider supports it; completed JSON responses are also accepted. Only design-relevant operator contract fields are sent to the model.
 
 The model returns a JSON object with reply, job_yaml and variables_yaml. For a clarification, both YAML fields are null and the canvas stays unchanged. A proposal supplies complete YAML strings, follows logical stream connections and uses available operators. Invalid, truncated or unsupported proposals cannot be applied. Model requests time out after 90 seconds; responses are limited to 1 MiB.
 
@@ -75,6 +78,7 @@ HTTP APIs do not authenticate website visitors and serve this designer. Except c
 | `/api/export` | Check graph structure and return Job and variable YAML |
 | `/api/infer` | Request real inference using `job_yaml`, `variables_yaml` |
 | `/api/chat` | Generate proposals from the draft, messages and live catalogs |
+| `/api/chat_stream` | Stream processing status and a validated final proposal as NDJSON |
 
 POSTs are limited to 1 MiB; repository lists to 4 MiB. Browsers cannot supply arbitrary proxy destinations. CA and token_file are server-side files. The editor reads metadata and structures and provides no job execution, repository publication or user management APIs.
 
@@ -266,3 +270,9 @@ A deployment must use its actual Item paths, configured service addresses and Un
 Example cards display compact feature tags such as **Cross-node**, **Variables**, **Local target**, **Remote target**, **Union**, **Multi-input** and **Scientific array**. Configure `tags: [Cross-node, Variables, Remote target]` on an index entry; labels are presentation metadata, not execution settings. Each example accepts up to eight labels of at most 40 characters each.
 
 Examples are numbered `01`, `02`, … in index order for quick reference. The number is a display position; the example’s stable identifier remains its `id`.
+
+## Integrate with an application editor
+
+Open Designer in a new window with `integration=window`, `parent_origin` (the calling HTTP/S origin), `channel` (32 lowercase hexadecimal characters) and optional `return_label`. Designer sends `xstream-designer:ready`; the caller replies with `xstream-designer:load`, `job_yaml` and optional `variables_yaml`. After loading, the user can click the return button to send `xstream-designer:job` with `job_yaml`. All messages include the channel. Both sides must validate the source window, origin and channel; send messages only to the configured origin.
+
+Integrated sessions do not restore or overwrite the ordinary browser draft. They edit a caller-owned Job and do not execute it. The normal iframe restriction remains enabled. Switching applications in the caller must invalidate earlier handoffs.
