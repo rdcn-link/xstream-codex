@@ -1,0 +1,7 @@
+>seq1 example sequence
+ACGTACGT
+ACGT
+>seq2 short sequence
+AGTC
+>seq3 longer sequence
+ACGTACGTACGTACGTACGT

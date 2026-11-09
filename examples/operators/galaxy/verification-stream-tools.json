@@ -1,0 +1,79 @@
+{
+  "repository": "http://127.0.0.1:8820",
+  "status": "passed",
+  "published_artifacts": [
+    {
+      "operator": "galaxy_tabular_to_fasta@1.0.1",
+      "artifact_sha256": "5d5285bd7d1edcea90a34e743e2ef1f165a226d6c7977b210afa5de6c864d246",
+      "status": "published",
+      "tests": {
+        "artifact_sha256": "5d5285bd7d1edcea90a34e743e2ef1f165a226d6c7977b210afa5de6c864d246",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "corrected_upstream_interval_cases": 0,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_filter_flags@1.0",
+      "artifact_sha256": "8dd2bdb27c47e1cca3c7c0e39dd779133c46cb5ac958995db2bee2a093b29830",
+      "status": "published",
+      "tests": {
+        "artifact_sha256": "8dd2bdb27c47e1cca3c7c0e39dd779133c46cb5ac958995db2bee2a093b29830",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "corrected_upstream_interval_cases": 0,
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_to_interval@1.0",
+      "artifact_sha256": "4f28f963e7fb08ab14081f1d5d64ddc51867be577e31cb8aa22233544d13d578",
+      "status": "published",
+      "tests": {
+        "artifact_sha256": "4f28f963e7fb08ab14081f1d5d64ddc51867be577e31cb8aa22233544d13d578",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 3,
+        "corrected_upstream_interval_cases": 2,
+        "execution_cases": 5,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    }
+  ],
+  "safety_checks": [
+    "title expansion before allocation",
+    "malformed CIGAR",
+    "coordinate overflow",
+    "conflicting bit masks",
+    "cancellation",
+    "I/O propagation",
+    "UTF-8 validation",
+    "line length limits"
+  ],
+  "runner_jobs": [
+    {
+      "job": "job-sam.yaml",
+      "status": "passed",
+      "output_sha256": "001ba8145e8150a5e5230510aa3f13b9e27748b973d386d2c10174d44074fd2f"
+    },
+    {
+      "job": "job-tabular-to-fasta.yaml",
+      "status": "passed",
+      "output_sha256": "ea383aac01379820f4fc02a9ced75a08c7fcb03e6baa1baca0e7296d73c76400"
+    }
+  ]
+}

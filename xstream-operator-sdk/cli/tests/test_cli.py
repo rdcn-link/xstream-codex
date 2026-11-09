@@ -51,6 +51,7 @@ class CommandTests(unittest.TestCase):
                 root=Path(temp);(root/'src').mkdir();(root/'src/main.py').write_text('pass\n')
                 (root/'local.yaml').write_text('private settings')
                 definition={'name':'example','version':'1.0','description':'Example','language':'python','entrypoint':'main','runtime':'python-arrow@1.0','source_public':True,'icon':{'path':'M1 1h2','color':'#123456'},'inputs':{},'parameters':{'type':'object','properties':{}}}
+                definition['documentation']={'inputs':{},'outputs':{'result':'Output stream.'},'parameters':{},'example_job':'name: Example\nsteps:\n- id: run\n  operator: example@1.0\n  inputs: {}\n  params: {}\noutputs: {result: run}\n'}
                 (root/'operator.yaml').write_text(json.dumps(definition));token=root/'token';token.write_text('test-submitter')
                 origin=f'http://localhost:{server.server_port}'
                 with contextlib.redirect_stdout(io.StringIO()) as output:
@@ -75,7 +76,11 @@ class CommandTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as temp:
                 root=Path(temp)/'sample'
                 create_template(root, language)
-                check_directory(root)
+                definition=check_directory(root)
+                import yaml
+                usage=yaml.safe_load(definition['documentation']['example_job'])
+                self.assertIn('steps', usage)
+                self.assertTrue(any(step['operator']==definition['name']+'@'+definition['version'] for step in usage['steps']))
                 for path in (root/'src').glob('*.py'):
                     ast.parse(path.read_text())
                 archive=package_directory(root,Path(temp)/'sources.zip')

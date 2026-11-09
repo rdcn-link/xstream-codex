@@ -51,6 +51,28 @@ parameters:
   properties: {}
   required: []
   additionalProperties: false
+documentation:
+  inputs:
+    source: 待按质量筛选的观测记录。
+  outputs:
+    result: 质量筛选后保留的观测记录。
+  parameters: {}
+  example_job: |
+    name: Filter observations
+    steps:
+      - id: read
+        operator: read_item@1.0
+        inputs: {}
+        params:
+          uri: context:/weather/observations
+          view: records
+      - id: filter
+        operator: weather_filter@1.0
+        inputs:
+          source: read
+        params: {}
+    outputs:
+      result: filter
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
@@ -69,6 +91,27 @@ xstream-operator submit /path/weather-filter/submission.yaml \
 ```
 
 也可用 `--token-env ENV_NAME` 代替 `--token-file`。远程提交要求 HTTPS，仅 localhost 开发允许 HTTP。工具上传源码和可选许可证/SBOM，再 POST `/v1/submissions`；不会上传运行环境或算子产物。HTTP 202 返回 `submission_id` 和 `status: pending`。提交者携带 Token GET `/v1/submissions` 或 `/v1/submissions/{id}`，只能查看自己的记录。Token 撤销后无法提交或查询。
+
+## 必填的使用说明
+
+新提交必须包含 `documentation.inputs`、`documentation.outputs`、`documentation.parameters` 和 `documentation.example_job`。按名称说明每个声明的输入端口及至少一个输出端口。每个声明的参数都需提供 `help` 和符合参数 schema 的 `example`；`description` 可以放在这里或参数 schema 中。未知端口/参数、缺失说明以及不合法的示例值都会被拒绝。`example_job` 必须是包含非空 `steps` 和 `outputs` 的完整 YAML Job，使用所提交的精确算子版本，绑定其全部输入并填写合法的必填参数。可以使用示意 `context:` Item 路径，但要说明运行前需要替换；示例不会创建源数据集。校验采用安全 YAML 解析，不执行 Job。
+
+```yaml
+documentation:
+  inputs:
+    source: 待筛选的记录。
+  outputs:
+    result: 满足条件的记录。
+  parameters:
+    condition:
+      description: 用于筛选记录的 SQLite 条件。
+      help: 字符串值需加引号，字段名应来自输入 schema。
+      example: "quality = '0'"
+  example_job: |
+    # 此处填写完整 Job，参考前面的提交示例。
+```
+
+最后一段仅说明参数元数据写法，提交前必须将 `example_job` 替换为完整 Job。仓库详情页采用易读列表，并提供可复制的 YAML 示例。即使实现源码不公开，审批后使用说明仍公开。管理员可以通过认证及 CSRF 保护的说明更新接口修正已发布的使用说明，不改变产物摘要或可信度评估。
 
 ## 管理员流程
 

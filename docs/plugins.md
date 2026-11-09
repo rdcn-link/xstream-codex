@@ -26,3 +26,7 @@ The standalone engine supports source-directory references, reusable builds and 
 ## Remote data plugins
 
 `RemoteItemProvider` is a ServiceLoader extension point in `xstream-execution-api` for remote data access. See [local execution and remote data](execution-targets.md) for registration, configuration, resource contracts and tests.
+
+## Geospatial and HDF5 extensions
+
+Optional plugins: [GDAL raster and vector formats](gdal-formats.md) and [HDF5 hierarchies and arrays](hdf5-formats.md). Both use the same format extension contracts and document installation, configuration, capability limits and native contract tests. Native dependencies belong to plugins rather than core.

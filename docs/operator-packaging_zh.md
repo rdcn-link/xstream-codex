@@ -36,7 +36,7 @@ parameters:
   additionalProperties: false
 ```
 
-`jvm` 需要 JAR 和 main 类。`python` 需要 `.py` 或 `.whl`，wheel 用 `entrypoint` 选择模块，源码直接执行脚本。`command` 适配原生 stdin/stdout 程序，见[原生命令](native-commands_zh.md)。`container` 使用镜像自带入口，不接受入口覆盖或代码文件。每个执行器接收 `operator /input /input/params.json` 和 `XSTREAM_OPERATOR=name@version`，遵守 [Arrow IPC 契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams_zh.md)。
+`jvm` 需要 JAR 和 main 类。`python` 需要 `.py`、源码 `.zip` 或 `.whl`，wheel 用 `entrypoint` 选择模块，源码直接执行脚本。`command` 适配原生 stdin/stdout 程序，见[原生命令](native-commands_zh.md)。`container` 使用镜像自带入口，不接受入口覆盖或代码文件。每个执行器接收 `operator /input /input/params.json` 和 `XSTREAM_OPERATOR=name@version`，遵守 [Arrow IPC 契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams_zh.md)。
 
 ```bash
 # 在完成仓库 stage 构建后，从项目根目录运行。

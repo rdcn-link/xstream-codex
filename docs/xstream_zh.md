@@ -113,3 +113,9 @@ flowchart LR
 ```
 
 执行记录配置及存储接口见[执行历史 API](execution-history_zh.md)。
+
+## 阅读执行输出
+
+![Runner 输出中的执行进度与结果信息](images/runner-output.png)
+
+通过 Runner 输出确认 Job 是否完成，并查看报告的结果信息。图形化编辑操作见 [Designer 指南](designer-guide_zh.md)，其中提供界面总览和参数编辑截图。

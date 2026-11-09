@@ -1,0 +1,12 @@
+{
+  "artifact_sha256": "2fc0b0ac77848721144ce83504ff7ad84cdf1d9aee157d7330b6f198698d52e6",
+  "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+  "upstream_golden_cases": 28,
+  "execution_cases": 65,
+  "inference_preview_cases": 15,
+  "invalid_parameter_cases": 15,
+  "resource_encoding_cases": 2,
+  "pipeline": "passed",
+  "status": "passed",
+  "corrected_upstream_interval_cases": 2
+}

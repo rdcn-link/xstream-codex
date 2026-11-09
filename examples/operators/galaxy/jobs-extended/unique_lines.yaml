@@ -1,0 +1,19 @@
+name: Sort text lines and retain one occurrence of each comparison key.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/unique_lines.txt
+    view: bytes
+- id: process
+  operator: galaxy_unique_lines@1.0
+  inputs:
+    source: read
+  params:
+    ignore_case: false
+    column: 0
+    numeric: false
+    header: 0
+outputs:
+  result: process

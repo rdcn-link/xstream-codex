@@ -66,3 +66,7 @@ ZIP 列表读取归档目录，不解压载荷；TAR 和压缩 TAR 顺序扫描�
 `FormatHandler.scan` 为所有 records 处理器提供有界批次过滤、投影和到达限制后的提前终止。可覆盖以优化源读取；directory、mixed 及归档子项使用同一契约。原生结构化子项使用 `DataViews.Records`。见[记录扫描契约](records-scans_zh.md#插件实现契约)。
 
 内置读取器的参数、容器限制及发布元数据见[文件格式与容器参考](file-formats_zh.md)。
+
+## 地理空间与 HDF5 扩展
+
+可选插件：[GDAL 栅格与矢量格式](gdal-formats_zh.md)、[HDF5 层级与数组](hdf5-formats_zh.md)。两者通过相同的格式扩展契约注册，提供安装、配置、能力限制及原生契约测试说明。原生依赖仅属于插件，不进入核心。

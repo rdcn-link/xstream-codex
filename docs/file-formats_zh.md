@@ -92,3 +92,7 @@ Excel 使用 Apache POI 5.5.1 的 XLS/XLSX 事件读取接口。空表头生成 
 
 `plugin_directory` 可选指定插件及依赖 JAR 所在目录，在注册表初始化前加载，修改后需要重启。读取器专用参数放入 `options`，由处理器自行校验。独立 API 与结构化文件契约见 [插件指南](plugins_zh.md)。
 
+
+## 地理空间与 HDF5 扩展
+
+可选插件：[GDAL 栅格与矢量格式](gdal-formats_zh.md)、[HDF5 层级与数组](hdf5-formats_zh.md)。两者通过相同的格式扩展契约注册，提供安装、配置、能力限制及原生契约测试说明。原生依赖仅属于插件，不进入核心。

@@ -1,0 +1,19 @@
+name: Remove named table columns or keep only the named columns.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/remove_columns_by_header.txt
+    view: bytes
+- id: process
+  operator: galaxy_remove_columns_by_header@1.0
+  inputs:
+    source: read
+  params:
+    names:
+    - B
+    keep: false
+    strip_prefix: ''
+outputs:
+  result: process

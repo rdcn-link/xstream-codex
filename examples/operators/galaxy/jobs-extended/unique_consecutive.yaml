@@ -1,0 +1,19 @@
+name: Collapse adjacent equal text records, optionally counting or selecting duplicate
+  groups.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/unique_consecutive.txt
+    view: bytes
+- id: process
+  operator: galaxy_unique_consecutive@1.0
+  inputs:
+    source: read
+  params:
+    ignore_case: false
+    count: true
+    mode: all
+outputs:
+  result: process

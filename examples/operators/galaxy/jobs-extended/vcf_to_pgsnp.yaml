@@ -1,0 +1,17 @@
+name: Convert called VCF SNP genotypes to pgSnp allele counts.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/vcf_to_pgsnp.txt
+    view: bytes
+- id: process
+  operator: galaxy_vcf_to_pgsnp@1.0
+  inputs:
+    source: read
+  params:
+    sample_column: 0
+    prefix_chr: true
+outputs:
+  result: process

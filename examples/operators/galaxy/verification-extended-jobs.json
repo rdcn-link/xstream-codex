@@ -1,0 +1,187 @@
+{
+  "status": "passed",
+  "completed": 30,
+  "total": 30,
+  "jobs": [
+    {
+      "operator": "galaxy_reverse_lines@1.0",
+      "job": "jobs-extended/reverse_lines.yaml",
+      "status": "passed",
+      "output": "two\none\n"
+    },
+    {
+      "operator": "galaxy_number_lines@1.0",
+      "job": "jobs-extended/number_lines.yaml",
+      "status": "passed",
+      "output": "001\ta\n   \n002\tb\n"
+    },
+    {
+      "operator": "galaxy_sort_lines@1.0",
+      "job": "jobs-extended/sort_lines.yaml",
+      "status": "passed",
+      "output": "id\tvalue\na\t2\nb\t10\n"
+    },
+    {
+      "operator": "galaxy_sort_fields@1.0",
+      "job": "jobs-extended/sort_fields.yaml",
+      "status": "passed",
+      "output": "a\tb\tc\n1\t2\n"
+    },
+    {
+      "operator": "galaxy_unique_lines@1.0",
+      "job": "jobs-extended/unique_lines.yaml",
+      "status": "passed",
+      "output": "a\nb\n"
+    },
+    {
+      "operator": "galaxy_unique_consecutive@1.0",
+      "job": "jobs-extended/unique_consecutive.yaml",
+      "status": "passed",
+      "output": "2\ta\n1\tb\n"
+    },
+    {
+      "operator": "galaxy_unfold_column@1.0",
+      "job": "jobs-extended/unfold_column.yaml",
+      "status": "passed",
+      "output": "id\ta\tz\nid\tb\tz\n"
+    },
+    {
+      "operator": "galaxy_replace_text_in_column@1.0",
+      "job": "jobs-extended/replace_text_in_column.yaml",
+      "status": "passed",
+      "output": "dog\tcat\n"
+    },
+    {
+      "operator": "galaxy_replace_text_in_line@1.0",
+      "job": "jobs-extended/replace_text_in_line.yaml",
+      "status": "passed",
+      "output": "dog\tdog\n"
+    },
+    {
+      "operator": "galaxy_find_and_replace@1.0",
+      "job": "jobs-extended/find_and_replace.yaml",
+      "status": "passed",
+      "output": "dog\tdog\n"
+    },
+    {
+      "operator": "galaxy_grep_lines@1.0",
+      "job": "jobs-extended/grep_lines.yaml",
+      "status": "passed",
+      "output": "Cat\ncatfish\n"
+    },
+    {
+      "operator": "galaxy_arrange_columns@1.0",
+      "job": "jobs-extended/arrange_columns.yaml",
+      "status": "passed",
+      "output": "C\tA\tB\n3\t1\t2\n"
+    },
+    {
+      "operator": "galaxy_add_line@1.0",
+      "job": "jobs-extended/add_line.yaml",
+      "status": "passed",
+      "output": "header\na\nb\n"
+    },
+    {
+      "operator": "galaxy_recurring_lines@1.0",
+      "job": "jobs-extended/recurring_lines.yaml",
+      "status": "passed",
+      "output": "abc\nabc\nabc\n"
+    },
+    {
+      "operator": "galaxy_remove_columns_by_header@1.0",
+      "job": "jobs-extended/remove_columns_by_header.yaml",
+      "status": "passed",
+      "output": "A\tC\n1\t3\n"
+    },
+    {
+      "operator": "galaxy_sort_columns_by_header@1.0",
+      "job": "jobs-extended/sort_columns_by_header.yaml",
+      "status": "passed",
+      "output": "B\tA\tC\n2\t1\t3\n"
+    },
+    {
+      "operator": "galaxy_add_input_name@1.0",
+      "job": "jobs-extended/add_input_name.yaml",
+      "status": "passed",
+      "output": "sample\tid\nrun1\tA\n"
+    },
+    {
+      "operator": "galaxy_fixed_width_to_tabular@1.0",
+      "job": "jobs-extended/fixed_width_to_tabular.yaml",
+      "status": "passed",
+      "output": "AB\t123\nCD\t456\n"
+    },
+    {
+      "operator": "galaxy_colorspace_to_fasta@1.0",
+      "job": "jobs-extended/colorspace_to_fasta.yaml",
+      "status": "passed",
+      "output": ">seq1\nAACG\n"
+    },
+    {
+      "operator": "galaxy_split_paired_reads@1.0",
+      "job": "jobs-extended/split_paired_reads.yaml",
+      "status": "passed",
+      "output": "@r/2\nGT\n+\nII\n"
+    },
+    {
+      "operator": "galaxy_pileup_interval@1.0",
+      "job": "jobs-extended/pileup_interval.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t2\tAC\n"
+    },
+    {
+      "operator": "galaxy_divide_pg_snp@1.0",
+      "job": "jobs-extended/divide_pg_snp.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t1\tA\t3\t0\tG\t4\t0\n"
+    },
+    {
+      "operator": "galaxy_vcf_to_pgsnp@1.0",
+      "job": "jobs-extended/vcf_to_pgsnp.yaml",
+      "status": "passed",
+      "output": "chr1\t9\t10\tA/G\t2\t1,3\t0,0\n"
+    },
+    {
+      "operator": "galaxy_reverse_complement@1.0",
+      "job": "jobs-extended/reverse_complement.yaml",
+      "status": "passed",
+      "output": ">id title\nNCGtT\n"
+    },
+    {
+      "operator": "galaxy_translate@1.0",
+      "job": "jobs-extended/translate.yaml",
+      "status": "passed",
+      "output": ">gene\nMA*\n"
+    },
+    {
+      "operator": "galaxy_codon_count@1.0",
+      "job": "jobs-extended/codon_count.yaml",
+      "status": "passed",
+      "output": "AAA\t0\nAAC\t0\nAAG\t0\nAAT\t0\nACA\t0\nACC\t0\nACG\t0\nACT\t0\nAGA\t0\nAGC\t0\nAGG\t0\nAGT\t0\nATA\t0\nATC\t0\nATG\t2\nATT\t0\nCAA\t0\nCAC\t0\nCAG\t0\nCAT\t0\nCCA\t0\nCCC\t0\nCCG\t0\nCCT\t0\nCGA\t0\nCGC\t0\nCGG\t0\nCGT\t0\nCTA\t0\nCTC\t0\nCTG\t0\nCTT\t0\nGAA\t0\nGAC\t0\nGAG\t0\nGAT\t0\nGCA\t0\nGCC\t0\nGCG\t0\nGCT\t0\nGGA\t0\nGGC\t0\nGGG\t0\nGGT\t0\nGTA\t0\nGTC\t0\nGTG\t0\nGTT\t0\nTAA\t0\nTAC\t0\nTAG\t0\nTAT\t0\nTCA\t0\nTCC\t0\nTCG\t0\nTCT\t0\nTGA\t0\nTGC\t0\nTGG\t0\nTGT\t0\nTTA\t0\nTTC\t0\nTTG\t0\nTTT\t0\n"
+    },
+    {
+      "operator": "galaxy_base_distribution@1.0",
+      "job": "jobs-extended/base_distribution.yaml",
+      "status": "passed",
+      "output": "Gene\tA\tC\tG\tT\tLength\tCG%\ng\t2\t1\t1\t1\t6\t0.333333\n"
+    },
+    {
+      "operator": "galaxy_find_subsequences@1.0",
+      "job": "jobs-extended/find_subsequences.yaml",
+      "status": "passed",
+      "output": "g\t0\t2\tg title\t\t+\ng\t2\t4\tg title\t\t-\n"
+    },
+    {
+      "operator": "galaxy_fasta_stats@1.0",
+      "job": "jobs-extended/fasta_stats.yaml",
+      "status": "passed",
+      "output": "Scaffold L50\t1\nScaffold N50\t8\nScaffold L90\t2\nScaffold N90\t2\nScaffold len_max\t8\nScaffold len_min\t2\nScaffold len_mean\t5\nScaffold len_median\t5\nScaffold len_std\t3\nScaffold num_A\t3\nScaffold num_T\t1\nScaffold num_C\t1\nScaffold num_G\t3\nScaffold num_N\t2\nScaffold num_bp\t10\nScaffold num_bp_not_N\t8\nScaffold num_seq\t2\nScaffold GC content overall\t40.00\nContig L50\t1\nContig N50\t4\nContig L90\t3\nContig N90\t2\nContig len_max\t4\nContig len_min\t2\nContig len_mean\t2\nContig len_median\t2\nContig len_std\t0\nContig num_bp\t8\nContig num_seq\t3\nNumber of gaps\t1\n"
+    },
+    {
+      "operator": "galaxy_motif_flank_counts@1.0",
+      "job": "jobs-extended/motif_flank_counts.yaml",
+      "status": "passed",
+      "output": "AC\t1\t0\nAC\t0\t1\n"
+    }
+  ]
+}

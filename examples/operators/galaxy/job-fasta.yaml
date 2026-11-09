@@ -1,0 +1,30 @@
+name: FASTA length selection and annotation
+steps:
+  - id: read
+    operator: read_item@1.0
+    inputs: {}
+    params:
+      uri: context:/galaxy/sequences.fasta
+      view: bytes
+  - id: select
+    operator: galaxy_fasta_filter_length@1.0
+    inputs:
+      source: read
+    params:
+      min_length: 10
+      max_length: 0
+  - id: lengths
+    operator: galaxy_fasta_length@1.0
+    inputs:
+      source: select
+    params:
+      id_only: true
+  - id: annotate
+    operator: galaxy_add_column@1.0
+    inputs:
+      source: lengths
+    params:
+      value: sequence
+      iterate: true
+outputs:
+  result: annotate

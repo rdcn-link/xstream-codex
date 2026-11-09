@@ -93,3 +93,17 @@ flowchart TD
 ## Item 时间元数据
 
 `Item.creationTimeMs` 与 `lastModifiedTimeMs` 为可选的 UTC Unix 毫秒时间戳；`None` 表示未知，`Some(0L)` 是已知的 Unix 纪元。文件和物理文件夹采用文件系统报告值；ZIP 条目保留可用的创建及修改时间，TAR 条目保留可用修改时间。SQL、科学文件内部对象和虚拟文件夹由各插件决定，不能用注册时间、解压时间或当前时间代替原始时间。文件夹大小和记录数仍未知。查询时间属性不读取内容或遍历子项。
+
+## 从视图到流的生命周期
+
+```mermaid
+flowchart LR
+    Item[Item] --> View[选择已声明的视图]
+    View --> Open[携带选择条件及取消上下文打开]
+    Open --> Schema[一次 Schema 回调]
+    Schema --> Batches[零个或多个有序 Arrow 批次]
+    Batches --> Consumer[下游消费者]
+    Consumer --> Close[关闭流并释放资源]
+```
+
+bytes、records 和 array 共用流接口，同时保留不同的 Schema 与语义。进程内消费者可以直接使用 Arrow 批次；跨进程或网络边界时需要传输编码。视图不要求先将整个 Item 收集到内存。

@@ -1,0 +1,15 @@
+name: Count all 64 unambiguous DNA codons over FASTA sequences in frame zero.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/codon_count.txt
+    view: bytes
+- id: process
+  operator: galaxy_codon_count@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

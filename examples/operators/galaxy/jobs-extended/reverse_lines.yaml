@@ -1,0 +1,15 @@
+name: Reverse the order of newline-separated text records.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/reverse_lines.txt
+    view: bytes
+- id: process
+  operator: galaxy_reverse_lines@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

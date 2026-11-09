@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "job": "job-fastq.yaml",
+  "operators": [
+    "read_item@1.0",
+    "galaxy_fastq_to_fasta@1.0",
+    "galaxy_fasta_length@1.0"
+  ],
+  "expected_output": "read1\t4\nread2\t2\n",
+  "output": "read1\t4\nread2\t2\n",
+  "safety_tests": "FastqSafetyCheck passed: cancellation, input/output failure, multiple records",
+  "invalid_fastq_cases_per_operator": 7
+}

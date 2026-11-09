@@ -1,0 +1,17 @@
+name: Translate nucleotide FASTA to protein FASTA with the standard genetic code.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/translate.txt
+    view: bytes
+- id: process
+  operator: galaxy_translate@1.0
+  inputs:
+    source: read
+  params:
+    to_stop: false
+    cds: false
+outputs:
+  result: process

@@ -1,0 +1,25 @@
+name: Sliding genomic windows with shortened labels
+steps:
+  - id: read
+    operator: read_item@1.0
+    inputs: {}
+    params:
+      uri: context:/galaxy/intervals.bed
+      view: bytes
+  - id: windows
+    operator: galaxy_make_windows@1.0
+    inputs:
+      source: read
+    params:
+      window_size: 4
+      offset: 2
+  - id: labels
+    operator: galaxy_trim@1.0
+    inputs:
+      source: windows
+    params:
+      column: 4
+      start: 1
+      end: 4
+outputs:
+  result: labels

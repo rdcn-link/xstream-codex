@@ -1,0 +1,20 @@
+name: Convert explicitly configured fixed-width fields into trimmed tab-separated
+  columns.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fixed_width_to_tabular.txt
+    view: bytes
+- id: process
+  operator: galaxy_fixed_width_to_tabular@1.0
+  inputs:
+    source: read
+  params:
+    widths:
+    - 4
+    - 3
+    pad_short: false
+outputs:
+  result: process

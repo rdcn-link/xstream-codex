@@ -93,3 +93,17 @@ flowchart TD
 ## Item timestamp metadata
 
 `Item.creationTimeMs` and `lastModifiedTimeMs` are optional UTC Unix epoch milliseconds. `None` means unknown; `Some(0L)` is the known Unix epoch. Files and physical folders use filesystem-reported values. ZIP entries retain available creation/modification times; TAR entries retain available modification times. SQL objects, scientific-file children and virtual folders depend on their plugins. Never substitute registration, extraction or current time for a source timestamp. Folder size and record count remain unknown. Timestamp queries do not read content or traverse descendants.
+
+## View-to-stream lifecycle
+
+```mermaid
+flowchart LR
+    Item[Item] --> View[Select an advertised View]
+    View --> Open[Open with selection and cancellation context]
+    Open --> Schema[One schema callback]
+    Schema --> Batches[Zero or more ordered Arrow batches]
+    Batches --> Consumer[Downstream consumer]
+    Consumer --> Close[Close stream and release resources]
+```
+
+Bytes, records and arrays share the stream interface but retain different schemas and semantics. In-process consumers can use Arrow batches directly; crossing a process or network boundary requires transport encoding. A View does not require collecting the entire Item into memory.

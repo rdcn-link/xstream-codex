@@ -1,0 +1,119 @@
+{
+  "csv_parser": {
+    "inputs": {
+      "source": "UTF-8 CSV bytes, optionally including a header row."
+    },
+    "outputs": {
+      "result": "Parse a UTF-8 CSV byte stream into string-valued records."
+    },
+    "parameters": {
+      "header": {
+        "description": "Treat the first CSV row as column names.",
+        "help": "Use true for named columns; use false with schema for headerless CSV.",
+        "example": true
+      },
+      "delimiter": {
+        "description": "One-character CSV field separator.",
+        "help": "For CSV operators provide one character. For Galaxy tools choose a listed delimiter name.",
+        "example": ","
+      },
+      "schema": {
+        "description": "Comma-separated column names for headerless CSV.",
+        "help": "Separate field names with commas and set header to false when supplying them.",
+        "example": "station_id,temperature,quality"
+      }
+    },
+    "example_job": "# Replace the example Item paths with Items in your target catalog.\nname: Parse a UTF-8 CSV byte stream into string-valued records.\nsteps:\n- id: read_source\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/source.csv\n    view: bytes\n- id: process\n  operator: piflow_csv_parser@2.0\n  inputs:\n    source: read_source\n  params:\n    header: true\n    delimiter: ','\n    schema: station_id,temperature,quality\noutputs:\n  result: process\n"
+  },
+  "csv_save": {
+    "inputs": {
+      "source": "Input records to process."
+    },
+    "outputs": {
+      "result": "Serialize scalar input records into a CSV byte stream."
+    },
+    "parameters": {
+      "header": {
+        "description": "Include a header row in the output.",
+        "help": "Use true for named columns; use false with schema for headerless CSV.",
+        "example": true
+      },
+      "delimiter": {
+        "description": "One-character CSV field separator.",
+        "help": "For CSV operators provide one character. For Galaxy tools choose a listed delimiter name.",
+        "example": ","
+      }
+    },
+    "example_job": "# Replace the example Item paths with Items in your target catalog.\nname: Serialize scalar input records into a CSV byte stream.\nsteps:\n- id: read_source\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/source.csv\n    view: records\n- id: process\n  operator: piflow_csv_save@2.0\n  inputs:\n    source: read_source\n  params:\n    header: true\n    delimiter: ','\noutputs:\n  result: process\n"
+  },
+  "filter": {
+    "inputs": {
+      "source": "Input records to process."
+    },
+    "outputs": {
+      "result": "Keep records that satisfy the configured SQLite predicate."
+    },
+    "parameters": {
+      "condition": {
+        "description": "SQLite SQL predicate applied to each record batch, e.g. quality = 0.",
+        "help": "Use column names from the input; quote string literals and CAST string columns for numeric comparisons.",
+        "example": "quality = '0'"
+      }
+    },
+    "example_job": "# Replace the example Item paths with Items in your target catalog.\nname: Keep records that satisfy the configured SQLite predicate.\nsteps:\n- id: read_source\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/source.csv\n    view: records\n- id: process\n  operator: piflow_filter@2.0\n  inputs:\n    source: read_source\n  params:\n    condition: quality = '0'\noutputs:\n  result: process\n"
+  },
+  "execute_sql_stop": {
+    "inputs": {
+      "source": "Input records to process."
+    },
+    "outputs": {
+      "result": "Run a read-only SQLite analysis query over the input relation."
+    },
+    "parameters": {
+      "viewName": {
+        "description": "Relation name used to expose the input to the query.",
+        "help": "Use this same relation name in the FROM clause.",
+        "example": "observations"
+      },
+      "sql": {
+        "description": "Read-only SQLite SELECT query.",
+        "help": "Reference viewName; use SELECT and explicitly cast text columns when numeric operations are needed.",
+        "example": "SELECT station_id, AVG(CAST(temperature AS REAL)) AS mean_temperature FROM observations GROUP BY station_id"
+      }
+    },
+    "example_job": "# Replace the example Item paths with Items in your target catalog.\nname: Run a read-only SQLite analysis query over the input relation.\nsteps:\n- id: read_source\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/source.csv\n    view: records\n- id: process\n  operator: piflow_execute_sql_stop@2.0\n  inputs:\n    source: read_source\n  params:\n    viewName: observations\n    sql: SELECT station_id, AVG(CAST(temperature AS REAL)) AS mean_temperature FROM\n      observations GROUP BY station_id\noutputs:\n  result: process\n"
+  },
+  "merge": {
+    "inputs": {
+      "left": "First record stream; its key fields must match the right stream for joins.",
+      "right": "Second record stream, joined by key or appended after the first stream."
+    },
+    "outputs": {
+      "result": "Concatenate two record streams, merging compatible fields by name."
+    },
+    "parameters": {},
+    "example_job": "# Replace the example Item paths with Items in your target catalog.\nname: Concatenate two record streams, merging compatible fields by name.\nsteps:\n- id: read_left\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/left.csv\n    view: records\n- id: read_right\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/right.csv\n    view: records\n- id: process\n  operator: piflow_merge@2.0\n  inputs:\n    left: read_left\n    right: read_right\n  params: {}\noutputs:\n  result: process\n"
+  },
+  "join": {
+    "inputs": {
+      "left": "First record stream; its key fields must match the right stream for joins.",
+      "right": "Second record stream, joined by key or appended after the first stream."
+    },
+    "outputs": {
+      "result": "Join two record streams using the specified key columns and join mode."
+    },
+    "parameters": {
+      "joinMode": {
+        "description": "Join semantics: inner, left, right, or full_outer.",
+        "help": "Choose inner, left, right or full_outer according to which unmatched records should be retained.",
+        "example": "inner"
+      },
+      "correlationColumn": {
+        "description": "Comma-separated join key column names.",
+        "help": "Provide matching field names present on both inputs, separated by commas.",
+        "example": "station_id"
+      }
+    },
+    "example_job": "# Replace the example Item paths with Items in your target catalog.\nname: Join two record streams using the specified key columns and join mode.\nsteps:\n- id: read_left\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/left.csv\n    view: records\n- id: read_right\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/example/right.csv\n    view: records\n- id: process\n  operator: piflow_join@2.0\n  inputs:\n    left: read_left\n    right: read_right\n  params:\n    joinMode: inner\n    correlationColumn: station_id\noutputs:\n  result: process\n"
+  }
+}

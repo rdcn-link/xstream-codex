@@ -1,0 +1,16 @@
+name: FASTQ sequence lengths
+steps:
+  - id: read
+    operator: read_item@1.0
+    inputs: {}
+    params: {uri: 'context:/galaxy/reads.fastq', view: bytes}
+  - id: fasta
+    operator: galaxy_fastq_to_fasta@1.0
+    inputs: {source: read}
+    params: {encoding: sanger33}
+  - id: lengths
+    operator: galaxy_fasta_length@1.0
+    inputs: {source: fasta}
+    params: {id_only: true}
+outputs:
+  result: lengths

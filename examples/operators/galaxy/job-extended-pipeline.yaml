@@ -1,0 +1,32 @@
+name: Decode and measure a color-space sequence
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/colorspace_to_fasta.txt
+    view: bytes
+- id: decode
+  operator: galaxy_colorspace_to_fasta@1.0
+  inputs:
+    source: read
+  params:
+    keep_prefix: true
+- id: reverse
+  operator: galaxy_reverse_complement@1.0
+  inputs:
+    source: decode
+- id: measure
+  operator: galaxy_fasta_length@1.0
+  inputs:
+    source: reverse
+  params:
+    id_only: true
+- id: label
+  operator: galaxy_add_input_name@1.0
+  inputs:
+    source: measure
+  params:
+    label: run1
+outputs:
+  result: label

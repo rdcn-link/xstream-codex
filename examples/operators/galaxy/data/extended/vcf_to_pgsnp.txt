@@ -1,0 +1,2 @@
+#header
+1	10	.	A	G	50	PASS	.	GT	0/1	1/1

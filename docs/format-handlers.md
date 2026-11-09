@@ -66,3 +66,7 @@ Use `PluginChecks.listing(access)` for metadata contract tests. Also test stream
 `FormatHandler.scan` supplies bounded batch filtering, projection, and early limit termination for every records handler. Override it to optimize the source reader; directory-backed and mixed datasets invoke the same contract, including for archive children. Native structured children use `DataViews.Records`. See [records scan contracts](records-scans.md#plugin-implementation-contract).
 
 For built-in reader options, container limits and publication metadata, see the [file format and container reference](file-formats.md).
+
+## Geospatial and HDF5 extensions
+
+Optional plugins: [GDAL raster and vector formats](gdal-formats.md) and [HDF5 hierarchies and arrays](hdf5-formats.md). Both use the same format extension contracts and document installation, configuration, capability limits and native contract tests. Native dependencies belong to plugins rather than core.

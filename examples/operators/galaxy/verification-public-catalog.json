@@ -1,0 +1,1039 @@
+{
+  "status": "passed",
+  "distinct_operators": 50,
+  "operators": [
+    {
+      "operator": "galaxy_change_case@1.0",
+      "artifact_sha256": "be34ec1156aa549d5beb675055e8af6e86f961fd54f108fa1cb7343f34c6b6c0",
+      "source_sha256": "ad9b91468207cd1a6b0d564a4c62e92550b6de5d0bbbd4ce8fcfcd2fad26b664",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "be34ec1156aa549d5beb675055e8af6e86f961fd54f108fa1cb7343f34c6b6c0",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_condense_characters@1.0",
+      "artifact_sha256": "6a466c1fdf3e0fc47a46080d564761b1d9984ea1587244f9addec48d54146777",
+      "source_sha256": "399532269e2a486dc95860ae5424abc9cbed25d2855f61b00f29088bb412dd54",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "6a466c1fdf3e0fc47a46080d564761b1d9984ea1587244f9addec48d54146777",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_convert_delimiters@1.0",
+      "artifact_sha256": "48e5765a038fbe25ba98c97f536aab2549d79df9c0f9dc3876fedf6ff9c3357e",
+      "source_sha256": "4bc51985bf769caaf3621bc7fb77b4005fe540b87ecee133bb6a77b84d6c5fd2",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "48e5765a038fbe25ba98c97f536aab2549d79df9c0f9dc3876fedf6ff9c3357e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_cut_columns@1.0",
+      "artifact_sha256": "33f8464d50976af02cb163d508e3c110eac496e5d1b9a0b1827c1e92c5e67ce1",
+      "source_sha256": "197ca8412695cf0eaad772bbf3a94bd759ff7bce6c308c0543ef8661d134ac93",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "33f8464d50976af02cb163d508e3c110eac496e5d1b9a0b1827c1e92c5e67ce1",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "execution_cases": 5,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_merge_columns@1.0",
+      "artifact_sha256": "55b2f7bf3dde8a1e30ffbd37d467caf3fa8e3394019d6d784658b710bfc2ee72",
+      "source_sha256": "0565fa02154bfcbc1c3b5c522fc4521645d3fe7f6c45d8aeb5f5de069f740bae",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "55b2f7bf3dde8a1e30ffbd37d467caf3fa8e3394019d6d784658b710bfc2ee72",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_add_column@1.0",
+      "artifact_sha256": "f14a8bd7cf46c32f388a58ec7f764e96acdf3de54b57384132a0b97d42901338",
+      "source_sha256": "a1b415ea5917ba99ddab2a508452bedf427185c56708a8fbe559e2c9ac084687",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "f14a8bd7cf46c32f388a58ec7f764e96acdf3de54b57384132a0b97d42901338",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 2,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fasta_length@1.0",
+      "artifact_sha256": "6cdef10db58f41754c3a4677de60175a53d4ccf7b7829e279fd5bd353b8b76fc",
+      "source_sha256": "f784d63418aa8999ea015e5104483482441282b73422140a1ad0ffb0c6fbf8ef",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "6cdef10db58f41754c3a4677de60175a53d4ccf7b7829e279fd5bd353b8b76fc",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 4,
+        "execution_cases": 6,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fasta_filter_length@1.0",
+      "artifact_sha256": "0fd8c84c1d8d6e8434cea857c9fe8ffbb859c6e51a54738d6bd6bcead6bd7b92",
+      "source_sha256": "a4e66e26dfad36cec94b8fd841a73dd1a3ddb0323e644c3605934213131847af",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "0fd8c84c1d8d6e8434cea857c9fe8ffbb859c6e51a54738d6bd6bcead6bd7b92",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "execution_cases": 5,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fasta_to_tabular@1.0",
+      "artifact_sha256": "b786a249acc8cd388b08f151633caf0c577ebc9b3ecedac6613ecfa481560028",
+      "source_sha256": "0e672c462179dd8f63fca8d7e85ef5c9fc401142935dbe3f20e65724fec7031b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "b786a249acc8cd388b08f151633caf0c577ebc9b3ecedac6613ecfa481560028",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 5,
+        "execution_cases": 8,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_remove_beginning@1.0",
+      "artifact_sha256": "9384f05a63da9c2f3027020e74cef519dc450f162730828799a5e72c21772416",
+      "source_sha256": "8ad8893dc2fcd802bbc9db298b6afe9b6c6446da944da44dd1e78b0e0e2fb476",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "9384f05a63da9c2f3027020e74cef519dc450f162730828799a5e72c21772416",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_head@1.0",
+      "artifact_sha256": "d16a5708834102ccdd4a5bc70eb4355581705aa93432f6fbdf5fa5b1d14cf940",
+      "source_sha256": "c87b1d3bbb47dd9a8c8510269d291732bef3c0df8c8c7b568455c2273b04a932",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "d16a5708834102ccdd4a5bc70eb4355581705aa93432f6fbdf5fa5b1d14cf940",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_tail@1.0",
+      "artifact_sha256": "8d67db8c45d91db24f531e849194c5c72ee606ec5f349376c0ecb98d2c072b91",
+      "source_sha256": "748743dbbf8acf495214e078be55e2644781310fb1d8c45ce7e29b93382e7e8e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "8d67db8c45d91db24f531e849194c5c72ee606ec5f349376c0ecb98d2c072b91",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_tabular_to_fasta@1.0.1",
+      "artifact_sha256": "5d5285bd7d1edcea90a34e743e2ef1f165a226d6c7977b210afa5de6c864d246",
+      "source_sha256": "a918744f7da26f7838288601e3b5b8f4db72d5fc275ef83b8708fcfdfceb5e81",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "5d5285bd7d1edcea90a34e743e2ef1f165a226d6c7977b210afa5de6c864d246",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "corrected_upstream_interval_cases": 0,
+        "execution_cases": 4,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_filter_flags@1.0",
+      "artifact_sha256": "8dd2bdb27c47e1cca3c7c0e39dd779133c46cb5ac958995db2bee2a093b29830",
+      "source_sha256": "df1771f965f2b06da8f84e86e8ea6653667cdd4f2b581b01ea79c011f50a2db2",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "8dd2bdb27c47e1cca3c7c0e39dd779133c46cb5ac958995db2bee2a093b29830",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "corrected_upstream_interval_cases": 0,
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_to_interval@1.0",
+      "artifact_sha256": "4f28f963e7fb08ab14081f1d5d64ddc51867be577e31cb8aa22233544d13d578",
+      "source_sha256": "2f52ca663337b31c3a2367d02497b41505c8ddd09df6464c4604b22d98dd5bea",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "4f28f963e7fb08ab14081f1d5d64ddc51867be577e31cb8aa22233544d13d578",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 3,
+        "corrected_upstream_interval_cases": 2,
+        "execution_cases": 5,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_trim@1.0",
+      "artifact_sha256": "ce9807dc8d8b93c28256d3fdfccecb67e7bee84031b55ef466cbb5f0bcb049db",
+      "source_sha256": "265ac98bf516e71eff8900b0dddded41b5a148e9a37addb7fa780213bfb9638b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "ce9807dc8d8b93c28256d3fdfccecb67e7bee84031b55ef466cbb5f0bcb049db",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 0,
+        "execution_cases": 6,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_make_windows@1.0",
+      "artifact_sha256": "da5ea075b7626658989bb3577a9fd2397ed8e7a131473cf8d83d3584d08f2d5a",
+      "source_sha256": "4ab843a8627541b9954a27abe50d46947844aad2a60140961cfbab35b8d76b72",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "da5ea075b7626658989bb3577a9fd2397ed8e7a131473cf8d83d3584d08f2d5a",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 0,
+        "execution_cases": 5,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_extract@1.0",
+      "artifact_sha256": "e10280b62182e4b14b8da69a2d08eeaf87e0e17e3b9bfec1352e48338753b201",
+      "source_sha256": "c72092f3fda18c6e12b13fcf18171f8911c93a9c8e6a8d7cd8641c2e1513a765",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "e10280b62182e4b14b8da69a2d08eeaf87e0e17e3b9bfec1352e48338753b201",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 5,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 5,
+        "execution_cases": 8,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_to_fasta@1.0",
+      "artifact_sha256": "4ee628bf3996abcd30dc0f19f63179bb6563491d0168e1ae4468ce525ce293f6",
+      "source_sha256": "ea5bad50d5aa849784c0750c249fa00c3d449f223142236779fcce663ea31efe",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "4ee628bf3996abcd30dc0f19f63179bb6563491d0168e1ae4468ce525ce293f6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 0,
+        "execution_cases": 8,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_to_qual@1.0",
+      "artifact_sha256": "2e77c95752382e1f09bebaa23c0c0163abbbdc351f95f4a23f2405f03343d80b",
+      "source_sha256": "04f6f577e4f24b9b7815db8c56585184aa7581bf3ace5f13eea17ca24a881059",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "artifact_sha256": "2e77c95752382e1f09bebaa23c0c0163abbbdc351f95f4a23f2405f03343d80b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 0,
+        "execution_cases": 8,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_reverse_lines@1.0",
+      "artifact_sha256": "fce44efbf7d3fddf1be2b3454a0c808de2b291c235678d6f52e9559dcb071bf4",
+      "source_sha256": "1292b99b2997e53ca8121e75ee847bb2dc9ae974e7c4bc50ec832274dd40eb17",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_reverse_lines@1.0",
+        "artifact_sha256": "fce44efbf7d3fddf1be2b3454a0c808de2b291c235678d6f52e9559dcb071bf4",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/tac.xml"
+        },
+        "scope": "Newline records only; a bounded 8 MiB-character buffer is required. No custom separators.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_number_lines@1.0",
+      "artifact_sha256": "80113390545627953d96c5f86dc1c33d95e7e477031c13eda6358ecbdadce2ba",
+      "source_sha256": "16c3eac2ec87ba76a7787bbfa6d814bb66fcf0932db9fae5cb524b33e5a0c767",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_number_lines@1.0",
+        "artifact_sha256": "80113390545627953d96c5f86dc1c33d95e7e477031c13eda6358ecbdadce2ba",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/nl.xml"
+        },
+        "scope": "Empty lines are unnumbered. Logical-page escape sequences are treated as literal text.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sort_lines@1.0",
+      "artifact_sha256": "78f3d005b8ff6c73932d79e0d5492b5f0501e48b5842bdaaeaa9f55aa7380a3b",
+      "source_sha256": "94bfe752e3548276941779f95269cfa86a5550a0369ff0cf136b0bfc4acb5663",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sort_lines@1.0",
+        "artifact_sha256": "78f3d005b8ff6c73932d79e0d5492b5f0501e48b5842bdaaeaa9f55aa7380a3b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/sort.xml"
+        },
+        "scope": "One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sort_fields@1.0",
+      "artifact_sha256": "8ee8969029960e976953c3330140bf345c4286b46d9b05818da33e72712b8351",
+      "source_sha256": "c53324df37d12ef354eab59a6278d184a799e80b2c1cae9e165c863701ade4ee",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sort_fields@1.0",
+        "artifact_sha256": "8ee8969029960e976953c3330140bf345c4286b46d9b05818da33e72712b8351",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/sort_rows.xml"
+        },
+        "scope": "As upstream, strips surrounding row whitespace before sorting fields.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_unique_lines@1.0",
+      "artifact_sha256": "8e2eadb83a536d9ae5eb8cc7c48e7fcf5852eea36117d29959e272fd8eecfd32",
+      "source_sha256": "063cebfcd6dd628703d8ea9d4dd45dc8d1130d6b203dcb4fd5a6b11ffb8c9349",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_unique_lines@1.0",
+        "artifact_sha256": "8e2eadb83a536d9ae5eb8cc7c48e7fcf5852eea36117d29959e272fd8eecfd32",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/unsorted_uniq.xml"
+        },
+        "scope": "Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_unique_consecutive@1.0",
+      "artifact_sha256": "5a380d182e1f53bab9e0ce9f63775839302d1f5221e95bef7ad5174acd48dadd",
+      "source_sha256": "858df427749d50cefedace37a62ee2489e8fee7b58586be0d9780640dcd4413f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_unique_consecutive@1.0",
+        "artifact_sha256": "5a380d182e1f53bab9e0ce9f63775839302d1f5221e95bef7ad5174acd48dadd",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/sorted_uniq.xml"
+        },
+        "scope": "Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_unfold_column@1.0",
+      "artifact_sha256": "23ca961ab70b16d4f2cf237088c03842d1f136864bfb95c5a09e2706fe5f871b",
+      "source_sha256": "9c7589186031bcec0a4d0ac23ee193e64ed4b9dc2054757ba95e96aeb17276aa",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_unfold_column@1.0",
+        "artifact_sha256": "23ca961ab70b16d4f2cf237088c03842d1f136864bfb95c5a09e2706fe5f871b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/unfold_column.py"
+        },
+        "scope": "Literal nonempty separator; at most 10000 output rows and 16 MiB estimated characters per input row. Fixes upstream last-column newline handling.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_replace_text_in_column@1.0",
+      "artifact_sha256": "b435da0d0939dde9b378afd2ac149c956c107f16df1bf2c19160de8fc197a089",
+      "source_sha256": "0dd4f15c66328e9c0a83a675f4759b887e28ca9e063ba8784344c1368711ee53",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_replace_text_in_column@1.0",
+        "artifact_sha256": "b435da0d0939dde9b378afd2ac149c956c107f16df1bf2c19160de8fc197a089",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/replace_text_in_column.xml"
+        },
+        "scope": "Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_replace_text_in_line@1.0",
+      "artifact_sha256": "2efeea4f87d4c630250c2422d524425aa8d29814a5d1a5db31abce60a3c30f5d",
+      "source_sha256": "98790bea5eb744862fb407d33dc9d007cc640dc7039ef2033495fecfb12da40e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_replace_text_in_line@1.0",
+        "artifact_sha256": "2efeea4f87d4c630250c2422d524425aa8d29814a5d1a5db31abce60a3c30f5d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/replace_text_in_line.xml"
+        },
+        "scope": "Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_find_and_replace@1.0",
+      "artifact_sha256": "bc66151b77d20209562c5c5934961d8cfd499202909c90f9b4001c1453264105",
+      "source_sha256": "960ebe154fff6a2a13f6405f84c3f95db3361dcf82b1d2929aee0fb99e1ae0ce",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_find_and_replace@1.0",
+        "artifact_sha256": "bc66151b77d20209562c5c5934961d8cfd499202909c90f9b4001c1453264105",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/find_and_replace"
+        },
+        "scope": "Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_grep_lines@1.0",
+      "artifact_sha256": "81976154664cf2c318fc3e8b6b41c555050d2bd4357eee335033a5fd25053469",
+      "source_sha256": "daab3767d30e49c85ef4025908598213b021ad24319642021e24d91a8e014bff",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_grep_lines@1.0",
+        "artifact_sha256": "81976154664cf2c318fc3e8b6b41c555050d2bd4357eee335033a5fd25053469",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/grep.xml"
+        },
+        "scope": "Literal text search; no regex, context-line expansion or HTML output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_arrange_columns@1.0",
+      "artifact_sha256": "16fba8863d280c5ec74b1df120ba9f775fbf5e4983a50a210ebc6590ea04a98f",
+      "source_sha256": "68da96aeeb9b55f53d35dd9d352c75111bf59f65f4808bae38908a2b12be8645",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_arrange_columns@1.0",
+        "artifact_sha256": "16fba8863d280c5ec74b1df120ba9f775fbf5e4983a50a210ebc6590ea04a98f",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/column_arrange_by_header/column_arrange.py"
+        },
+        "scope": "Unique header names and requested names are required. Ragged rows and unknown headers fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_add_line@1.0",
+      "artifact_sha256": "f7701111c8168f70b3e26efde4b4a47c41acea063246925c35ca16b3745bd331",
+      "source_sha256": "dda731c5bb994c1ea06798b530d6f8a506beddf56c661259c2702a2d0dfea866",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_add_line@1.0",
+        "artifact_sha256": "f7701111c8168f70b3e26efde4b4a47c41acea063246925c35ca16b3745bd331",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/add_line_to_file/add_line_to_file.xml"
+        },
+        "scope": "Existing data lines are normalized to LF; this avoids concatenating a footer onto an unterminated final row.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_recurring_lines@1.0",
+      "artifact_sha256": "2c44741b047d3eeee7f9fcecd0709ad7593d4851571168b5070af07614e70ee1",
+      "source_sha256": "92cbd8613ac8d61fafc54bdc8a9ea85aa5f19fc9314c6073dba978c07e342f4a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_recurring_lines@1.0",
+        "artifact_sha256": "2c44741b047d3eeee7f9fcecd0709ad7593d4851571168b5070af07614e70ee1",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "text_processing/text_processing/recurring_lines.xml"
+        },
+        "scope": "One explicit repetition group, bounded 16 MiB output expansion; input is drained, not used to infer repetitions.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_remove_columns_by_header@1.0",
+      "artifact_sha256": "d4f2f3da7058987678cd5484a56420b4dcc1f9defb2f091ae91d3054a5ff03d6",
+      "source_sha256": "4ed235e33386c6f1bace3df7367cba5203c5779e8780bccec8fcf4a20591269f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_remove_columns_by_header@1.0",
+        "artifact_sha256": "d4f2f3da7058987678cd5484a56420b4dcc1f9defb2f091ae91d3054a5ff03d6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "column_remove_by_header/column_remove_by_header.py"
+        },
+        "scope": "Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sort_columns_by_header@1.0",
+      "artifact_sha256": "4c7fd4e3a06ef2ec9831f80c25a26ce6a91372f88e233f0b6b059a38c0cd50e8",
+      "source_sha256": "4cfffb23a1838648b8f14b09f1323583811dfacce2546389155273693770d5e0",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sort_columns_by_header@1.0",
+        "artifact_sha256": "4c7fd4e3a06ef2ec9831f80c25a26ce6a91372f88e233f0b6b059a38c0cd50e8",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "column_order_header_sort/column_order_header_sort.py"
+        },
+        "scope": "Zero sorts every column; otherwise a one-based column stays first. Headers must be unique.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_add_input_name@1.0",
+      "artifact_sha256": "8b86915a821b0dbaac2529890542b364350f73933ff7eabbc85fb1885bc9a888",
+      "source_sha256": "e15d00209b806bb3d5e1e6d176a7f6665646e609d6286de1d3e5784ad3128cad",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_add_input_name@1.0",
+        "artifact_sha256": "8b86915a821b0dbaac2529890542b364350f73933ff7eabbc85fb1885bc9a888",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "add_input_name_as_column/add_input_name_as_column.py"
+        },
+        "scope": "The input label is explicit configuration; no local path or filename is required.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fixed_width_to_tabular@1.0",
+      "artifact_sha256": "ff801d79dcdbec8c4ff55fde5a51a9d5a8beb98175d13d298adc67a61398a9c8",
+      "source_sha256": "12f59462213deef0f496fcbf4e2b3afb06cdb24689f04479278dbaf19647f677",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fixed_width_to_tabular@1.0",
+        "artifact_sha256": "ff801d79dcdbec8c4ff55fde5a51a9d5a8beb98175d13d298adc67a61398a9c8",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "fixed2tab/fixed2tab.xml"
+        },
+        "scope": "Explicit character widths only; no automatic boundary detection, FORTRAN descriptors, reports or encoding conversion. Long rows or unpadded short rows fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_colorspace_to_fasta@1.0",
+      "artifact_sha256": "aab50a12f805b41dc8253e7bd1964eeaf43ee5e28c7999a5bf242ef7e15cf387",
+      "source_sha256": "2a8cb81ea4beb797ee485e04adeb82a931baa7ee0c5e542c094f13a00a3deca5",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_colorspace_to_fasta@1.0",
+        "artifact_sha256": "aab50a12f805b41dc8253e7bd1964eeaf43ee5e28c7999a5bf242ef7e15cf387",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "convert_solid_color2nuc/convert_SOLiD_color2nuc.py"
+        },
+        "scope": "A/C/G/T primer followed only by 0..3; wrapped sequence lines accepted. Buffers at most one 8 MiB-character sequence.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_split_paired_reads@1.0",
+      "artifact_sha256": "dd9a7a030f61273f562b152c5f2ec851c55ef3efd3d997ca7c551fb199d317c1",
+      "source_sha256": "78897f152330865e6e3b1e49226c7a09970a42670abe102f3b2c6da3973e8a57",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_split_paired_reads@1.0",
+        "artifact_sha256": "dd9a7a030f61273f562b152c5f2ec851c55ef3efd3d997ca7c551fb199d317c1",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "split_paired_reads/split_paired_reads.py"
+        },
+        "scope": "Select mate 1 or 2; validates four-line FASTQ, optional matching + title, equal sequence/quality lengths and even sequence length. No silent truncation. An empty + title remains empty so emitted FASTQ remains valid.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_pileup_interval@1.0",
+      "artifact_sha256": "89c1a9bf2561889c9cc5e14eb5e7962bfc8018cd310b01dce03fa117edd2ac92",
+      "source_sha256": "ed3be0e571962d5d1bb21972a03f747b791d11c38586bd993ef32eebaa8b6370",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_pileup_interval@1.0",
+        "artifact_sha256": "89c1a9bf2561889c9cc5e14eb5e7962bfc8018cd310b01dce03fa117edd2ac92",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "pileup_interval/pileup_interval.py"
+        },
+        "scope": "One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_divide_pg_snp@1.0",
+      "artifact_sha256": "f3984c3d36326af20826ecdbab8c75964787e63e4c7c9e820e12ebff61ddb8d4",
+      "source_sha256": "661b4a6a06a49dfcc1627db075010a56bca3b96bdc369377d6871e3322401fc4",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_divide_pg_snp@1.0",
+        "artifact_sha256": "f3984c3d36326af20826ecdbab8c75964787e63e4c7c9e820e12ebff61ddb8d4",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "divide_pg_snp/dividePgSnpAlleles.pl"
+        },
+        "scope": "Rows with more than two alleles are skipped. Homozygous second allele is N or the configured reference column; extra input columns are retained.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_to_pgsnp@1.0",
+      "artifact_sha256": "2348ccf7e62e35845caf575a926e0dc86f7afbdd33f52212f82835191fd7c850",
+      "source_sha256": "34c699cd6d48032639401971c1ddac62681d97eca5e870cd4636652df1b9a3d9",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_to_pgsnp@1.0",
+        "artifact_sha256": "2348ccf7e62e35845caf575a926e0dc86f7afbdd33f52212f82835191fd7c850",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "vcf2pgsnp/vcf2pgSnp.pl"
+        },
+        "scope": "Zero selects all samples; otherwise use a one-based VCF column >=10. Only single-base A/C/G/T SNPs with PASS or missing FILTER are converted. GT position, haploidy, phased calls and all allele indices are handled; missing alleles ignored.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_reverse_complement@1.0",
+      "artifact_sha256": "9e5f41d4293360b64b53b7fa1561716d6da3f27be53772694e69564b700ee10b",
+      "source_sha256": "49b3b4ba06491d7dd9a0f844a434409e1a9a0db7efd60b067bb692db48393540",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_reverse_complement@1.0",
+        "artifact_sha256": "9e5f41d4293360b64b53b7fa1561716d6da3f27be53772694e69564b700ee10b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "biopython/converters/reverse_complement.py"
+        },
+        "scope": "FASTA input/output only; DNA or RNA IUPAC symbols, case preserved, invalid characters rejected. One sequence buffered up to 8 MiB characters.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_translate@1.0",
+      "artifact_sha256": "3904ae21f3c087656e36f6fd9a234dc2187af9b5bff31fa6a73832c3578311da",
+      "source_sha256": "71302ba0c91ebe5802488b10261e4fc87b0cdd924eeb9b05bc40c792f3032e96",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_translate@1.0",
+        "artifact_sha256": "3904ae21f3c087656e36f6fd9a234dc2187af9b5bff31fa6a73832c3578311da",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "biopython/converters/translate.py"
+        },
+        "scope": "Standard code table 1, FASTA only. Ambiguous complete codons emit X; terminal partial codons fail. CDS requires ATG start, terminal stop and no internal stop; final stop omitted. Alternate genetic codes are not advertised.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_codon_count@1.0",
+      "artifact_sha256": "99e5a71433d7074f0ee09362087c9978a20e21369f4acf0175edc392450ebb15",
+      "source_sha256": "7a2b6134545293f0a266e8b73a24417e13b6c011e46c47512996dba340ac913f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_codon_count@1.0",
+        "artifact_sha256": "99e5a71433d7074f0ee09362087c9978a20e21369f4acf0175edc392450ebb15",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "biopython/codon_count.py"
+        },
+        "scope": "Input lengths must be multiples of three. Only A/C/G/T codons are accepted; output is deterministic lexicographic codon/count TSV, including zero counts.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_base_distribution@1.0",
+      "artifact_sha256": "234363a005e230c5a175644280f637c6d83a52a7f54a77496b743ef5fd588e78",
+      "source_sha256": "bf3eef19bbebfdf0bada958b1b16ec566729a0bdad6de8ed6c739a43921e4663",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_base_distribution@1.0",
+        "artifact_sha256": "234363a005e230c5a175644280f637c6d83a52a7f54a77496b743ef5fd588e78",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "biopython/base_distribution.py"
+        },
+        "scope": "FASTA input. GC denominator includes ambiguous symbols; zero-length records use GC fraction zero. Output CG% is the upstream fraction, not a percentage.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_find_subsequences@1.0",
+      "artifact_sha256": "ed4c96b964a59be048cc804bcf9135334fbd4408d2f55e54b2f85687d101ab92",
+      "source_sha256": "abb5011d7913b572af6114a2a95508e076a7e64c5a760262e54cf9c2e8864715",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_find_subsequences@1.0",
+        "artifact_sha256": "ed4c96b964a59be048cc804bcf9135334fbd4408d2f55e54b2f85687d101ab92",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "find_subsequences/find_subsequences.py"
+        },
+        "scope": "Uses reverse complement for reverse-strand search, correcting the upstream complement-only bug. Overlapping hits are consistently included. Maximum one million candidate comparisons per record times pattern length is bounded to 64 million.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fasta_stats@1.0",
+      "artifact_sha256": "6175de33b39597638dca9bd44bed7b4358d6595479be14a22d439e7e3aca82f3",
+      "source_sha256": "4aca6d2b38aa11f6780afe1ae567c19644abbf6869552c374b81c11f85c6d118",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fasta_stats@1.0",
+        "artifact_sha256": "6175de33b39597638dca9bd44bed7b4358d6595479be14a22d439e7e3aca82f3",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "fasta_stats/fasta-stats.py"
+        },
+        "scope": "Statistics TSV output only, no separate gap BED. N-runs split contigs; internal N-runs count as gaps. Uses standard N50 threshold >= half, correcting upstream strict-greater edge. At most 100000 sequences/contigs and one 8 MiB-character record.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_motif_flank_counts@1.0",
+      "artifact_sha256": "51951c7aed80dfbfdccdbd0080c86d6107c35495f1e1e757c96e8d2db95f3197",
+      "source_sha256": "a5e5809c78e4686552b75783279678c0484e19f4855b2fdadaefa4c2f5291739",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_motif_flank_counts@1.0",
+        "artifact_sha256": "51951c7aed80dfbfdccdbd0080c86d6107c35495f1e1e757c96e8d2db95f3197",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "compute_motif_frequencies_for_all_motifs/compute_motif_frequencies_for_all_motifs.pl"
+        },
+        "scope": "Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported.",
+        "status": "passed"
+      }
+    }
+  ]
+}

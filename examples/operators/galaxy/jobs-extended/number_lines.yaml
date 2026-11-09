@@ -1,0 +1,20 @@
+name: Number nonempty text lines with configurable starting number, increment and
+  alignment.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/number_lines.txt
+    view: bytes
+- id: process
+  operator: galaxy_number_lines@1.0
+  inputs:
+    source: read
+  params:
+    start: 1
+    increment: 1
+    width: 3
+    style: rz
+outputs:
+  result: process

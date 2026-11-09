@@ -1,0 +1,15 @@
+name: Report per-sequence A/C/G/T counts, sequence length and GC fraction.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/base_distribution.txt
+    view: bytes
+- id: process
+  operator: galaxy_base_distribution@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

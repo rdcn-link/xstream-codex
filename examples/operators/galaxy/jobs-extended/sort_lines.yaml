@@ -1,0 +1,20 @@
+name: Stable sort of text rows using a selected tab-separated key.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sort_lines.txt
+    view: bytes
+- id: process
+  operator: galaxy_sort_lines@1.0
+  inputs:
+    source: read
+  params:
+    column: 2
+    numeric: true
+    reverse: false
+    ignore_case: false
+    header: 1
+outputs:
+  result: process

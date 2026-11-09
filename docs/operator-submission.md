@@ -51,6 +51,28 @@ parameters:
   properties: {}
   required: []
   additionalProperties: false
+documentation:
+  inputs:
+    source: Observation records to filter by quality.
+  outputs:
+    result: Observation records retained after quality filtering.
+  parameters: {}
+  example_job: |
+    name: Filter observations
+    steps:
+      - id: read
+        operator: read_item@1.0
+        inputs: {}
+        params:
+          uri: context:/weather/observations
+          view: records
+      - id: filter
+        operator: weather_filter@1.0
+        inputs:
+          source: read
+        params: {}
+    outputs:
+      result: filter
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
@@ -69,6 +91,27 @@ xstream-operator submit /path/weather-filter/submission.yaml \
 ```
 
 `--token-env ENV_NAME` is also available instead of `--token-file`. Remote submission requires HTTPS; HTTP is accepted only for localhost development. The helper uploads the source and optional license/SBOM, then POSTs `/v1/submissions`. It does not upload runtime images or operator artifacts. HTTP 202 returns `submission_id` and `status: pending`. A submitter can GET `/v1/submissions` or `/v1/submissions/{id}` with their Token to inspect only their own records. Revoked Tokens cannot submit or inspect records.
+
+## Required usage documentation
+
+Every new submission must include `documentation.inputs`, `documentation.outputs`, `documentation.parameters` and `documentation.example_job`. Describe every declared input and at least one output by name. For each declared parameter, include `help` and a schema-valid `example`; supply `description` here or in the parameter schema. Unknown parameter/port names, missing descriptions and invalid example values are rejected. `example_job` is a complete YAML Job with nonempty `steps` and `outputs`, uses the exact submitted operator version, binds all its inputs and supplies valid required parameters. Use illustrative `context:` Item paths and explain what to replace; examples do not create source datasets. YAML is parsed safely and never executed during validation.
+
+```yaml
+documentation:
+  inputs:
+    source: Records to filter.
+  outputs:
+    result: Records matching the predicate.
+  parameters:
+    condition:
+      description: SQLite predicate for selecting records.
+      help: Quote string values and use column names from the input schema.
+      example: "quality = '0'"
+  example_job: |
+    # A complete Job goes here; see the submission example above.
+```
+
+The last block illustrates parameter metadata only: replace its `example_job` with a complete Job before submission. Repository detail pages show readable lists and a copyable YAML example. Documentation is public after approval even when implementation source stays private. Administrators can correct published usage metadata through an authenticated, CSRF-protected documentation update without changing package digests or trust assessments.
 
 ## Administrator workflow
 

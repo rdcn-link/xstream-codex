@@ -1,0 +1,9 @@
+categories:
+- Variant Analysis
+description: VCF to pgSnp
+long_description: |
+  Convert from VCF to pgSnp format
+name: vcf2pgsnp
+owner: devteam
+remote_repository_url: https://github.com/galaxyproject/tools-devteam/tree/master/tools/vcf2pgsnp
+type: unrestricted

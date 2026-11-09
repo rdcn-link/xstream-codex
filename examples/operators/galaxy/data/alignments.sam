@@ -1,0 +1,4 @@
+@HD	VN:1.6
+read1	2	chr1	10	20	4M	*	0	0	ACGT	*
+read2	18	chr1	20	20	2=1X1P2D3N1I	*	0	0	ACGT	*
+unmapped	4	*	0	0	*	*	0	0	N	*

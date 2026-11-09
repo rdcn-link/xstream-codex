@@ -1,0 +1,13 @@
+XStream Galaxy text tools, Scala adaptations (2026).
+Upstream: Galaxy Contributors, https://github.com/galaxyproject/tools-devteam
+Revision: ddbe2a1e6eded54877d786fbcfc18e594fb12932
+Sources and golden fixtures retain their upstream attribution.
+Upstream LICENSE contains AFL-3.0 for contributions before 2024-12-01 and
+MIT for later contributions. Both license texts are included unchanged.
+Adaptations: streaming UTF-8 Scala/Arrow I/O, validated parameters, resource
+limits and cancellation, explicit newline/Unicode fixes. See README.md.
+Not an official Galaxy release; Galaxy is not an endorsement of these adapters.
+
+Extended adapters also use reviewed Galaxy IUC and bgruening/galaxytools tools.
+Their pinned revisions, source hashes and MIT notices are retained in
+upstream-extended/ and upstream-extended-manifest.json.

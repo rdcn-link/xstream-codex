@@ -1,0 +1,11 @@
+categories:
+- Sequence Analysis
+- Variant Analysis
+description: Make windows
+long_description: |
+  This tool splits the intervals in the input file into smaller intervals
+  based on the specified window-size and window type.
+name: windowsplitter
+owner: devteam
+remote_repository_url: https://github.com/galaxyproject/tools-devteam/tree/master/tools/windowsplitter
+type: unrestricted

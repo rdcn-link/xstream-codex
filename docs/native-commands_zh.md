@@ -36,7 +36,7 @@ parameters:
 
 ## 发布与执行
 
-仓库仅接受源码提交，通过 `xstream-operator submit` 上传，由仓库构建并审核。原生程序需要管理员提供的构建运行时；发布包和共享执行运行时分别下载。参见[提交与审核](operator-submission_zh.md)。本地开发可使用[本地算子库](local-operators_zh.md)的 `command` 构建器。
+仓库接受源码提交及带适配源码的第三方二进制提交，通过 `xstream-operator submit` 上传，由仓库构建并审核。通用命令适配器不提供纯配置二进制提交接口。原生程序需要管理员提供的构建运行时；发布包和共享执行运行时分别下载。参见[提交与审核](operator-submission_zh.md)。本地开发可使用[本地算子库](local-operators_zh.md)的 `command` 构建器。
 
 Job 使用普通输入连接引用该算子，通过 `xstream-runner engine.yaml job.yaml` 执行。
 

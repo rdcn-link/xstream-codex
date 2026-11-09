@@ -1,0 +1,30 @@
+name: Galaxy tabular text pipeline
+steps:
+  - id: read
+    operator: read_item@1.0
+    inputs: {}
+    params:
+      uri: context:/galaxy/input.txt
+      view: bytes
+  - id: delimiters
+    operator: galaxy_convert_delimiters@1.0
+    inputs:
+      source: read
+    params:
+      character: comma
+  - id: uppercase
+    operator: galaxy_change_case@1.0
+    inputs:
+      source: delimiters
+    params:
+      columns: c1
+      casing: upper
+  - id: annotate
+    operator: galaxy_add_column@1.0
+    inputs:
+      source: uppercase
+    params:
+      value: row
+      iterate: true
+outputs:
+  result: annotate

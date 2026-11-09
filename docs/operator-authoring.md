@@ -2,12 +2,28 @@
 
 [中文](operator-authoring_zh.md)
 
-XStream operators run in the standalone engine or DACP nodes. Developers submit source only; the repository scans, builds in isolation and publishes after administrator approval. Administrators assign categories and the final trust score.
+XStream operators run in the standalone engine or DACP nodes. The repository accepts source and third-party binary submissions with wrapper source, scans and builds in isolation, and publishes after administrator approval. Executor support for a package does not imply that public submission accepts that prebuilt package directly. Administrators assign categories and the final trust score.
 
 ```mermaid
 flowchart LR
   Code["Write processing, inference and samples"] --> Test["Test locally"] --> Dependencies["Declare dependencies"] --> Submit["Submit source"] --> Review["Build and review"] --> Publish["Publish and use"]
 ```
+
+Every repository submission also includes human-readable port descriptions, parameter descriptions/help/examples and a complete copyable Job in `documentation`. See [required usage documentation](operator-submission.md#required-usage-documentation). The repository validates these fields before accepting a new submission.
+
+
+## Choose among four development approaches
+
+`executor` controls how an operator starts; the Runtime supplies its environment. All four executors run inside Docker containers.
+
+| executor | What the developer supplies | Suitable workloads | Inference and samples |
+|---|---|---|---|
+| `jvm` | Scala/Java implementation, main class and build declarations; execution artifact is a JAR | New operators, JVM libraries, typed stream processing | SDK methods or templates |
+| `python` | Python implementation and dependency declarations; execution artifacts include `.py`, `.zip` and `.whl` | Scientific computing and Python libraries | SDK methods or templates |
+| `command` | Program, runtime and stdin/stdout mapping configuration | Existing command-line tools and binaries | Configuration infers bytes output; the generic adapter does not execute programs for samples |
+| `container` | Image with its own entrypoint implementing the operator protocol | Custom languages or complete runtime stacks | Entrypoint implements the protocol |
+
+Develop in this order: define ports and parameters → choose Runtime/executor → write implementation or adapter configuration → verify processing, inference, samples and cancellation → submit through a supported repository review workflow. The Scala/Python examples below show business code; the command/container examples show execution definitions, not repository source-submission manifests.
 
 ## Preferred language: Scala
 
@@ -23,7 +39,7 @@ Select an actually registered runtime and version at `/runtimes`. Execution and 
 
 Scala and Java implement `Operator` or use the JVM `BytesOperator`, `ByteStreamOperator` and `RecordsOperator` templates. Python offers `BytesOperator` and `RecordsOperator`. Templates supply schema and bounded-sample inference; override the relevant method when changing the output structure. Low-level implementations must provide processing, structure inference and output samples.
 
-## Scala
+## jvm: Scala / Java
 
 Save this as `src/example/Identity.scala`. It transfers an `InputStream` to an `OutputStream` without buffering the whole Item. Submit with `language: scala`, `entrypoint: example.Identity` and a registered JVM runtime. Java can implement the same JVM SDK `Operator` interface.
 
@@ -42,7 +58,7 @@ object Identity extends ByteStreamOperator {
 }
 ```
 
-## Python
+## python: Python SDK
 
 Install the SDK and save this as `src/upper_ascii.py`. Input `abc\n` produces `ABC\n`; `uppercase: false` preserves the input. This example handles ASCII: byte chunks do not guarantee UTF-8 character or business-record boundaries.
 
@@ -60,6 +76,56 @@ class UpperAscii(BytesOperator):
 if __name__ == '__main__':
     UpperAscii().main()
 ```
+
+## command: reuse a command-line program
+
+Programs that read bytes from stdin and write bytes to stdout can use the framework adapter without implementing basic stream framing. This execution-definition fragment converts input to uppercase:
+
+```yaml
+executor: command
+entrypoint: /usr/bin/tr
+executor_config:
+  args: [a-z, A-Z]
+  stdin: source
+  stdout: {port: result, representation: bytes, format: text}
+inputs:
+  source: {representations: [bytes], formats: []}
+```
+
+Include the fragment in a complete execution definition with name, version, image, icon and parameter contract. The image must actually provide `/usr/bin/tr`, Python and PyArrow; execution does not install them. Input `abc` should produce `ABC`. Reserve stdout for results and stderr for diagnostics.
+
+Currently at most one bytes input and one bytes output are supported; sources and sinks can respectively set `stdin: null` or `stdout: null`. `args` contains fixed literal strings, without Job parameter substitution or shell interpretation. Records conversion, filename arguments, multiple inputs/outputs, dynamic parameters and special formats require a custom wrapper. The framework infers structure from stdout configuration but does not run arbitrary commands for samples; provide a dedicated adapter when samples are required. See [native commands](native-commands.md) for complete configuration, separate executable mounting and cancellation.
+
+**Publication boundary:** a generic execution adapter is not a configuration-only binary upload API. Current repository third-party binary submissions require wrapper source; do not pass this fragment directly to `submit`. For public publication, prepare wrapper source and provenance using the [binary-wrapper submission workflow](dependency-environments.md).
+
+## container: provide the entrypoint in the image
+
+The image ENTRYPOINT is the operator program. Use `executor: container` without `entrypoint` or `artifact`; `executor_config` is not accepted. For example, add a Scala operator to a base image supplying the SDK, JDK and dependencies:
+
+```dockerfile
+FROM example/jvm-arrow:1
+COPY operator.jar /opt/operator/operator.jar
+ENTRYPOINT ["/opt/java/bin/java", "--add-opens=java.base/java.nio=ALL-UNNAMED", "-Dio.netty.tryReflectionSetAccessible=true", "-cp", "/opt/operator/operator.jar:/opt/lib/*:/opt/xstream/jars/*", "example.Identity"]
+```
+
+The base image is a placeholder: replace it with an image actually supplying the dependencies. The entrypoint can use the Scala SDK implementation above; a Docker image does not automatically turn an arbitrary program into an operator.
+
+The entrypoint must handle framework processing and inference requests, read input channels and parameters under `/input`, and return valid output and bounded samples. SDKs handle protocol details; custom languages must implement the corresponding protocol. Reserve stdout for protocol and stderr for logs. The image must tolerate a read-only root filesystem, disabled networking and bounded temporary space. See [packaging](operator-packaging.md), [structure inference](structure-inference.md) and [stream contracts](operator-streams.md).
+
+Local or administrator-managed execution definitions can use these images. Public developer submission still follows the supported source or binary-wrapper review workflow; `executor: container` does not authorize direct arbitrary-image uploads.
+
+## Verify and publish
+
+For all approaches, verify empty and multi-batch inputs, output structures, parameter changes, failure exits, cancellation and resource cleanup. SDK implementations must also verify sample budgets; see above for the generic command sample limitation. Run test Jobs with the local operator library and ensure target machines provide compatible Runtimes, executor plugins and dependencies. Compatible `jvm`/`python` steps can fuse; matching dependencies do not automatically fuse commands into one process.
+
+```bash
+xstream-operator check ./my-operator
+xstream-operator build ./my-operator --config ./engine.yaml
+xstream-operator submit ./my-operator \
+  --url https://repo.example.org --token-file ./publisher.token
+```
+
+These commands apply to directories following the source-project convention, not as a replacement for image execution-definition validation. Building requires a configured local build environment. Submission requires a repository-issued token, and public downloads require approval. See [dependency environments](dependency-environments.md) for dependencies and binary submissions, and [local operators](local-operators.md) for test Jobs.
 
 ## Inputs, parameters and outputs
 

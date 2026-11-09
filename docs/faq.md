@@ -116,3 +116,34 @@ Airflow is particularly useful for scheduled workflows that coordinate external 
 XStream is therefore a useful foundation for scientific analysis, interactive analysis applications and embedded cross-language data pipelines. Its engine executes steps locally; remote Item access uses data connectors, and DACP/Union supplies remote Job invocation and cross-node collaboration. Continuous stream processing with time windows and durable state recovery requires further capabilities.
 
 The systems can work together: Airflow schedules and supervises an analysis Job, while XStream executes its internal data-processing pipeline. For measured results and their limits, see the [workflow performance comparison](orchestration-llm-benchmark.md).
+
+## 5. How should I understand XStream's logical filesystem?
+
+XStream organizes and accesses data through a **unified logical catalog**, abstracting its physical storage and file formats. It is a data-resource namespace rather than an operating-system filesystem or a mounted disk.
+
+```text
+DataCatalog
+└── Dataset
+    ├── Data Item
+    └── Folder Item
+        └── Child Item
+```
+
+A DataCatalog discovers Datasets; each Dataset provides a logical Item tree. For example, assuming the corresponding backend and format plugins are installed:
+
+| Logical address | Possible backing resource |
+|---|---|
+| `context:/science/observations.csv` | A local CSV file |
+| `context:/science/archive.zip/labels/a.csv` | A member inside a ZIP, without manual extraction |
+| `context:/science/climate.nc/temperature` | A variable inside a NetCDF file |
+| A table Item exposed by a database Dataset | A database table or configured query result |
+
+The logical path is not necessarily a physical file path. Archive children and scientific variables need not exist as separate files. Plugins determine which resources and structures are exposed.
+
+**An Item identifies a resource; a View defines how to read it.** A CSV Item can expose `bytes` for the original file and `records` for parsed rows. Scientific Items can expose `array` while preserving multidimensional structure. Reading a supported View produces an Arrow stream for downstream operators. Inspect advertised capabilities rather than assuming every Item supports every View.
+
+Hierarchy and readability are separate: folder Items support browsing through `list()`, but ordinary folders have no readable Views. A ZIP root can legitimately be `kind: folder` with `views: [bytes]`: its bytes View returns the original ZIP file, while its children expose internal resources. Internal folders without a bytes View are not readable, and requesting records on a folder is rejected.
+
+`context:` refers to the DataCatalog bound to the current execution environment, not an arbitrary local disk path. A remote DACP URI accesses a remote catalog through a connector. Together, logical Items, explicit Views and streams let a Job handle files, archive members, scientific variables and database resources without implementing a separate storage reader in each operator.
+
+See the [data model](data-model.md), [file formats and containers](file-formats.md), [DataView examples](data-view-examples.md) and [local-file FAQ](#3-how-can-a-xstream-job-read-local-files-and-what-does-context-refer-to).

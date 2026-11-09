@@ -1,0 +1,17 @@
+name: Alphabetically reorder table columns by header, optionally pinning one column
+  first.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sort_columns_by_header.txt
+    view: bytes
+- id: process
+  operator: galaxy_sort_columns_by_header@1.0
+  inputs:
+    source: read
+  params:
+    key_column: 2
+outputs:
+  result: process

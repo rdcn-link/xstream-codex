@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "job": "job-extended-pipeline.yaml",
+  "operators": [
+    "read_item@1.0",
+    "galaxy_colorspace_to_fasta@1.0",
+    "galaxy_reverse_complement@1.0",
+    "galaxy_fasta_length@1.0",
+    "galaxy_add_input_name@1.0"
+  ],
+  "expected_output": "seq1\t4\trun1\n",
+  "output": "seq1\t4\trun1\n"
+}

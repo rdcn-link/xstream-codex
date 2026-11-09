@@ -2,12 +2,28 @@
 
 [English](operator-authoring.md)
 
-算子由 XStream 管理，可由独立引擎或 DACP 节点执行。开发者仅提交源码；仓库完成扫描、隔离构建及管理员审核后才公开算子。分类和最终可信度由管理员指定。
+算子由 XStream 管理，可由独立引擎或 DACP 节点执行。仓库接受源码及带适配源码的第三方二进制提交，经扫描、隔离构建及管理员审核后才公开算子。执行器能够运行某种包，并不意味着公共提交接口接受直接上传这种成品。分类和最终可信度由管理员指定。
 
 ```mermaid
 flowchart LR
   Code["编写处理、结构推导和样例代码"] --> Test["本地测试"] --> Dependencies["声明依赖"] --> Submit["提交源码"] --> Review["构建与审核"] --> Publish["发布与使用"]
 ```
+
+每次提交仓库还需在 `documentation` 中提供易读的端口说明、参数描述/填写说明/示例，以及完整的可复制 Job。参见[必填的使用说明](operator-submission_zh.md#必填的使用说明)。仓库接收新提交前会校验这些字段。
+
+
+## 选择四种开发方式
+
+`executor` 决定如何启动算子，Runtime 决定其运行环境；四种执行器都在 Docker 容器中执行。
+
+| executor | 开发者需要提供 | 适合场景 | 推导与样例 |
+|---|---|---|---|
+| `jvm` | Scala/Java 实现、入口类及构建声明；执行产物为 JAR | 新算子、JVM 库、类型化流处理 | SDK 方法或模板 |
+| `python` | Python 实现及依赖声明；执行产物可为 `.py`、`.zip` 或 `.whl` | 科学计算与 Python 库 | SDK 方法或模板 |
+| `command` | 程序、运行环境及 stdin/stdout 映射配置 | 已有命令行工具、二进制程序 | 配置推导 bytes 输出；通用适配器不执行程序生成样例 |
+| `container` | 自带入口并实现算子协议的镜像 | 自定义语言或完整运行栈 | 镜像内入口实现协议 |
+
+开发顺序是：确定端口和参数 → 选择 Runtime/executor → 编写实现或适配配置 → 验证处理、结构推导、样例和取消 → 按仓库支持的提交方式审核发布。以下 Scala 和 Python 示例展示业务代码；命令与容器示例展示执行定义，不能直接当作仓库源码提交清单。
 
 ## 首选语言：Scala
 
@@ -23,7 +39,7 @@ Scala 适合表达类型化的流变换，并可与引擎共用 JVM 接口和库
 
 Scala 和 Java 可实现 `Operator`，或使用 JVM 的 `BytesOperator`、`ByteStreamOperator`、`RecordsOperator` 模板；Python 可使用 `BytesOperator` 或 `RecordsOperator`。模板提供结构及有界样例推导，修改输出结构时应覆盖相应方法。底层接口必须实现处理、结构推导和样例输出。
 
-## Scala
+## jvm：Scala / Java
 
 在 `src/example/Identity.scala` 保存以下代码，它直接把 `InputStream` 传给 `OutputStream`，不缓存整个 Item。提交时使用 `language: scala`、`entrypoint: example.Identity` 和注册的 JVM 运行环境。Java 同样可以实现 JVM SDK 的 `Operator` 接口。
 
@@ -42,7 +58,7 @@ object Identity extends ByteStreamOperator {
 }
 ```
 
-## Python
+## python：Python SDK
 
 安装 SDK，在 `src/upper_ascii.py` 保存以下代码。`abc\n` 会输出 `ABC\n`；`uppercase: false` 则原样输出。这是 ASCII 示例，任意字节块不保证 UTF-8 字符或业务记录边界。
 
@@ -60,6 +76,56 @@ class UpperAscii(BytesOperator):
 if __name__ == '__main__':
     UpperAscii().main()
 ```
+
+## command：复用命令行程序
+
+如果程序已经通过 stdin 读取字节、通过 stdout 输出字节，可以使用框架自带适配器，无需编写基础流协议代码。例如以下执行定义片段把输入转成大写：
+
+```yaml
+executor: command
+entrypoint: /usr/bin/tr
+executor_config:
+  args: [a-z, A-Z]
+  stdin: source
+  stdout: {port: result, representation: bytes, format: text}
+inputs:
+  source: {representations: [bytes], formats: []}
+```
+
+将片段补入包含名称、版本、镜像、图标和参数契约的完整执行定义。镜像必须实际包含 `/usr/bin/tr`、Python 和 PyArrow；它们不会在执行时自动安装。输入 `abc` 应得到 `ABC`，stdout 只能输出结果，诊断写 stderr。
+
+当前最多一个 bytes 输入和一个 bytes 输出；源或汇可分别设置 `stdin: null` 或 `stdout: null`。`args` 是固定字符串列表，不替换 Job 参数，也不经过 shell。records 转换、文件名参数、多输入输出、动态参数及特殊格式需要专用适配代码。框架根据 stdout 配置推导结构，但不运行任意命令生成样例；需要样例时提供专用适配。完整配置、独立可执行文件挂载及取消行为见[原生命令算子](native-commands_zh.md)。
+
+**发布边界：** 通用执行适配器不等于纯配置二进制上传接口。当前仓库的第三方二进制提交要求适配源码；不要把上述片段直接交给 `submit`。需要公开发布时，按照[二进制适配提交](dependency-environments_zh.md)准备适配源码及来源材料。
+
+## container：镜像自行提供算子入口
+
+选择此方式时，镜像的 ENTRYPOINT 就是算子程序；执行定义使用 `executor: container`，不配置 `entrypoint` 或 `artifact`，也不接受 `executor_config`。例如可以在提供 SDK、JDK 和依赖的基础镜像上加入自己的 Scala 算子：
+
+```dockerfile
+FROM example/jvm-arrow:1
+COPY operator.jar /opt/operator/operator.jar
+ENTRYPOINT ["/opt/java/bin/java", "--add-opens=java.base/java.nio=ALL-UNNAMED", "-Dio.netty.tryReflectionSetAccessible=true", "-cp", "/opt/operator/operator.jar:/opt/lib/*:/opt/xstream/jars/*", "example.Identity"]
+```
+
+基础镜像名是占位符，必须替换为实际具备所需依赖的镜像。该入口类可使用前文的 Scala SDK 实现；Docker 镜像本身不会把任意程序自动变成算子。
+
+入口必须处理框架提供的执行及推导请求，读取 `/input` 下的输入通道和参数，返回合法输出及有界样例。SDK 可承担协议处理；自定义语言则需实现对应协议。stdout 用于协议，日志写 stderr。镜像应适应只读根文件系统、禁用网络和受限临时空间。参见[打包参考](operator-packaging_zh.md)、[结构推导](structure-inference_zh.md)和[流契约](operator-streams_zh.md)。
+
+本地或管理员管理的执行定义可以使用此类镜像。公共开发者提交仍按仓库支持的源码或二进制适配流程审核，不能仅凭 `executor: container` 直接上传任意镜像。
+
+## 验证与发布检查
+
+四种方式都应验证：空输入、多批次输入、输出结构、参数变化、失败退出、取消和资源释放。SDK 实现还应验证样例预算；`command` 的通用样例限制见上文。使用本地算子库运行测试 Job，并确保目标机器具备匹配的 Runtime、执行器插件及依赖。`jvm`/`python` 的兼容步骤可合并执行；`command` 不会因依赖相同而自动变成同一进程。
+
+```bash
+xstream-operator check ./my-operator
+xstream-operator build ./my-operator --config ./engine.yaml
+xstream-operator submit ./my-operator \
+  --url https://repo.example.org --token-file ./publisher.token
+```
+
+这些命令针对符合源码项目约定的目录；不要用它们替代镜像执行定义的验证。构建需要配置好的本地构建环境，提交需要仓库签发的 token，批准前不可公开下载。依赖和二进制提交详见[依赖环境](dependency-environments_zh.md)，本地 Job 示例见[本地算子库](local-operators_zh.md)。
 
 ## 输入、参数与输出
 

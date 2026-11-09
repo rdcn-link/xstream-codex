@@ -1,0 +1,16 @@
+name: Extract one mate from concatenated equal-length paired FASTQ records.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/split_paired_reads.txt
+    view: bytes
+- id: process
+  operator: galaxy_split_paired_reads@1.0
+  inputs:
+    source: read
+  params:
+    mate: 2
+outputs:
+  result: process

@@ -116,3 +116,34 @@ Airflow 尤其适合协调外部系统的调度工作流，例如定期抽取、
 因此，XStream 适合作为科学数据分析、交互式分析应用以及可嵌入的跨语言数据流水线的基础。引擎在本地执行步骤，远程 Item 访问通过数据连接器实现，DACP/Union 提供远程 Job 调用与跨节点协作。支持时间窗口和持久状态恢复的持续流处理还需要进一步建设。
 
 两者可以配合使用：Airflow 负责安排和管理分析 Job 的执行，XStream 负责其内部的数据处理流水线。实际性能及适用边界参见[工作流性能对比](orchestration-llm-benchmark_zh.md)。
+
+## 5. 如何理解 XStream 的逻辑文件系统？
+
+XStream 通过**统一的逻辑数据目录**组织和访问数据，屏蔽数据实际存储的位置及文件格式。它是数据资源命名空间，而不是操作系统的磁盘文件系统或挂载磁盘。
+
+```text
+DataCatalog
+└── Dataset
+    ├── 普通数据 Item
+    └── folder Item
+        └── 子 Item
+```
+
+DataCatalog 发现各 Dataset，每个 Dataset 提供一棵逻辑 Item 树。例如，在安装了对应后端和格式插件的情况下：
+
+| 逻辑地址 | 实际可能对应的资源 |
+|---|---|
+| `context:/science/observations.csv` | 本地 CSV 文件 |
+| `context:/science/archive.zip/labels/a.csv` | ZIP 内部文件，无需用户手动解压 |
+| `context:/science/climate.nc/temperature` | NetCDF 内部变量 |
+| 数据库 Dataset 暴露的表格 Item | 数据库表或配置的查询结果 |
+
+逻辑路径不一定是物理文件路径。压缩包成员和科学数据变量不必作为独立文件存在；具体暴露哪些资源及内部结构，由插件决定。
+
+**Item 表示资源，View 表示读取方式。** CSV Item 可以提供原始文件字节的 `bytes` 视图，以及解析后表格记录的 `records` 视图；科学数据 Item 可以提供保留多维结构的 `array` 视图。读取受支持的 View 后，得到供下游算子处理的 Arrow 数据流。应检查资源声明的能力，不能假定所有 Item 都支持所有 View。
+
+层级结构与读取能力相互独立：folder Item 可以通过 `list()` 浏览，但普通目录没有可读取的 View。ZIP 根项可以合法地声明 `kind: folder`、`views: [bytes]`，其 bytes 视图返回原始 ZIP 文件，子项则表示内部资源。没有 bytes 视图的内部目录不可读取，folder 请求 records 也会被拒绝。
+
+`context:` 指向当前执行环境绑定的 DataCatalog，不是任意本地磁盘路径；远程 DACP URI 则通过连接器访问远程数据目录。这套设计将文件、压缩包成员、科学数据变量和数据库资源统一为逻辑 Item、明确的 View 以及数据流，使 Job 不必为每种存储方式分别实现读取逻辑。
+
+参见[数据模型](data-model_zh.md)、[文件格式与容器](file-formats_zh.md)、[DataView 示例](data-view-examples_zh.md)，以及本页第 3 条本地文件访问问答。

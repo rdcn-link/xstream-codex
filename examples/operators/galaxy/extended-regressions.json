@@ -1,0 +1,303 @@
+{
+  "golden_cases": 10,
+  "positive": [
+    {
+      "operator": "sort_fields",
+      "data": "a\tb\tc\td\te\tf\nf\te\td\tc\tb\ta\n7\t6\t5\t4\t3\t2\n1\t2\t3\t4\t5\t6\n",
+      "expected": "a\tb\tc\td\te\tf\na\tb\tc\td\te\tf\n2\t3\t4\t5\t6\t7\n1\t2\t3\t4\t5\t6\n",
+      "params": {}
+    },
+    {
+      "operator": "number_lines",
+      "data": "fruit\tcolor\tweight\tprice\napple\tred\t1.4\t0.4\norange\torange\t1.1\t0.2\nbanana\tyellow\t0.9\t0.35\n",
+      "expected": "     1\tfruit\tcolor\tweight\tprice\n     2\tapple\tred\t1.4\t0.4\n     3\torange\torange\t1.1\t0.2\n     4\tbanana\tyellow\t0.9\t0.35\n",
+      "params": {}
+    },
+    {
+      "operator": "number_lines",
+      "data": "fruit\tcolor\tweight\tprice\napple\tred\t1.4\t0.4\norange\torange\t1.1\t0.2\nbanana\tyellow\t0.9\t0.35\n",
+      "expected": "    10\tfruit\tcolor\tweight\tprice\n    12\tapple\tred\t1.4\t0.4\n    14\torange\torange\t1.1\t0.2\n    16\tbanana\tyellow\t0.9\t0.35\n",
+      "params": {
+        "start": 10,
+        "increment": 2
+      }
+    },
+    {
+      "operator": "number_lines",
+      "data": "fruit\tcolor\tweight\tprice\napple\tred\t1.4\t0.4\norange\torange\t1.1\t0.2\nbanana\tyellow\t0.9\t0.35\n",
+      "expected": "1\tfruit\tcolor\tweight\tprice\n2\tapple\tred\t1.4\t0.4\n3\torange\torange\t1.1\t0.2\n4\tbanana\tyellow\t0.9\t0.35\n",
+      "params": {
+        "style": "ln",
+        "width": 1
+      }
+    },
+    {
+      "operator": "reverse_lines",
+      "data": "chr1\t147962192\t147962580\tCCDS989.1_cds_0_0_chr1_147962193_r\t0\t-\nchr1\t147984545\t147984630\tCCDS990.1_cds_0_0_chr1_147984546_f\t0\t+\nchr1\t148078400\t148078582\tCCDS993.1_cds_0_0_chr1_148078401_r\t0\t-\nchr1\t148185136\t148185276\tCCDS996.1_cds_0_0_chr1_148185137_f\t0\t+\nchr10\t55251623\t55253124\tCCDS7248.1_cds_0_0_chr10_55251624_r\t0\t-\nchr11\t116124407\t116124501\tCCDS8374.1_cds_0_0_chr11_116124408_r\t0\t-\nchr11\t116206508\t116206563\tCCDS8377.1_cds_0_0_chr11_116206509_f\t0\t+\nchr11\t116211733\t116212337\tCCDS8378.1_cds_0_0_chr11_116211734_r\t0\t-\nchr11\t1812377\t1812407\tCCDS7726.1_cds_0_0_chr11_1812378_f\t0\t+\nchr12\t38440094\t38440321\tCCDS8736.1_cds_0_0_chr12_38440095_r\t0\t-\nchr13\t112381694\t112381953\tCCDS9526.1_cds_0_0_chr13_112381695_f\t0\t+\nchr14\t98710240\t98712285\tCCDS9949.1_cds_0_0_chr14_98710241_r\t0\t-\nchr15\t41486872\t41487060\tCCDS10096.1_cds_0_0_chr15_41486873_r\t0\t-\nchr15\t41673708\t41673857\tCCDS10097.1_cds_0_0_chr15_41673709_f\t0\t+\nchr15\t41679161\t41679250\tCCDS10098.1_cds_0_0_chr15_41679162_r\t0\t-\nchr15\t41826029\t41826196\tCCDS10101.1_cds_0_0_chr15_41826030_f\t0\t+\nchr16\t142908\t143003\tCCDS10397.1_cds_0_0_chr16_142909_f\t0\t+\nchr16\t179963\t180135\tCCDS10401.1_cds_0_0_chr16_179964_r\t0\t-\nchr16\t244413\t244681\tCCDS10402.1_cds_0_0_chr16_244414_f\t0\t+\nchr16\t259268\t259383\tCCDS10403.1_cds_0_0_chr16_259269_r\t0\t-\nchr18\t23786114\t23786321\tCCDS11891.1_cds_0_0_chr18_23786115_r\t0\t-\nchr18\t59406881\t59407046\tCCDS11985.1_cds_0_0_chr18_59406882_f\t0\t+\nchr18\t59455932\t59456337\tCCDS11986.1_cds_0_0_chr18_59455933_r\t0\t-\nchr18\t59600586\t59600754\tCCDS11988.1_cds_0_0_chr18_59600587_f\t0\t+\nchr19\t59068595\t59069564\tCCDS12866.1_cds_0_0_chr19_59068596_f\t0\t+\nchr19\t59236026\t59236146\tCCDS12872.1_cds_0_0_chr19_59236027_r\t0\t-\nchr19\t59297998\t59298008\tCCDS12877.1_cds_0_0_chr19_59297999_f\t0\t+\nchr19\t59302168\t59302288\tCCDS12878.1_cds_0_0_chr19_59302169_r\t0\t-\nchr2\t118288583\t118288668\tCCDS2120.1_cds_0_0_chr2_118288584_f\t0\t+\nchr2\t118394148\t118394202\tCCDS2121.1_cds_0_0_chr2_118394149_r\t0\t-\nchr2\t220190202\t220190242\tCCDS2441.1_cds_0_0_chr2_220190203_f\t0\t+\nchr2\t220229609\t220230869\tCCDS2443.1_cds_0_0_chr2_220229610_r\t0\t-\nchr20\t33330413\t33330423\tCCDS13249.1_cds_0_0_chr20_33330414_r\t0\t-\nchr20\t33513606\t33513792\tCCDS13255.1_cds_0_0_chr20_33513607_f\t0\t+\nchr20\t33579500\t33579527\tCCDS13256.1_cds_0_0_chr20_33579501_r\t0\t-\nchr20\t33593260\t33593348\tCCDS13257.1_cds_0_0_chr20_33593261_f\t0\t+\nchr21\t32707032\t32707192\tCCDS13614.1_cds_0_0_chr21_32707033_f\t0\t+\nchr21\t32869641\t32870022\tCCDS13615.1_cds_0_0_chr21_32869642_r\t0\t-\nchr21\t33321040\t33322012\tCCDS13620.1_cds_0_0_chr21_33321041_f\t0\t+\nchr21\t33744994\t33745040\tCCDS13625.1_cds_0_0_chr21_33744995_r\t0\t-\nchr22\t30120223\t30120265\tCCDS13897.1_cds_0_0_chr22_30120224_f\t0\t+\nchr22\t30160419\t30160661\tCCDS13898.1_cds_0_0_chr22_30160420_r\t0\t-\nchr22\t30665273\t30665360\tCCDS13901.1_cds_0_0_chr22_30665274_f\t0\t+\nchr22\t30939054\t30939266\tCCDS13903.1_cds_0_0_chr22_30939055_r\t0\t-\nchr5\t131424298\t131424460\tCCDS4149.1_cds_0_0_chr5_131424299_f\t0\t+\nchr5\t131556601\t131556672\tCCDS4151.1_cds_0_0_chr5_131556602_r\t0\t-\nchr5\t131621326\t131621419\tCCDS4152.1_cds_0_0_chr5_131621327_f\t0\t+\nchr5\t131847541\t131847666\tCCDS4155.1_cds_0_0_chr5_131847542_r\t0\t-\nchr6\t108299600\t108299744\tCCDS5061.1_cds_0_0_chr6_108299601_r\t0\t-\nchr6\t108594662\t108594687\tCCDS5063.1_cds_0_0_chr6_108594663_f\t0\t+\nchr6\t108640045\t108640151\tCCDS5064.1_cds_0_0_chr6_108640046_r\t0\t-\nchr6\t108722976\t108723115\tCCDS5067.1_cds_0_0_chr6_108722977_f\t0\t+\nchr7\t113660517\t113660685\tCCDS5760.1_cds_0_0_chr7_113660518_f\t0\t+\nchr7\t116512159\t116512389\tCCDS5771.1_cds_0_0_chr7_116512160_r\t0\t-\nchr7\t116714099\t116714152\tCCDS5773.1_cds_0_0_chr7_116714100_f\t0\t+\nchr7\t116945541\t116945787\tCCDS5774.1_cds_0_0_chr7_116945542_r\t0\t-\nchr8\t118881131\t118881317\tCCDS6324.1_cds_0_0_chr8_118881132_r\t0\t-\nchr9\t128764156\t128764189\tCCDS6914.1_cds_0_0_chr9_128764157_f\t0\t+\nchr9\t128787519\t128789136\tCCDS6915.1_cds_0_0_chr9_128787520_r\t0\t-\nchr9\t128882427\t128882523\tCCDS6917.1_cds_0_0_chr9_128882428_f\t0\t+\nchr9\t128937229\t128937445\tCCDS6919.1_cds_0_0_chr9_128937230_r\t0\t-\nchrX\t122745047\t122745924\tCCDS14606.1_cds_0_0_chrX_122745048_f\t0\t+\nchrX\t152648964\t152649196\tCCDS14733.1_cds_0_0_chrX_152648965_r\t0\t-\nchrX\t152691446\t152691471\tCCDS14735.1_cds_0_0_chrX_152691447_f\t0\t+\nchrX\t152694029\t152694263\tCCDS14736.1_cds_0_0_chrX_152694030_r\t0\t-\n",
+      "expected": "chrX\t152694029\t152694263\tCCDS14736.1_cds_0_0_chrX_152694030_r\t0\t-\nchrX\t152691446\t152691471\tCCDS14735.1_cds_0_0_chrX_152691447_f\t0\t+\nchrX\t152648964\t152649196\tCCDS14733.1_cds_0_0_chrX_152648965_r\t0\t-\nchrX\t122745047\t122745924\tCCDS14606.1_cds_0_0_chrX_122745048_f\t0\t+\nchr9\t128937229\t128937445\tCCDS6919.1_cds_0_0_chr9_128937230_r\t0\t-\nchr9\t128882427\t128882523\tCCDS6917.1_cds_0_0_chr9_128882428_f\t0\t+\nchr9\t128787519\t128789136\tCCDS6915.1_cds_0_0_chr9_128787520_r\t0\t-\nchr9\t128764156\t128764189\tCCDS6914.1_cds_0_0_chr9_128764157_f\t0\t+\nchr8\t118881131\t118881317\tCCDS6324.1_cds_0_0_chr8_118881132_r\t0\t-\nchr7\t116945541\t116945787\tCCDS5774.1_cds_0_0_chr7_116945542_r\t0\t-\nchr7\t116714099\t116714152\tCCDS5773.1_cds_0_0_chr7_116714100_f\t0\t+\nchr7\t116512159\t116512389\tCCDS5771.1_cds_0_0_chr7_116512160_r\t0\t-\nchr7\t113660517\t113660685\tCCDS5760.1_cds_0_0_chr7_113660518_f\t0\t+\nchr6\t108722976\t108723115\tCCDS5067.1_cds_0_0_chr6_108722977_f\t0\t+\nchr6\t108640045\t108640151\tCCDS5064.1_cds_0_0_chr6_108640046_r\t0\t-\nchr6\t108594662\t108594687\tCCDS5063.1_cds_0_0_chr6_108594663_f\t0\t+\nchr6\t108299600\t108299744\tCCDS5061.1_cds_0_0_chr6_108299601_r\t0\t-\nchr5\t131847541\t131847666\tCCDS4155.1_cds_0_0_chr5_131847542_r\t0\t-\nchr5\t131621326\t131621419\tCCDS4152.1_cds_0_0_chr5_131621327_f\t0\t+\nchr5\t131556601\t131556672\tCCDS4151.1_cds_0_0_chr5_131556602_r\t0\t-\nchr5\t131424298\t131424460\tCCDS4149.1_cds_0_0_chr5_131424299_f\t0\t+\nchr22\t30939054\t30939266\tCCDS13903.1_cds_0_0_chr22_30939055_r\t0\t-\nchr22\t30665273\t30665360\tCCDS13901.1_cds_0_0_chr22_30665274_f\t0\t+\nchr22\t30160419\t30160661\tCCDS13898.1_cds_0_0_chr22_30160420_r\t0\t-\nchr22\t30120223\t30120265\tCCDS13897.1_cds_0_0_chr22_30120224_f\t0\t+\nchr21\t33744994\t33745040\tCCDS13625.1_cds_0_0_chr21_33744995_r\t0\t-\nchr21\t33321040\t33322012\tCCDS13620.1_cds_0_0_chr21_33321041_f\t0\t+\nchr21\t32869641\t32870022\tCCDS13615.1_cds_0_0_chr21_32869642_r\t0\t-\nchr21\t32707032\t32707192\tCCDS13614.1_cds_0_0_chr21_32707033_f\t0\t+\nchr20\t33593260\t33593348\tCCDS13257.1_cds_0_0_chr20_33593261_f\t0\t+\nchr20\t33579500\t33579527\tCCDS13256.1_cds_0_0_chr20_33579501_r\t0\t-\nchr20\t33513606\t33513792\tCCDS13255.1_cds_0_0_chr20_33513607_f\t0\t+\nchr20\t33330413\t33330423\tCCDS13249.1_cds_0_0_chr20_33330414_r\t0\t-\nchr2\t220229609\t220230869\tCCDS2443.1_cds_0_0_chr2_220229610_r\t0\t-\nchr2\t220190202\t220190242\tCCDS2441.1_cds_0_0_chr2_220190203_f\t0\t+\nchr2\t118394148\t118394202\tCCDS2121.1_cds_0_0_chr2_118394149_r\t0\t-\nchr2\t118288583\t118288668\tCCDS2120.1_cds_0_0_chr2_118288584_f\t0\t+\nchr19\t59302168\t59302288\tCCDS12878.1_cds_0_0_chr19_59302169_r\t0\t-\nchr19\t59297998\t59298008\tCCDS12877.1_cds_0_0_chr19_59297999_f\t0\t+\nchr19\t59236026\t59236146\tCCDS12872.1_cds_0_0_chr19_59236027_r\t0\t-\nchr19\t59068595\t59069564\tCCDS12866.1_cds_0_0_chr19_59068596_f\t0\t+\nchr18\t59600586\t59600754\tCCDS11988.1_cds_0_0_chr18_59600587_f\t0\t+\nchr18\t59455932\t59456337\tCCDS11986.1_cds_0_0_chr18_59455933_r\t0\t-\nchr18\t59406881\t59407046\tCCDS11985.1_cds_0_0_chr18_59406882_f\t0\t+\nchr18\t23786114\t23786321\tCCDS11891.1_cds_0_0_chr18_23786115_r\t0\t-\nchr16\t259268\t259383\tCCDS10403.1_cds_0_0_chr16_259269_r\t0\t-\nchr16\t244413\t244681\tCCDS10402.1_cds_0_0_chr16_244414_f\t0\t+\nchr16\t179963\t180135\tCCDS10401.1_cds_0_0_chr16_179964_r\t0\t-\nchr16\t142908\t143003\tCCDS10397.1_cds_0_0_chr16_142909_f\t0\t+\nchr15\t41826029\t41826196\tCCDS10101.1_cds_0_0_chr15_41826030_f\t0\t+\nchr15\t41679161\t41679250\tCCDS10098.1_cds_0_0_chr15_41679162_r\t0\t-\nchr15\t41673708\t41673857\tCCDS10097.1_cds_0_0_chr15_41673709_f\t0\t+\nchr15\t41486872\t41487060\tCCDS10096.1_cds_0_0_chr15_41486873_r\t0\t-\nchr14\t98710240\t98712285\tCCDS9949.1_cds_0_0_chr14_98710241_r\t0\t-\nchr13\t112381694\t112381953\tCCDS9526.1_cds_0_0_chr13_112381695_f\t0\t+\nchr12\t38440094\t38440321\tCCDS8736.1_cds_0_0_chr12_38440095_r\t0\t-\nchr11\t1812377\t1812407\tCCDS7726.1_cds_0_0_chr11_1812378_f\t0\t+\nchr11\t116211733\t116212337\tCCDS8378.1_cds_0_0_chr11_116211734_r\t0\t-\nchr11\t116206508\t116206563\tCCDS8377.1_cds_0_0_chr11_116206509_f\t0\t+\nchr11\t116124407\t116124501\tCCDS8374.1_cds_0_0_chr11_116124408_r\t0\t-\nchr10\t55251623\t55253124\tCCDS7248.1_cds_0_0_chr10_55251624_r\t0\t-\nchr1\t148185136\t148185276\tCCDS996.1_cds_0_0_chr1_148185137_f\t0\t+\nchr1\t148078400\t148078582\tCCDS993.1_cds_0_0_chr1_148078401_r\t0\t-\nchr1\t147984545\t147984630\tCCDS990.1_cds_0_0_chr1_147984546_f\t0\t+\nchr1\t147962192\t147962580\tCCDS989.1_cds_0_0_chr1_147962193_r\t0\t-\n",
+      "params": {}
+    },
+    {
+      "operator": "arrange_columns",
+      "data": "name\tfname\tage\tnationality\nWoryt\tHeiko\t22\tgerman\nHumte\tAlfons\t49\taustrian\nWitz\tGerald\t12\tfrench\nKoulibaly\tAnsgard\t33\tnigerian\n",
+      "expected": "fname\tage\tname\tnationality\nHeiko\t22\tWoryt\tgerman\nAlfons\t49\tHumte\taustrian\nGerald\t12\tWitz\tfrench\nAnsgard\t33\tKoulibaly\tnigerian\n",
+      "params": {
+        "names": [
+          "fname",
+          "age"
+        ]
+      }
+    },
+    {
+      "operator": "arrange_columns",
+      "data": "second name\tage\tnationality\tfirst name\nWoryt\t22\tgerman\tHeiko\nHumte\t49\taustrian\tAlfons\nWitz\t12\tfrench\tGerald\nKoulibaly\t33\tnigerian\tAnsgard\n",
+      "expected": "first name\tnationality\tsecond name\tage\nHeiko\tgerman\tWoryt\t22\nAlfons\taustrian\tHumte\t49\nGerald\tfrench\tWitz\t12\nAnsgard\tnigerian\tKoulibaly\t33\n",
+      "params": {
+        "names": [
+          "first name",
+          "nationality"
+        ]
+      }
+    },
+    {
+      "operator": "colorspace_to_fasta",
+      "data": ">2_14_26_F3\nT011213122200221123032111221021210131332222101\n>2_14_192_F3\nT110021221100310030120022032222111321022112223\n>2_14_233_F3\nT011001332311121212312022310203312201132111223\n>2_14_294_F3\nT213012132300000021323212232103300033102330332\n>2_14_463_F3\nT132032030200202202003211302222202230022110222\n>2_14_578_F3\nT131013032310120222321211010130110221312110222\n>2_14_956_F3\nT210213030022120032001012021321220011232201231\n>2_14_988_F3\nT221202031310031102033002302330301301010023133\n>2_14_1028_F3\nT112230301101101120201331111302110031102111321\n>2_14_1035_F3\nT003033103303232110201102100032203301023110332\n>2_14_1157_F3\nT330302102023212332202300023010210001331011220",
+      "expected": ">2_14_26_F3\nTGTCATGAGAAAGACAGCCGACACTCAAGTCAACGTATCTCTGGT\n>2_14_192_F3\nGTTTCAGACAAATGGGCCAGGGAGGCTCTCACATCAAGACAGAGC\n>2_14_233_F3\nTGTTTGCGATGTGACTGATGAAGATGGAATACTCCACGACACTCG\n>2_14_294_F3\nCATTGACGATTTTTTTCATCGACTCGACCGCCCCGCAAGCGGCGA\n>2_14_463_F3\nGCTTAGGCCTTTCCTCCTTTAGTGCCTCTCTTCTAAAGACAAGAG\n>2_14_578_F3\nGCAACGGCTACCAGGAGATCAGTGGTTGCCACCTCATGACAAGAG\n>2_14_956_F3\nCAAGTAATTTCTGAAATCCCAACTTCATCAGAAACAGCTCCAGCA\n>2_14_988_F3\nCTGAAGGCATGGGCACCTTATTTCGGATAATTGCCAACCCTACGC\n>2_14_1028_F3\nGTCTAATTGTTGTTGTCCTTGCGTGTGCCTGTTTACAAGTGTAGT\n>2_14_1035_F3\nTTAATACCGCCGATCACCTTGTTCAAAATCTTATTGGATGTTATC\n>2_14_1157_F3\nATTAAGTTCCTAGTCGCTCCTAAAAGCCAAGTTTTGCGTTGTCTT\n",
+      "params": {
+        "keep_prefix": false
+      }
+    },
+    {
+      "operator": "divide_pg_snp",
+      "data": "chr1\t256\t257\tA/C\t2\t4,5\t0,0\nchr1\t56100\t56101\tA\t1\t8\t0\nchr1\t77052\t77053\tA/G\t2\t3,5\t0,0\nchr1\t110904\t110905\tA\t1\t5\t0\nchr1\t160592\t160593\tG\t1\t3\t0\nchr1\t640353\t640354\tG\t1\t1\t0\nchr1\t695314\t695315\tA\t1\t7\t0\nchr1\t713681\t713682\tA\t1\t8\t0\nchr1\t713965\t713966\tA/G\t2\t3,2\t0,0\nchr1\t714056\t714057\tA/G\t2\t1,5\t0,0\n",
+      "expected": "chr1\t256\t257\tA\t4\t0\tC\t5\t0\nchr1\t56100\t56101\tA\t8\t0\tN\t0\t0\nchr1\t77052\t77053\tA\t3\t0\tG\t5\t0\nchr1\t110904\t110905\tA\t5\t0\tN\t0\t0\nchr1\t160592\t160593\tG\t3\t0\tN\t0\t0\nchr1\t640353\t640354\tG\t1\t0\tN\t0\t0\nchr1\t695314\t695315\tA\t7\t0\tN\t0\t0\nchr1\t713681\t713682\tA\t8\t0\tN\t0\t0\nchr1\t713965\t713966\tA\t3\t0\tG\t2\t0\nchr1\t714056\t714057\tA\t1\t0\tG\t5\t0\n",
+      "params": {}
+    },
+    {
+      "operator": "vcf_to_pgsnp",
+      "data": "##fileformat=VCFv4.1\n##INFO=<ID=LDAF,Number=1,Type=Float,Description=\"MLE Allele Frequency Accounting for LD\">\n##INFO=<ID=AVGPOST,Number=1,Type=Float,Description=\"Average posterior probability from MaCH/Thunder\">\n##INFO=<ID=RSQ,Number=1,Type=Float,Description=\"Genotype imputation quality from MaCH/Thunder\">\n##INFO=<ID=ERATE,Number=1,Type=Float,Description=\"Per-marker Mutation rate from MaCH/Thunder\">\n##INFO=<ID=THETA,Number=1,Type=Float,Description=\"Per-marker Transition rate from MaCH/Thunder\">\n##INFO=<ID=CIEND,Number=2,Type=Integer,Description=\"Confidence interval around END for imprecise variants\">\n##INFO=<ID=CIPOS,Number=2,Type=Integer,Description=\"Confidence interval around POS for imprecise variants\">\n##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of the variant described in this record\">\n##INFO=<ID=HOMLEN,Number=.,Type=Integer,Description=\"Length of base pair identical micro-homology at event breakpoints\">\n##INFO=<ID=HOMSEQ,Number=.,Type=String,Description=\"Sequence of base pair identical micro-homology at event breakpoints\">\n##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Difference in length between REF and ALT alleles\">\n##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of structural variant\">\n##INFO=<ID=AC,Number=.,Type=Integer,Description=\"Alternate Allele Count\">\n##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Total Allele Count\">\n##ALT=<ID=DEL,Description=\"Deletion\">\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n##FORMAT=<ID=DS,Number=1,Type=Float,Description=\"Genotype dosage from MaCH/Thunder\">\n##FORMAT=<ID=GL,Number=.,Type=Float,Description=\"Genotype Likelihoods\">\n##INFO=<ID=AA,Number=1,Type=String,Description=\"Ancestral Allele, ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/pilot_data/technical/reference/ancestral_alignments/README\">\n##INFO=<ID=AF,Number=1,Type=Float,Description=\"Global Allele Frequency based on AC/AN\">\n##INFO=<ID=AMR_AF,Number=1,Type=Float,Description=\"Allele Frequency for samples from AMR based on AC/AN\">\n##INFO=<ID=ASN_AF,Number=1,Type=Float,Description=\"Allele Frequency for samples from ASN based on AC/AN\">\n##INFO=<ID=AFR_AF,Number=1,Type=Float,Description=\"Allele Frequency for samples from AFR based on AC/AN\">\n##INFO=<ID=EUR_AF,Number=1,Type=Float,Description=\"Allele Frequency for samples from EUR based on AC/AN\">\n##INFO=<ID=VT,Number=1,Type=String,Description=\"indicates what type of variant the line represents\">\n##INFO=<ID=SNPSOURCE,Number=.,Type=String,Description=\"indicates if a snp was called when analysing the low coverage or exome alignment data\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tHG00096\tHG00097\tHG00099\tHG00100\n1\t10523\t.\tTCCG\tT\t152\tPASS\tVT=INDEL;RSQ=0.5246;ERATE=0.0023;AN=2184;AA=.;THETA=0.0172;AC=5;AVGPOST=0.9954;LDAF=0.0045;AF=0.00;AMR_AF=0.00;AFR_AF=0.01\tGT:DS:GL\t0|0:0.000:0.00,-1.50,-34.60\t0|0:0.000:0.00,-0.90,-20.70\t0|0:0.000:0.00,-1.50,-34.50\t0|0:0.000:0.00,-0.30,-6.90\n1\t10583\trs58108140\tG\tA\t100\tPASS\tVT=SNP;SNPSOURCE=LOWCOV;AN=2184;AC=327;LDAF=0.2363;AVGPOST=0.7630;ERATE=0.0098;AA=.;RSQ=0.4161;THETA=0.0197;SNPSOURCE=LOWCOV;AF=0.15;ASN_AF=0.15;AMR_AF=0.18;AFR_AF=0.04;EUR_AF=0.21\tGT:DS:GL\t0|0:0.250:-0.18,-0.47,-2.42\t0|0:0.200:-0.24,-0.44,-1.16\t0|0:0.250:-0.15,-0.54,-3.12\t0|1:0.750:-0.48,-0.48,-0.48\n1\t10611\trs189107123\tC\tG\t100\tPASS\tVT=SNP;SNPSOURCE=LOWCOV;THETA=0.0048;RSQ=0.3814;AN=2184;AVGPOST=0.9427;ERATE=0.0024;LDAF=0.0420;AA=.;SNPSOURCE=LOWCOV;AC=39;AF=0.02;ASN_AF=0.02;AMR_AF=0.02;AFR_AF=0.01;EUR_AF=0.02\tGT:DS:GL\t0|0:0.050:-0.48,-0.48,-0.48\t0|0:0.350:-0.24,-0.44,-1.16\t0|0:0.100:-0.22,-0.42,-1.80\t0|0:0.100:-0.48,-0.48,-0.48\n1\t10616\t.\tCCGCCGTTGCAAAGGCGCGCCG\tC\t2781\tPASS\tVT=INDEL;RSQ=0.1048;AN=2184;LDAF=0.7052;AVGPOST=0.5674;ERATE=0.0146;AA=.;THETA=0.0195;AC=1972;AF=0.90;ASN_AF=0.88;AMR_AF=0.92;AFR_AF=0.89;EUR_AF=0.92\tGT:DS:GL\t1|1:1.450:0,0,0\t1|1:1.750:0,0,0\t1|1:1.200:0,0,0\t0|1:1.150:0,0,0\n1\t11540\t.\tT\tTA\t263\tPASS\tVT=INDEL;AVGPOST=0.5915;LDAF=0.2676;AN=2184;RSQ=0.0831;AC=93;THETA=0.0011;AA=.;ERATE=0.0222;AF=0.04;ASN_AF=0.05;AMR_AF=0.04;AFR_AF=0.05;EUR_AF=0.04\tGT:DS:GL\t0|0:0.700:0,0,0\t0|1:0.800:0,0,0\t0|0:0.300:0,0,0\t0|0:0.450:0,0,0\n1\t13302\trs180734498\tC\tT\t100\tPASS\tVT=SNP;SNPSOURCE=LOWCOV;THETA=0.0159;LDAF=0.1562;AN=2184;AC=250;AA=.;RSQ=0.6272;ERATE=0.0116;SNPSOURCE=LOWCOV;AVGPOST=0.8877;AF=0.11;ASN_AF=0.02;AMR_AF=0.09;AFR_AF=0.21;EUR_AF=0.13\tGT:DS:GL\t0|0:0.250:-0.13,-0.58,-3.62\t0|1:0.950:-2.45,-0.00,-5.00\t0|0:0.450:-0.29,-0.32,-5.00\t0|0:0.300:-0.48,-0.48,-0.48\n1\t13327\trs144762171\tG\tC\t100\tPASS\tVT=SNP;SNPSOURCE=LOWCOV;RSQ=0.6776;THETA=0.0189;AN=2184;AC=57;AA=.;LDAF=0.0342;AVGPOST=0.9733;SNPSOURCE=LOWCOV;ERATE=0.0007;AF=0.03;ASN_AF=0.01;AMR_AF=0.03;AFR_AF=0.02;EUR_AF=0.04\tGT:DS:GL\t0|0:0.000:-0.03,-1.11,-5.00\t0|1:1.000:-1.97,-0.01,-2.51\t0|0:0.050:-0.01,-1.69,-5.00\t0|0:0.100:-0.48,-0.48,-0.48\n1\t13417\t.\tC\tCGAGA\t2788\tPASS\tVT=INDEL;AVGPOST=0.7560;THETA=0.0061;AC=52;AN=2184;AA=.;RSQ=0.1970;LDAF=0.1542;ERATE=0.0127;AF=0.02;ASN_AF=0.02;AMR_AF=0.04;AFR_AF=0.01;EUR_AF=0.03\tGT:DS:GL\t0|0:0.050:0.00,-0.30,-5.60\t0|0:0.250:0,0,0\t0|0:0.400:0,0,0\t0|0:0.350:0.00,-0.30,-5.60\n1\t13957\t.\tTC\tT\t226\tPASS\tVT=INDEL;RSQ=0.2600;AN=2184;AA=.;LDAF=0.0542;THETA=0.0144;AVGPOST=0.9144;ERATE=0.0029;AC=27;AF=0.01;ASN_AF=0.01;AMR_AF=0.01;AFR_AF=0.01;EUR_AF=0.01\tGT:DS:GL\t0|0:0.150:0,0,0\t0|0:0.050:0,0,0\t0|0:0.100:0,0,0\t0|0:0.100:0,0,0\n1\t13980\trs151276478\tT\tC\t100\tPASS\tVT=SNP;SNPSOURCE=LOWCOV;ERATE=0.0021;THETA=0.0096;RSQ=0.3995;AN=2184;AC=55;LDAF=0.0628;AVGPOST=0.9128;AA=.;SNPSOURCE=LOWCOV;AF=0.03;ASN_AF=0.02;AMR_AF=0.03;AFR_AF=0.01;EUR_AF=0.03\tGT:DS:GL\t0|0:0.100:-0.48,-0.48,-0.48\t0|1:0.950:-0.48,-0.48,-0.48\t0|0:0.050:-0.48,-0.48,-0.48\t0|0:0.050:-0.48,-0.48,-0.48\n1\t16226\t.\tAG\tA\t104\tPASS\tVT=INDEL;THETA=0.0211;AN=2184;RSQ=0.6096;LDAF=0.0034;AVGPOST=0.9971;AA=A;ERATE=0.0008;AC=4;AF=0.00;AMR_AF=0.00;EUR_AF=0.00\tGT:DS:GL\t0|0:0.000:0.00,-1.50,-24.00\t0|0:0.050:0,0,0\t0|0:0.000:0.00,-0.30,-4.80\t0|0:0.000:0.00,-0.90,-14.40\n1\t17496\t.\tAC\tA\t209\tPASS\tVT=INDEL;AC=7;AN=2184;ERATE=0.0009;AA=A;RSQ=0.7057;THETA=0.0221;AVGPOST=0.9968;LDAF=0.0045;AF=0.00;AFR_AF=0.01\tGT:DS:GL\t0|0:0.000:0.00,-3.30,-42.90\t0|0:0.000:0,0,0\t0|0:0.000:0,0,0\t0|0:0.000:0,0,0\n1\t18869\t.\tACC\tA\t126\tPASS\tVT=INDEL;LDAF=0.2562;AC=52;AN=2184;ERATE=0.0162;AVGPOST=0.5962;AA=A;RSQ=0.0889;THETA=0.0107;AF=0.02;ASN_AF=0.04;AMR_AF=0.02;AFR_AF=0.02;EUR_AF=0.01\tGT:DS:GL\t0|0:0.400:0,0,0\t0|0:0.350:0,0,0\t0|0:0.250:0.00,-0.30,-2.90\t0|0:0.550:0,0,0\n1\t19083\t.\tG\tGCA\t139\tPASS\tVT=INDEL;AVGPOST=0.7121;AN=2184;AC=13;AA=G;THETA=0.0077;ERATE=0.0123;RSQ=0.0826;LDAF=0.1645;AF=0.01;ASN_AF=0.01;AMR_AF=0.01;AFR_AF=0.01;EUR_AF=0.00\tGT:DS:GL\t0|0:0.200:0,0,0\t0|0:0.400:0,0,0\t0|0:0.250:0,0,0\t0|0:0.350:0,0,0\n1\t19190\t.\tGC\tG\t815\tPASS\tVT=INDEL;AC=131;LDAF=0.2531;AN=2184;AA=G;THETA=0.0161;AVGPOST=0.6408;RSQ=0.1696;ERATE=0.0188;AF=0.06;ASN_AF=0.05;AMR_AF=0.10;AFR_AF=0.07;EUR_AF=0.04\tGT:DS:GL\t0|0:0.650:0,0,0\t0|0:0.200:0,0,0\t0|0:0.650:0,0,0\t0|0:0.500:0,0,0\n1\t20862\t.\tA\tAG\t78\tPASS\tVT=INDEL;ERATE=0.0067;AVGPOST=0.8007;RSQ=0.0827;LDAF=0.8907;AN=2184;THETA=0.0095;AA=A;AC=2178;AF=1.00;ASN_AF=1.00;AMR_AF=1.00;AFR_AF=0.99;EUR_AF=1.00\tGT:DS:GL\t1|1:1.750:0,0,0\t1|1:1.800:0,0,0\t1|1:1.850:0,0,0\t1|1:1.750:0,0,0\n1\t30923\trs140337953\tG\tT\t100\tPASS\tVT=SNP;SNPSOURCE=LOWCOV;RSQ=0.5363;LDAF=0.6540;THETA=0.0078;AN=2184;AA=T;ERATE=0.0127;AC=1581;SNPSOURCE=LOWCOV;AVGPOST=0.7309;AF=0.72;ASN_AF=0.88;AMR_AF=0.81;AFR_AF=0.48;EUR_AF=0.72\tGT:DS:GL\t1|1:1.950:-5.00,-0.61,-0.12\t0|0:0.450:-0.10,-0.69,-2.81\t0|0:0.450:-0.11,-0.64,-3.49\t1|1:1.500:-0.48,-0.48,-0.48\n1\t46402\t.\tC\tCTGT\t104\tPASS\tVT=INDEL;RSQ=0.0943;AA=C;AN=2184;AVGPOST=0.8697;THETA=0.0108;AC=5;LDAF=0.0697;ERATE=0.0056;AF=0.00;ASN_AF=0.00;AMR_AF=0.00;AFR_AF=0.01\tGT:DS:GL\t0|0:0.050:0,0,0\t0|0:0.100:0,0,0\t0|0:0.050:0,0,0\t0|0:0.050:0,0,0\n1\t47190\t.\tG\tGA\t868\tPASS\tVT=INDEL;LDAF=0.2298;AN=2184;AC=45;AA=G;RSQ=0.1035;AVGPOST=0.6322;THETA=0.0141;ERATE=0.0127;AF=0.02;ASN_AF=0.00;AMR_AF=0.03;AFR_AF=0.05;EUR_AF=0.01\tGT:DS:GL\t0|0:0.350:0,0,0\t0|0:0.500:0,0,0\t0|0:0.550:0,0,0\t0|0:0.400:0,0,0\n1\t49514\t.\tAG\tA\t449\tPASS\tVT=INDEL;THETA=0.0164;AC=52;AN=2184;RSQ=0.4892;AA=A;LDAF=0.0469;AVGPOST=0.9448;ERATE=0.0053;AF=0.02;ASN_AF=0.02;AMR_AF=0.02;AFR_AF=0.01;EUR_AF=0.03\tGT:DS:GL\t0|0:0.000:0.00,-0.90,-12.40\t0|1:0.800:0,0,0\t0|0:0.150:-0.10,0.00,0.00\t0|0:0.000:0.00,-0.30,-4.20\n1\t49515\t.\tG\tGA\t44\tPASS\tVT=INDEL;THETA=0.0214;AN=2184;AC=13;AA=A;ERATE=0.0008;AVGPOST=0.9879;LDAF=0.0111;RSQ=0.5361;AF=0.01;ASN_AF=0.02;EUR_AF=0.01\tGT:DS:GL\t0|0:0.050:0.00,-0.90,-9.70\t0|0:0.050:0,0,0\t0|0:0.000:0,0,0\t0|0:0.000:0.00,-0.30,-3.20\n1\t50481\t.\tGGT\tG\t2370\tPASS\tVT=INDEL;RSQ=0.3702;THETA=0.0038;AN=2184;AA=G;ERATE=0.0177;AVGPOST=0.7981;AC=142;LDAF=0.1660;AF=0.07;ASN_AF=0.05;AMR_AF=0.13;AFR_AF=0.07;EUR_AF=0.04\tGT:DS:GL\t0|0:0.250:0,0,0\t0|0:0.350:0,0,0\t1|0:1.150:-3.00,-0.30,0.00\t0|0:0.250:0,0,0\n",
+      "expected": "chr1\t10582\t10583\tG/A\t2\t7,1\t0,0\nchr1\t10610\t10611\tC\t1\t8\t0\nchr1\t13301\t13302\tC/T\t2\t7,1\t0,0\nchr1\t13326\t13327\tG/C\t2\t7,1\t0,0\nchr1\t13979\t13980\tT/C\t2\t7,1\t0,0\nchr1\t30922\t30923\tG/T\t2\t4,4\t0,0\n",
+      "params": {}
+    },
+    {
+      "operator": "unfold_column",
+      "data": "a\tx;y",
+      "expected": "a\tx\na\ty\n",
+      "params": {
+        "column": 2
+      }
+    },
+    {
+      "operator": "unique_consecutive",
+      "data": "a\na\nb\na\n",
+      "expected": "2\ta\n",
+      "params": {
+        "mode": "repeated",
+        "count": true
+      }
+    },
+    {
+      "operator": "unique_consecutive",
+      "data": "a\na\nb\na\n",
+      "expected": "b\na\n",
+      "params": {
+        "mode": "single"
+      }
+    },
+    {
+      "operator": "sort_lines",
+      "data": "a\t2\nb\t2\nc\t1\n",
+      "expected": "c\t1\na\t2\nb\t2\n",
+      "params": {
+        "column": 2,
+        "numeric": true
+      }
+    },
+    {
+      "operator": "sort_lines",
+      "data": "a\t2\nb\t2\nc\t1\n",
+      "expected": "a\t2\nb\t2\nc\t1\n",
+      "params": {
+        "column": 2,
+        "numeric": true,
+        "reverse": true
+      }
+    },
+    {
+      "operator": "unique_lines",
+      "data": "b\t2\na\t1\nc\t2\n",
+      "expected": "a\t1\nb\t2\n",
+      "params": {
+        "column": 2,
+        "numeric": true
+      }
+    },
+    {
+      "operator": "replace_text_in_line",
+      "data": "Cat cat\ncatcat",
+      "expected": "\u72d7 cat\n\u72d7cat\n",
+      "params": {
+        "find": "cat",
+        "replacement": "\u72d7",
+        "ignore_case": true,
+        "first_only": true
+      }
+    },
+    {
+      "operator": "fixed_width_to_tabular",
+      "data": "a",
+      "expected": "a\t\n",
+      "params": {
+        "widths": [
+          2,
+          2
+        ],
+        "pad_short": true
+      }
+    },
+    {
+      "operator": "split_paired_reads",
+      "data": "@id title\nACGT\n+id title\n!I5?\n",
+      "expected": "@id title/1\nAC\n+id title/1\n!I\n",
+      "params": {}
+    },
+    {
+      "operator": "pileup_interval",
+      "data": "c\t1\tA\t2\nc\t2\tC\t2\n\nc\t4\tG\t2\nx\t1\tT\t2\n",
+      "expected": "c\t0\t2\tAC\nc\t3\t4\tG\nx\t0\t1\tT\n",
+      "params": {}
+    },
+    {
+      "operator": "vcf_to_pgsnp",
+      "data": "1\t1\t.\tA\tG,T\t.\tPASS\t.\tDP:GT\t9:2|0\t4:1\t.\n",
+      "expected": "chr1\t0\t1\tA/G/T\t3\t1,1,1\t0,0,0\n",
+      "params": {}
+    },
+    {
+      "operator": "reverse_complement",
+      "data": ">rna\nAaCGUN\n",
+      "expected": ">rna\nNACGuU\n",
+      "params": {
+        "alphabet": "rna"
+      }
+    },
+    {
+      "operator": "translate",
+      "data": ">g\nATGTAAATG\n",
+      "expected": ">g\nM\n",
+      "params": {
+        "to_stop": true
+      }
+    },
+    {
+      "operator": "translate",
+      "data": ">g\nATGNNNTAG\n",
+      "expected": ">g\nMX\n",
+      "params": {
+        "cds": true
+      }
+    },
+    {
+      "operator": "find_subsequences",
+      "data": ">g\nAAAA\n",
+      "expected": "g\t0\t2\tg\t\t+\ng\t1\t3\tg\t\t+\ng\t2\t4\tg\t\t+\n",
+      "params": {
+        "pattern": "AA",
+        "strand": "forward"
+      }
+    },
+    {
+      "operator": "motif_flank_counts",
+      "data": "AC\tTT\tindel\tAC\tGT\n",
+      "expected": "m\t1\t1\n",
+      "params": {
+        "motifs": [
+          "m=AC"
+        ],
+        "windows": 2
+      }
+    }
+  ],
+  "negative": [
+    {
+      "operator": "split_paired_reads",
+      "data": "@a\nABC\n+\nIII",
+      "params": {}
+    },
+    {
+      "operator": "split_paired_reads",
+      "data": "@a\nAC\n+other\nII",
+      "params": {}
+    },
+    {
+      "operator": "vcf_to_pgsnp",
+      "data": "1\t1\t.\tA\tG\t.\tPASS\t.\tGT\t3/0",
+      "params": {}
+    },
+    {
+      "operator": "divide_pg_snp",
+      "data": "c\t0\t1\tA/G\t2\t1\t0,0",
+      "params": {}
+    },
+    {
+      "operator": "translate",
+      "data": ">g\nAT",
+      "params": {}
+    },
+    {
+      "operator": "translate",
+      "data": ">g\nATGTAAATG",
+      "params": {
+        "cds": true
+      }
+    },
+    {
+      "operator": "reverse_complement",
+      "data": ">g\nAU",
+      "params": {}
+    },
+    {
+      "operator": "colorspace_to_fasta",
+      "data": ">g\nA04",
+      "params": {}
+    },
+    {
+      "operator": "arrange_columns",
+      "data": "A\tA\n1\t2",
+      "params": {
+        "names": [
+          "A"
+        ]
+      }
+    },
+    {
+      "operator": "fixed_width_to_tabular",
+      "data": "ABC",
+      "params": {
+        "widths": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "operator": "unfold_column",
+      "data": "a",
+      "params": {
+        "separator": ""
+      }
+    },
+    {
+      "operator": "motif_flank_counts",
+      "data": "AC\tTT\n",
+      "params": {}
+    },
+    {
+      "operator": "find_subsequences",
+      "data": ">g\nACTG",
+      "params": {
+        "pattern": "(a+)+"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+name: Find IUPAC nucleotide motifs in FASTA and emit zero-based half-open BED6 locations.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/find_subsequences.txt
+    view: bytes
+- id: process
+  operator: galaxy_find_subsequences@1.0
+  inputs:
+    source: read
+  params:
+    pattern: AC
+    strand: both
+outputs:
+  result: process

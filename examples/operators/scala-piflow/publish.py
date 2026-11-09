@@ -16,7 +16,7 @@ def package(name):
     files = {'pom.xml': HERE / 'pom.xml'}
     for filename in ('Support.scala', source):
         files['src/' + filename] = HERE / 'src/main/scala/xstream/examples/piflow' / filename
-    for filename in ('README.md', 'README_zh.md', 'LICENSE', 'NOTICE'):
+    for filename in ('README.md', 'README_zh.md', 'LICENSE', 'NOTICE', 'usage.json'):
         files[filename] = HERE / filename
     data = io.BytesIO()
     with zipfile.ZipFile(data, 'w', zipfile.ZIP_DEFLATED) as z:
@@ -57,7 +57,7 @@ def main():
         api('/v1/blobs/sha256/' + digest, 'PUT', raw=data)
         manifest = dict(api_version=2, name='piflow_' + name, version='2.0',
             description=spec['description'], icon=spec['icon'], inputs=spec['inputs'], parameters=spec['parameters'],
-            execution=dict(executor='jvm', entrypoint='xstream.examples.piflow.' + cls, config={}),
+            documentation=json.loads((HERE/'usage.json').read_text())[name], execution=dict(executor='jvm', entrypoint='xstream.examples.piflow.' + cls, config={}),
             runtime=runtime_ref, dependencies={'provider':'jvm'}, build={'language':'scala'}, source_public=True,
             provenance={'source_archive':{'sha256':digest,'size':len(data),'filename':name + '-sources.zip'}, 'license':'Apache-2.0'})
         result, _ = api('/v1/submissions', 'POST', manifest); sid = result['submission_id']

@@ -1,0 +1,21 @@
+name: Collapse consecutive pileup positions meeting a minimum depth into BED-like
+  sequence intervals.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/pileup_interval.txt
+    view: bytes
+- id: process
+  operator: galaxy_pileup_interval@1.0
+  inputs:
+    source: read
+  params:
+    min_coverage: 3
+    sequence_column: 1
+    position_column: 2
+    base_column: 3
+    coverage_column: 4
+outputs:
+  result: process

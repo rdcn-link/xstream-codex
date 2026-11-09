@@ -61,9 +61,10 @@ def submit(definition, source, origin, token):
         return values
     UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, mapping)
     n = yaml.load(definition.read_text(), Loader=UniqueLoader)
-    allowed = {'name', 'version', 'description', 'icon', 'inputs', 'parameters', 'language', 'entrypoint', 'runtime', 'source_public', 'provenance', 'dependencies', 'submission', 'binary', 'execution_config'}
+    allowed = {'name', 'version', 'description', 'icon', 'inputs', 'parameters', 'language', 'entrypoint', 'runtime', 'source_public', 'provenance', 'dependencies', 'submission', 'binary', 'execution_config', 'documentation'}
     if not isinstance(n, dict) or not set(n).issubset(allowed):
         raise ValueError('unsupported definition fields; do not provide artifacts or classifications')
+    require_documentation(n)
     if not isinstance(n.get('source_public'), bool):
         raise ValueError('source_public must explicitly be true or false')
     languages = {r['language']: r['executor'] for r in request('GET', '/v1/build-languages')}
@@ -104,7 +105,7 @@ def submit(definition, source, origin, token):
     manifest = {key: n[key] for key in ('name', 'version', 'description', 'icon', 'inputs', 'parameters', 'source_public')}
     manifest.update(api_version=2, execution={'executor': languages[language], 'entrypoint': n['entrypoint'], 'config': n.get('execution_config', {})},
                     runtime={'image': runtime['image'], 'archive': runtime['archive']}, build={'language': language}, provenance=provenance)
-    for key in ('dependencies', 'submission'):
+    for key in ('dependencies', 'submission', 'documentation'):
         if key in n:
             manifest[key] = n[key]
     if binary is not None:
@@ -146,6 +147,32 @@ def package_directory(directory, destination):
     return destination
 
 
+def require_documentation(n):
+    d = n.get('documentation')
+    if not isinstance(d, dict) or not {'inputs', 'outputs', 'parameters', 'example_job'} <= d.keys():
+        raise ValueError('documentation requires inputs, outputs, parameters and example_job')
+    for key in ('inputs', 'outputs', 'parameters'):
+        if not isinstance(d[key], dict):
+            raise ValueError('documentation.' + key + ' must be a mapping')
+    if set(d['inputs']) != set(n.get('inputs', {})) or not d['outputs']:
+        raise ValueError('describe every input and at least one output')
+    if any(not isinstance(v, str) or not v.strip() for key in ('inputs', 'outputs') for v in d[key].values()):
+        raise ValueError('port descriptions must be nonempty text')
+    properties = n.get('parameters', {}).get('properties', {})
+    if set(d['parameters']) != set(properties):
+        raise ValueError('document every parameter')
+    for key, value in d['parameters'].items():
+        if not isinstance(value, dict) or 'example' not in value or not value.get('help') or not value.get('description', properties[key].get('description')):
+            raise ValueError('each parameter needs a description, help and example')
+    if not isinstance(d['example_job'], str):
+        raise ValueError('example_job must be YAML text')
+    job = yaml.safe_load(d['example_job'])
+    if not isinstance(job, dict) or not isinstance(job.get('steps'), list) or not job.get('outputs'):
+        raise ValueError('example_job must contain steps and outputs')
+    if not any(isinstance(step, dict) and step.get('operator') == n['name']+'@'+n['version'] for step in job['steps']):
+        raise ValueError('example_job must use this exact operator version')
+
+
 def check_directory(directory):
     directory = directory.resolve()
     n = yaml.safe_load((directory / 'operator.yaml').read_text())
@@ -153,6 +180,7 @@ def check_directory(directory):
         raise ValueError('operator requires a supported language and entrypoint')
     if not isinstance(n.get('source_public'), bool):
         raise ValueError('source_public must be explicit')
+    require_documentation(n)
     deps = n.get('dependencies')
     if deps:
         if not isinstance(deps, dict) or not isinstance(deps.get('provider'), str) or not re.fullmatch(r'[a-z][a-z0-9_-]*', deps['provider']):
@@ -186,6 +214,7 @@ def create_template(directory, language):
              parameters={'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False},
              language='python' if python else 'java', entrypoint='main' if python else 'Identity',
              runtime='python-arrow@1.0' if python else 'jvm-arrow@1.0', source_public=True,
+             documentation={'inputs': {'source': 'Input byte stream.'}, 'outputs': {'result': 'Processed byte stream.'}, 'parameters': {}, 'example_job': 'name: Example\nsteps:\n  - id: read\n    operator: read_item@1.0\n    inputs: {}\n    params:\n      uri: context:/example/input.bin\n      view: bytes\n  - id: process\n    operator: '+name+'@1.0.0\n    inputs: {source: read}\n    params: {}\noutputs: {result: process}\n'},
              dependencies={'provider': 'python' if python else 'jvm'})
     if python:
         (directory / 'pyproject.toml').write_text('[project]\nname = "'+name+'"\nversion = "1.0.0"\nrequires-python = ">=3.11,<3.14"\ndependencies = []\n')

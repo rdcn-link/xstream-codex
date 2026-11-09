@@ -1,0 +1,23 @@
+name: Select VCF variants by reference, inclusive region, quality, INFO tags and PASS
+  status while preserving headers.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/variants.vcf
+    view: bytes
+- id: process
+  operator: galaxy_vcf_extract@1.0
+  inputs:
+    source: read
+  params:
+    reference_sequence: ''
+    region: 20:80000..100000
+    quality: 90
+    quality_operator: ge
+    keep_info: ''
+    discard_info: ''
+    pass_only: true
+outputs:
+  result: process

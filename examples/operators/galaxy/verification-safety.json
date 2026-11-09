@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "commands": [
+    "sbt 'Test/runMain xstream.galaxy.SafetyCheck' 'Test/runMain xstream.galaxy.GenomicSafetyCheck' 'Test/runMain xstream.galaxy.FastqSafetyCheck' 'Test/runMain xstream.galaxy.ExtendedSafetyCheck'"
+  ],
+  "extended_checks": 249,
+  "upstream_files_sha256_verified": 354,
+  "checks": [
+    "fixture output",
+    "unknown parameters",
+    "cancellation",
+    "input/output failure propagation",
+    "malformed UTF-8",
+    "line budgets",
+    "upstream golden fixtures",
+    "biological input validation",
+    "output expansion budgets",
+    "coordinate boundaries"
+  ]
+}

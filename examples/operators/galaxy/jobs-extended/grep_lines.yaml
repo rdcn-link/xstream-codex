@@ -1,0 +1,19 @@
+name: Select lines containing a literal search string, with optional inversion and
+  case folding.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/grep_lines.txt
+    view: bytes
+- id: process
+  operator: galaxy_grep_lines@1.0
+  inputs:
+    source: read
+  params:
+    pattern: cat
+    invert: false
+    ignore_case: true
+outputs:
+  result: process

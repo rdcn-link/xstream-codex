@@ -10,6 +10,12 @@ curl http://localhost:8820/v1/operators
 
 This endpoint and the repository homepage show the versions actually published. `read_item@1.0` is a built-in XStream data-reading step and requires no repository publication. Java, Python, script, native-command, common-operator collections and other PiFlow adaptations in the source tree are buildable examples, not necessarily published operators.
 
+## Galaxy streaming tools
+
+The example repository also publishes fifty Scala text, table and biological tools. The original twenty use version `1.0` (`galaxy_tabular_to_fasta`: `1.0.1`): `galaxy_change_case`, `galaxy_condense_characters`, `galaxy_convert_delimiters`, `galaxy_cut_columns`, `galaxy_merge_columns`, `galaxy_add_column`, `galaxy_fasta_length`, `galaxy_fasta_filter_length`, `galaxy_fasta_to_tabular`, `galaxy_remove_beginning`, `galaxy_head`, `galaxy_tail`, `galaxy_tabular_to_fasta`, `galaxy_sam_filter_flags`, `galaxy_sam_to_interval`, `galaxy_trim`, `galaxy_make_windows`, `galaxy_vcf_extract`, `galaxy_fastq_to_fasta` and `galaxy_fastq_to_qual`. Each accepts and emits a bounded UTF-8 bytes stream through the Arrow operator protocol, and provides inference and output samples. Use the bytes view when reading an Item. See the [Galaxy examples](../examples/operators/galaxy/README.md) for the parameter table, complete Job, upstream attribution, behavior differences and reproducible tests. They use `jvm-arrow@2.1` without extra dependencies; publication uses source submission and administrator review.
+
+The [Galaxy extension reference](galaxy-operators.md) lists the additional thirty adapters, covering sorting, deduplication, column rearrangement, literal search/replacement, color-space decoding, paired reads, pileup, pgSnp, reverse complement, translation, codon/base counts, motif matching and FASTA statistics. Each has a complete runnable Job and documented supported scope. Public manifests, source archives and artifact checksums are audited in [the catalog report](../examples/operators/galaxy/verification-public-catalog.json).
+
 ## Ports, parameters and execution
 
 All operators below use the output port `result`. Output descriptions come from `inferOutputs(inputs, params)`; manifests declare inputs only. Job execution does not call inference automatically.
@@ -115,3 +121,5 @@ Browsing and downloads are public; publication requires a token. Build, test and
 ## Script operators
 
 The example repository also provides `script_text_replace@1.0`, `script_line_number@1.0`, `script_jsonl_project@1.0` and `script_records_to_jsonl@1.0`. They use `python-arrow@2.0` and the same locked dependency environment, with no bundled SDK or external commands. See [script examples](../examples/operators/scripts/README.md) for parameters, ports, limits and a complete Job.
+
+Galaxy FASTQ operators: `galaxy_fastq_to_fasta@1.0` and `galaxy_fastq_to_qual@1.0`, with explicit Solexa64, Sanger33 and integer quality encodings. Inputs and outputs are bytes streams.

@@ -92,3 +92,7 @@ Set `count_file_records_on_startup: true` to count mixed file mappings and initi
 
 `plugin_directory` optionally selects a directory containing plugin and dependency JARs. It is loaded before registry initialization and requires a restart after changes. Reader-specific parameters go under `options`; handlers validate them. See [plugins](plugins.md) for the standalone API and structured-file contracts.
 
+
+## Geospatial and HDF5 extensions
+
+Optional plugins: [GDAL raster and vector formats](gdal-formats.md) and [HDF5 hierarchies and arrays](hdf5-formats.md). Both use the same format extension contracts and document installation, configuration, capability limits and native contract tests. Native dependencies belong to plugins rather than core.

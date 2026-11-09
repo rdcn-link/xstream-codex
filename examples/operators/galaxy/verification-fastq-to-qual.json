@@ -1,0 +1,13 @@
+{
+  "artifact_sha256": "2e77c95752382e1f09bebaa23c0c0163abbbdc351f95f4a23f2405f03343d80b",
+  "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+  "upstream_golden_cases": 2,
+  "corrected_upstream_interval_cases": 0,
+  "preserved_header_vcf_fixture_cases": 0,
+  "execution_cases": 8,
+  "inference_preview_cases": 1,
+  "invalid_parameter_cases": 1,
+  "resource_encoding_cases": 0,
+  "pipeline": "not requested",
+  "status": "passed"
+}

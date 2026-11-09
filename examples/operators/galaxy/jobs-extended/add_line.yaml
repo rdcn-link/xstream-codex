@@ -1,0 +1,17 @@
+name: Add a literal header or footer line to a text stream.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/add_line.txt
+    view: bytes
+- id: process
+  operator: galaxy_add_line@1.0
+  inputs:
+    source: read
+  params:
+    text: header
+    position: header
+outputs:
+  result: process

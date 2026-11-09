@@ -55,3 +55,7 @@ Complete Scala examples: [DataView and view streams](../docs/data-view-examples.
 ## Public dataset descriptions
 
 `DatasetInfo.description` and `DatasetDefinition.description` are JSON object strings requiring a nonempty string `title` and a string `description`; additional fields remain extensible. `DatasetInfo("weather")` generates `{"title":"weather","description":""}`. Static configuration uses the dataset name as title when the description is omitted. Explicit descriptions are not rewritten or reserialized; aggregating hosts should retain the original string when renaming datasets.
+
+## Geospatial and HDF5 extensions
+
+Optional plugins: [GDAL raster and vector formats](../docs/gdal-formats.md) and [HDF5 hierarchies and arrays](../docs/hdf5-formats.md). Both use the same format extension contracts and document installation, configuration, capability limits and native contract tests. Native dependencies belong to plugins rather than core.

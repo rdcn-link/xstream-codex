@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "published_artifacts": [
+    {
+      "operator": "galaxy_trim@1.0",
+      "artifact_sha256": "ce9807dc8d8b93c28256d3fdfccecb67e7bee84031b55ef466cbb5f0bcb049db",
+      "status": "published",
+      "tests": {
+        "artifact_sha256": "ce9807dc8d8b93c28256d3fdfccecb67e7bee84031b55ef466cbb5f0bcb049db",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 2,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 0,
+        "execution_cases": 6,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_make_windows@1.0",
+      "artifact_sha256": "da5ea075b7626658989bb3577a9fd2397ed8e7a131473cf8d83d3584d08f2d5a",
+      "status": "published",
+      "tests": {
+        "artifact_sha256": "da5ea075b7626658989bb3577a9fd2397ed8e7a131473cf8d83d3584d08f2d5a",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 1,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 0,
+        "execution_cases": 5,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_extract@1.0",
+      "artifact_sha256": "e10280b62182e4b14b8da69a2d08eeaf87e0e17e3b9bfec1352e48338753b201",
+      "status": "published",
+      "tests": {
+        "artifact_sha256": "e10280b62182e4b14b8da69a2d08eeaf87e0e17e3b9bfec1352e48338753b201",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "upstream_golden_cases": 5,
+        "corrected_upstream_interval_cases": 0,
+        "preserved_header_vcf_fixture_cases": 5,
+        "execution_cases": 8,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 1,
+        "resource_encoding_cases": 0,
+        "pipeline": "not requested",
+        "status": "passed"
+      }
+    }
+  ],
+  "runner_jobs": [
+    {
+      "job": "job-windows.yaml",
+      "status": "passed",
+      "output_sha256": "bc57b5aff9328f5a30da7ecee5e57e5df53180245836cb6564c785f4d9bc64c4"
+    },
+    {
+      "job": "job-vcf.yaml",
+      "status": "passed",
+      "output_sha256": "95812cc23d8fb8c24f672322cb4353e850a8dde6aef835417064b44ff5d631e1"
+    }
+  ],
+  "safety_checks": [
+    "GenomicSafetyCheck: passed",
+    "mid-expansion cancellation",
+    "bounded expansion",
+    "coordinate limits",
+    "parameter validation",
+    "UTF-8 and I/O errors"
+  ]
+}

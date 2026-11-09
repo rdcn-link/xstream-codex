@@ -1,0 +1,23 @@
+name: Properly paired mapped reads as genomic intervals
+steps:
+  - id: read
+    operator: read_item@1.0
+    inputs: {}
+    params:
+      uri: context:/galaxy/alignments.sam
+      view: bytes
+  - id: select
+    operator: galaxy_sam_filter_flags@1.0
+    inputs:
+      source: read
+    params:
+      require_flags: 2
+      exclude_flags: 4
+  - id: intervals
+    operator: galaxy_sam_to_interval@1.0
+    inputs:
+      source: select
+    params:
+      print_all: false
+outputs:
+  result: intervals

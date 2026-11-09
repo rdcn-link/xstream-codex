@@ -1,0 +1,20 @@
+name: Replace literal text within complete lines.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/find_and_replace.txt
+    view: bytes
+- id: process
+  operator: galaxy_find_and_replace@1.0
+  inputs:
+    source: read
+  params:
+    find: cat
+    replacement: dog
+    first_only: false
+    ignore_case: false
+    skip_header: false
+outputs:
+  result: process

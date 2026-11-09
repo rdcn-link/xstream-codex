@@ -113,3 +113,9 @@ flowchart LR
 ```
 
 For execution record configuration and storage interfaces, see the [execution history API](execution-history.md).
+
+## Read the execution output
+
+![Runner output showing execution progress and result information](images/runner-output.png)
+
+Use the Runner output to check whether the Job completed and inspect the reported result information. For graphical editing, the [Designer guide](designer-guide.md) includes an overview screenshot and a parameter-editor screenshot.

@@ -34,3 +34,5 @@ xstream-operator submit /path/to/submission.yaml \
 `--token-env` 从指定环境变量读取令牌。提交者 Token 由仓库管理员分配。工具查询注册语言和运行环境，上传源码材料并提交扫描、构建和审核。JSON 输出包含提交 ID 和待审状态；管理员批准后才公开。远程提交要求 HTTPS，仅 localhost／回环地址开发允许 HTTP。不提供管理员会话或自动批准功能。
 
 参见[源码提交与审核](../../docs/operator-submission_zh.md)和[本地算子](../../docs/local-operators_zh.md)。安装后可在任意目录执行，无需读取 XStream 源码目录中的文件。
+
+新提交必须包含 `documentation`：输入/输出端口说明，每个参数的描述、填写说明及符合 schema 的示例值，以及使用精确提交版本的完整 `example_job`。`xstream-operator init` 包含起始示例，`check` 和 `submit` 检查其完整性；仓库执行 schema 和安全 YAML 校验。参见[必填的使用说明](../../docs/operator-submission_zh.md#必填的使用说明)。

@@ -55,3 +55,7 @@ datasets:
 ## 数据集公开描述
 
 `DatasetInfo.description` 和 `DatasetDefinition.description` 为 JSON 对象字符串，必须包含非空字符串 `title` 和字符串 `description`，其他字段可自由扩展。`DatasetInfo("weather")` 自动生成 `{"title":"weather","description":""}`；静态配置省略时同样使用数据集名称作为标题。显式描述不会被重写或重新序列化；聚合宿主重命名数据集时应原样保留该字符串。
+
+## 地理空间与 HDF5 扩展
+
+可选插件：[GDAL 栅格与矢量格式](../docs/gdal-formats_zh.md)、[HDF5 层级与数组](../docs/hdf5-formats_zh.md)。两者通过相同的格式扩展契约注册，提供安装、配置、能力限制及原生契约测试说明。原生依赖仅属于插件，不进入核心。

@@ -42,7 +42,7 @@ The adapter supports zero or one bytes input and zero or one bytes output. Recor
 
 ## Publication and execution
 
-The operator repository accepts source-only submissions through `xstream-operator submit`, then builds and reviews them. Native programs require an administrator-provided build runtime; the published package and shared execution runtime are downloaded separately. See [submission and review](operator-submission.md). Local development can use the `command` builder in [local operator libraries](local-operators.md).
+The operator repository accepts source submissions and third-party binary submissions with wrapper source through `xstream-operator submit`, then builds and reviews them. Configuration-only binary submission is not provided by the generic command adapter. Native programs require an administrator-provided build runtime; the published package and shared execution runtime are downloaded separately. See [submission and review](operator-submission.md). Local development can use the `command` builder in [local operator libraries](local-operators.md).
 
 Jobs reference native operators with ordinary input bindings, without special step syntax. Run them using `xstream-runner engine.yaml job.yaml`.
 

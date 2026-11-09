@@ -1,0 +1,2342 @@
+{
+  "reverse_lines": {
+    "name": "galaxy_reverse_lines",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.ReverseLines",
+    "description": "Reverse the order of newline-separated text records.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {},
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/tac.xml"
+    },
+    "scope": "Newline records only; a bounded 8 MiB-character buffer is required. No custom separators.",
+    "fixture": {
+      "data": "one\ntwo\n",
+      "expected": "two\none\n",
+      "params": {}
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Newline records only; a bounded 8 MiB-character buffer is required. No custom separators."
+      },
+      "outputs": {
+        "result": "Reverse the order of newline-separated text records. Newline records only; a bounded 8 MiB-character buffer is required. No custom separators."
+      },
+      "parameters": {},
+      "example_job": "name: Reverse the order of newline-separated text records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_lines@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "number_lines": {
+    "name": "galaxy_number_lines",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.NumberLines",
+    "description": "Number nonempty text lines with configurable starting number, increment and alignment.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 1000000000,
+          "description": "First line number."
+        },
+        "increment": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 1000000,
+          "description": "Positive increment between numbered lines."
+        },
+        "width": {
+          "type": "integer",
+          "default": 6,
+          "minimum": 1,
+          "maximum": 64,
+          "description": "Minimum number-label width."
+        },
+        "style": {
+          "type": "string",
+          "default": "rn",
+          "maxLength": 4096,
+          "enum": [
+            "ln",
+            "rn",
+            "rz"
+          ],
+          "description": "Line-number alignment: ln left, rn right or rz zero-filled."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "start": 1,
+      "increment": 1,
+      "width": 3,
+      "style": "rz"
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/nl.xml"
+    },
+    "scope": "Empty lines are unnumbered. Logical-page escape sequences are treated as literal text.",
+    "fixture": {
+      "data": "a\n\nb\n",
+      "expected": "001\ta\n   \n002\tb\n",
+      "params": {
+        "start": 1,
+        "increment": 1,
+        "width": 3,
+        "style": "rz"
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Empty lines are unnumbered. Logical-page escape sequences are treated as literal text."
+      },
+      "outputs": {
+        "result": "Number nonempty text lines with configurable starting number, increment and alignment. Empty lines are unnumbered. Logical-page escape sequences are treated as literal text."
+      },
+      "parameters": {
+        "start": {
+          "description": "First line number.",
+          "help": "First line number. Empty lines are unnumbered. Logical-page escape sequences are treated as literal text.",
+          "example": 1
+        },
+        "increment": {
+          "description": "Positive increment between numbered lines.",
+          "help": "Positive increment between numbered lines. Empty lines are unnumbered. Logical-page escape sequences are treated as literal text.",
+          "example": 1
+        },
+        "width": {
+          "description": "Minimum number-label width.",
+          "help": "Minimum number-label width. Empty lines are unnumbered. Logical-page escape sequences are treated as literal text.",
+          "example": 3
+        },
+        "style": {
+          "description": "Line-number alignment: ln left, rn right or rz zero-filled.",
+          "help": "Line-number alignment: ln left, rn right or rz zero-filled. Empty lines are unnumbered. Logical-page escape sequences are treated as literal text.",
+          "example": "rz"
+        }
+      },
+      "example_job": "name: Number nonempty text lines with configurable starting number, increment and\n  alignment.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/number_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_number_lines@1.0\n  inputs:\n    source: read\n  params:\n    start: 1\n    increment: 1\n    width: 3\n    style: rz\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "sort_lines": {
+    "name": "galaxy_sort_lines",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.SortLines",
+    "description": "Stable sort of text rows using a selected tab-separated key.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based selected field, or zero for a whole-line key where allowed."
+        },
+        "numeric": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare keys as finite decimal/scientific numbers."
+        },
+        "reverse": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use descending key order."
+        },
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        },
+        "header": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Header line count, or new header label for label-column operators."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "column": 2,
+      "numeric": true,
+      "reverse": false,
+      "ignore_case": false,
+      "header": 1
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/sort.xml"
+    },
+    "scope": "One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+    "fixture": {
+      "data": "id\tvalue\nb\t10\na\t2\n",
+      "expected": "id\tvalue\na\t2\nb\t10\n",
+      "params": {
+        "column": 2,
+        "numeric": true,
+        "reverse": false,
+        "ignore_case": false,
+        "header": 1
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer."
+      },
+      "outputs": {
+        "result": "Stable sort of text rows using a selected tab-separated key. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer."
+      },
+      "parameters": {
+        "column": {
+          "description": "One-based selected field, or zero for a whole-line key where allowed.",
+          "help": "One-based selected field, or zero for a whole-line key where allowed. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+          "example": 2
+        },
+        "numeric": {
+          "description": "Compare keys as finite decimal/scientific numbers.",
+          "help": "Compare keys as finite decimal/scientific numbers. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+          "example": true
+        },
+        "reverse": {
+          "description": "Use descending key order.",
+          "help": "Use descending key order. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+          "example": false
+        },
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+          "example": false
+        },
+        "header": {
+          "description": "Header line count, or new header label for label-column operators.",
+          "help": "Header line count, or new header label for label-column operators. One full-field sort key; numeric mode requires finite decimal/scientific values. No locale, random or human-size sorting. Bounded 8 MiB-character row buffer.",
+          "example": 1
+        }
+      },
+      "example_job": "name: Stable sort of text rows using a selected tab-separated key.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_lines@1.0\n  inputs:\n    source: read\n  params:\n    column: 2\n    numeric: true\n    reverse: false\n    ignore_case: false\n    header: 1\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "sort_fields": {
+    "name": "galaxy_sort_fields",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.SortFields",
+    "description": "Sort the tab-separated fields within each row alphabetically.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {},
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/sort_rows.xml"
+    },
+    "scope": "As upstream, strips surrounding row whitespace before sorting fields.",
+    "fixture": {
+      "data": "c\ta\tb\n2\t1\n",
+      "expected": "a\tb\tc\n1\t2\n",
+      "params": {}
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. As upstream, strips surrounding row whitespace before sorting fields."
+      },
+      "outputs": {
+        "result": "Sort the tab-separated fields within each row alphabetically. As upstream, strips surrounding row whitespace before sorting fields."
+      },
+      "parameters": {},
+      "example_job": "name: Sort the tab-separated fields within each row alphabetically.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_fields.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_fields@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "unique_lines": {
+    "name": "galaxy_unique_lines",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.UniqueLines",
+    "description": "Sort text lines and retain one occurrence of each comparison key.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        },
+        "column": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 65536,
+          "description": "One-based selected field, or zero for a whole-line key where allowed."
+        },
+        "numeric": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare keys as finite decimal/scientific numbers."
+        },
+        "header": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Header line count, or new header label for label-column operators."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "ignore_case": false,
+      "column": 0,
+      "numeric": false,
+      "header": 0
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/unsorted_uniq.xml"
+    },
+    "scope": "Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged.",
+    "fixture": {
+      "data": "b\na\nb\n",
+      "expected": "a\nb\n",
+      "params": {
+        "ignore_case": false,
+        "column": 0,
+        "numeric": false,
+        "header": 0
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged."
+      },
+      "outputs": {
+        "result": "Sort text lines and retain one occurrence of each comparison key. Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged."
+      },
+      "parameters": {
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged.",
+          "example": false
+        },
+        "column": {
+          "description": "One-based selected field, or zero for a whole-line key where allowed.",
+          "help": "One-based selected field, or zero for a whole-line key where allowed. Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged.",
+          "example": 0
+        },
+        "numeric": {
+          "description": "Compare keys as finite decimal/scientific numbers.",
+          "help": "Compare keys as finite decimal/scientific numbers. Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged.",
+          "example": false
+        },
+        "header": {
+          "description": "Header line count, or new header label for label-column operators.",
+          "help": "Header line count, or new header label for label-column operators. Whole line or one selected field; stable representative, bounded 8 MiB-character buffer. Header lines pass unchanged.",
+          "example": 0
+        }
+      },
+      "example_job": "name: Sort text lines and retain one occurrence of each comparison key.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unique_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_unique_lines@1.0\n  inputs:\n    source: read\n  params:\n    ignore_case: false\n    column: 0\n    numeric: false\n    header: 0\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "unique_consecutive": {
+    "name": "galaxy_unique_consecutive",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.UniqueConsecutive",
+    "description": "Collapse adjacent equal text records, optionally counting or selecting duplicate groups.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        },
+        "count": {
+          "type": "boolean",
+          "default": false,
+          "description": "Prefix each emitted group by its occurrence count."
+        },
+        "mode": {
+          "type": "string",
+          "default": "all",
+          "maxLength": 4096,
+          "enum": [
+            "all",
+            "repeated",
+            "single"
+          ],
+          "description": "Emit every group, repeated groups, or singleton groups."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "ignore_case": false,
+      "count": true,
+      "mode": "all"
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/sorted_uniq.xml"
+    },
+    "scope": "Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping.",
+    "fixture": {
+      "data": "a\na\nb\n",
+      "expected": "2\ta\n1\tb\n",
+      "params": {
+        "ignore_case": false,
+        "count": true,
+        "mode": "all"
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping."
+      },
+      "outputs": {
+        "result": "Collapse adjacent equal text records, optionally counting or selecting duplicate groups. Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping."
+      },
+      "parameters": {
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping.",
+          "example": false
+        },
+        "count": {
+          "description": "Prefix each emitted group by its occurrence count.",
+          "help": "Prefix each emitted group by its occurrence count. Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping.",
+          "example": true
+        },
+        "mode": {
+          "description": "Emit every group, repeated groups, or singleton groups.",
+          "help": "Emit every group, repeated groups, or singleton groups. Only consecutive duplicates are grouped; no arbitrary field skipping or blank-delimited grouping.",
+          "example": "all"
+        }
+      },
+      "example_job": "name: Collapse adjacent equal text records, optionally counting or selecting duplicate\n  groups.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unique_consecutive.txt\n    view: bytes\n- id: process\n  operator: galaxy_unique_consecutive@1.0\n  inputs:\n    source: read\n  params:\n    ignore_case: false\n    count: true\n    mode: all\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "unfold_column": {
+    "name": "galaxy_unfold_column",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.UnfoldColumn",
+    "description": "Expand a delimited list in one tab-separated field into multiple rows.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based selected field, or zero for a whole-line key where allowed."
+        },
+        "separator": {
+          "type": "string",
+          "default": ";",
+          "maxLength": 128,
+          "description": "Literal separator between values in the selected field."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "column": 2,
+      "separator": ";"
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/unfold_column.py"
+    },
+    "scope": "Literal nonempty separator; at most 10000 output rows and 16 MiB estimated characters per input row. Fixes upstream last-column newline handling.",
+    "fixture": {
+      "data": "id\ta;b\tz\n",
+      "expected": "id\ta\tz\nid\tb\tz\n",
+      "params": {
+        "column": 2,
+        "separator": ";"
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Literal nonempty separator; at most 10000 output rows and 16 MiB estimated characters per input row. Fixes upstream last-column newline handling."
+      },
+      "outputs": {
+        "result": "Expand a delimited list in one tab-separated field into multiple rows. Literal nonempty separator; at most 10000 output rows and 16 MiB estimated characters per input row. Fixes upstream last-column newline handling."
+      },
+      "parameters": {
+        "column": {
+          "description": "One-based selected field, or zero for a whole-line key where allowed.",
+          "help": "One-based selected field, or zero for a whole-line key where allowed. Literal nonempty separator; at most 10000 output rows and 16 MiB estimated characters per input row. Fixes upstream last-column newline handling.",
+          "example": 2
+        },
+        "separator": {
+          "description": "Literal separator between values in the selected field.",
+          "help": "Literal separator between values in the selected field. Literal nonempty separator; at most 10000 output rows and 16 MiB estimated characters per input row. Fixes upstream last-column newline handling.",
+          "example": ";"
+        }
+      },
+      "example_job": "name: Expand a delimited list in one tab-separated field into multiple rows.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unfold_column.txt\n    view: bytes\n- id: process\n  operator: galaxy_unfold_column@1.0\n  inputs:\n    source: read\n  params:\n    column: 2\n    separator: ;\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "replace_text_in_column": {
+    "name": "galaxy_replace_text_in_column",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.ReplaceTextInColumn",
+    "description": "Replace literal text within one tab-separated field.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "find": {
+          "type": "string",
+          "default": "old",
+          "maxLength": 4096,
+          "description": "Nonempty literal search text."
+        },
+        "replacement": {
+          "type": "string",
+          "default": "new",
+          "maxLength": 4096,
+          "description": "Literal replacement text."
+        },
+        "first_only": {
+          "type": "boolean",
+          "default": false,
+          "description": "Replace only the first match per row or selected field."
+        },
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        },
+        "skip_header": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep the first input row unchanged."
+        },
+        "column": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based selected field, or zero for a whole-line key where allowed."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "find": "cat",
+      "replacement": "dog",
+      "first_only": false,
+      "ignore_case": false,
+      "skip_header": false,
+      "column": 1
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/replace_text_in_column.xml"
+    },
+    "scope": "Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+    "fixture": {
+      "data": "cat\tcat\n",
+      "expected": "dog\tcat\n",
+      "params": {
+        "find": "cat",
+        "replacement": "dog",
+        "first_only": false,
+        "ignore_case": false,
+        "skip_header": false,
+        "column": 1
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail."
+      },
+      "outputs": {
+        "result": "Replace literal text within one tab-separated field. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail."
+      },
+      "parameters": {
+        "find": {
+          "description": "Nonempty literal search text.",
+          "help": "Nonempty literal search text. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": "cat"
+        },
+        "replacement": {
+          "description": "Literal replacement text.",
+          "help": "Literal replacement text. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": "dog"
+        },
+        "first_only": {
+          "description": "Replace only the first match per row or selected field.",
+          "help": "Replace only the first match per row or selected field. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "skip_header": {
+          "description": "Keep the first input row unchanged.",
+          "help": "Keep the first input row unchanged. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "column": {
+          "description": "One-based selected field, or zero for a whole-line key where allowed.",
+          "help": "One-based selected field, or zero for a whole-line key where allowed. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": 1
+        }
+      },
+      "example_job": "name: Replace literal text within one tab-separated field.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/replace_text_in_column.txt\n    view: bytes\n- id: process\n  operator: galaxy_replace_text_in_column@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\n    column: 1\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "replace_text_in_line": {
+    "name": "galaxy_replace_text_in_line",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.ReplaceTextInLine",
+    "description": "Replace literal text within complete lines.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "find": {
+          "type": "string",
+          "default": "old",
+          "maxLength": 4096,
+          "description": "Nonempty literal search text."
+        },
+        "replacement": {
+          "type": "string",
+          "default": "new",
+          "maxLength": 4096,
+          "description": "Literal replacement text."
+        },
+        "first_only": {
+          "type": "boolean",
+          "default": false,
+          "description": "Replace only the first match per row or selected field."
+        },
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        },
+        "skip_header": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep the first input row unchanged."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "find": "cat",
+      "replacement": "dog",
+      "first_only": false,
+      "ignore_case": false,
+      "skip_header": false
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/replace_text_in_line.xml"
+    },
+    "scope": "Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+    "fixture": {
+      "data": "cat\tcat\n",
+      "expected": "dog\tdog\n",
+      "params": {
+        "find": "cat",
+        "replacement": "dog",
+        "first_only": false,
+        "ignore_case": false,
+        "skip_header": false
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail."
+      },
+      "outputs": {
+        "result": "Replace literal text within complete lines. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail."
+      },
+      "parameters": {
+        "find": {
+          "description": "Nonempty literal search text.",
+          "help": "Nonempty literal search text. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": "cat"
+        },
+        "replacement": {
+          "description": "Literal replacement text.",
+          "help": "Literal replacement text. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": "dog"
+        },
+        "first_only": {
+          "description": "Replace only the first match per row or selected field.",
+          "help": "Replace only the first match per row or selected field. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "skip_header": {
+          "description": "Keep the first input row unchanged.",
+          "help": "Keep the first input row unchanged. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        }
+      },
+      "example_job": "name: Replace literal text within complete lines.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/replace_text_in_line.txt\n    view: bytes\n- id: process\n  operator: galaxy_replace_text_in_line@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "find_and_replace": {
+    "name": "galaxy_find_and_replace",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.FindAndReplace",
+    "description": "Replace literal text within complete lines.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "find": {
+          "type": "string",
+          "default": "old",
+          "maxLength": 4096,
+          "description": "Nonempty literal search text."
+        },
+        "replacement": {
+          "type": "string",
+          "default": "new",
+          "maxLength": 4096,
+          "description": "Literal replacement text."
+        },
+        "first_only": {
+          "type": "boolean",
+          "default": false,
+          "description": "Replace only the first match per row or selected field."
+        },
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        },
+        "skip_header": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep the first input row unchanged."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "find": "cat",
+      "replacement": "dog",
+      "first_only": false,
+      "ignore_case": false,
+      "skip_header": false
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/find_and_replace"
+    },
+    "scope": "Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+    "fixture": {
+      "data": "cat\tcat\n",
+      "expected": "dog\tdog\n",
+      "params": {
+        "find": "cat",
+        "replacement": "dog",
+        "first_only": false,
+        "ignore_case": false,
+        "skip_header": false
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail."
+      },
+      "outputs": {
+        "result": "Replace literal text within complete lines. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail."
+      },
+      "parameters": {
+        "find": {
+          "description": "Nonempty literal search text.",
+          "help": "Nonempty literal search text. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": "cat"
+        },
+        "replacement": {
+          "description": "Literal replacement text.",
+          "help": "Literal replacement text. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": "dog"
+        },
+        "first_only": {
+          "description": "Replace only the first match per row or selected field.",
+          "help": "Replace only the first match per row or selected field. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        },
+        "skip_header": {
+          "description": "Keep the first input row unchanged.",
+          "help": "Keep the first input row unchanged. Literal matching only: no regular expressions, shell commands, sed programs or replacement backreferences. Case-insensitive matching is locale-independent. Missing selected columns fail.",
+          "example": false
+        }
+      },
+      "example_job": "name: Replace literal text within complete lines.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/find_and_replace.txt\n    view: bytes\n- id: process\n  operator: galaxy_find_and_replace@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "grep_lines": {
+    "name": "galaxy_grep_lines",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.GrepLines",
+    "description": "Select lines containing a literal search string, with optional inversion and case folding.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "default": "sample",
+          "maxLength": 4096,
+          "description": "Literal text or IUPAC DNA motif, as described by this operator."
+        },
+        "invert": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep lines that do not contain the pattern."
+        },
+        "ignore_case": {
+          "type": "boolean",
+          "default": false,
+          "description": "Compare without case differences."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "pattern": "cat",
+      "invert": false,
+      "ignore_case": true
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/grep.xml"
+    },
+    "scope": "Literal text search; no regex, context-line expansion or HTML output.",
+    "fixture": {
+      "data": "Cat\ndog\ncatfish\n",
+      "expected": "Cat\ncatfish\n",
+      "params": {
+        "pattern": "cat",
+        "invert": false,
+        "ignore_case": true
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Literal text search; no regex, context-line expansion or HTML output."
+      },
+      "outputs": {
+        "result": "Select lines containing a literal search string, with optional inversion and case folding. Literal text search; no regex, context-line expansion or HTML output."
+      },
+      "parameters": {
+        "pattern": {
+          "description": "Literal text or IUPAC DNA motif, as described by this operator.",
+          "help": "Literal text or IUPAC DNA motif, as described by this operator. Literal text search; no regex, context-line expansion or HTML output.",
+          "example": "cat"
+        },
+        "invert": {
+          "description": "Keep lines that do not contain the pattern.",
+          "help": "Keep lines that do not contain the pattern. Literal text search; no regex, context-line expansion or HTML output.",
+          "example": false
+        },
+        "ignore_case": {
+          "description": "Compare without case differences.",
+          "help": "Compare without case differences. Literal text search; no regex, context-line expansion or HTML output.",
+          "example": true
+        }
+      },
+      "example_job": "name: Select lines containing a literal search string, with optional inversion and\n  case folding.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/grep_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_grep_lines@1.0\n  inputs:\n    source: read\n  params:\n    pattern: cat\n    invert: false\n    ignore_case: true\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "arrange_columns": {
+    "name": "galaxy_arrange_columns",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.ArrangeColumns",
+    "description": "Reorder table columns by their header names, optionally discarding unselected columns.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "names": {
+          "type": "array",
+          "default": [
+            "id"
+          ],
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "default": "",
+            "maxLength": 4096
+          },
+          "description": "Unique header names to select, remove or reorder."
+        },
+        "discard": {
+          "type": "boolean",
+          "default": false,
+          "description": "Discard columns not explicitly selected."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "names": [
+        "C",
+        "A"
+      ],
+      "discard": false
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/column_arrange_by_header/column_arrange.py"
+    },
+    "scope": "Unique header names and requested names are required. Ragged rows and unknown headers fail.",
+    "fixture": {
+      "data": "A\tB\tC\n1\t2\t3\n",
+      "expected": "C\tA\tB\n3\t1\t2\n",
+      "params": {
+        "names": [
+          "C",
+          "A"
+        ],
+        "discard": false
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Unique header names and requested names are required. Ragged rows and unknown headers fail."
+      },
+      "outputs": {
+        "result": "Reorder table columns by their header names, optionally discarding unselected columns. Unique header names and requested names are required. Ragged rows and unknown headers fail."
+      },
+      "parameters": {
+        "names": {
+          "description": "Unique header names to select, remove or reorder.",
+          "help": "Unique header names to select, remove or reorder. Unique header names and requested names are required. Ragged rows and unknown headers fail.",
+          "example": [
+            "C",
+            "A"
+          ]
+        },
+        "discard": {
+          "description": "Discard columns not explicitly selected.",
+          "help": "Discard columns not explicitly selected. Unique header names and requested names are required. Ragged rows and unknown headers fail.",
+          "example": false
+        }
+      },
+      "example_job": "name: Reorder table columns by their header names, optionally discarding unselected\n  columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/arrange_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_arrange_columns@1.0\n  inputs:\n    source: read\n  params:\n    names:\n    - C\n    - A\n    discard: false\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "add_line": {
+    "name": "galaxy_add_line",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.AddLine",
+    "description": "Add a literal header or footer line to a text stream.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "default": "header",
+          "maxLength": 4096,
+          "description": "Literal line content."
+        },
+        "position": {
+          "type": "string",
+          "default": "header",
+          "maxLength": 4096,
+          "enum": [
+            "header",
+            "footer"
+          ],
+          "description": "Insert the line as a header or footer."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "text": "header",
+      "position": "header"
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/add_line_to_file/add_line_to_file.xml"
+    },
+    "scope": "Existing data lines are normalized to LF; this avoids concatenating a footer onto an unterminated final row.",
+    "fixture": {
+      "data": "a\nb\n",
+      "expected": "header\na\nb\n",
+      "params": {
+        "text": "header",
+        "position": "header"
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Existing data lines are normalized to LF; this avoids concatenating a footer onto an unterminated final row."
+      },
+      "outputs": {
+        "result": "Add a literal header or footer line to a text stream. Existing data lines are normalized to LF; this avoids concatenating a footer onto an unterminated final row."
+      },
+      "parameters": {
+        "text": {
+          "description": "Literal line content.",
+          "help": "Literal line content. Existing data lines are normalized to LF; this avoids concatenating a footer onto an unterminated final row.",
+          "example": "header"
+        },
+        "position": {
+          "description": "Insert the line as a header or footer.",
+          "help": "Insert the line as a header or footer. Existing data lines are normalized to LF; this avoids concatenating a footer onto an unterminated final row.",
+          "example": "header"
+        }
+      },
+      "example_job": "name: Add a literal header or footer line to a text stream.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/add_line.txt\n    view: bytes\n- id: process\n  operator: galaxy_add_line@1.0\n  inputs:\n    source: read\n  params:\n    text: header\n    position: header\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "recurring_lines": {
+    "name": "galaxy_recurring_lines",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.RecurringLines",
+    "description": "Generate a configured line repeatedly after draining the input stream.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "default": "sample",
+          "maxLength": 4096,
+          "description": "Literal line content."
+        },
+        "times": {
+          "type": "integer",
+          "default": 10,
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Number of generated repetitions."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "text": "abc",
+      "times": 3
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "text_processing/text_processing/recurring_lines.xml"
+    },
+    "scope": "One explicit repetition group, bounded 16 MiB output expansion; input is drained, not used to infer repetitions.",
+    "fixture": {
+      "data": "ignored\n",
+      "expected": "abc\nabc\nabc\n",
+      "params": {
+        "text": "abc",
+        "times": 3
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. One explicit repetition group, bounded 16 MiB output expansion; input is drained, not used to infer repetitions."
+      },
+      "outputs": {
+        "result": "Generate a configured line repeatedly after draining the input stream. One explicit repetition group, bounded 16 MiB output expansion; input is drained, not used to infer repetitions."
+      },
+      "parameters": {
+        "text": {
+          "description": "Literal line content.",
+          "help": "Literal line content. One explicit repetition group, bounded 16 MiB output expansion; input is drained, not used to infer repetitions.",
+          "example": "abc"
+        },
+        "times": {
+          "description": "Number of generated repetitions.",
+          "help": "Number of generated repetitions. One explicit repetition group, bounded 16 MiB output expansion; input is drained, not used to infer repetitions.",
+          "example": 3
+        }
+      },
+      "example_job": "name: Generate a configured line repeatedly after draining the input stream.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/recurring_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_recurring_lines@1.0\n  inputs:\n    source: read\n  params:\n    text: abc\n    times: 3\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "remove_columns_by_header": {
+    "name": "galaxy_remove_columns_by_header",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.RemoveColumnsByHeader",
+    "description": "Remove named table columns or keep only the named columns.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "names": {
+          "type": "array",
+          "default": [
+            "id"
+          ],
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "default": "",
+            "maxLength": 4096
+          },
+          "description": "Unique header names to select, remove or reorder."
+        },
+        "keep": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep only the named columns instead of removing them."
+        },
+        "strip_prefix": {
+          "type": "string",
+          "default": "",
+          "maxLength": 4096,
+          "description": "Characters stripped from the beginning of the first header name when matching."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "names": [
+        "B"
+      ],
+      "keep": false,
+      "strip_prefix": ""
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-iuc",
+      "path": "column_remove_by_header/column_remove_by_header.py"
+    },
+    "scope": "Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail.",
+    "fixture": {
+      "data": "A\tB\tC\n1\t2\t3\n",
+      "expected": "A\tC\n1\t3\n",
+      "params": {
+        "names": [
+          "B"
+        ],
+        "keep": false,
+        "strip_prefix": ""
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail."
+      },
+      "outputs": {
+        "result": "Remove named table columns or keep only the named columns. Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail."
+      },
+      "parameters": {
+        "names": {
+          "description": "Unique header names to select, remove or reorder.",
+          "help": "Unique header names to select, remove or reorder. Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail.",
+          "example": [
+            "B"
+          ]
+        },
+        "keep": {
+          "description": "Keep only the named columns instead of removing them.",
+          "help": "Keep only the named columns instead of removing them. Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail.",
+          "example": false
+        },
+        "strip_prefix": {
+          "description": "Characters stripped from the beginning of the first header name when matching.",
+          "help": "Characters stripped from the beginning of the first header name when matching. Tab-delimited UTF-8; optional leading-character stripping on first header field. Retains source column order. Unknown requested headers fail.",
+          "example": ""
+        }
+      },
+      "example_job": "name: Remove named table columns or keep only the named columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/remove_columns_by_header.txt\n    view: bytes\n- id: process\n  operator: galaxy_remove_columns_by_header@1.0\n  inputs:\n    source: read\n  params:\n    names:\n    - B\n    keep: false\n    strip_prefix: ''\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "sort_columns_by_header": {
+    "name": "galaxy_sort_columns_by_header",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.SortColumnsByHeader",
+    "description": "Alphabetically reorder table columns by header, optionally pinning one column first.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "key_column": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 65536,
+          "description": "One-based column to keep first, or zero to sort every header."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "key_column": 2
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-iuc",
+      "path": "column_order_header_sort/column_order_header_sort.py"
+    },
+    "scope": "Zero sorts every column; otherwise a one-based column stays first. Headers must be unique.",
+    "fixture": {
+      "data": "C\tB\tA\n3\t2\t1\n",
+      "expected": "B\tA\tC\n2\t1\t3\n",
+      "params": {
+        "key_column": 2
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Zero sorts every column; otherwise a one-based column stays first. Headers must be unique."
+      },
+      "outputs": {
+        "result": "Alphabetically reorder table columns by header, optionally pinning one column first. Zero sorts every column; otherwise a one-based column stays first. Headers must be unique."
+      },
+      "parameters": {
+        "key_column": {
+          "description": "One-based column to keep first, or zero to sort every header.",
+          "help": "One-based column to keep first, or zero to sort every header. Zero sorts every column; otherwise a one-based column stays first. Headers must be unique.",
+          "example": 2
+        }
+      },
+      "example_job": "name: Alphabetically reorder table columns by header, optionally pinning one column\n  first.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_columns_by_header.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_columns_by_header@1.0\n  inputs:\n    source: read\n  params:\n    key_column: 2\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "add_input_name": {
+    "name": "galaxy_add_input_name",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.AddInputName",
+    "description": "Add an input label as a new table column, with optional header and prepending.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "default": "sample",
+          "maxLength": 4096,
+          "description": "Explicit input name to append or prepend."
+        },
+        "header": {
+          "type": "string",
+          "default": "",
+          "maxLength": 4096,
+          "description": "Header line count, or new header label for label-column operators."
+        },
+        "prepend": {
+          "type": "boolean",
+          "default": false,
+          "description": "Place the added label column first."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "label": "run1",
+      "header": "sample",
+      "prepend": true
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-iuc",
+      "path": "add_input_name_as_column/add_input_name_as_column.py"
+    },
+    "scope": "The input label is explicit configuration; no local path or filename is required.",
+    "fixture": {
+      "data": "id\nA\n",
+      "expected": "sample\tid\nrun1\tA\n",
+      "params": {
+        "label": "run1",
+        "header": "sample",
+        "prepend": true
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. The input label is explicit configuration; no local path or filename is required."
+      },
+      "outputs": {
+        "result": "Add an input label as a new table column, with optional header and prepending. The input label is explicit configuration; no local path or filename is required."
+      },
+      "parameters": {
+        "label": {
+          "description": "Explicit input name to append or prepend.",
+          "help": "Explicit input name to append or prepend. The input label is explicit configuration; no local path or filename is required.",
+          "example": "run1"
+        },
+        "header": {
+          "description": "Header line count, or new header label for label-column operators.",
+          "help": "Header line count, or new header label for label-column operators. The input label is explicit configuration; no local path or filename is required.",
+          "example": "sample"
+        },
+        "prepend": {
+          "description": "Place the added label column first.",
+          "help": "Place the added label column first. The input label is explicit configuration; no local path or filename is required.",
+          "example": true
+        }
+      },
+      "example_job": "name: Add an input label as a new table column, with optional header and prepending.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/add_input_name.txt\n    view: bytes\n- id: process\n  operator: galaxy_add_input_name@1.0\n  inputs:\n    source: read\n  params:\n    label: run1\n    header: sample\n    prepend: true\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "fixed_width_to_tabular": {
+    "name": "galaxy_fixed_width_to_tabular",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.FixedWidthToTabular",
+    "description": "Convert explicitly configured fixed-width fields into trimmed tab-separated columns.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "widths": {
+          "type": "array",
+          "default": [
+            4,
+            3
+          ],
+          "maxItems": 128,
+          "items": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 65536
+          },
+          "description": "Positive fixed-width character counts for each field."
+        },
+        "pad_short": {
+          "type": "boolean",
+          "default": false,
+          "description": "Pad short fixed-width rows with spaces."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "widths": [
+        4,
+        3
+      ],
+      "pad_short": false
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-iuc",
+      "path": "fixed2tab/fixed2tab.xml"
+    },
+    "scope": "Explicit character widths only; no automatic boundary detection, FORTRAN descriptors, reports or encoding conversion. Long rows or unpadded short rows fail.",
+    "fixture": {
+      "data": "AB  123\nCD  456\n",
+      "expected": "AB\t123\nCD\t456\n",
+      "params": {
+        "widths": [
+          4,
+          3
+        ],
+        "pad_short": false
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Text processing",
+      "Tabular data"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Explicit character widths only; no automatic boundary detection, FORTRAN descriptors, reports or encoding conversion. Long rows or unpadded short rows fail."
+      },
+      "outputs": {
+        "result": "Convert explicitly configured fixed-width fields into trimmed tab-separated columns. Explicit character widths only; no automatic boundary detection, FORTRAN descriptors, reports or encoding conversion. Long rows or unpadded short rows fail."
+      },
+      "parameters": {
+        "widths": {
+          "description": "Positive fixed-width character counts for each field.",
+          "help": "Positive fixed-width character counts for each field. Explicit character widths only; no automatic boundary detection, FORTRAN descriptors, reports or encoding conversion. Long rows or unpadded short rows fail.",
+          "example": [
+            4,
+            3
+          ]
+        },
+        "pad_short": {
+          "description": "Pad short fixed-width rows with spaces.",
+          "help": "Pad short fixed-width rows with spaces. Explicit character widths only; no automatic boundary detection, FORTRAN descriptors, reports or encoding conversion. Long rows or unpadded short rows fail.",
+          "example": false
+        }
+      },
+      "example_job": "name: Convert explicitly configured fixed-width fields into trimmed tab-separated\n  columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fixed_width_to_tabular.txt\n    view: bytes\n- id: process\n  operator: galaxy_fixed_width_to_tabular@1.0\n  inputs:\n    source: read\n  params:\n    widths:\n    - 4\n    - 3\n    pad_short: false\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "colorspace_to_fasta": {
+    "name": "galaxy_colorspace_to_fasta",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.ColorspaceToFasta",
+    "description": "Convert FASTA-like SOLiD color-space sequences to nucleotide FASTA.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "keep_prefix": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include the SOLiD primer nucleotide in the output."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "keep_prefix": true
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-devteam",
+      "path": "convert_solid_color2nuc/convert_SOLiD_color2nuc.py"
+    },
+    "scope": "A/C/G/T primer followed only by 0..3; wrapped sequence lines accepted. Buffers at most one 8 MiB-character sequence.",
+    "fixture": {
+      "data": ">seq1\nA013\n",
+      "expected": ">seq1\nAACG\n",
+      "params": {
+        "keep_prefix": true
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. A/C/G/T primer followed only by 0..3; wrapped sequence lines accepted. Buffers at most one 8 MiB-character sequence."
+      },
+      "outputs": {
+        "result": "Convert FASTA-like SOLiD color-space sequences to nucleotide FASTA. A/C/G/T primer followed only by 0..3; wrapped sequence lines accepted. Buffers at most one 8 MiB-character sequence."
+      },
+      "parameters": {
+        "keep_prefix": {
+          "description": "Include the SOLiD primer nucleotide in the output.",
+          "help": "Include the SOLiD primer nucleotide in the output. A/C/G/T primer followed only by 0..3; wrapped sequence lines accepted. Buffers at most one 8 MiB-character sequence.",
+          "example": true
+        }
+      },
+      "example_job": "name: Convert FASTA-like SOLiD color-space sequences to nucleotide FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/colorspace_to_fasta.txt\n    view: bytes\n- id: process\n  operator: galaxy_colorspace_to_fasta@1.0\n  inputs:\n    source: read\n  params:\n    keep_prefix: true\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "split_paired_reads": {
+    "name": "galaxy_split_paired_reads",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.SplitPairedReads",
+    "description": "Extract one mate from concatenated equal-length paired FASTQ records.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "mate": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 2,
+          "description": "One-based mate number, 1 or 2."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "mate": 2
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-devteam",
+      "path": "split_paired_reads/split_paired_reads.py"
+    },
+    "scope": "Select mate 1 or 2; validates four-line FASTQ, optional matching + title, equal sequence/quality lengths and even sequence length. No silent truncation. An empty + title remains empty so emitted FASTQ remains valid.",
+    "fixture": {
+      "data": "@r\nACGT\n+\nIIII\n",
+      "expected": "@r/2\nGT\n+\nII\n",
+      "params": {
+        "mate": 2
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Select mate 1 or 2; validates four-line FASTQ, optional matching + title, equal sequence/quality lengths and even sequence length. No silent truncation. An empty + title remains empty so emitted FASTQ remains valid."
+      },
+      "outputs": {
+        "result": "Extract one mate from concatenated equal-length paired FASTQ records. Select mate 1 or 2; validates four-line FASTQ, optional matching + title, equal sequence/quality lengths and even sequence length. No silent truncation. An empty + title remains empty so emitted FASTQ remains valid."
+      },
+      "parameters": {
+        "mate": {
+          "description": "One-based mate number, 1 or 2.",
+          "help": "One-based mate number, 1 or 2. Select mate 1 or 2; validates four-line FASTQ, optional matching + title, equal sequence/quality lengths and even sequence length. No silent truncation. An empty + title remains empty so emitted FASTQ remains valid.",
+          "example": 2
+        }
+      },
+      "example_job": "name: Extract one mate from concatenated equal-length paired FASTQ records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/split_paired_reads.txt\n    view: bytes\n- id: process\n  operator: galaxy_split_paired_reads@1.0\n  inputs:\n    source: read\n  params:\n    mate: 2\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "pileup_interval": {
+    "name": "galaxy_pileup_interval",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.PileupInterval",
+    "description": "Collapse consecutive pileup positions meeting a minimum depth into BED-like sequence intervals.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "min_coverage": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 1000000,
+          "description": "Inclusive minimum accepted pileup depth."
+        },
+        "sequence_column": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based chromosome/sequence-name column."
+        },
+        "position_column": {
+          "type": "integer",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based input position column."
+        },
+        "base_column": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based reference-base column."
+        },
+        "coverage_column": {
+          "type": "integer",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "One-based pileup coverage column."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "min_coverage": 3,
+      "sequence_column": 1,
+      "position_column": 2,
+      "base_column": 3,
+      "coverage_column": 4
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-devteam",
+      "path": "pileup_interval/pileup_interval.py"
+    },
+    "scope": "One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+    "fixture": {
+      "data": "chr1\t1\tA\t4\nchr1\t2\tC\t5\nchr1\t3\tG\t1\n",
+      "expected": "chr1\t0\t2\tAC\n",
+      "params": {
+        "min_coverage": 3,
+        "sequence_column": 1,
+        "position_column": 2,
+        "base_column": 3,
+        "coverage_column": 4
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input."
+      },
+      "outputs": {
+        "result": "Collapse consecutive pileup positions meeting a minimum depth into BED-like sequence intervals. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input."
+      },
+      "parameters": {
+        "min_coverage": {
+          "description": "Inclusive minimum accepted pileup depth.",
+          "help": "Inclusive minimum accepted pileup depth. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+          "example": 3
+        },
+        "sequence_column": {
+          "description": "One-based chromosome/sequence-name column.",
+          "help": "One-based chromosome/sequence-name column. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+          "example": 1
+        },
+        "position_column": {
+          "description": "One-based input position column.",
+          "help": "One-based input position column. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+          "example": 2
+        },
+        "base_column": {
+          "description": "One-based reference-base column.",
+          "help": "One-based reference-base column. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+          "example": 3
+        },
+        "coverage_column": {
+          "description": "One-based pileup coverage column.",
+          "help": "One-based pileup coverage column. One-based pileup to zero-based half-open intervals. Configurable columns cover six-column, legacy ten-column and custom rows. Active interval limited to 8 MiB bases; blank lines are skipped rather than terminating all input.",
+          "example": 4
+        }
+      },
+      "example_job": "name: Collapse consecutive pileup positions meeting a minimum depth into BED-like\n  sequence intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/pileup_interval.txt\n    view: bytes\n- id: process\n  operator: galaxy_pileup_interval@1.0\n  inputs:\n    source: read\n  params:\n    min_coverage: 3\n    sequence_column: 1\n    position_column: 2\n    base_column: 3\n    coverage_column: 4\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "divide_pg_snp": {
+    "name": "galaxy_divide_pg_snp",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.DividePgSnp",
+    "description": "Expand one or two pgSnp alleles, frequencies and scores into separate columns.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "reference_column": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 65536,
+          "description": "One-based reference-allele column, or zero for N."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "reference_column": 0
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-devteam",
+      "path": "divide_pg_snp/dividePgSnpAlleles.pl"
+    },
+    "scope": "Rows with more than two alleles are skipped. Homozygous second allele is N or the configured reference column; extra input columns are retained.",
+    "fixture": {
+      "data": "chr1\t0\t1\tA/G\t2\t3,4\t0,0\n",
+      "expected": "chr1\t0\t1\tA\t3\t0\tG\t4\t0\n",
+      "params": {
+        "reference_column": 0
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Rows with more than two alleles are skipped. Homozygous second allele is N or the configured reference column; extra input columns are retained."
+      },
+      "outputs": {
+        "result": "Expand one or two pgSnp alleles, frequencies and scores into separate columns. Rows with more than two alleles are skipped. Homozygous second allele is N or the configured reference column; extra input columns are retained."
+      },
+      "parameters": {
+        "reference_column": {
+          "description": "One-based reference-allele column, or zero for N.",
+          "help": "One-based reference-allele column, or zero for N. Rows with more than two alleles are skipped. Homozygous second allele is N or the configured reference column; extra input columns are retained.",
+          "example": 0
+        }
+      },
+      "example_job": "name: Expand one or two pgSnp alleles, frequencies and scores into separate columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/divide_pg_snp.txt\n    view: bytes\n- id: process\n  operator: galaxy_divide_pg_snp@1.0\n  inputs:\n    source: read\n  params:\n    reference_column: 0\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "vcf_to_pgsnp": {
+    "name": "galaxy_vcf_to_pgsnp",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.VcfToPgsnp",
+    "description": "Convert called VCF SNP genotypes to pgSnp allele counts.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "sample_column": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 65536,
+          "description": "One-based VCF sample column, or zero for all samples."
+        },
+        "prefix_chr": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add chr to sequence names without that prefix."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "sample_column": 0,
+      "prefix_chr": true
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-devteam",
+      "path": "vcf2pgsnp/vcf2pgSnp.pl"
+    },
+    "scope": "Zero selects all samples; otherwise use a one-based VCF column >=10. Only single-base A/C/G/T SNPs with PASS or missing FILTER are converted. GT position, haploidy, phased calls and all allele indices are handled; missing alleles ignored.",
+    "fixture": {
+      "data": "#header\n1\t10\t.\tA\tG\t50\tPASS\t.\tGT\t0/1\t1/1\n",
+      "expected": "chr1\t9\t10\tA/G\t2\t1,3\t0,0\n",
+      "params": {
+        "sample_column": 0,
+        "prefix_chr": true
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Zero selects all samples; otherwise use a one-based VCF column >=10. Only single-base A/C/G/T SNPs with PASS or missing FILTER are converted. GT position, haploidy, phased calls and all allele indices are handled; missing alleles ignored."
+      },
+      "outputs": {
+        "result": "Convert called VCF SNP genotypes to pgSnp allele counts. Zero selects all samples; otherwise use a one-based VCF column >=10. Only single-base A/C/G/T SNPs with PASS or missing FILTER are converted. GT position, haploidy, phased calls and all allele indices are handled; missing alleles ignored."
+      },
+      "parameters": {
+        "sample_column": {
+          "description": "One-based VCF sample column, or zero for all samples.",
+          "help": "One-based VCF sample column, or zero for all samples. Zero selects all samples; otherwise use a one-based VCF column >=10. Only single-base A/C/G/T SNPs with PASS or missing FILTER are converted. GT position, haploidy, phased calls and all allele indices are handled; missing alleles ignored.",
+          "example": 0
+        },
+        "prefix_chr": {
+          "description": "Add chr to sequence names without that prefix.",
+          "help": "Add chr to sequence names without that prefix. Zero selects all samples; otherwise use a one-based VCF column >=10. Only single-base A/C/G/T SNPs with PASS or missing FILTER are converted. GT position, haploidy, phased calls and all allele indices are handled; missing alleles ignored.",
+          "example": true
+        }
+      },
+      "example_job": "name: Convert called VCF SNP genotypes to pgSnp allele counts.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_to_pgsnp.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_to_pgsnp@1.0\n  inputs:\n    source: read\n  params:\n    sample_column: 0\n    prefix_chr: true\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "reverse_complement": {
+    "name": "galaxy_reverse_complement",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.ReverseComplement",
+    "description": "Reverse-complement FASTA nucleotide sequences using the IUPAC alphabet.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "alphabet": {
+          "type": "string",
+          "default": "dna",
+          "maxLength": 4096,
+          "enum": [
+            "dna",
+            "rna"
+          ],
+          "description": "DNA or RNA alphabet for complementing."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "alphabet": "dna"
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "biopython/converters/reverse_complement.py"
+    },
+    "scope": "FASTA input/output only; DNA or RNA IUPAC symbols, case preserved, invalid characters rejected. One sequence buffered up to 8 MiB characters.",
+    "fixture": {
+      "data": ">id title\nAaCGN\n",
+      "expected": ">id title\nNCGtT\n",
+      "params": {
+        "alphabet": "dna"
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. FASTA input/output only; DNA or RNA IUPAC symbols, case preserved, invalid characters rejected. One sequence buffered up to 8 MiB characters."
+      },
+      "outputs": {
+        "result": "Reverse-complement FASTA nucleotide sequences using the IUPAC alphabet. FASTA input/output only; DNA or RNA IUPAC symbols, case preserved, invalid characters rejected. One sequence buffered up to 8 MiB characters."
+      },
+      "parameters": {
+        "alphabet": {
+          "description": "DNA or RNA alphabet for complementing.",
+          "help": "DNA or RNA alphabet for complementing. FASTA input/output only; DNA or RNA IUPAC symbols, case preserved, invalid characters rejected. One sequence buffered up to 8 MiB characters.",
+          "example": "dna"
+        }
+      },
+      "example_job": "name: Reverse-complement FASTA nucleotide sequences using the IUPAC alphabet.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_complement.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_complement@1.0\n  inputs:\n    source: read\n  params:\n    alphabet: dna\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "translate": {
+    "name": "galaxy_translate",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.Translate",
+    "description": "Translate nucleotide FASTA to protein FASTA with the standard genetic code.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to_stop": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stop translation before the first stop codon."
+        },
+        "cds": {
+          "type": "boolean",
+          "default": false,
+          "description": "Validate a complete standard-code CDS and omit its terminal stop."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "to_stop": false,
+      "cds": false
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "biopython/converters/translate.py"
+    },
+    "scope": "Standard code table 1, FASTA only. Ambiguous complete codons emit X; terminal partial codons fail. CDS requires ATG start, terminal stop and no internal stop; final stop omitted. Alternate genetic codes are not advertised.",
+    "fixture": {
+      "data": ">gene\nATGGCTTAA\n",
+      "expected": ">gene\nMA*\n",
+      "params": {
+        "to_stop": false,
+        "cds": false
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Standard code table 1, FASTA only. Ambiguous complete codons emit X; terminal partial codons fail. CDS requires ATG start, terminal stop and no internal stop; final stop omitted. Alternate genetic codes are not advertised."
+      },
+      "outputs": {
+        "result": "Translate nucleotide FASTA to protein FASTA with the standard genetic code. Standard code table 1, FASTA only. Ambiguous complete codons emit X; terminal partial codons fail. CDS requires ATG start, terminal stop and no internal stop; final stop omitted. Alternate genetic codes are not advertised."
+      },
+      "parameters": {
+        "to_stop": {
+          "description": "Stop translation before the first stop codon.",
+          "help": "Stop translation before the first stop codon. Standard code table 1, FASTA only. Ambiguous complete codons emit X; terminal partial codons fail. CDS requires ATG start, terminal stop and no internal stop; final stop omitted. Alternate genetic codes are not advertised.",
+          "example": false
+        },
+        "cds": {
+          "description": "Validate a complete standard-code CDS and omit its terminal stop.",
+          "help": "Validate a complete standard-code CDS and omit its terminal stop. Standard code table 1, FASTA only. Ambiguous complete codons emit X; terminal partial codons fail. CDS requires ATG start, terminal stop and no internal stop; final stop omitted. Alternate genetic codes are not advertised.",
+          "example": false
+        }
+      },
+      "example_job": "name: Translate nucleotide FASTA to protein FASTA with the standard genetic code.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/translate.txt\n    view: bytes\n- id: process\n  operator: galaxy_translate@1.0\n  inputs:\n    source: read\n  params:\n    to_stop: false\n    cds: false\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "codon_count": {
+    "name": "galaxy_codon_count",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.CodonCount",
+    "description": "Count all 64 unambiguous DNA codons over FASTA sequences in frame zero.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {},
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "biopython/codon_count.py"
+    },
+    "scope": "Input lengths must be multiples of three. Only A/C/G/T codons are accepted; output is deterministic lexicographic codon/count TSV, including zero counts.",
+    "fixture": {
+      "data": ">g\nATGATG\n",
+      "expected": "AAA\t0\nAAC\t0\nAAG\t0\nAAT\t0\nACA\t0\nACC\t0\nACG\t0\nACT\t0\nAGA\t0\nAGC\t0\nAGG\t0\nAGT\t0\nATA\t0\nATC\t0\nATG\t2\nATT\t0\nCAA\t0\nCAC\t0\nCAG\t0\nCAT\t0\nCCA\t0\nCCC\t0\nCCG\t0\nCCT\t0\nCGA\t0\nCGC\t0\nCGG\t0\nCGT\t0\nCTA\t0\nCTC\t0\nCTG\t0\nCTT\t0\nGAA\t0\nGAC\t0\nGAG\t0\nGAT\t0\nGCA\t0\nGCC\t0\nGCG\t0\nGCT\t0\nGGA\t0\nGGC\t0\nGGG\t0\nGGT\t0\nGTA\t0\nGTC\t0\nGTG\t0\nGTT\t0\nTAA\t0\nTAC\t0\nTAG\t0\nTAT\t0\nTCA\t0\nTCC\t0\nTCG\t0\nTCT\t0\nTGA\t0\nTGC\t0\nTGG\t0\nTGT\t0\nTTA\t0\nTTC\t0\nTTG\t0\nTTT\t0\n",
+      "params": {}
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Input lengths must be multiples of three. Only A/C/G/T codons are accepted; output is deterministic lexicographic codon/count TSV, including zero counts."
+      },
+      "outputs": {
+        "result": "Count all 64 unambiguous DNA codons over FASTA sequences in frame zero. Input lengths must be multiples of three. Only A/C/G/T codons are accepted; output is deterministic lexicographic codon/count TSV, including zero counts."
+      },
+      "parameters": {},
+      "example_job": "name: Count all 64 unambiguous DNA codons over FASTA sequences in frame zero.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/codon_count.txt\n    view: bytes\n- id: process\n  operator: galaxy_codon_count@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "base_distribution": {
+    "name": "galaxy_base_distribution",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.BaseDistribution",
+    "description": "Report per-sequence A/C/G/T counts, sequence length and GC fraction.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {},
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "biopython/base_distribution.py"
+    },
+    "scope": "FASTA input. GC denominator includes ambiguous symbols; zero-length records use GC fraction zero. Output CG% is the upstream fraction, not a percentage.",
+    "fixture": {
+      "data": ">g title\nAaCGTN\n",
+      "expected": "Gene\tA\tC\tG\tT\tLength\tCG%\ng\t2\t1\t1\t1\t6\t0.333333\n",
+      "params": {}
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. FASTA input. GC denominator includes ambiguous symbols; zero-length records use GC fraction zero. Output CG% is the upstream fraction, not a percentage."
+      },
+      "outputs": {
+        "result": "Report per-sequence A/C/G/T counts, sequence length and GC fraction. FASTA input. GC denominator includes ambiguous symbols; zero-length records use GC fraction zero. Output CG% is the upstream fraction, not a percentage."
+      },
+      "parameters": {},
+      "example_job": "name: Report per-sequence A/C/G/T counts, sequence length and GC fraction.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/base_distribution.txt\n    view: bytes\n- id: process\n  operator: galaxy_base_distribution@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "find_subsequences": {
+    "name": "galaxy_find_subsequences",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.FindSubsequences",
+    "description": "Find IUPAC nucleotide motifs in FASTA and emit zero-based half-open BED6 locations.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "default": "AC",
+          "maxLength": 128,
+          "description": "Literal text or IUPAC DNA motif, as described by this operator."
+        },
+        "strand": {
+          "type": "string",
+          "default": "both",
+          "maxLength": 4096,
+          "enum": [
+            "both",
+            "forward",
+            "reverse"
+          ],
+          "description": "Search forward, reverse-complement, or both strands."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "pattern": "AC",
+      "strand": "both"
+    },
+    "upstream": {
+      "repository": "https://github.com/bgruening/galaxytools",
+      "path": "find_subsequences/find_subsequences.py"
+    },
+    "scope": "Uses reverse complement for reverse-strand search, correcting the upstream complement-only bug. Overlapping hits are consistently included. Maximum one million candidate comparisons per record times pattern length is bounded to 64 million.",
+    "fixture": {
+      "data": ">g title\nACGT\n",
+      "expected": "g\t0\t2\tg title\t\t+\ng\t2\t4\tg title\t\t-\n",
+      "params": {
+        "pattern": "AC",
+        "strand": "both"
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Uses reverse complement for reverse-strand search, correcting the upstream complement-only bug. Overlapping hits are consistently included. Maximum one million candidate comparisons per record times pattern length is bounded to 64 million."
+      },
+      "outputs": {
+        "result": "Find IUPAC nucleotide motifs in FASTA and emit zero-based half-open BED6 locations. Uses reverse complement for reverse-strand search, correcting the upstream complement-only bug. Overlapping hits are consistently included. Maximum one million candidate comparisons per record times pattern length is bounded to 64 million."
+      },
+      "parameters": {
+        "pattern": {
+          "description": "Literal text or IUPAC DNA motif, as described by this operator.",
+          "help": "Literal text or IUPAC DNA motif, as described by this operator. Uses reverse complement for reverse-strand search, correcting the upstream complement-only bug. Overlapping hits are consistently included. Maximum one million candidate comparisons per record times pattern length is bounded to 64 million.",
+          "example": "AC"
+        },
+        "strand": {
+          "description": "Search forward, reverse-complement, or both strands.",
+          "help": "Search forward, reverse-complement, or both strands. Uses reverse complement for reverse-strand search, correcting the upstream complement-only bug. Overlapping hits are consistently included. Maximum one million candidate comparisons per record times pattern length is bounded to 64 million.",
+          "example": "both"
+        }
+      },
+      "example_job": "name: Find IUPAC nucleotide motifs in FASTA and emit zero-based half-open BED6 locations.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/find_subsequences.txt\n    view: bytes\n- id: process\n  operator: galaxy_find_subsequences@1.0\n  inputs:\n    source: read\n  params:\n    pattern: AC\n    strand: both\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "fasta_stats": {
+    "name": "galaxy_fasta_stats",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.FastaStats",
+    "description": "Compute scaffold, contig and base-composition summary statistics from FASTA.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "genome_size": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 1000000000,
+          "description": "Estimated genome size for NG50, or zero to omit NG50."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "genome_size": 0
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-iuc",
+      "path": "fasta_stats/fasta-stats.py"
+    },
+    "scope": "Statistics TSV output only, no separate gap BED. N-runs split contigs; internal N-runs count as gaps. Uses standard N50 threshold >= half, correcting upstream strict-greater edge. At most 100000 sequences/contigs and one 8 MiB-character record.",
+    "fixture": {
+      "data": ">a\nACGTNNAA\n>b\nGG\n",
+      "expected": "Scaffold L50\t1\nScaffold N50\t8\nScaffold L90\t2\nScaffold N90\t2\nScaffold len_max\t8\nScaffold len_min\t2\nScaffold len_mean\t5\nScaffold len_median\t5\nScaffold len_std\t3\nScaffold num_A\t3\nScaffold num_T\t1\nScaffold num_C\t1\nScaffold num_G\t3\nScaffold num_N\t2\nScaffold num_bp\t10\nScaffold num_bp_not_N\t8\nScaffold num_seq\t2\nScaffold GC content overall\t40.00\nContig L50\t1\nContig N50\t4\nContig L90\t3\nContig N90\t2\nContig len_max\t4\nContig len_min\t2\nContig len_mean\t2\nContig len_median\t2\nContig len_std\t0\nContig num_bp\t8\nContig num_seq\t3\nNumber of gaps\t1\n",
+      "params": {
+        "genome_size": 0
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Statistics TSV output only, no separate gap BED. N-runs split contigs; internal N-runs count as gaps. Uses standard N50 threshold >= half, correcting upstream strict-greater edge. At most 100000 sequences/contigs and one 8 MiB-character record."
+      },
+      "outputs": {
+        "result": "Compute scaffold, contig and base-composition summary statistics from FASTA. Statistics TSV output only, no separate gap BED. N-runs split contigs; internal N-runs count as gaps. Uses standard N50 threshold >= half, correcting upstream strict-greater edge. At most 100000 sequences/contigs and one 8 MiB-character record."
+      },
+      "parameters": {
+        "genome_size": {
+          "description": "Estimated genome size for NG50, or zero to omit NG50.",
+          "help": "Estimated genome size for NG50, or zero to omit NG50. Statistics TSV output only, no separate gap BED. N-runs split contigs; internal N-runs count as gaps. Uses standard N50 threshold >= half, correcting upstream strict-greater edge. At most 100000 sequences/contigs and one 8 MiB-character record.",
+          "example": 0
+        }
+      },
+      "example_job": "name: Compute scaffold, contig and base-composition summary statistics from FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fasta_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_fasta_stats@1.0\n  inputs:\n    source: read\n  params:\n    genome_size: 0\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  },
+  "motif_flank_counts": {
+    "name": "galaxy_motif_flank_counts",
+    "version": "1.0",
+    "entrypoint": "xstream.galaxy.MotifFlankCounts",
+    "description": "Count motif-bearing windows upstream and downstream of each indel.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "motifs": {
+          "type": "array",
+          "default": [
+            "AC"
+          ],
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "default": "",
+            "maxLength": 4096
+          },
+          "description": "Literal DNA motifs, each written as sequence or name=sequence."
+        },
+        "windows": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 128,
+          "description": "Number of adjacent windows considered on each side of the indel."
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "params": {
+      "motifs": [
+        "AC"
+      ],
+      "windows": 1
+    },
+    "upstream": {
+      "repository": "https://github.com/galaxyproject/tools-devteam",
+      "path": "compute_motif_frequencies_for_all_motifs/compute_motif_frequencies_for_all_motifs.pl"
+    },
+    "scope": "Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported.",
+    "fixture": {
+      "data": "AC\tindel\tTT\nGG\tindel\tAC\n",
+      "expected": "AC\t1\t0\nAC\t0\t1\n",
+      "params": {
+        "motifs": [
+          "AC"
+        ],
+        "windows": 1
+      }
+    },
+    "categories": [
+      "Galaxy",
+      "Bioinformatics"
+    ],
+    "documentation": {
+      "inputs": {
+        "source": "UTF-8 bytes stream. Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported."
+      },
+      "outputs": {
+        "result": "Count motif-bearing windows upstream and downstream of each indel. Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported."
+      },
+      "parameters": {
+        "motifs": {
+          "description": "Literal DNA motifs, each written as sequence or name=sequence.",
+          "help": "Literal DNA motifs, each written as sequence or name=sequence. Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported.",
+          "example": [
+            "AC"
+          ]
+        },
+        "windows": {
+          "description": "Number of adjacent windows considered on each side of the indel.",
+          "help": "Number of adjacent windows considered on each side of the indel. Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported.",
+          "example": 1
+        }
+      },
+      "example_job": "name: Count motif-bearing windows upstream and downstream of each indel.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/motif_flank_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_motif_flank_counts@1.0\n  inputs:\n    source: read\n  params:\n    motifs:\n    - AC\n    windows: 1\noutputs:\n  result: process\n"
+    },
+    "icon": {
+      "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
+      "color": "#5265ad"
+    }
+  }
+}

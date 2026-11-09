@@ -26,3 +26,7 @@ XStream 的内置实现和外部插件使用同一套扩展契约。核心负责
 ## 远程数据插件
 
 `RemoteItemProvider` 是 `xstream-execution-api` 中用于远程数据访问的 ServiceLoader 扩展点。注册、配置、资源契约与测试见[本地执行与远程数据](execution-targets_zh.md)。
+
+## 地理空间与 HDF5 扩展
+
+可选插件：[GDAL 栅格与矢量格式](gdal-formats_zh.md)、[HDF5 层级与数组](hdf5-formats_zh.md)。两者通过相同的格式扩展契约注册，提供安装、配置、能力限制及原生契约测试说明。原生依赖仅属于插件，不进入核心。

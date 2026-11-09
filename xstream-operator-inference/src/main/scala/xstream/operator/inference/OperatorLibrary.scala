@@ -93,7 +93,7 @@ object OperatorLibrary {
       val options = new org.yaml.snakeyaml.LoaderOptions(); options.setAllowDuplicateKeys(false)
       val in = Files.newInputStream(local)
       val m = try new Yaml(options).load[java.util.Map[String,Object]](in).asScala.toMap finally in.close()
-      require(m.keySet.subsetOf(Set("name", "version", "image", "description", "icon", "executor", "entrypoint", "artifact", "inputs", "parameters", "executor_config", "provenance")), "unknown operator setting")
+      require(m.keySet.subsetOf(Set("name", "version", "image", "description", "icon", "executor", "entrypoint", "artifact", "inputs", "parameters", "executor_config", "provenance", "documentation")), "unknown operator setting")
       xstream.operator.OperatorPresentation.validate(Data.mapper.valueToTree[JsonNode](m.asJava))
       xstream.operator.ParameterSchema.validate(Data.mapper.valueToTree[JsonNode](m.getOrElse("parameters",null)))
       require(m("name").toString == p(0) && m("version").toString == p(1), "operator identity mismatch")

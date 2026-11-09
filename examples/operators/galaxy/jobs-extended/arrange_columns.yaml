@@ -1,0 +1,20 @@
+name: Reorder table columns by their header names, optionally discarding unselected
+  columns.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/arrange_columns.txt
+    view: bytes
+- id: process
+  operator: galaxy_arrange_columns@1.0
+  inputs:
+    source: read
+  params:
+    names:
+    - C
+    - A
+    discard: false
+outputs:
+  result: process

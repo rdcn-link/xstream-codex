@@ -1,0 +1,2 @@
+AC	indel	TT
+GG	indel	AC
