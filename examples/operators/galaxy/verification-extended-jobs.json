@@ -1,7 +1,7 @@
 {
   "status": "passed",
-  "completed": 30,
-  "total": 30,
+  "completed": 180,
+  "total": 180,
   "jobs": [
     {
       "operator": "galaxy_reverse_lines@1.0",
@@ -182,6 +182,906 @@
       "job": "jobs-extended/motif_flank_counts.yaml",
       "status": "passed",
       "output": "AC\t1\t0\nAC\t0\t1\n"
+    },
+    {
+      "operator": "galaxy_circos_karyotype_fasta@1.0",
+      "job": "jobs-extended/circos_karyotype_fasta.yaml",
+      "status": "passed",
+      "output": "chr\t-\tchr1\tchr1\t0\t4\tchr0color\n"
+    },
+    {
+      "operator": "galaxy_circos_karyotype_lengths@1.0",
+      "job": "jobs-extended/circos_karyotype_lengths.yaml",
+      "status": "passed",
+      "output": "chr\t-\tchr1\tchr1\t0\t100\tchr0color\nchr\t-\tchr2\tchr2\t0\t20\tchr1color\n"
+    },
+    {
+      "operator": "galaxy_circos_tiles_bed@1.0",
+      "job": "jobs-extended/circos_tiles_bed.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t10\tname=x,strand=1,value=5\n"
+    },
+    {
+      "operator": "galaxy_circos_text_bed@1.0",
+      "job": "jobs-extended/circos_text_bed.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t10\tx\tstrand=-1,value=5\n"
+    },
+    {
+      "operator": "galaxy_circos_tiles_gff3@1.0",
+      "job": "jobs-extended/circos_tiles_gff3.yaml",
+      "status": "passed",
+      "output": "chr1\t1\t8\tname=Gene1,strand=1,type=gene,value=5\n"
+    },
+    {
+      "operator": "galaxy_circos_text_gff3@1.0",
+      "job": "jobs-extended/circos_text_gff3.yaml",
+      "status": "passed",
+      "output": "chr1\t1\t8\tGene1\tstrand=1,value=5\n"
+    },
+    {
+      "operator": "galaxy_remove_terminal_stop_codons@1.0",
+      "job": "jobs-extended/remove_terminal_stop_codons.yaml",
+      "status": "passed",
+      "output": ">cds note\nATG\n"
+    },
+    {
+      "operator": "galaxy_windowmasker_to_bed@1.0",
+      "job": "jobs-extended/windowmasker_to_bed.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t5\twm_0\nchr1\t8\t9\twm_1\n"
+    },
+    {
+      "operator": "galaxy_count_gff_features@1.0",
+      "job": "jobs-extended/count_gff_features.yaml",
+      "status": "passed",
+      "output": "1\n"
+    },
+    {
+      "operator": "galaxy_resize_coordinate_window@1.0",
+      "job": "jobs-extended/resize_coordinate_window.yaml",
+      "status": "passed",
+      "output": "chr1\tsrc\tgene\t3\t9\t5\t+\t.\tID=g1;Name=Gene1\n"
+    },
+    {
+      "operator": "galaxy_bed_sort@1.0",
+      "job": "jobs-extended/bed_sort.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t4\nchr1\t9\t10\nchr2\t1\t4\n"
+    },
+    {
+      "operator": "galaxy_bed_merge@1.0",
+      "job": "jobs-extended/bed_merge.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t6\nchr1\t9\t10\n"
+    },
+    {
+      "operator": "galaxy_bed_cluster@1.0",
+      "job": "jobs-extended/bed_cluster.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t4\t1\nchr1\t3\t6\t1\nchr1\t9\t10\t2\n"
+    },
+    {
+      "operator": "galaxy_bed_spacing@1.0",
+      "job": "jobs-extended/bed_spacing.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t4\t.\nchr1\t3\t6\t-1\nchr1\t9\t10\t3\n"
+    },
+    {
+      "operator": "galaxy_bed_slop@1.0",
+      "job": "jobs-extended/bed_slop.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t7\n"
+    },
+    {
+      "operator": "galaxy_bed_flank@1.0",
+      "job": "jobs-extended/bed_flank.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t1\nchr1\t4\t7\n"
+    },
+    {
+      "operator": "galaxy_bed_complement@1.0",
+      "job": "jobs-extended/bed_complement.yaml",
+      "status": "passed",
+      "output": "chr1\t6\t9\nchr1\t10\t100\n"
+    },
+    {
+      "operator": "galaxy_bed_genome_coverage@1.0",
+      "job": "jobs-extended/bed_genome_coverage.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t3\t1\nchr1\t3\t4\t2\nchr1\t4\t6\t1\nchr1\t9\t10\t1\n"
+    },
+    {
+      "operator": "galaxy_interval_overlap@1.0",
+      "job": "jobs-extended/interval_overlap.yaml",
+      "status": "passed",
+      "output": "chr1\t1\t5\tchr1\t3\t8\t2\n"
+    },
+    {
+      "operator": "galaxy_expand_columns@1.0",
+      "job": "jobs-extended/expand_columns.yaml",
+      "status": "passed",
+      "output": "chr1\t0\t4\ta\t5\nchr1\t0\t4\tb\t7\n"
+    },
+    {
+      "operator": "galaxy_group_table@1.0",
+      "job": "jobs-extended/group_table.yaml",
+      "status": "passed",
+      "output": "a\t6\nb\t3\n"
+    },
+    {
+      "operator": "galaxy_fastq_to_tabular@1.0",
+      "job": "jobs-extended/fastq_to_tabular.yaml",
+      "status": "passed",
+      "output": "r1 description\tAC\t!I\n"
+    },
+    {
+      "operator": "galaxy_tabular_to_fastq@1.0",
+      "job": "jobs-extended/tabular_to_fastq.yaml",
+      "status": "passed",
+      "output": "@r1\nAC\n+\n!I\n"
+    },
+    {
+      "operator": "galaxy_fastq_mask_quality@1.0",
+      "job": "jobs-extended/fastq_mask_quality.yaml",
+      "status": "passed",
+      "output": "@r1 description\nNC\n+\n!I\n"
+    },
+    {
+      "operator": "galaxy_fastq_filter_quality@1.0",
+      "job": "jobs-extended/fastq_filter_quality.yaml",
+      "status": "passed",
+      "output": "@r2\nAT\n+\nII\n"
+    },
+    {
+      "operator": "galaxy_fastq_join_mates@1.0",
+      "job": "jobs-extended/fastq_join_mates.yaml",
+      "status": "passed",
+      "output": "@r/1\nACGT\n+\nIIJJ\n"
+    },
+    {
+      "operator": "galaxy_fastq_deinterlace@1.0",
+      "job": "jobs-extended/fastq_deinterlace.yaml",
+      "status": "passed",
+      "output": "@r/1\nAC\n+\nII\n"
+    },
+    {
+      "operator": "galaxy_fastq_groom@1.0",
+      "job": "jobs-extended/fastq_groom.yaml",
+      "status": "passed",
+      "output": "@r1\nAC\n+\n!I\n"
+    },
+    {
+      "operator": "galaxy_fastq_quality_stats@1.0",
+      "job": "jobs-extended/fastq_quality_stats.yaml",
+      "status": "passed",
+      "output": "position\tcount\tmin\tmax\tmean\tQ1\tmedian\tQ3\tA\tC\tG\tT\tN\tother\n1\t1\t40\t40\t40.000000\t40.000000\t40.000000\t40.000000\t1\t0\t0\t0\t0\t0\n2\t1\t40\t40\t40.000000\t40.000000\t40.000000\t40.000000\t0\t1\t0\t0\t0\t0\n"
+    },
+    {
+      "operator": "galaxy_seqtk_comp@1.0",
+      "job": "jobs-extended/seqtk_comp.yaml",
+      "status": "passed",
+      "output": "#chr\tlength\t#A\t#C\t#G\t#T\t#2\t#3\t#4\t#CpG\t#tv\t#ts\t#CpG-ts\nx\t4\t1\t1\t1\t1\t0\t0\t0\t2\t0\t0\t0\n"
+    },
+    {
+      "operator": "galaxy_seqtk_listhet@1.0",
+      "job": "jobs-extended/seqtk_listhet.yaml",
+      "status": "passed",
+      "output": "#chr\tposition\tbase\nx\t2\tM\nx\t3\tR\nx\t4\tY\n"
+    },
+    {
+      "operator": "galaxy_seqtk_cutN@1.0",
+      "job": "jobs-extended/seqtk_cutN.yaml",
+      "status": "passed",
+      "output": ">x:1-2\nAA\n>x:6-7\nCC\n"
+    },
+    {
+      "operator": "galaxy_seqtk_randbase@1.0",
+      "job": "jobs-extended/seqtk_randbase.yaml",
+      "status": "passed",
+      "output": ">x\nACGT\n"
+    },
+    {
+      "operator": "galaxy_seqtk_sample@1.0",
+      "job": "jobs-extended/seqtk_sample.yaml",
+      "status": "passed",
+      "output": ">x\nACGT\n"
+    },
+    {
+      "operator": "galaxy_seqtk_subseq@1.0",
+      "job": "jobs-extended/seqtk_subseq.yaml",
+      "status": "passed",
+      "output": ">x:2-3\nCG\n"
+    },
+    {
+      "operator": "galaxy_seqtk_seq@1.0",
+      "job": "jobs-extended/seqtk_seq.yaml",
+      "status": "passed",
+      "output": ">x\nACGT\n"
+    },
+    {
+      "operator": "galaxy_seqtk_hety@1.0",
+      "job": "jobs-extended/seqtk_hety.yaml",
+      "status": "passed",
+      "output": "x\t0\t4\t1.00\t4\t1\n"
+    },
+    {
+      "operator": "galaxy_seqtk_telo@1.0",
+      "job": "jobs-extended/seqtk_telo.yaml",
+      "status": "passed",
+      "output": "x\t0\t8\t8\n"
+    },
+    {
+      "operator": "galaxy_seqtk_trimfq@1.0",
+      "job": "jobs-extended/seqtk_trimfq.yaml",
+      "status": "passed",
+      "output": "@r1\nAC\n+\nII\n"
+    },
+    {
+      "operator": "galaxy_seqtk_dropse@1.0",
+      "job": "jobs-extended/seqtk_dropse.yaml",
+      "status": "passed",
+      "output": "@r1/1\nAC\n+\nII\n@r1/2\nGT\n+\nII\n"
+    },
+    {
+      "operator": "galaxy_seqtk_fqchk@1.0",
+      "job": "jobs-extended/seqtk_fqchk.yaml",
+      "status": "passed",
+      "output": "POS\t#bases\t%A\t%C\t%G\t%T\t%N\tavgQ\terrQ\t%low\t%high\nALL\t2\t50.0\t50.0\t0.0\t0.0\t0.0\t40.0\t40.0\t0.0\t100.0\n1\t1\t100.0\t0.0\t0.0\t0.0\t0.0\t40.0\t40.0\t0.0\t100.0\n2\t1\t0.0\t100.0\t0.0\t0.0\t0.0\t40.0\t40.0\t0.0\t100.0\n"
+    },
+    {
+      "operator": "galaxy_transpose_table@1.0",
+      "job": "jobs-extended/transpose_table.yaml",
+      "status": "passed",
+      "output": "a\tc\nb\td\n"
+    },
+    {
+      "operator": "galaxy_reverse_columns@1.0",
+      "job": "jobs-extended/reverse_columns.yaml",
+      "status": "passed",
+      "output": "c\tb\ta\n"
+    },
+    {
+      "operator": "galaxy_numeric_summary@1.0",
+      "job": "jobs-extended/numeric_summary.yaml",
+      "status": "passed",
+      "output": "count\tsum\tmin\tmax\tmean\tmedian\tpopulation_sd\tsample_sd\n3\t6.000000\t1.000000\t3.000000\t2.000000\t2.000000\t0.816497\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_annovar_replace_na@1.0",
+      "job": "jobs-extended/annovar_replace_na.yaml",
+      "status": "passed",
+      "output": "name\tvalue\nA\t2\nB\t-1\n"
+    },
+    {
+      "operator": "galaxy_gff_to_bedgraph@1.0",
+      "job": "jobs-extended/gff_to_bedgraph.yaml",
+      "status": "passed",
+      "output": "chr1\t1\t8\t0\n"
+    },
+    {
+      "operator": "galaxy_circos_gc_skew@1.0",
+      "job": "jobs-extended/circos_gc_skew.yaml",
+      "status": "passed",
+      "output": "x\t0\t4\t0.000000\nx\t4\t5\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_correlation_matrix@1.0",
+      "job": "jobs-extended/correlation_matrix.yaml",
+      "status": "passed",
+      "output": "1.000000\t-1.000000\n-1.000000\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_circos_cytobands@1.0",
+      "job": "jobs-extended/circos_cytobands.yaml",
+      "status": "passed",
+      "output": "band chr1 p1 p1 0 10 255,0,0\n"
+    },
+    {
+      "operator": "galaxy_category_totals@1.0",
+      "job": "jobs-extended/category_totals.yaml",
+      "status": "passed",
+      "output": "category\tcriterion1\tcriterion2\ngroup1\t5\t4\n"
+    },
+    {
+      "operator": "galaxy_vcf_list_samples@1.0",
+      "job": "jobs-extended/vcf_list_samples.yaml",
+      "status": "passed",
+      "output": "A\nB\n"
+    },
+    {
+      "operator": "galaxy_vcf_genotype_dosage@1.0",
+      "job": "jobs-extended/vcf_genotype_dosage.yaml",
+      "status": "passed",
+      "output": "CHROM\tPOS\tREF\tALT\tA\tB\n1\t10\tA\tG\t1\t.\n"
+    },
+    {
+      "operator": "galaxy_vcf_missing_to_ref@1.0",
+      "job": "jobs-extended/vcf_missing_to_ref.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t0/1:8\t0/0:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_fill_allele_counts@1.0",
+      "job": "jobs-extended/vcf_fill_allele_counts.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n##INFO=<ID=AN,Number=1,Type=Integer,Description=\"Total called alleles\">\n##INFO=<ID=AC,Number=A,Type=Integer,Description=\"Alternate allele counts\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\n1\t10\t.\tA\tG\t30\tPASS\tAN=2;AC=1\tGT:DP\t0/1:8\t./.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_variant_counts@1.0",
+      "job": "jobs-extended/vcf_variant_counts.yaml",
+      "status": "passed",
+      "output": "samples\tsites\tsnps\tindels\tmnps\tother\n2\t1\t1\t0\t0\t0\n"
+    },
+    {
+      "operator": "galaxy_vcf_select_samples@1.0",
+      "job": "jobs-extended/vcf_select_samples.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t./.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_rename_samples@1.0",
+      "job": "jobs-extended/vcf_rename_samples.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tAlice\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t0/1:8\t./.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_remove_annotations@1.0",
+      "job": "jobs-extended/vcf_remove_annotations.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t0/1:8\t./.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_filter_quality@1.0",
+      "job": "jobs-extended/vcf_filter_quality.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n##FILTER=<ID=LowQual,Description=\"Below configured minimum QUAL\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t0/1:8\t./.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_set_missing_genotypes@1.0",
+      "job": "jobs-extended/vcf_set_missing_genotypes.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t./.:8\t./.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_fix_ploidy@1.0",
+      "job": "jobs-extended/vcf_fix_ploidy.yaml",
+      "status": "passed",
+      "output": "##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\n1\t10\t.\tA\tG\t30\tPASS\t.\tGT:DP\t0:8\t.:0\n"
+    },
+    {
+      "operator": "galaxy_vcf_genotype_table@1.0",
+      "job": "jobs-extended/vcf_genotype_table.yaml",
+      "status": "passed",
+      "output": "CHROM\tPOS\tREF\tALT\tSAMPLE\tGT\n1\t10\tA\tG\tA\t0/1\n1\t10\tA\tG\tB\t./.\n"
+    },
+    {
+      "operator": "galaxy_sam_flagstat@1.0",
+      "job": "jobs-extended/sam_flagstat.yaml",
+      "status": "passed",
+      "output": "category\tqc_pass\tqc_fail\ntotal\t1\t0\nprimary\t1\t0\nsecondary\t0\t0\nsupplementary\t0\t0\nduplicates\t0\t0\nmapped\t1\t0\npaired\t0\t0\nread1\t0\t0\nread2\t0\t0\nproper_pair\t0\t0\nsingletons\t0\t0\n"
+    },
+    {
+      "operator": "galaxy_sam_reference_counts@1.0",
+      "job": "jobs-extended/sam_reference_counts.yaml",
+      "status": "passed",
+      "output": "chr1\t10\t1\t0\n*\t0\t0\t0\n"
+    },
+    {
+      "operator": "galaxy_sam_depth@1.0",
+      "job": "jobs-extended/sam_depth.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t1\nchr1\t3\t1\nchr1\t4\t1\n"
+    },
+    {
+      "operator": "galaxy_sam_coverage@1.0",
+      "job": "jobs-extended/sam_coverage.yaml",
+      "status": "passed",
+      "output": "reference\tlength\treads\tcovered_bases\tcoverage_percent\tmean_depth\nchr1\t10\t1\t3\t30.000000\t0.300000\n"
+    },
+    {
+      "operator": "galaxy_sam_alignment_stats@1.0",
+      "job": "jobs-extended/sam_alignment_stats.yaml",
+      "status": "passed",
+      "output": "records\tmapped\tunmapped\tbases\taligned_bases\tmean_mapping_quality\n1\t1\t0\t3\t3\t60.000000\n"
+    },
+    {
+      "operator": "galaxy_sam_sort@1.0",
+      "job": "jobs-extended/sam_sort.yaml",
+      "status": "passed",
+      "output": "@HD\tVN:1.6\tSO:coordinate\n@SQ\tSN:chr1\tLN:10\nr1\t0\tchr1\t2\t60\t3M\t*\t0\t0\tACG\tIII\n"
+    },
+    {
+      "operator": "galaxy_sam_collate@1.0",
+      "job": "jobs-extended/sam_collate.yaml",
+      "status": "passed",
+      "output": "@HD\tVN:1.6\tSO:unsorted\n@SQ\tSN:chr1\tLN:10\nr1\t0\tchr1\t2\t60\t3M\t*\t0\t0\tACG\tIII\n"
+    },
+    {
+      "operator": "galaxy_sam_to_fastq@1.0",
+      "job": "jobs-extended/sam_to_fastq.yaml",
+      "status": "passed",
+      "output": "@r1\nACG\n+\nIII\n"
+    },
+    {
+      "operator": "galaxy_sam_reheader@1.0",
+      "job": "jobs-extended/sam_reheader.yaml",
+      "status": "passed",
+      "output": "@HD\tVN:1.6\tSO:unknown\n@SQ\tSN:chr1\tLN:10\nr1\t0\tchr1\t2\t60\t3M\t*\t0\t0\tACG\tIII\n"
+    },
+    {
+      "operator": "galaxy_sam_calmd@1.0",
+      "job": "jobs-extended/sam_calmd.yaml",
+      "status": "passed",
+      "output": "@HD\tVN:1.6\tSO:unsorted\n@SQ\tSN:chr1\tLN:10\nr1\t0\tchr1\t2\t60\t3M\t*\t0\t0\tACG\tIII\tNM:i:0\tMD:Z:3\n"
+    },
+    {
+      "operator": "galaxy_bed_intersect@1.0",
+      "job": "jobs-extended/bed_intersect.yaml",
+      "status": "passed",
+      "output": "chr1\t4\t6\n"
+    },
+    {
+      "operator": "galaxy_bed_subtract@1.0",
+      "job": "jobs-extended/bed_subtract.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t4\nchr1\t6\t8\n"
+    },
+    {
+      "operator": "galaxy_bed_window@1.0",
+      "job": "jobs-extended/bed_window.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t8\tchr1\t4\t6\t5\n"
+    },
+    {
+      "operator": "galaxy_bed_closest@1.0",
+      "job": "jobs-extended/bed_closest.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t8\tchr1\t4\t6\t5\t0\n"
+    },
+    {
+      "operator": "galaxy_bed_coverage@1.0",
+      "job": "jobs-extended/bed_coverage.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t8\t1\t2\t6\t0.333333\n"
+    },
+    {
+      "operator": "galaxy_bed_map@1.0",
+      "job": "jobs-extended/bed_map.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t8\t5.000000\n"
+    },
+    {
+      "operator": "galaxy_bed_annotate@1.0",
+      "job": "jobs-extended/bed_annotate.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t8\t1\t0.333333\n"
+    },
+    {
+      "operator": "galaxy_bed_jaccard@1.0",
+      "job": "jobs-extended/bed_jaccard.yaml",
+      "status": "passed",
+      "output": "intersection\tunion\tjaccard\n2\t6\t0.333333\n"
+    },
+    {
+      "operator": "galaxy_seqtk_mergefa@1.0",
+      "job": "jobs-extended/seqtk_mergefa.yaml",
+      "status": "passed",
+      "output": ">x\nASGT\n"
+    },
+    {
+      "operator": "galaxy_seqtk_mergepe@1.0",
+      "job": "jobs-extended/seqtk_mergepe.yaml",
+      "status": "passed",
+      "output": "@x/1\nAC\n+\nII\n@x/2\nGT\n+\nJJ\n"
+    },
+    {
+      "operator": "galaxy_seqtk_mutfa@1.0",
+      "job": "jobs-extended/seqtk_mutfa.yaml",
+      "status": "passed",
+      "output": ">x\nATGT\n"
+    },
+    {
+      "operator": "galaxy_bed12_to_bed6@1.0",
+      "job": "jobs-extended/bed12_to_bed6.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t4\tx\t5\t+\nchr1\t7\t10\tx\t5\t+\n"
+    },
+    {
+      "operator": "galaxy_bed_extract_fasta@1.0",
+      "job": "jobs-extended/bed_extract_fasta.yaml",
+      "status": "passed",
+      "output": ">chr1:2-6\nGTAC\n"
+    },
+    {
+      "operator": "galaxy_bed_mask_fasta@1.0",
+      "job": "jobs-extended/bed_mask_fasta.yaml",
+      "status": "passed",
+      "output": ">chr1\nACNNNCGT\n"
+    },
+    {
+      "operator": "galaxy_bed_nucleotide_content@1.0",
+      "job": "jobs-extended/bed_nucleotide_content.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t6\t0.500000\t0.500000\t1\t1\t1\t1\t0\t0\t4\n"
+    },
+    {
+      "operator": "galaxy_bed_union_bedgraph@1.0",
+      "job": "jobs-extended/bed_union_bedgraph.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t4\t3\t0\nchr1\t4\t6\t3\t5\nchr1\t6\t8\t0\t5\n"
+    },
+    {
+      "operator": "galaxy_bed_multi_intersect@1.0",
+      "job": "jobs-extended/bed_multi_intersect.yaml",
+      "status": "passed",
+      "output": "chr1\t2\t4\t1\t1\t1\t0\nchr1\t4\t6\t2\t1,2\t1\t1\nchr1\t6\t8\t1\t2\t0\t1\n"
+    },
+    {
+      "operator": "galaxy_emboss_biosed@1.0",
+      "job": "jobs-extended/emboss_biosed.yaml",
+      "status": "passed",
+      "output": ">x\nATTT\n"
+    },
+    {
+      "operator": "galaxy_emboss_checktrans@1.0",
+      "job": "jobs-extended/emboss_checktrans.yaml",
+      "status": "passed",
+      "output": "sequence\tlength\tstop_count\tlast_stop\nx\t5\t2\t5\n"
+    },
+    {
+      "operator": "galaxy_emboss_cutseq@1.0",
+      "job": "jobs-extended/emboss_cutseq.yaml",
+      "status": "passed",
+      "output": ">x\nAT\n"
+    },
+    {
+      "operator": "galaxy_emboss_degapseq@1.0",
+      "job": "jobs-extended/emboss_degapseq.yaml",
+      "status": "passed",
+      "output": ">x\nACGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_descseq@1.0",
+      "job": "jobs-extended/emboss_descseq.yaml",
+      "status": "passed",
+      "output": ">x edited\nACGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_extractseq@1.0",
+      "job": "jobs-extended/emboss_extractseq.yaml",
+      "status": "passed",
+      "output": ">x\nCG\n"
+    },
+    {
+      "operator": "galaxy_emboss_getorf@1.0",
+      "job": "jobs-extended/emboss_getorf.yaml",
+      "status": "passed",
+      "output": ">x_orf_1 frame=1 start=1 end=3\nM\n>x_orf_2 frame=2 start=2 end=4\nC\n>x_orf_3 frame=3 start=3 end=5\nV\n"
+    },
+    {
+      "operator": "galaxy_emboss_maskseq@1.0",
+      "job": "jobs-extended/emboss_maskseq.yaml",
+      "status": "passed",
+      "output": ">x\nANNT\n"
+    },
+    {
+      "operator": "galaxy_emboss_notseq@1.0",
+      "job": "jobs-extended/emboss_notseq.yaml",
+      "status": "passed",
+      "output": ">y\nGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_nthseq@1.0",
+      "job": "jobs-extended/emboss_nthseq.yaml",
+      "status": "passed",
+      "output": ">y\nGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_shuffleseq@1.0",
+      "job": "jobs-extended/emboss_shuffleseq.yaml",
+      "status": "passed",
+      "output": ">x_shuffle_1\nAAAA\n"
+    },
+    {
+      "operator": "galaxy_emboss_skipseq@1.0",
+      "job": "jobs-extended/emboss_skipseq.yaml",
+      "status": "passed",
+      "output": ">y\nGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_splitter@1.0",
+      "job": "jobs-extended/emboss_splitter.yaml",
+      "status": "passed",
+      "output": ">x_1-3\nACG\n>x_3-4\nGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_textsearch@1.0",
+      "job": "jobs-extended/emboss_textsearch.yaml",
+      "status": "passed",
+      "output": "x\tsample one\n"
+    },
+    {
+      "operator": "galaxy_emboss_trimest@1.0",
+      "job": "jobs-extended/emboss_trimest.yaml",
+      "status": "passed",
+      "output": ">x\nCG\n"
+    },
+    {
+      "operator": "galaxy_emboss_trimseq@1.0",
+      "job": "jobs-extended/emboss_trimseq.yaml",
+      "status": "passed",
+      "output": ">x\nACGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_transeq@1.0",
+      "job": "jobs-extended/emboss_transeq.yaml",
+      "status": "passed",
+      "output": ">x_1\nMK\n>x_2\n*\n>x_3\nE\n>x_-1\nFH\n>x_-2\nF\n>x_-3\nS\n"
+    },
+    {
+      "operator": "galaxy_emboss_fuzzpro@1.0",
+      "job": "jobs-extended/emboss_fuzzpro.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tmismatches\tmatch\nx\t2\t3\t0\tAC\n"
+    },
+    {
+      "operator": "galaxy_emboss_compseq@1.0",
+      "job": "jobs-extended/emboss_compseq.yaml",
+      "status": "passed",
+      "output": "sequence\tword\tcount\tfraction\nx\tAC\t1\t0.333333\nx\tCG\t1\t0.333333\nx\tGT\t1\t0.333333\n"
+    },
+    {
+      "operator": "galaxy_emboss_freak@1.0",
+      "job": "jobs-extended/emboss_freak.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tfraction\nx\t1\t3\t0.666667\nx\t2\t4\t0.666667\n"
+    },
+    {
+      "operator": "galaxy_emboss_pepstats@1.0",
+      "job": "jobs-extended/emboss_pepstats.yaml",
+      "status": "passed",
+      "output": "sequence\tlength\tmolecular_weight\tmean_hydropathy\tcharge_ph7\tisoelectric_point\textinction_reduced\nx\t1\t89.094080\t1.800000\t-0.239855\t5.550000\t0\n"
+    },
+    {
+      "operator": "galaxy_emboss_iep@1.0",
+      "job": "jobs-extended/emboss_iep.yaml",
+      "status": "passed",
+      "output": "sequence\tisoelectric_point\nx\t5.550000\n"
+    },
+    {
+      "operator": "galaxy_emboss_charge@1.0",
+      "job": "jobs-extended/emboss_charge.yaml",
+      "status": "passed",
+      "output": "sequence\tph\tcharge\nx\t7.000000\t-0.239855\n"
+    },
+    {
+      "operator": "galaxy_emboss_hmoment@1.0",
+      "job": "jobs-extended/emboss_hmoment.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tmoment\nx\t1\t3\t0.134892\n"
+    },
+    {
+      "operator": "galaxy_emboss_pepwindow@1.0",
+      "job": "jobs-extended/emboss_pepwindow.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tmean_hydropathy\nx\t1\t3\t1.800000\n"
+    },
+    {
+      "operator": "galaxy_emboss_pepinfo@1.0",
+      "job": "jobs-extended/emboss_pepinfo.yaml",
+      "status": "passed",
+      "output": "sequence\tposition\tresidue\tresidue_mass\tkyte_doolittle\teisenberg\nx\t1\tA\t71.078800\t1.800000\t0.620000\n"
+    },
+    {
+      "operator": "galaxy_emboss_antigenic@1.0",
+      "job": "jobs-extended/emboss_antigenic.yaml",
+      "status": "passed",
+      "output": "sequence\tcenter\tpropensity\nx\t4\t1.064000\n"
+    },
+    {
+      "operator": "galaxy_emboss_digest@1.0",
+      "job": "jobs-extended/emboss_digest.yaml",
+      "status": "passed",
+      "output": ">x_peptide_1 start=1 end=2\nAK\n>x_peptide_2 start=3 end=6\nRPQK\n"
+    },
+    {
+      "operator": "galaxy_emboss_backtranseq@1.0",
+      "job": "jobs-extended/emboss_backtranseq.yaml",
+      "status": "passed",
+      "output": ">x\nATGGCA\n"
+    },
+    {
+      "operator": "galaxy_emboss_oddcomp@1.0",
+      "job": "jobs-extended/emboss_oddcomp.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\twindow\nx\t1\t3\tACA\nx\t2\t4\tCAA\n"
+    },
+    {
+      "operator": "galaxy_emboss_needle@1.0",
+      "job": "jobs-extended/emboss_needle.yaml",
+      "status": "passed",
+      "output": ">query score=8.000000 start=1 end=4\nACGT\n>reference score=8.000000 start=1 end=4\nACGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_water@1.0",
+      "job": "jobs-extended/emboss_water.yaml",
+      "status": "passed",
+      "output": ">query score=8.000000 start=1 end=4\nACGT\n>reference score=8.000000 start=1 end=4\nACGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_diffseq@1.0",
+      "job": "jobs-extended/emboss_diffseq.yaml",
+      "status": "passed",
+      "output": "reference_offset\tquery_offset\treference\tquery\ttype\n1\t1\tG\tC\tsubstitution\n"
+    },
+    {
+      "operator": "galaxy_emboss_dottup@1.0",
+      "job": "jobs-extended/emboss_dottup.yaml",
+      "status": "passed",
+      "output": "query\treference\t1\t1\tACG\nquery\treference\t2\t2\tCGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_dotmatcher@1.0",
+      "job": "jobs-extended/emboss_dotmatcher.yaml",
+      "status": "passed",
+      "output": "query\treference\t1\t1\t6\nquery\treference\t2\t2\t6\n"
+    },
+    {
+      "operator": "galaxy_emboss_wordmatch@1.0",
+      "job": "jobs-extended/emboss_wordmatch.yaml",
+      "status": "passed",
+      "output": "query\treference\t1\t1\t4\tACGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_merger@1.0",
+      "job": "jobs-extended/emboss_merger.yaml",
+      "status": "passed",
+      "output": ">query_merged_reference\nACGTAA\n"
+    },
+    {
+      "operator": "galaxy_emboss_palindrome@1.0",
+      "job": "jobs-extended/emboss_palindrome.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tstem\tloop\ndna\t1\t6\t3\t0\n"
+    },
+    {
+      "operator": "galaxy_emboss_equicktandem@1.0",
+      "job": "jobs-extended/emboss_equicktandem.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tperiod\tcopies\tunit\ndna\t1\t6\t2\t3\tAT\n"
+    },
+    {
+      "operator": "galaxy_emboss_fuzznuc@1.0",
+      "job": "jobs-extended/emboss_fuzznuc.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tstrand\tmismatches\tmatch\ndna\t1\t3\t+\t0\tACG\n"
+    },
+    {
+      "operator": "galaxy_emboss_fuzztran@1.0",
+      "job": "jobs-extended/emboss_fuzztran.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tframe\tmismatches\tpeptide\ndna\t1\t6\t1\t0\tMK\n"
+    },
+    {
+      "operator": "galaxy_emboss_cpgreport@1.0",
+      "job": "jobs-extended/emboss_cpgreport.yaml",
+      "status": "passed",
+      "output": "sequence\tlength\tgc_fraction\tcpg_count\tobserved_expected\ndna\t6\t0.666667\t2\t3.000000\n"
+    },
+    {
+      "operator": "galaxy_emboss_cpgplot@1.0",
+      "job": "jobs-extended/emboss_cpgplot.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\ndna\t1\t6\n"
+    },
+    {
+      "operator": "galaxy_emboss_newcpgseek@1.0",
+      "job": "jobs-extended/emboss_newcpgseek.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\tscore\ndna\t2\t5\t33\n"
+    },
+    {
+      "operator": "galaxy_emboss_syco@1.0",
+      "job": "jobs-extended/emboss_syco.yaml",
+      "status": "passed",
+      "output": "sequence\tamino_acid\tcodons\tobserved\tentropy_bits\ndna\tK\t2\t2\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_emboss_wobble@1.0",
+      "job": "jobs-extended/emboss_wobble.yaml",
+      "status": "passed",
+      "output": "sequence\tstart_codon\tend_codon\twobble_fraction\tnonwobble_fraction\ndna\t1\t2\t0.500000\t0.500000\n"
+    },
+    {
+      "operator": "galaxy_emboss_cai@1.0",
+      "job": "jobs-extended/emboss_cai.yaml",
+      "status": "passed",
+      "output": "sequence\tcodons\tcai\ndna\t2\t0.500000\n"
+    },
+    {
+      "operator": "galaxy_emboss_codcmp@1.0",
+      "job": "jobs-extended/emboss_codcmp.yaml",
+      "status": "passed",
+      "output": "query\treference\tquery_codons\treference_codons\tjs_divergence_bits\nquery\treference\t2\t2\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_linear_regression@1.0",
+      "job": "jobs-extended/linear_regression.yaml",
+      "status": "passed",
+      "output": "term\tcoefficient\nintercept\t1.000000\ncolumn_1\t2.000000\nr_squared\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_partial_r_square@1.0",
+      "job": "jobs-extended/partial_r_square.yaml",
+      "status": "passed",
+      "output": "column\tpartial_r_squared\n1\t0.930769\n"
+    },
+    {
+      "operator": "galaxy_pca@1.0",
+      "job": "jobs-extended/pca.yaml",
+      "status": "passed",
+      "output": "row\tPC1\tPC2\n1\t-1.414214\t0.000000\n2\t0.000000\t0.000000\n3\t1.414214\t0.000000\n"
+    },
+    {
+      "operator": "galaxy_histogram@1.0",
+      "job": "jobs-extended/histogram.yaml",
+      "status": "passed",
+      "output": "lower\tupper\tcount\n0.000000\t1.500000\t2\n1.500000\t3.000000\t2\n"
+    },
+    {
+      "operator": "galaxy_scatterplot@1.0",
+      "job": "jobs-extended/scatterplot.yaml",
+      "status": "passed",
+      "output": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 420\"><path d=\"M40 20V380H620\" fill=\"none\" stroke=\"#64748b\"/><circle cx=\"40.000000\" cy=\"380.000000\" r=\"3\" fill=\"#0891b2\"/><circle cx=\"620.000000\" cy=\"20.000000\" r=\"3\" fill=\"#0891b2\"/></svg>\n"
+    },
+    {
+      "operator": "galaxy_logistic_regression@1.0",
+      "job": "jobs-extended/logistic_regression.yaml",
+      "status": "passed",
+      "output": "term\tcoefficient\nintercept\t0.000000\ncolumn_1\t0.000000\n"
+    },
+    {
+      "operator": "galaxy_statistical_hypothesis_testing@1.0",
+      "job": "jobs-extended/statistical_hypothesis_testing.yaml",
+      "status": "passed",
+      "output": "n\tmean\tt_statistic\tdegrees_freedom\tp_value\n3\t2.000000\t0.000000\t2\t1.000000\n"
+    },
+    {
+      "operator": "galaxy_join_files_by_id@1.0",
+      "job": "jobs-extended/join_files_by_id.yaml",
+      "status": "passed",
+      "output": "a\t1\ta\tX\nb\t2\t.\t.\n"
+    },
+    {
+      "operator": "galaxy_join_files_on_column_fuzzy@1.0",
+      "job": "jobs-extended/join_files_on_column_fuzzy.yaml",
+      "status": "passed",
+      "output": "1\ta\t1.1\tX\t0.100000\n"
+    },
+    {
+      "operator": "galaxy_emboss_pasteseq@1.0",
+      "job": "jobs-extended/emboss_pasteseq.yaml",
+      "status": "passed",
+      "output": ">main\nACTTGT\n"
+    },
+    {
+      "operator": "galaxy_emboss_tranalign@1.0",
+      "job": "jobs-extended/emboss_tranalign.yaml",
+      "status": "passed",
+      "output": ">gene\nATG---AAA\n"
+    },
+    {
+      "operator": "galaxy_emboss_octanol@1.0",
+      "job": "jobs-extended/emboss_octanol.yaml",
+      "status": "passed",
+      "output": "sequence\tstart\tend\toctanol\tinterface\tdifference\nprotein\t1\t2\t0.240000\t-0.035000\t0.275000\n"
+    },
+    {
+      "operator": "galaxy_emboss_pepwheel@1.0",
+      "job": "jobs-extended/emboss_pepwheel.yaml",
+      "status": "passed",
+      "output": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 400\"><circle cx=\"200\" cy=\"200\" r=\"150\" fill=\"none\" stroke=\"#94a3b8\"/><circle cx=\"350.000000\" cy=\"200.000000\" r=\"13\" fill=\"#cffafe\"/><text x=\"350.000000\" y=\"204.000000\" text-anchor=\"middle\" font-size=\"12\">A</text></svg>\n"
     }
   ]
 }

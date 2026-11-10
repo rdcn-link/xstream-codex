@@ -1,0 +1,35 @@
+name: Project protein gaps to DNA and recover coding adaptation
+steps:
+- id: dna
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/extended/emboss_tranalign.txt
+    view: bytes
+  inputs: {}
+- id: protein
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/extended/emboss_tranalign-reference.txt
+    view: bytes
+  inputs: {}
+- id: align
+  operator: galaxy_emboss_tranalign@1.0
+  params: {}
+  inputs:
+    source: dna
+    reference: protein
+- id: ungap
+  operator: galaxy_emboss_degapseq@1.0
+  params: {}
+  inputs:
+    source: align
+- id: adaptation
+  operator: galaxy_emboss_cai@1.0
+  params:
+    weights:
+    - ATG=1000
+    - AAA=500
+  inputs:
+    source: ungap
+outputs:
+  result: adaptation

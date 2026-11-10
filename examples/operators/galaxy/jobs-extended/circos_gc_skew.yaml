@@ -1,0 +1,15 @@
+name: Compute windowed FASTA GC skew as bedGraph.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/circos_gc_skew.txt
+    view: bytes
+- id: process
+  operator: galaxy_circos_gc_skew@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

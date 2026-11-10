@@ -1,0 +1,15 @@
+name: Expand BED12 blocks into discrete BED6 intervals.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed12_to_bed6.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed12_to_bed6@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

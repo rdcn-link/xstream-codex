@@ -1,0 +1,172 @@
+{
+  "status": "passed",
+  "case_count": 27,
+  "references": {
+    "bcftools": "Debian 1.19-1build2 (htslib 1.19)",
+    "samtools": "Debian 1.19.2-1build2 (htslib 1.19)"
+  },
+  "cases": [
+    {
+      "case": 0,
+      "operator": "vcf_missing_to_ref",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 1,
+      "operator": "vcf_missing_to_ref",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 2,
+      "operator": "vcf_missing_to_ref",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 3,
+      "operator": "vcf_set_missing_genotypes",
+      "status": "passed",
+      "normalization": "Preserve input GT phase separators; native setGT resets missing calls to unphased."
+    },
+    {
+      "case": 4,
+      "operator": "vcf_set_missing_genotypes",
+      "status": "passed",
+      "normalization": "Preserve input GT phase separators; native setGT resets missing calls to unphased."
+    },
+    {
+      "case": 5,
+      "operator": "vcf_set_missing_genotypes",
+      "status": "passed",
+      "normalization": "Preserve input GT phase separators; native setGT resets missing calls to unphased."
+    },
+    {
+      "case": 6,
+      "operator": "vcf_fix_ploidy",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 7,
+      "operator": "vcf_fix_ploidy",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 8,
+      "operator": "vcf_fix_ploidy",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 9,
+      "operator": "vcf_select_samples",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 10,
+      "operator": "vcf_select_samples",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 11,
+      "operator": "vcf_select_samples",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 12,
+      "operator": "sam_depth",
+      "status": "passed",
+      "normalization": "Sparse nonzero positions only; omit native zero-depth rows inside alignments."
+    },
+    {
+      "case": 13,
+      "operator": "sam_depth",
+      "status": "passed",
+      "normalization": "Sparse nonzero positions only; omit native zero-depth rows inside alignments."
+    },
+    {
+      "case": 14,
+      "operator": "sam_depth",
+      "status": "passed",
+      "normalization": "Sparse nonzero positions only; omit native zero-depth rows inside alignments."
+    },
+    {
+      "case": 15,
+      "operator": "sam_depth",
+      "status": "passed",
+      "normalization": "Sparse nonzero positions only; omit native zero-depth rows inside alignments."
+    },
+    {
+      "case": 16,
+      "operator": "sam_reference_counts",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 17,
+      "operator": "sam_reference_counts",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 18,
+      "operator": "sam_reference_counts",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 19,
+      "operator": "sam_reference_counts",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 20,
+      "operator": "sam_to_fastq",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 21,
+      "operator": "sam_to_fastq",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 22,
+      "operator": "sam_to_fastq",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 23,
+      "operator": "sam_to_fastq",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 24,
+      "operator": "sam_calmd",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 25,
+      "operator": "sam_calmd",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    },
+    {
+      "case": 26,
+      "operator": "sam_calmd",
+      "status": "passed",
+      "normalization": "Record/header formatting is compared separately where documented."
+    }
+  ]
+}

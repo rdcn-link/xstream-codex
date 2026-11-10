@@ -1,0 +1,28 @@
+name: Sort, merge and measure interval coverage
+steps:
+- id: read
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/extended/bed_sort.txt
+    view: bytes
+  inputs: {}
+- id: sort
+  operator: galaxy_bed_sort@1.0
+  inputs:
+    source: read
+  params: {}
+- id: merge
+  operator: galaxy_bed_merge@1.0
+  inputs:
+    source: sort
+  params: {}
+- id: coverage
+  operator: galaxy_bed_genome_coverage@1.0
+  inputs:
+    source: merge
+  params:
+    chromosomes:
+    - chr1=20
+    - chr2=10
+outputs:
+  result: coverage

@@ -1,0 +1,2698 @@
+{
+  "reference": "seqtk at 94e707082d39b0a038f234df676e32d9802c0dc7",
+  "cases": [
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nACGTMRYWSKBDHVN\n>y\nccgryn\n",
+      "expected": "x\t15\t1\t1\t1\t1\t6\t4\t1\t2\t4\t2\t0\ny\t6\t0\t2\t1\t0\t2\t0\t1\t2\t0\t2\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nAmrSwYNBDHV\n",
+      "expected": "x\t2\tm\nx\t3\tr\nx\t4\tS\nx\t5\tw\nx\t6\tY\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "10",
+        "<input>"
+      ],
+      "data": ">x\nAANNNCCNNNNGG\n",
+      "expected": ">x:1-2\nAA\n>x:6-7\nCC\n>x:12-13\nGG\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "1",
+        "<input>"
+      ],
+      "data": ">x\nAMGTNNRYAC\n",
+      "expected": "x\t0\t4\t1.00\t4\t1\nx\t4\t8\t4.00\t2\t2\nx\t8\t10\t0.00\t2\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "CCC",
+        "-s",
+        "3",
+        "<input>"
+      ],
+      "data": ">x\nCCCCCCCCAAAGGGGGGG\n",
+      "expected": "x\t0\t8\t18\nx\t11\t18\t18\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "1",
+        "<input>"
+      ],
+      "data": "@r1\nAACCGGTT\n+\n!!IIII!!\n",
+      "expected": "@r1\nCCGG\n+\nIIII\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_dropse",
+      "reference_command": [
+        "seqtk",
+        "dropse",
+        "<input>"
+      ],
+      "data": "@r1/1\nAC\n+\nII\n@single\nGT\n+\nII\n@r2/1\nAC\n+\nII\n@r2/2\nGT\n+\nII\n",
+      "expected": "@r2/1\nAC\n+\nII\n@r2/2\nGT\n+\nII\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nGWWGYRYS\n",
+      "params": {},
+      "expected": "x\t8\t0\t0\t2\t0\t6\t0\t0\t2\t3\t3\t2\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nGWWGYRYS\n",
+      "params": {},
+      "expected": "x\t2\tW\nx\t3\tW\nx\t5\tY\nx\t6\tR\nx\t7\tY\nx\t8\tS\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nGWWGYRYS\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t2.00\t4\t2\nx\t4\t6\t3.00\t4\t3\nx\t6\t8\t4.00\t2\t2\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nGWWGYRYS\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-8\nGWWGYRYS\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nGWWGYRYS\n+\n!I!!I55!\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nYRY\n+\nI55\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nGWWGYRYS\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nMMTRTNTGG\n",
+      "params": {},
+      "expected": "x\t9\t0\t0\t2\t3\t3\t0\t1\t0\t2\t1\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nMMTRTNTGG\n",
+      "params": {},
+      "expected": "x\t1\tM\nx\t2\tM\nx\t4\tR\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMMTRTNTGG\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t3.00\t4\t3\nx\t4\t6\t1.33\t3\t1\nx\t6\t8\t0.00\t3\t0\nx\t8\t9\t0.00\t1\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMMTRTNTGG\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-9\nMMTRTNTGG\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nMMTRTNTGG\n+\n!55I5!55I\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nMTRT\n+\n55I5\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMMTRTNTGG\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nNYGMMCGAKY\n",
+      "params": {},
+      "expected": "x\t10\t1\t1\t2\t0\t5\t0\t1\t4\t3\t2\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nNYGMMCGAKY\n",
+      "params": {},
+      "expected": "x\t2\tY\nx\t4\tM\nx\t5\tM\nx\t9\tK\nx\t10\tY\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nNYGMMCGAKY\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t2.67\t3\t2\nx\t4\t6\t2.00\t4\t2\nx\t6\t8\t1.00\t4\t1\nx\t8\t10\t4.00\t2\t2\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nNYGMMCGAKY\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-10\nNYGMMCGAKY\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nNYGMMCGAKY\n+\n!I!!!!I!5I\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nGAK\n+\nI!5\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nNYGMMCGAKY\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nYGKSAKTKSNK\n",
+      "params": {},
+      "expected": "x\t11\t1\t0\t1\t1\t7\t0\t1\t2\t6\t1\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nYGKSAKTKSNK\n",
+      "params": {},
+      "expected": "x\t1\tY\nx\t3\tK\nx\t4\tS\nx\t6\tK\nx\t8\tK\nx\t9\tS\nx\t11\tK\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nYGKSAKTKSNK\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t3.00\t4\t3\nx\t4\t6\t3.00\t4\t3\nx\t6\t8\t2.00\t4\t2\nx\t8\t10\t2.67\t3\t2\nx\t10\t11\t4.00\t1\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nYGKSAKTKSNK\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-11\nYGKSAKTKSNK\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nYGKSAKTKSNK\n+\n5II5I555!!5\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nYGKSAKTK\n+\n5II5I555\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nYGKSAKTKSNK\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nMYNTYSWKNGAM\n",
+      "params": {},
+      "expected": "x\t12\t1\t0\t1\t1\t7\t0\t2\t0\t5\t2\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nMYNTYSWKNGAM\n",
+      "params": {},
+      "expected": "x\t1\tM\nx\t2\tY\nx\t5\tY\nx\t6\tS\nx\t7\tW\nx\t8\tK\nx\t12\tM\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMYNTYSWKNGAM\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t2.67\t3\t2\nx\t4\t6\t2.67\t3\t2\nx\t6\t8\t4.00\t4\t4\nx\t8\t10\t2.67\t3\t2\nx\t10\t12\t2.00\t2\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMYNTYSWKNGAM\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-12\nMYNTYSWKNGAM\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nMYNTYSWKNGAM\n+\nI5!!5II!I!I!\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nYSW\n+\n5II\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMYNTYSWKNGAM\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nNSKTMKRRWACWT\n",
+      "params": {},
+      "expected": "x\t13\t1\t1\t0\t2\t8\t0\t1\t0\t6\t2\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nNSKTMKRRWACWT\n",
+      "params": {},
+      "expected": "x\t2\tS\nx\t3\tK\nx\t5\tM\nx\t6\tK\nx\t7\tR\nx\t8\tR\nx\t9\tW\nx\t12\tW\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nNSKTMKRRWACWT\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t2.67\t3\t2\nx\t4\t6\t3.00\t4\t3\nx\t6\t8\t4.00\t4\t4\nx\t8\t10\t3.00\t4\t3\nx\t10\t12\t2.00\t4\t2\nx\t12\t13\t0.00\t1\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nNSKTMKRRWACWT\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-13\nNSKTMKRRWACWT\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nNSKTMKRRWACWT\n+\nI!II!!5I!5II!\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nACW\n+\n5II\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nNSKTMKRRWACWT\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nKMMWSAWGAWATTG\n",
+      "params": {},
+      "expected": "x\t14\t3\t0\t2\t2\t7\t0\t0\t0\t7\t0\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nKMMWSAWGAWATTG\n",
+      "params": {},
+      "expected": "x\t1\tK\nx\t2\tM\nx\t3\tM\nx\t4\tW\nx\t5\tS\nx\t7\tW\nx\t10\tW\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nKMMWSAWGAWATTG\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t4.00\t4\t4\nx\t4\t6\t3.00\t4\t3\nx\t6\t8\t2.00\t4\t2\nx\t8\t10\t2.00\t4\t2\nx\t10\t12\t1.00\t4\t1\nx\t12\t14\t0.00\t2\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nKMMWSAWGAWATTG\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-14\nKMMWSAWGAWATTG\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nKMMWSAWGAWATTG\n+\n!!!!I!!5!II5!I\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nWAT\n+\nII5\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nKMMWSAWGAWATTG\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "x\t12\t14\t14\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nYWWRWSTKKNYGTYC\n",
+      "params": {},
+      "expected": "x\t15\t0\t1\t1\t2\t10\t0\t1\t2\t6\t4\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nYWWRWSTKKNYGTYC\n",
+      "params": {},
+      "expected": "x\t1\tY\nx\t2\tW\nx\t3\tW\nx\t4\tR\nx\t5\tW\nx\t6\tS\nx\t8\tK\nx\t9\tK\nx\t11\tY\nx\t14\tY\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nYWWRWSTKKNYGTYC\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t4.00\t4\t4\nx\t4\t6\t4.00\t4\t4\nx\t6\t8\t3.00\t4\t3\nx\t8\t10\t2.67\t3\t2\nx\t10\t12\t2.67\t3\t2\nx\t12\t14\t2.00\t4\t2\nx\t14\t15\t0.00\t1\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nYWWRWSTKKNYGTYC\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-15\nYWWRWSTKKNYGTYC\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nYWWRWSTKKNYGTYC\n+\nI555I!!!!55!55!\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nYWWRW\n+\nI555I\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nYWWRWSTKKNYGTYC\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nASNTYAMCTNMMMACK\n",
+      "params": {},
+      "expected": "x\t16\t3\t2\t0\t2\t7\t0\t2\t0\t6\t1\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nASNTYAMCTNMMMACK\n",
+      "params": {},
+      "expected": "x\t2\tS\nx\t5\tY\nx\t7\tM\nx\t11\tM\nx\t12\tM\nx\t13\tM\nx\t16\tK\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nASNTYAMCTNMMMACK\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t1.33\t3\t1\nx\t4\t6\t1.33\t3\t1\nx\t6\t8\t2.00\t4\t2\nx\t8\t10\t1.33\t3\t1\nx\t10\t12\t2.67\t3\t2\nx\t12\t14\t3.00\t4\t3\nx\t14\t16\t2.00\t2\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nASNTYAMCTNMMMACK\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-16\nASNTYAMCTNMMMACK\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nASNTYAMCTNMMMACK\n+\n55I5!I!!!II5I!!I\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nNMMM\n+\nII5I\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nASNTYAMCTNMMMACK\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nAMARSYGYYWTTGKKSN\n",
+      "params": {},
+      "expected": "x\t17\t2\t0\t2\t2\t10\t0\t1\t2\t6\t4\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nAMARSYGYYWTTGKKSN\n",
+      "params": {},
+      "expected": "x\t2\tM\nx\t4\tR\nx\t5\tS\nx\t6\tY\nx\t8\tY\nx\t9\tY\nx\t10\tW\nx\t14\tK\nx\t15\tK\nx\t16\tS\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nAMARSYGYYWTTGKKSN\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t2.00\t4\t2\nx\t4\t6\t3.00\t4\t3\nx\t6\t8\t3.00\t4\t3\nx\t8\t10\t3.00\t4\t3\nx\t10\t12\t2.00\t4\t2\nx\t12\t14\t1.00\t4\t1\nx\t14\t16\t3.00\t4\t3\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nAMARSYGYYWTTGKKSN\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-17\nAMARSYGYYWTTGKKSN\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nAMARSYGYYWTTGKKSN\n+\n!I5II!5III!I5!!II\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nMARS\n+\nI5II\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nAMARSYGYYWTTGKKSN\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nTAYWYRCCAWYAKGWCCN\n",
+      "params": {},
+      "expected": "x\t18\t3\t4\t1\t1\t8\t0\t1\t2\t4\t4\t2\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nTAYWYRCCAWYAKGWCCN\n",
+      "params": {},
+      "expected": "x\t3\tY\nx\t4\tW\nx\t5\tY\nx\t6\tR\nx\t10\tW\nx\t11\tY\nx\t13\tK\nx\t15\tW\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nTAYWYRCCAWYAKGWCCN\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t2.00\t4\t2\nx\t4\t6\t4.00\t4\t4\nx\t6\t8\t2.00\t4\t2\nx\t8\t10\t1.00\t4\t1\nx\t10\t12\t2.00\t4\t2\nx\t12\t14\t2.00\t4\t2\nx\t14\t16\t2.00\t4\t2\nx\t16\t18\t0.00\t1\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nTAYWYRCCAWYAKGWCCN\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-18\nTAYWYRCCAWYAKGWCCN\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nTAYWYRCCAWYAKGWCCN\n+\nII!II!!II!!5II5II!\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nAKGWCC\n+\n5II5II\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nTAYWYRCCAWYAKGWCCN\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_comp",
+      "reference_command": [
+        "seqtk",
+        "comp",
+        "<input>"
+      ],
+      "data": ">x\nMWRCMWNTRTAATSCSCGW\n",
+      "params": {},
+      "expected": "x\t19\t2\t3\t1\t3\t9\t0\t1\t2\t7\t2\t0\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_listhet",
+      "reference_command": [
+        "seqtk",
+        "listhet",
+        "<input>"
+      ],
+      "data": ">x\nMWRCMWNTRTAATSCSCGW\n",
+      "params": {},
+      "expected": "x\t1\tM\nx\t2\tW\nx\t3\tR\nx\t5\tM\nx\t6\tW\nx\t9\tR\nx\t14\tS\nx\t16\tS\nx\t19\tW\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_hety",
+      "reference_command": [
+        "seqtk",
+        "hety",
+        "-w",
+        "4",
+        "-t",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMWRCMWNTRTAATSCSCGW\n",
+      "params": {
+        "window": 4,
+        "starts": 2
+      },
+      "expected": "x\t0\t4\t3.00\t4\t3\nx\t4\t6\t3.00\t4\t3\nx\t6\t8\t2.67\t3\t2\nx\t8\t10\t1.33\t3\t1\nx\t10\t12\t1.00\t4\t1\nx\t12\t14\t1.00\t4\t1\nx\t14\t16\t2.00\t4\t2\nx\t16\t18\t1.00\t4\t1\nx\t18\t19\t4.00\t1\t1\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_cutN",
+      "reference_command": [
+        "seqtk",
+        "cutN",
+        "-n",
+        "3",
+        "-p",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMWRCMWNTRTAATSCSCGW\n",
+      "params": {
+        "penalty": 2
+      },
+      "expected": ">x:1-19\nMWRCMWNTRTAATSCSCGW\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_trimfq",
+      "reference_command": [
+        "seqtk",
+        "trimfq",
+        "-l",
+        "3",
+        "<input>"
+      ],
+      "data": "@x\nMWRCMWNTRTAATSCSCGW\n+\nI!I55I5!5!III5!III!\n",
+      "params": {
+        "minimum_length": 3
+      },
+      "expected": "@x\nRCMWN\n+\nI55I5\n",
+      "reference": "seqtk"
+    },
+    {
+      "operator": "seqtk_telo",
+      "reference_command": [
+        "seqtk",
+        "telo",
+        "-m",
+        "AC",
+        "-s",
+        "1",
+        "-d",
+        "2",
+        "<input>"
+      ],
+      "data": ">x\nMWRCMWNTRTAATSCSCGW\n",
+      "params": {
+        "motif": "AC",
+        "minimum_score": 1,
+        "max_drop": 2
+      },
+      "expected": "",
+      "reference": "seqtk"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {},
+      "expected": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {},
+      "expected": "chr1\t18\t27\nchr1\t44\t53\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t88\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {},
+      "expected": "chr1\t18\t27\t1\nchr1\t22\t24\t1\nchr1\t44\t53\t2\nchr1\t50\t52\t2\nchr1\t55\t57\t3\nchr1\t58\t66\t4\nchr2\t6\t10\t5\nchr2\t26\t31\t6\nchr2\t33\t37\t7\nchr2\t42\t45\t8\nchr2\t82\t85\t9\nchr2\t84\t88\t9\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {},
+      "expected": "chr1\t18\t27\t.\nchr1\t22\t24\t-1\nchr1\t44\t53\t20\nchr1\t50\t52\t-1\nchr1\t55\t57\t3\nchr1\t58\t66\t1\nchr2\t6\t10\t.\nchr2\t26\t31\t16\nchr2\t33\t37\t2\nchr2\t42\t45\t5\nchr2\t82\t85\t37\nchr2\t84\t88\t-1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t16\t30\nchr1\t20\t27\nchr1\t42\t56\nchr1\t48\t55\nchr1\t53\t60\nchr1\t56\t69\nchr2\t4\t13\nchr2\t24\t34\nchr2\t31\t40\nchr2\t40\t48\nchr2\t80\t88\nchr2\t82\t91\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t16\t18\nchr1\t27\t30\nchr1\t20\t22\nchr1\t24\t27\nchr1\t42\t44\nchr1\t53\t56\nchr1\t48\t50\nchr1\t52\t55\nchr1\t53\t55\nchr1\t57\t60\nchr1\t56\t58\nchr1\t66\t69\nchr2\t4\t6\nchr2\t10\t13\nchr2\t24\t26\nchr2\t31\t34\nchr2\t31\t33\nchr2\t37\t40\nchr2\t40\t42\nchr2\t45\t48\nchr2\t80\t82\nchr2\t85\t88\nchr2\t82\t84\nchr2\t88\t91\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t18\nchr1\t27\t44\nchr1\t53\t55\nchr1\t57\t58\nchr1\t66\t100\nchr2\t0\t6\nchr2\t10\t26\nchr2\t31\t33\nchr2\t37\t42\nchr2\t45\t82\nchr2\t88\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t18\t27\nchr1\t22\t24\nchr1\t44\t53\nchr1\t50\t52\nchr1\t55\t57\nchr1\t58\t66\nchr2\t6\t10\nchr2\t26\t31\nchr2\t33\t37\nchr2\t42\t45\nchr2\t82\t85\nchr2\t84\t88\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t18\t22\t1\nchr1\t22\t24\t2\nchr1\t24\t27\t1\nchr1\t44\t50\t1\nchr1\t50\t52\t2\nchr1\t52\t53\t1\nchr1\t55\t57\t1\nchr1\t58\t66\t1\nchr2\t6\t10\t1\nchr2\t26\t31\t1\nchr2\t33\t37\t1\nchr2\t42\t45\t1\nchr2\t82\t84\t1\nchr2\t84\t85\t2\nchr2\t85\t88\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {},
+      "expected": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {},
+      "expected": "chr1\t26\t34\nchr1\t44\t58\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {},
+      "expected": "chr1\t26\t34\t1\nchr1\t44\t53\t2\nchr1\t47\t52\t2\nchr1\t51\t58\t2\nchr1\t52\t55\t2\nchr1\t80\t91\t3\nchr2\t0\t3\t4\nchr2\t15\t25\t5\nchr2\t23\t26\t5\nchr2\t50\t54\t6\nchr2\t77\t80\t7\nchr2\t81\t82\t8\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {},
+      "expected": "chr1\t26\t34\t.\nchr1\t44\t53\t10\nchr1\t47\t52\t-1\nchr1\t51\t58\t-1\nchr1\t52\t55\t-1\nchr1\t80\t91\t25\nchr2\t0\t3\t.\nchr2\t15\t25\t12\nchr2\t23\t26\t-1\nchr2\t50\t54\t24\nchr2\t77\t80\t23\nchr2\t81\t82\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t24\t37\nchr1\t42\t56\nchr1\t45\t55\nchr1\t49\t61\nchr1\t50\t58\nchr1\t78\t94\nchr2\t0\t6\nchr2\t13\t28\nchr2\t21\t29\nchr2\t48\t57\nchr2\t75\t83\nchr2\t79\t85\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t24\t26\nchr1\t34\t37\nchr1\t42\t44\nchr1\t53\t56\nchr1\t45\t47\nchr1\t52\t55\nchr1\t49\t51\nchr1\t58\t61\nchr1\t50\t52\nchr1\t55\t58\nchr1\t78\t80\nchr1\t91\t94\nchr2\t3\t6\nchr2\t13\t15\nchr2\t25\t28\nchr2\t21\t23\nchr2\t26\t29\nchr2\t48\t50\nchr2\t54\t57\nchr2\t75\t77\nchr2\t80\t83\nchr2\t79\t81\nchr2\t82\t85\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t26\nchr1\t34\t44\nchr1\t58\t80\nchr1\t91\t100\nchr2\t3\t15\nchr2\t26\t50\nchr2\t54\t77\nchr2\t80\t81\nchr2\t82\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t26\t34\nchr1\t44\t53\nchr1\t47\t52\nchr1\t51\t58\nchr1\t52\t55\nchr1\t80\t91\nchr2\t0\t3\nchr2\t15\t25\nchr2\t23\t26\nchr2\t50\t54\nchr2\t77\t80\nchr2\t81\t82\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t26\t34\t1\nchr1\t44\t47\t1\nchr1\t47\t51\t2\nchr1\t51\t53\t3\nchr1\t53\t55\t2\nchr1\t55\t58\t1\nchr1\t80\t91\t1\nchr2\t0\t3\t1\nchr2\t15\t23\t1\nchr2\t23\t25\t2\nchr2\t25\t26\t1\nchr2\t50\t54\t1\nchr2\t77\t80\t1\nchr2\t81\t82\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {},
+      "expected": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {},
+      "expected": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t95\nchr2\t37\t49\nchr2\t64\t73\nchr2\t75\t83\nchr2\t88\t95\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {},
+      "expected": "chr1\t16\t26\t1\nchr1\t30\t39\t2\nchr1\t49\t50\t3\nchr1\t57\t67\t4\nchr1\t81\t85\t5\nchr1\t85\t95\t5\nchr2\t37\t48\t6\nchr2\t43\t49\t6\nchr2\t64\t73\t7\nchr2\t67\t73\t7\nchr2\t75\t83\t8\nchr2\t88\t95\t9\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {},
+      "expected": "chr1\t16\t26\t.\nchr1\t30\t39\t4\nchr1\t49\t50\t10\nchr1\t57\t67\t7\nchr1\t81\t85\t14\nchr1\t85\t95\t0\nchr2\t37\t48\t.\nchr2\t43\t49\t-1\nchr2\t64\t73\t15\nchr2\t67\t73\t-1\nchr2\t75\t83\t2\nchr2\t88\t95\t5\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t14\t29\nchr1\t28\t42\nchr1\t47\t53\nchr1\t55\t70\nchr1\t79\t88\nchr1\t83\t98\nchr2\t35\t51\nchr2\t41\t52\nchr2\t62\t76\nchr2\t65\t76\nchr2\t73\t86\nchr2\t86\t98\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t14\t16\nchr1\t26\t29\nchr1\t28\t30\nchr1\t39\t42\nchr1\t47\t49\nchr1\t50\t53\nchr1\t55\t57\nchr1\t67\t70\nchr1\t79\t81\nchr1\t85\t88\nchr1\t83\t85\nchr1\t95\t98\nchr2\t35\t37\nchr2\t48\t51\nchr2\t41\t43\nchr2\t49\t52\nchr2\t62\t64\nchr2\t73\t76\nchr2\t65\t67\nchr2\t73\t76\nchr2\t73\t75\nchr2\t83\t86\nchr2\t86\t88\nchr2\t95\t98\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t16\nchr1\t26\t30\nchr1\t39\t49\nchr1\t50\t57\nchr1\t67\t81\nchr1\t95\t100\nchr2\t0\t37\nchr2\t49\t64\nchr2\t73\t75\nchr2\t83\t88\nchr2\t95\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t16\t26\nchr1\t30\t39\nchr1\t49\t50\nchr1\t57\t67\nchr1\t81\t85\nchr1\t85\t95\nchr2\t37\t48\nchr2\t43\t49\nchr2\t64\t73\nchr2\t67\t73\nchr2\t75\t83\nchr2\t88\t95\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t16\t26\t1\nchr1\t30\t39\t1\nchr1\t49\t50\t1\nchr1\t57\t67\t1\nchr1\t81\t95\t1\nchr2\t37\t43\t1\nchr2\t43\t48\t2\nchr2\t48\t49\t1\nchr2\t64\t67\t1\nchr2\t67\t73\t2\nchr2\t75\t83\t1\nchr2\t88\t95\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {},
+      "expected": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {},
+      "expected": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {},
+      "expected": "chr1\t7\t11\t1\nchr1\t12\t19\t2\nchr1\t32\t41\t3\nchr1\t38\t46\t3\nchr1\t55\t65\t4\nchr1\t83\t88\t5\nchr2\t7\t8\t6\nchr2\t18\t23\t7\nchr2\t21\t23\t7\nchr2\t41\t42\t8\nchr2\t74\t84\t9\nchr2\t86\t90\t10\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {},
+      "expected": "chr1\t7\t11\t.\nchr1\t12\t19\t1\nchr1\t32\t41\t13\nchr1\t38\t46\t-1\nchr1\t55\t65\t9\nchr1\t83\t88\t18\nchr2\t7\t8\t.\nchr2\t18\t23\t10\nchr2\t21\t23\t-1\nchr2\t41\t42\t18\nchr2\t74\t84\t32\nchr2\t86\t90\t2\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t5\t14\nchr1\t10\t22\nchr1\t30\t44\nchr1\t36\t49\nchr1\t53\t68\nchr1\t81\t91\nchr2\t5\t11\nchr2\t16\t26\nchr2\t19\t26\nchr2\t39\t45\nchr2\t72\t87\nchr2\t84\t93\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t5\t7\nchr1\t11\t14\nchr1\t10\t12\nchr1\t19\t22\nchr1\t30\t32\nchr1\t41\t44\nchr1\t36\t38\nchr1\t46\t49\nchr1\t53\t55\nchr1\t65\t68\nchr1\t81\t83\nchr1\t88\t91\nchr2\t5\t7\nchr2\t8\t11\nchr2\t16\t18\nchr2\t23\t26\nchr2\t19\t21\nchr2\t23\t26\nchr2\t39\t41\nchr2\t42\t45\nchr2\t72\t74\nchr2\t84\t87\nchr2\t84\t86\nchr2\t90\t93\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t7\nchr1\t11\t12\nchr1\t19\t32\nchr1\t46\t55\nchr1\t65\t83\nchr1\t88\t100\nchr2\t0\t7\nchr2\t8\t18\nchr2\t23\t41\nchr2\t42\t74\nchr2\t84\t86\nchr2\t90\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t7\t11\nchr1\t12\t19\nchr1\t32\t41\nchr1\t38\t46\nchr1\t55\t65\nchr1\t83\t88\nchr2\t7\t8\nchr2\t18\t23\nchr2\t21\t23\nchr2\t41\t42\nchr2\t74\t84\nchr2\t86\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t7\t11\t1\nchr1\t12\t19\t1\nchr1\t32\t38\t1\nchr1\t38\t41\t2\nchr1\t41\t46\t1\nchr1\t55\t65\t1\nchr1\t83\t88\t1\nchr2\t7\t8\t1\nchr2\t18\t21\t1\nchr2\t21\t23\t2\nchr2\t41\t42\t1\nchr2\t74\t84\t1\nchr2\t86\t90\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {},
+      "expected": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {},
+      "expected": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t37\nchr2\t67\t70\nchr2\t76\t86\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {},
+      "expected": "chr1\t27\t33\t1\nchr1\t39\t45\t2\nchr1\t67\t75\t3\nchr1\t72\t73\t3\nchr1\t79\t81\t4\nchr1\t83\t91\t5\nchr2\t5\t12\t6\nchr2\t15\t17\t7\nchr2\t24\t31\t8\nchr2\t26\t37\t8\nchr2\t67\t70\t9\nchr2\t76\t86\t10\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {},
+      "expected": "chr1\t27\t33\t.\nchr1\t39\t45\t6\nchr1\t67\t75\t22\nchr1\t72\t73\t-1\nchr1\t79\t81\t6\nchr1\t83\t91\t2\nchr2\t5\t12\t.\nchr2\t15\t17\t3\nchr2\t24\t31\t7\nchr2\t26\t37\t-1\nchr2\t67\t70\t30\nchr2\t76\t86\t6\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t25\t36\nchr1\t37\t48\nchr1\t65\t78\nchr1\t70\t76\nchr1\t77\t84\nchr1\t81\t94\nchr2\t3\t15\nchr2\t13\t20\nchr2\t22\t34\nchr2\t24\t40\nchr2\t65\t73\nchr2\t74\t89\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t25\t27\nchr1\t33\t36\nchr1\t37\t39\nchr1\t45\t48\nchr1\t65\t67\nchr1\t75\t78\nchr1\t70\t72\nchr1\t73\t76\nchr1\t77\t79\nchr1\t81\t84\nchr1\t81\t83\nchr1\t91\t94\nchr2\t3\t5\nchr2\t12\t15\nchr2\t13\t15\nchr2\t17\t20\nchr2\t22\t24\nchr2\t31\t34\nchr2\t24\t26\nchr2\t37\t40\nchr2\t65\t67\nchr2\t70\t73\nchr2\t74\t76\nchr2\t86\t89\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t27\nchr1\t33\t39\nchr1\t45\t67\nchr1\t75\t79\nchr1\t81\t83\nchr1\t91\t100\nchr2\t0\t5\nchr2\t12\t15\nchr2\t17\t24\nchr2\t37\t67\nchr2\t70\t76\nchr2\t86\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t27\t33\nchr1\t39\t45\nchr1\t67\t75\nchr1\t72\t73\nchr1\t79\t81\nchr1\t83\t91\nchr2\t5\t12\nchr2\t15\t17\nchr2\t24\t31\nchr2\t26\t37\nchr2\t67\t70\nchr2\t76\t86\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t27\t33\t1\nchr1\t39\t45\t1\nchr1\t67\t72\t1\nchr1\t72\t73\t2\nchr1\t73\t75\t1\nchr1\t79\t81\t1\nchr1\t83\t91\t1\nchr2\t5\t12\t1\nchr2\t15\t17\t1\nchr2\t24\t26\t1\nchr2\t26\t31\t2\nchr2\t31\t37\t1\nchr2\t67\t70\t1\nchr2\t76\t86\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {},
+      "expected": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {},
+      "expected": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t93\nchr2\t4\t15\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {},
+      "expected": "chr1\t4\t12\t1\nchr1\t61\t64\t2\nchr1\t69\t70\t3\nchr1\t82\t90\t4\nchr1\t84\t85\t4\nchr1\t89\t93\t4\nchr2\t4\t15\t5\nchr2\t12\t14\t5\nchr2\t17\t19\t6\nchr2\t20\t25\t7\nchr2\t27\t29\t8\nchr2\t31\t38\t9\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {},
+      "expected": "chr1\t4\t12\t.\nchr1\t61\t64\t49\nchr1\t69\t70\t5\nchr1\t82\t90\t12\nchr1\t84\t85\t-1\nchr1\t89\t93\t4\nchr2\t4\t15\t.\nchr2\t12\t14\t-1\nchr2\t17\t19\t3\nchr2\t20\t25\t1\nchr2\t27\t29\t2\nchr2\t31\t38\t2\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t2\t15\nchr1\t59\t67\nchr1\t67\t73\nchr1\t80\t93\nchr1\t82\t88\nchr1\t87\t96\nchr2\t2\t18\nchr2\t10\t17\nchr2\t15\t22\nchr2\t18\t28\nchr2\t25\t32\nchr2\t29\t41\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t2\t4\nchr1\t12\t15\nchr1\t59\t61\nchr1\t64\t67\nchr1\t67\t69\nchr1\t70\t73\nchr1\t80\t82\nchr1\t90\t93\nchr1\t82\t84\nchr1\t85\t88\nchr1\t87\t89\nchr1\t93\t96\nchr2\t2\t4\nchr2\t15\t18\nchr2\t10\t12\nchr2\t14\t17\nchr2\t15\t17\nchr2\t19\t22\nchr2\t18\t20\nchr2\t25\t28\nchr2\t25\t27\nchr2\t29\t32\nchr2\t29\t31\nchr2\t38\t41\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t4\nchr1\t12\t61\nchr1\t64\t69\nchr1\t70\t82\nchr1\t93\t100\nchr2\t0\t4\nchr2\t15\t17\nchr2\t19\t20\nchr2\t25\t27\nchr2\t29\t31\nchr2\t38\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t4\t12\nchr1\t61\t64\nchr1\t69\t70\nchr1\t82\t90\nchr1\t84\t85\nchr1\t89\t93\nchr2\t4\t15\nchr2\t12\t14\nchr2\t17\t19\nchr2\t20\t25\nchr2\t27\t29\nchr2\t31\t38\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t4\t12\t1\nchr1\t61\t64\t1\nchr1\t69\t70\t1\nchr1\t82\t84\t1\nchr1\t84\t85\t2\nchr1\t85\t89\t1\nchr1\t89\t90\t2\nchr1\t90\t93\t1\nchr2\t4\t12\t1\nchr2\t12\t14\t2\nchr2\t14\t15\t1\nchr2\t17\t19\t1\nchr2\t20\t25\t1\nchr2\t27\t29\t1\nchr2\t31\t38\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {},
+      "expected": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {},
+      "expected": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t57\nchr2\t76\t80\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {},
+      "expected": "chr1\t4\t12\t1\nchr1\t43\t52\t2\nchr1\t54\t58\t3\nchr1\t57\t67\t3\nchr1\t60\t70\t3\nchr1\t69\t74\t3\nchr2\t9\t14\t4\nchr2\t18\t25\t5\nchr2\t26\t31\t6\nchr2\t52\t54\t7\nchr2\t53\t57\t7\nchr2\t76\t80\t8\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {},
+      "expected": "chr1\t4\t12\t.\nchr1\t43\t52\t31\nchr1\t54\t58\t2\nchr1\t57\t67\t-1\nchr1\t60\t70\t-1\nchr1\t69\t74\t-1\nchr2\t9\t14\t.\nchr2\t18\t25\t4\nchr2\t26\t31\t1\nchr2\t52\t54\t21\nchr2\t53\t57\t-1\nchr2\t76\t80\t19\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t2\t15\nchr1\t41\t55\nchr1\t52\t61\nchr1\t55\t70\nchr1\t58\t73\nchr1\t67\t77\nchr2\t7\t17\nchr2\t16\t28\nchr2\t24\t34\nchr2\t50\t57\nchr2\t51\t60\nchr2\t74\t83\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t2\t4\nchr1\t12\t15\nchr1\t41\t43\nchr1\t52\t55\nchr1\t52\t54\nchr1\t58\t61\nchr1\t55\t57\nchr1\t67\t70\nchr1\t58\t60\nchr1\t70\t73\nchr1\t67\t69\nchr1\t74\t77\nchr2\t7\t9\nchr2\t14\t17\nchr2\t16\t18\nchr2\t25\t28\nchr2\t24\t26\nchr2\t31\t34\nchr2\t50\t52\nchr2\t54\t57\nchr2\t51\t53\nchr2\t57\t60\nchr2\t74\t76\nchr2\t80\t83\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t4\nchr1\t12\t43\nchr1\t52\t54\nchr1\t74\t100\nchr2\t0\t9\nchr2\t14\t18\nchr2\t25\t26\nchr2\t31\t52\nchr2\t57\t76\nchr2\t80\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t4\t12\nchr1\t43\t52\nchr1\t54\t58\nchr1\t57\t67\nchr1\t60\t70\nchr1\t69\t74\nchr2\t9\t14\nchr2\t18\t25\nchr2\t26\t31\nchr2\t52\t54\nchr2\t53\t57\nchr2\t76\t80\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t4\t12\t1\nchr1\t43\t52\t1\nchr1\t54\t57\t1\nchr1\t57\t58\t2\nchr1\t58\t60\t1\nchr1\t60\t67\t2\nchr1\t67\t69\t1\nchr1\t69\t70\t2\nchr1\t70\t74\t1\nchr2\t9\t14\t1\nchr2\t18\t25\t1\nchr2\t26\t31\t1\nchr2\t52\t53\t1\nchr2\t53\t54\t2\nchr2\t54\t57\t1\nchr2\t76\t80\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {},
+      "expected": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {},
+      "expected": "chr1\t0\t1\nchr1\t4\t13\nchr1\t34\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t94\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {},
+      "expected": "chr1\t0\t1\t1\nchr1\t4\t13\t2\nchr1\t6\t11\t2\nchr1\t34\t38\t3\nchr1\t38\t45\t3\nchr1\t49\t50\t4\nchr2\t10\t11\t5\nchr2\t28\t30\t6\nchr2\t38\t48\t7\nchr2\t80\t86\t8\nchr2\t82\t88\t8\nchr2\t83\t94\t8\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {},
+      "expected": "chr1\t0\t1\t.\nchr1\t4\t13\t3\nchr1\t6\t11\t-1\nchr1\t34\t38\t23\nchr1\t38\t45\t0\nchr1\t49\t50\t4\nchr2\t10\t11\t.\nchr2\t28\t30\t17\nchr2\t38\t48\t8\nchr2\t80\t86\t32\nchr2\t82\t88\t-1\nchr2\t83\t94\t-1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t4\nchr1\t2\t16\nchr1\t4\t14\nchr1\t32\t41\nchr1\t36\t48\nchr1\t47\t53\nchr2\t8\t14\nchr2\t26\t33\nchr2\t36\t51\nchr2\t78\t89\nchr2\t80\t91\nchr2\t81\t97\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t1\t4\nchr1\t2\t4\nchr1\t13\t16\nchr1\t4\t6\nchr1\t11\t14\nchr1\t32\t34\nchr1\t38\t41\nchr1\t36\t38\nchr1\t45\t48\nchr1\t47\t49\nchr1\t50\t53\nchr2\t8\t10\nchr2\t11\t14\nchr2\t26\t28\nchr2\t30\t33\nchr2\t36\t38\nchr2\t48\t51\nchr2\t78\t80\nchr2\t86\t89\nchr2\t80\t82\nchr2\t88\t91\nchr2\t81\t83\nchr2\t94\t97\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t1\t4\nchr1\t13\t34\nchr1\t45\t49\nchr1\t50\t100\nchr2\t0\t10\nchr2\t11\t28\nchr2\t30\t38\nchr2\t48\t80\nchr2\t94\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t0\t1\nchr1\t4\t13\nchr1\t6\t11\nchr1\t34\t38\nchr1\t38\t45\nchr1\t49\t50\nchr2\t10\t11\nchr2\t28\t30\nchr2\t38\t48\nchr2\t80\t86\nchr2\t82\t88\nchr2\t83\t94\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t1\t1\nchr1\t4\t6\t1\nchr1\t6\t11\t2\nchr1\t11\t13\t1\nchr1\t34\t45\t1\nchr1\t49\t50\t1\nchr2\t10\t11\t1\nchr2\t28\t30\t1\nchr2\t38\t48\t1\nchr2\t80\t82\t1\nchr2\t82\t83\t2\nchr2\t83\t86\t3\nchr2\t86\t88\t2\nchr2\t88\t94\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {},
+      "expected": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {},
+      "expected": "chr1\t2\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {},
+      "expected": "chr1\t2\t12\t1\nchr1\t4\t10\t1\nchr1\t10\t19\t1\nchr1\t23\t26\t2\nchr1\t56\t59\t3\nchr1\t88\t89\t4\nchr2\t1\t8\t5\nchr2\t22\t29\t6\nchr2\t40\t48\t7\nchr2\t50\t54\t8\nchr2\t64\t68\t9\nchr2\t87\t90\t10\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {},
+      "expected": "chr1\t2\t12\t.\nchr1\t4\t10\t-1\nchr1\t10\t19\t0\nchr1\t23\t26\t4\nchr1\t56\t59\t30\nchr1\t88\t89\t29\nchr2\t1\t8\t.\nchr2\t22\t29\t14\nchr2\t40\t48\t11\nchr2\t50\t54\t2\nchr2\t64\t68\t10\nchr2\t87\t90\t19\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t15\nchr1\t2\t13\nchr1\t8\t22\nchr1\t21\t29\nchr1\t54\t62\nchr1\t86\t92\nchr2\t0\t11\nchr2\t20\t32\nchr2\t38\t51\nchr2\t48\t57\nchr2\t62\t71\nchr2\t85\t93\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t2\nchr1\t12\t15\nchr1\t2\t4\nchr1\t10\t13\nchr1\t8\t10\nchr1\t19\t22\nchr1\t21\t23\nchr1\t26\t29\nchr1\t54\t56\nchr1\t59\t62\nchr1\t86\t88\nchr1\t89\t92\nchr2\t0\t1\nchr2\t8\t11\nchr2\t20\t22\nchr2\t29\t32\nchr2\t38\t40\nchr2\t48\t51\nchr2\t48\t50\nchr2\t54\t57\nchr2\t62\t64\nchr2\t68\t71\nchr2\t85\t87\nchr2\t90\t93\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t2\nchr1\t19\t23\nchr1\t26\t56\nchr1\t59\t88\nchr1\t89\t100\nchr2\t0\t1\nchr2\t8\t22\nchr2\t29\t40\nchr2\t48\t50\nchr2\t54\t64\nchr2\t68\t87\nchr2\t90\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t2\t12\nchr1\t4\t10\nchr1\t10\t19\nchr1\t23\t26\nchr1\t56\t59\nchr1\t88\t89\nchr2\t1\t8\nchr2\t22\t29\nchr2\t40\t48\nchr2\t50\t54\nchr2\t64\t68\nchr2\t87\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t2\t4\t1\nchr1\t4\t12\t2\nchr1\t12\t19\t1\nchr1\t23\t26\t1\nchr1\t56\t59\t1\nchr1\t88\t89\t1\nchr2\t1\t8\t1\nchr2\t22\t29\t1\nchr2\t40\t48\t1\nchr2\t50\t54\t1\nchr2\t64\t68\t1\nchr2\t87\t90\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_sort",
+      "reference_command": [
+        "bedtools",
+        "sort",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {},
+      "expected": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_merge",
+      "reference_command": [
+        "bedtools",
+        "merge",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {},
+      "expected": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t90\nchr2\t14\t24\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_cluster",
+      "reference_command": [
+        "bedtools",
+        "cluster",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {},
+      "expected": "chr1\t9\t17\t1\nchr1\t34\t45\t2\nchr1\t70\t73\t3\nchr1\t73\t80\t3\nchr1\t76\t86\t3\nchr1\t80\t90\t3\nchr2\t14\t24\t4\nchr2\t16\t20\t4\nchr2\t38\t39\t5\nchr2\t64\t71\t6\nchr2\t74\t82\t7\nchr2\t83\t90\t8\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_spacing",
+      "reference_command": [
+        "bedtools",
+        "spacing",
+        "-i",
+        "<input>"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {},
+      "expected": "chr1\t9\t17\t.\nchr1\t34\t45\t17\nchr1\t70\t73\t25\nchr1\t73\t80\t0\nchr1\t76\t86\t-1\nchr1\t80\t90\t-1\nchr2\t14\t24\t.\nchr2\t16\t20\t-1\nchr2\t38\t39\t18\nchr2\t64\t71\t25\nchr2\t74\t82\t3\nchr2\t83\t90\t1\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_slop",
+      "reference_command": [
+        "bedtools",
+        "slop",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t7\t20\nchr1\t32\t48\nchr1\t68\t76\nchr1\t71\t83\nchr1\t74\t89\nchr1\t78\t93\nchr2\t12\t27\nchr2\t14\t23\nchr2\t36\t42\nchr2\t62\t74\nchr2\t72\t85\nchr2\t81\t93\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_flank",
+      "reference_command": [
+        "bedtools",
+        "flank",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-l",
+        "2",
+        "-r",
+        "3"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t7\t9\nchr1\t17\t20\nchr1\t32\t34\nchr1\t45\t48\nchr1\t68\t70\nchr1\t73\t76\nchr1\t71\t73\nchr1\t80\t83\nchr1\t74\t76\nchr1\t86\t89\nchr1\t78\t80\nchr1\t90\t93\nchr2\t12\t14\nchr2\t24\t27\nchr2\t14\t16\nchr2\t20\t23\nchr2\t36\t38\nchr2\t39\t42\nchr2\t62\t64\nchr2\t71\t74\nchr2\t72\t74\nchr2\t82\t85\nchr2\t81\t83\nchr2\t90\t93\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_complement",
+      "reference_command": [
+        "bedtools",
+        "complement",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t0\t9\nchr1\t17\t34\nchr1\t45\t70\nchr1\t90\t100\nchr2\t0\t14\nchr2\t24\t38\nchr2\t39\t64\nchr2\t71\t74\nchr2\t82\t83\nchr2\t90\t100\n"
+    },
+    {
+      "reference": "bedtools2",
+      "operator": "bed_genome_coverage",
+      "reference_command": [
+        "bedtools",
+        "genomecov",
+        "-i",
+        "<input>",
+        "-g",
+        "<genome>",
+        "-bg"
+      ],
+      "data": "chr1\t9\t17\nchr1\t34\t45\nchr1\t70\t73\nchr1\t73\t80\nchr1\t76\t86\nchr1\t80\t90\nchr2\t14\t24\nchr2\t16\t20\nchr2\t38\t39\nchr2\t64\t71\nchr2\t74\t82\nchr2\t83\t90\n",
+      "params": {
+        "chromosomes": [
+          "chr1=100",
+          "chr2=100"
+        ]
+      },
+      "expected": "chr1\t9\t17\t1\nchr1\t34\t45\t1\nchr1\t70\t76\t1\nchr1\t76\t86\t2\nchr1\t86\t90\t1\nchr2\t14\t16\t1\nchr2\t16\t20\t2\nchr2\t20\t24\t1\nchr2\t38\t39\t1\nchr2\t64\t71\t1\nchr2\t74\t82\t1\nchr2\t83\t90\t1\n"
+    }
+  ],
+  "references": {
+    "seqtk": "94e707082d39b0a038f234df676e32d9802c0dc7",
+    "bedtools2": "614e9a5c5935ab86e873dab9072fbbaf003c1b7e"
+  }
+}

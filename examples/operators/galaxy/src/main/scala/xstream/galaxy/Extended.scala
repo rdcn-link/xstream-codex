@@ -49,6 +49,8 @@ abstract class ExtendedOperator(val operation:String) extends Operator {
   override def outputFormat:String=ExtendedOperator.this.format
   def transform(i:InputStream,o:OutputStream,p:JsonNode):Unit={validate(p);active();val out=new BufferedWriter(new OutputStreamWriter(o,StandardCharsets.UTF_8));run(i,s=>{active();require(s.length<=16777216,"output exceeds row budget");out.write(s)},p);active();out.flush()}
  }
+ def inputPorts:Vector[String]=Vector("source")
+ def transformInputs(inputs:Map[String,InputStream],o:OutputStream,p:JsonNode):Unit={require(inputs.keySet==Set("source"),"expected source input");transform(inputs("source"),o,p)}
  def transform(i:InputStream,o:OutputStream,p:JsonNode):Unit=delegate.transform(i,o,p)
  def inferOutputs(i:Map[String,StreamDescriptor],p:JsonNode):InferenceResult={validate(p);delegate.inferOutputs(i,p)}
  def previewOutputs(i:Map[String,StreamDescriptor],p:JsonNode,l:PreviewLimits):Map[String,OutputSample]={validate(p);delegate.previewOutputs(i,p,l)}

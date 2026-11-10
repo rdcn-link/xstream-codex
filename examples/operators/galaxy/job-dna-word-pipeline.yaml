@@ -1,0 +1,20 @@
+name: Edit DNA and count observed dinucleotide composition
+steps:
+- id: read
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/extended/emboss_biosed.txt
+    view: bytes
+  inputs: {}
+- id: edit
+  operator: galaxy_emboss_biosed@1.0
+  params: {}
+  inputs:
+    source: read
+- id: words
+  operator: galaxy_emboss_compseq@1.0
+  params: {}
+  inputs:
+    source: edit
+outputs:
+  result: words

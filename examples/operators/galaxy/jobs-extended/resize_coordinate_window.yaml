@@ -1,0 +1,15 @@
+name: Resize GFF intervals around their midpoint or existing boundaries.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/resize_coordinate_window.txt
+    view: bytes
+- id: process
+  operator: galaxy_resize_coordinate_window@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

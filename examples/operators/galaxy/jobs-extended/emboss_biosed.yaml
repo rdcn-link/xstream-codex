@@ -1,0 +1,15 @@
+name: Replace literal sequence motifs in FASTA.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_biosed.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_biosed@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

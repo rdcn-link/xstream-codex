@@ -1,0 +1,15 @@
+name: Replace SAM metadata while preserving the reference dictionary.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_reheader.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_reheader@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

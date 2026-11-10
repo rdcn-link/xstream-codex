@@ -1,0 +1,15 @@
+name: List one-based positions of two-allele IUPAC nucleotide codes.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_listhet.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_listhet@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

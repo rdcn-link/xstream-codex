@@ -1,0 +1,15 @@
+name: Reservoir-sample a bounded number of FASTA records.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_sample.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_sample@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

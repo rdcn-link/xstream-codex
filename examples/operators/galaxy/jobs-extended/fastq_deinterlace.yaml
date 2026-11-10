@@ -1,0 +1,15 @@
+name: Select paired or unpaired mate records from interleaved FASTQ.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fastq_deinterlace.txt
+    view: bytes
+- id: process
+  operator: galaxy_fastq_deinterlace@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

@@ -1,0 +1,15 @@
+name: Mask FASTQ bases selected by a quality-score comparison.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fastq_mask_quality.txt
+    view: bytes
+- id: process
+  operator: galaxy_fastq_mask_quality@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

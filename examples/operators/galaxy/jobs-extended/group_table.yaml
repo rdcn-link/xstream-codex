@@ -1,0 +1,15 @@
+name: Aggregate consecutive tabular groups using a numeric or textual operation.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/group_table.txt
+    view: bytes
+- id: process
+  operator: galaxy_group_table@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

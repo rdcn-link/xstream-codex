@@ -1,0 +1,15 @@
+name: Apply a soft minimum-QUAL filter to VCF records.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/vcf_filter_quality.txt
+    view: bytes
+- id: process
+  operator: galaxy_vcf_filter_quality@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

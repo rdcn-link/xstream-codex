@@ -1,0 +1,2 @@
+chr1	src	gene	2	8	5	+	.	ID=g1;Name=Gene1
+#comment

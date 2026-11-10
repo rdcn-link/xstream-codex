@@ -1,0 +1,236 @@
+{
+  "status": "passed",
+  "cases": 46,
+  "results": [
+    {
+      "operator": "bed12_to_bed6",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_extract_fasta",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_extract_fasta",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_mask_fasta",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_mask_fasta",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_nucleotide_content",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_nucleotide_content",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_union_bedgraph",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_union_bedgraph",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_union_bedgraph",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_multi_intersect",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_multi_intersect",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "bed_multi_intersect",
+      "source": "upstream-genome-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_biosed",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_cutseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_degapseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_descseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_extractseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_maskseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_notseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_nthseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_skipseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_trimseq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_transeq",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_getorf",
+      "source": "upstream-emboss-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_iep",
+      "source": "upstream-protein-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_iep",
+      "source": "upstream-protein-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_iep",
+      "source": "upstream-protein-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_iep",
+      "source": "upstream-protein-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_iep",
+      "source": "upstream-protein-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_needle",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_needle",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_needle",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_needle",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_needle",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_water",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_water",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_water",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_water",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_water",
+      "source": "upstream-alignment-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_fuzznuc",
+      "source": "upstream-nucleotide-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_fuzznuc",
+      "source": "upstream-nucleotide-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_fuzznuc",
+      "source": "upstream-nucleotide-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_pasteseq",
+      "source": "upstream-nucleotide-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_pasteseq",
+      "source": "upstream-nucleotide-cases.json",
+      "status": "passed"
+    },
+    {
+      "operator": "emboss_pasteseq",
+      "source": "upstream-nucleotide-cases.json",
+      "status": "passed"
+    }
+  ]
+}

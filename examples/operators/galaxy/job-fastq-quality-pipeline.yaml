@@ -1,0 +1,31 @@
+name: Normalize, mask and extract FASTQ sequence
+steps:
+- id: read
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/extended/fastq_groom.txt
+    view: bytes
+  inputs: {}
+- id: groom
+  operator: galaxy_fastq_groom@1.0
+  inputs:
+    source: read
+  params: {}
+- id: mask
+  operator: galaxy_fastq_mask_quality@1.0
+  inputs:
+    source: groom
+  params: {}
+- id: tabulate
+  operator: galaxy_fastq_to_tabular@1.0
+  inputs:
+    source: mask
+  params: {}
+- id: select
+  operator: galaxy_cut_columns@1.0
+  inputs:
+    source: tabulate
+  params:
+    columns: c2
+outputs:
+  result: select

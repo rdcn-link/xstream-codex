@@ -1,0 +1,15 @@
+name: Split FASTA sequences at scored N-rich tracts.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_cutN.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_cutN@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

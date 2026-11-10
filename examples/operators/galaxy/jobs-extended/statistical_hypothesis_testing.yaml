@@ -1,0 +1,15 @@
+name: Perform a two-sided one-sample Student t test.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/statistical_hypothesis_testing.txt
+    view: bytes
+- id: process
+  operator: galaxy_statistical_hypothesis_testing@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

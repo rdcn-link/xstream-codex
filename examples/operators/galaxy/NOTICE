@@ -11,3 +11,19 @@ Not an official Galaxy release; Galaxy is not an endorsement of these adapters.
 Extended adapters also use reviewed Galaxy IUC and bgruening/galaxytools tools.
 Their pinned revisions, source hashes and MIT notices are retained in
 upstream-extended/ and upstream-extended-manifest.json.
+
+Sequence analysis also adapts seqtk by Heng Li (MIT), revision
+94e707082d39b0a038f234df676e32d9802c0dc7, and galaxy-sequence-utils 1.2.0
+by Galaxy contributors (Academic Free License 3.0). Original source notices,
+licenses and file hashes are retained in upstream-dependencies/ and its manifest.
+These Scala adapters implement documented subsets, not binary-compatible tools.
+
+Variant adapters review BCFtools 1.21 by Genome Research Ltd. and contributors,
+revision bcf6c624342d0819e418169e7e5cd1277aefe7f8. The MIT license option is selected;
+original source notices and the full dual-license text are preserved under
+upstream-dependencies/bcftools/. No native binary or GSL dependency is distributed.
+
+SAM stream adapters review samtools 1.21, ec8bf989bd852cf46901b3e1a7d06d6fa10a79ff,
+by Genome Research Ltd., Broad Institute, Florian Breitwieser and contributors
+(MIT). Original per-file notices and LICENSE are retained under
+upstream-dependencies/samtools/. Native tools are test oracles, not runtime dependencies.

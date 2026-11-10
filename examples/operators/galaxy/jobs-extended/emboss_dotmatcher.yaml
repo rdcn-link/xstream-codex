@@ -1,0 +1,22 @@
+name: Find similar sequence windows using a bounded dot-plot score.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_dotmatcher.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_dotmatcher-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_dotmatcher@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

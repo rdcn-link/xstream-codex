@@ -1,0 +1,15 @@
+name: Calculate protein charge at a configured pH.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_charge.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_charge@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

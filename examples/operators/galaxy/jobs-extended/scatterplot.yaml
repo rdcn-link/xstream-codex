@@ -1,0 +1,15 @@
+name: Render paired numeric observations into a standalone SVG scatter plot.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/scatterplot.txt
+    view: bytes
+- id: process
+  operator: galaxy_scatterplot@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

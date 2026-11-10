@@ -1,0 +1,22 @@
+name: Subtract a union of reference intervals from each query interval.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_subtract.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_subtract-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed_subtract@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

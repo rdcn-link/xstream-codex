@@ -1,0 +1,15 @@
+name: Compute nucleotide, ambiguity, CpG and substitution-class composition.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_comp.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_comp@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

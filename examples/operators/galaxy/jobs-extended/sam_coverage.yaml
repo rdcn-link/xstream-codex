@@ -1,0 +1,15 @@
+name: Summarize reference breadth and mean depth.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_coverage.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_coverage@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

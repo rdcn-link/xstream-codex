@@ -1,0 +1,15 @@
+name: Convert FASTQ titles, sequences and quality strings to TSV.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fastq_to_tabular.txt
+    view: bytes
+- id: process
+  operator: galaxy_fastq_to_tabular@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

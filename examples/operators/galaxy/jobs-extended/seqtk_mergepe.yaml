@@ -1,0 +1,22 @@
+name: Interleave two corresponding four-line FASTQ streams.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_mergepe.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_mergepe-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_mergepe@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

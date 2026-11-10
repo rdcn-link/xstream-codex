@@ -2,11 +2,13 @@
 
 [English](README.md)
 
-本目录提供 50 个通过源码发布的 Scala 算子，将经过审阅的 Galaxy Devteam、Community 和 IUC 工具适配为 Arrow bytes 流。本页介绍原有 20 个适配器；[扩展参考](../../../docs/galaxy-operators_zh.md)介绍另外 30 个文本、表格和生物信息适配器、支持范围及限制。原始脚本、XML 定义、标准测试数据和许可保留在 `upstream/` 与 `upstream-extended/`，对应清单记录固定版本及 SHA-256。这些是选定工具的独立适配实现，并非完整 Galaxy 工具集合或 Galaxy 工作流导入器。
+本目录提供 200 个通过源码发布的 Scala 算子，将经过审阅的 Galaxy Devteam、Community 和 IUC 工具适配为 Arrow bytes 流。本页介绍20 个文本与基础基因组处理适配器；[扩展参考](../../../docs/galaxy-operators_zh.md)介绍其余 180 个文本、表格和生物信息适配器、支持范围及限制。原始脚本、XML 定义、标准测试数据和许可保留在 `upstream/`、`upstream-extended/` 与 `upstream-dependencies/`，对应清单记录固定版本及 SHA-256。这些是选定工具的独立适配实现，并非完整 Galaxy 工具集合或 Galaxy 工作流导入器。
 
 ## 选择算子
 
-算子版本为 `1.0`（`galaxy_tabular_to_fasta` 为 `1.0.1`），包含一个 `source` bytes 输入和一个 `result` bytes 输出，文本编码为 UTF-8。它们通过 JVM SDK 提供结构推导和受大小限制的输出样例。`bytes` 输出表达表格文本，不会声明 Arrow records schema；需要 records 时应连接合适的文本/TSV 解析算子。共享运行时为 `jvm-arrow@2.1`，产物是薄 JAR，无新增运行时依赖。
+其余 180 个适配器见 [Galaxy 流式算子适配器](../../../docs/galaxy-operators_zh.md)。
+
+以下20个算子版本为 `1.0`（`galaxy_tabular_to_fasta` 为 `1.0.1`），包含一个 `source` bytes 输入和一个 `result` bytes 输出，文本编码为 UTF-8。它们通过 JVM SDK 提供结构推导和受大小限制的输出样例。`bytes` 输出表达表格文本，不会声明 Arrow records schema；需要 records 时应连接合适的文本/TSV 解析算子。共享运行时为 `jvm-arrow@2.1`，产物是薄 JAR，无新增运行时依赖。
 
 | 算子 | 参数（默认值） | 行为 / 上游工具 |
 | --- | --- | --- |
@@ -79,7 +81,7 @@ python3 publish.py --url http://localhost:8820 \
   --token-file /secure/publisher.token --output /tmp/galaxy-publication
 ```
 
-该命令提交 50 份源码归档，由仓库隔离构建 Scala 算子，保持待审核状态。只提交一个工具时，在末尾添加短名称，例如 `cut_columns`。管理员可以增加 `--approve-password-file /secure/admin-password`；该模式等待构建，下载并验证每个候选产物，指定 `Galaxy`、`Text processing`、`Tabular data` 分类（FASTA 工具使用 `Galaxy`、`FASTA`、`Bioinformatics` 分类，SAM 工具使用 `Galaxy`、`SAM`、`Bioinformatics` 分类）和 4 分可信度，再审批发布，并核验公开下载与已测试候选产物一致。测试失败即停止发布。凭据从独立文件读取，不会打包或打印。远程发布必须使用 HTTPS。可信度是评估结果，不是安全保证。审核记录和产物测试报告写入 `--output`。
+该命令提交 200 份源码归档，由仓库隔离构建 Scala 算子，保持待审核状态。只提交一个工具时，在末尾添加短名称，例如 `cut_columns`。管理员可以增加 `--approve-password-file /secure/admin-password`；该模式等待构建，下载并验证每个候选产物，指定 `Galaxy`、`Text processing`、`Tabular data` 分类（FASTA 工具使用 `Galaxy`、`FASTA`、`Bioinformatics` 分类，SAM 工具使用 `Galaxy`、`SAM`、`Bioinformatics` 分类）和 4 分可信度，再审批发布，并核验公开下载与已测试候选产物一致。测试失败即停止发布。凭据从独立文件读取，不会打包或打印。远程发布必须使用 HTTPS。可信度是评估结果，不是安全保证。审核记录和产物测试报告写入 `--output`。
 
 每份源码归档包含 Scala 实现、上游证据、中英文说明、验证脚本和完整许可文本；发布的 JAR 内包含 `META-INF/LICENSE`、`META-INF/NOTICE` 和对应算子定义。源码公开。仓库管理和构建前提见[源码提交](../../../docs/operator-submission_zh.md)。
 
@@ -107,7 +109,7 @@ seq1	12	sequence-0
 seq3	20	sequence-1
 ```
 
-每个目录条目都包含 `documentation`：所有输入、输出及参数说明、符合 schema 的示例值，以及完整 Job。发布脚本随源码提交这些字段，仓库接收前会校验。`catalog.json` 同时提供 50 个算子定义的本地参考。固定运行时和测试结果见[验证结果](verification.json)。
+每个目录条目都包含 `documentation`：所有输入、输出及参数说明、符合 schema 的示例值，以及完整 Job。发布脚本随源码提交这些字段，仓库接收前会校验。`catalog.json` 同时提供 200 个算子定义的本地参考。固定运行时和测试结果见[验证结果](verification.json)。
 
 ## SAM 与表格序列示例
 
@@ -186,4 +188,12 @@ xstream-engine/target/universal/stage/bin/xstream-runner examples/operators/gala
 
 ## 扩展工具集
 
-新增 30 个适配器的参数范围、内存限制、来源和运行命令见 [Galaxy 算子](../../../docs/galaxy-operators_zh.md)。每个工具均附完整 Job、示例输入和回归预期。源码及许可证随提交归档。
+新增 180 个适配器的参数范围、内存限制、来源和运行命令见 [Galaxy 算子](../../../docs/galaxy-operators_zh.md)。每个工具均附完整 Job、示例输入和回归预期。源码及许可证随提交归档。
+
+## 组合示例
+
+`job-fastq-quality-pipeline.yaml` 将 Phred+64 转 Phred+33、屏蔽低质量碱基、转为表格并提取序列列。`job-interval-coverage-pipeline.yaml` 对基因组区间排序、合并后计算覆盖度。各步骤使用各自公开的算子程序包和共享 JVM 运行时。其余四个示例覆盖基因型规范化与剂量统计、DNA 编辑与词频、双输入密码子投影与适应指数，以及表连接后数值回归。发布后执行 `python3 verify-pipelines.py` 可验证全部七个组合示例。
+
+## 源码包与示例
+
+源码包包含完整 Scala 源码、契约、测试、许可和固定版本上游证据，以及当前算子的生成示例。执行 `python3 extend-catalog.py`，再执行 `python3 make-catalog.py`（需要 PyYAML），即可重建全部输入和 Job 示例。每份源码提交均遵守仓库归档限制。

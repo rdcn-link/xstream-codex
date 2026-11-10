@@ -1,0 +1,34 @@
+name: Join measurement IDs then fit numeric linear regression
+steps:
+- id: left
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/joined-regression-source.tsv
+    view: bytes
+  inputs: {}
+- id: right
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/joined-regression-reference.tsv
+    view: bytes
+  inputs: {}
+- id: join
+  operator: galaxy_join_files_by_id@1.0
+  params:
+    mode: inner
+  inputs:
+    source: left
+    reference: right
+- id: columns
+  operator: galaxy_cut_columns@1.0
+  params:
+    columns: c2,c4
+  inputs:
+    source: join
+- id: model
+  operator: galaxy_linear_regression@1.0
+  params: {}
+  inputs:
+    source: columns
+outputs:
+  result: model

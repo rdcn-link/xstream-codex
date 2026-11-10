@@ -1,0 +1,15 @@
+name: Resolve two-allele IUPAC ambiguities using a reproducible random choice.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_randbase.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_randbase@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

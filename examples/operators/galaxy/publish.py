@@ -9,17 +9,32 @@ HERE=Path(__file__).resolve().parent
 def source_package(spec):
  data=io.BytesIO()
  files={'src/'+p.name:p for p in (HERE/'src/main/scala').rglob('*.scala')}
- for name in ['LICENSE','NOTICE','README.md','README_zh.md','upstream-manifest.json','verify.py','make-catalog.py','build.sbt','catalog.json','extra-specs.json','extend-catalog.py','verify-extended.py','upstream-extended-manifest.json','extended-regressions.json']:
+ for name in ['LICENSE','NOTICE','README.md','README_zh.md','upstream-manifest.json','verify.py','make-catalog.py','build.sbt','catalog.json','extra-specs.json','extend-catalog.py','verify-extended.py','upstream-extended-manifest.json','extended-regressions.json','upstream-dependencies-manifest.json','upstream-golden-cases.json','upstream-variant-alignment-cases.json','upstream-paired-interval-cases.json','upstream-paired-sequence-cases.json','upstream-genome-cases.json','upstream-emboss-cases.json','upstream-protein-cases.json','upstream-alignment-cases.json','upstream-numerical-cases.json','upstream-nucleotide-cases.json']:
   files[name]=HERE/name
  for p in (HERE/'upstream').rglob('*'):
   if p.is_file():files[str(p.relative_to(HERE))]=p
  for p in (HERE/'upstream-extended').rglob('*'):
   if p.is_file():files[str(p.relative_to(HERE))]=p
+ for p in (HERE/'upstream-dependencies').rglob('*'):
+  if p.is_file():files[str(p.relative_to(HERE))]=p
+ # Generated extension fixtures/jobs are reproducible from extra-specs.json.
+ # Include this operator's generated examples, avoiding one archive entry per unrelated example.
+ for p in (HERE/'data').glob('*'):
+  if p.is_file():files[str(p.relative_to(HERE))]=p
+ short=spec['name'].removeprefix('galaxy_')
+ for p in [HERE/'data/extended'/f'{short}.txt',HERE/'jobs-extended'/f'{short}.yaml',*[HERE/'data/extended'/f'{short}-{port}.txt' for port in spec.get('fixture',{}).get('inputs',{})]]:
+  if p.is_file():files[str(p.relative_to(HERE))]=p
+ for p in HERE.glob('*.yaml'):files[p.name]=p
+ for name in ['verify-extended-jobs.py','verify-extended-pipeline.py','verify-pipelines.py','verify-upstream-reference.py','audit-publication.py','verify-variant-alignment-reference.py','verify-paired-reference.py','verify-scientific-reference.py','generate-numerical-reference.py']:files[name]=HERE/name
  for p in (HERE/'src/test').rglob('*.scala'):files['tests/'+p.name]=p
  for name in ['LICENSE','NOTICE']:files['resources/META-INF/'+name]=HERE/name
  for key in ['devteam','community','iuc']:files['resources/META-INF/GALAXY-'+key.upper()+'-LICENSE.txt']=HERE/'upstream-extended'/key/'LICENSE'
+ for key,path in [('SEQTK','seqtk/LICENSE'),('SEQUENCE-UTILS','galaxy-sequence-utils/galaxy_sequence_utils-1.2.0.dist-info/LICENSE'),('BCFTOOLS','bcftools/LICENSE'),('SAMTOOLS','samtools/LICENSE')]:files['resources/META-INF/GALAXY-'+key+'-LICENSE.txt']=HERE/'upstream-dependencies'/path
  with zipfile.ZipFile(data,'w',zipfile.ZIP_DEFLATED) as z:
+  assert len(files)+1<=1000,'source package exceeds repository entry limit'
+  assert sum(p.stat().st_size for p in files.values())+len(json.dumps(spec))<=16777216,'expanded source package exceeds repository byte limit'
   for name,p in sorted(files.items()):
+   assert p.stat().st_size<=1048576,'source file exceeds repository byte limit: '+name
    info=zipfile.ZipInfo(name,(2026,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;z.writestr(info,p.read_bytes())
   z.writestr('resources/META-INF/galaxy-operator.json',json.dumps(spec,sort_keys=True))
  return data.getvalue()
@@ -47,7 +62,7 @@ def main():
   evidence=store((HERE/'LICENSE').read_bytes(),'GALAXY-LICENSE.txt');receipts=[]
   for name in names:
    s=specs[name];source=source_package(s);source_ref=store(source,s['name']+'-sources.zip')
-   manifest={'api_version':2,'name':s['name'],'version':s['version'],'description':s['description'],'icon':s['icon'],'inputs':{'source':{'representations':['bytes'],'formats':[]}},'parameters':s['parameters'],'documentation':s['documentation'],'execution':{'executor':'jvm','entrypoint':s['entrypoint'],'config':{}},'runtime':{'image':runtime['image'],'archive':runtime['archive']},'build':{'language':'scala'},'source_public':True,'provenance':{'source_archive':source_ref,'source_repository':'https://github.com/galaxyproject/tools-devteam','source_revision':'ddbe2a1e6eded54877d786fbcfc18e594fb12932','license':'AFL-3.0 AND MIT','license_file':evidence,'build_instructions':'Scala adaptation sources are src/Galaxy.scala, src/Sequences.scala, src/Alignments.scala src/GenomicText.scala and src/Fastq.scala. Compile against the shared SDK with the registered jvm-arrow@2.1 Scala builder; include resources/ in the thin JAR. No external libraries beyond the shared runtime. README files document upstream behavior and deliberate fixes; upstream/ retains original tools and fixtures.'}}
+   manifest={'api_version':2,'name':s['name'],'version':s['version'],'description':s['description'],'icon':s['icon'],'inputs':s.get('inputs',{'source':{'representations':['bytes'],'formats':[]}}),'parameters':s['parameters'],'documentation':s['documentation'],'execution':{'executor':'jvm','entrypoint':s['entrypoint'],'config':{}},'runtime':{'image':runtime['image'],'archive':runtime['archive']},'build':{'language':'scala'},'source_public':True,'provenance':{'source_archive':source_ref,'source_repository':'https://github.com/galaxyproject/tools-devteam','source_revision':'ddbe2a1e6eded54877d786fbcfc18e594fb12932','license':'AFL-3.0 AND MIT','license_file':evidence,'build_instructions':'Scala adaptation sources are src/Galaxy.scala, src/Sequences.scala, src/Alignments.scala src/GenomicText.scala and src/Fastq.scala. Compile against the shared SDK with the registered jvm-arrow@2.1 Scala builder; include resources/ in the thin JAR. No external libraries beyond the shared runtime. README files document upstream behavior and deliberate fixes; upstream/ retains original tools and fixtures.'}}
    if 'upstream' in s:
     extended=json.loads((HERE/'upstream-extended-manifest.json').read_text());key=next(k for k,v in extended.items() if v['repository']==s['upstream']['repository']);upstream=extended[key]
     manifest['provenance'].update(source_repository=upstream['repository'],source_revision=upstream['revision'],license='AFL-3.0 AND MIT',license_file=evidence,build_instructions='Compile every src/*.scala against the shared SDK using the jvm-arrow@2.1 Scala builder. Include resources/ in the thin JAR. No external dependencies. See extra-specs.json, README and upstream-extended/ for reviewed sources, explicit supported scope and test fixtures.')

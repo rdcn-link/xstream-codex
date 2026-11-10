@@ -1,0 +1,81 @@
+{
+  "galaxy-sequence-utils": {
+    "version": "1.2.0",
+    "source": "https://pypi.org/project/galaxy-sequence-utils/1.2.0/",
+    "license": "AFL-3.0",
+    "files": {
+      "galaxy_utils/__init__.py": "5377ff260af7ce9822606da42dcbdc4f4e5342c57337d2a4b60fdfdd0f4e6450",
+      "galaxy_sequence_utils-1.2.0.dist-info/LICENSE": "9a0df9d6788d5e9ccd99aee762a3cb3476beb8d146d09416ef2bc442f65c39a8",
+      "galaxy_utils/sequence/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "galaxy_utils/sequence/sequence.py": "9a3eea135f07142235f9aed7aaca277d7f9aa07024eef62e60a5b888d1b86898",
+      "galaxy_utils/sequence/fasta.py": "1a2181d10811b543c8df9c8e75ecfbef75b4af544b2d083a91e5efd2272f6ca2",
+      "galaxy_utils/sequence/fastq.py": "f21be3a4632d81d8a040a512d470425d639402674e315bd3d0b61578fe71d107",
+      "galaxy_utils/sequence/vcf.py": "f29ff3ab7f9b4a98493b286f697cc6bf5fb646b6389a9705311ad3ef09ecc9aa",
+      "galaxy_utils/sequence/transform.py": "f02fdd73f59f9c998dec4be95ccb6d026db138eec920cde6076cb02335fc166d",
+      "galaxy_utils/sequence/scripts/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "galaxy_utils/sequence/scripts/fastq_combiner.py": "a3781c7ff3f6e6a5e1e90a346e7289946bbb7ee7c51f6f8f3ef5a7c6b480736d",
+      "galaxy_utils/sequence/scripts/fastq_stats.py": "1cd46e24840f7999c8ee6925c103189f447343ad56b61b0bad630ea2af36cc9a",
+      "galaxy_utils/sequence/scripts/fastq_paired_end_interlacer.py": "9333696a6b3f02145a036fa5e675b07e11696c7a10fc0476a62bffc7eda87793",
+      "galaxy_utils/sequence/scripts/fastq_paired_end_joiner.py": "44da70e4fa7facde703c75ce5091caa94800a35cf43ce7f3e8e8fde22b20769e",
+      "galaxy_utils/sequence/scripts/fastq_to_fasta.py": "380e0d0e1e013096d741393210559533a2e73b61fbf6f60221ad05b276787959",
+      "galaxy_utils/sequence/scripts/fastq_to_tabular.py": "947d19d464180019b59a8a9621a931758b11a229aa0f34e1231dec8b2ad49a7f",
+      "galaxy_utils/sequence/scripts/fastq_masker_by_quality.py": "634e357c16222ee706dad479c0906961183d684b5ee3795970a2e047bd58ebac",
+      "galaxy_utils/sequence/scripts/fastq_paired_end_splitter.py": "2cf013dfa8533cbce37cb6d1bd42216e5dc89a5fd1380d3536a6e31fb7faf7ce",
+      "galaxy_utils/sequence/scripts/fastq_paired_end_deinterlacer.py": "6070d0f18d1a129062c97c4a631b326f5c66357e9cad9b9f73e4df04be823e88",
+      "galaxy_utils/sequence/scripts/fastq_groomer.py": "07b0a568f4fb487dee956b0306f5e4b45d108265588cf926ede32517dc1c8d3d",
+      "galaxy_utils/sequence/scripts/fastq_trimmer.py": "344c670d71b27795e518c2e8d6dbfd62542163c4b62ed88eeeea4904f473baca",
+      "galaxy_utils/sequence/scripts/fastq_trimmer_by_quality.py": "8bda446450f6560121dd3936715e650ac221a7403e27a43663e2b32f6bf42806",
+      "galaxy_utils/sequence/scripts/fastq_manipulation.py": "84ec7018c2c05c009bdb990a90efc87d450ec7b6bf50ddd000b04cfdac7704e1",
+      "galaxy_utils/sequence/scripts/fastq_filter.py": "370bfd9298c4981551cff4ff4e7a30fbd7f8a4ff10de87ce3822ba3aa6c42b4f"
+    }
+  },
+  "seqtk": {
+    "repository": "https://github.com/lh3/seqtk",
+    "revision": "94e707082d39b0a038f234df676e32d9802c0dc7",
+    "license": "MIT",
+    "files": {
+      "seqtk.c": "cdec3b76b0a464070cfec3fe3dabc5f572ec88b08b0e19084d72e8aca22afa73",
+      "kseq.h": "34581642e3b439cd09f08456e653752dc55523cddaf06d5e3647ef4a822fc82e",
+      "khash.h": "ad7b5e2439a272155c72ad12f9936d3ed248970fdce862168d8761f3e89cf1a6",
+      "README.md": "9f08b79d7ee9b1e4f61e212efb8e7235be3c3df5792aa89190cd0d947137a259",
+      "LICENSE": "506c5701a91dbd753aaab8f34639ec98e038685dbb40d943f63465e291e739d8"
+    }
+  },
+  "bcftools": {
+    "repository": "https://github.com/samtools/bcftools",
+    "revision": "bcf6c624342d0819e418169e7e5cd1277aefe7f8",
+    "license": "MIT (selected license from dual MIT/GPL distribution; no GSL)",
+    "files": {
+      "LICENSE": "100dc370e44ccfecd7644d74f983e7cdf1c527bb99a5f8b6c1e0be1a6fcc78f7",
+      "README": "99d7a0a724889d47cc150e6834d38d01d74ca7130a3d9d6673e7b645bda59a51",
+      "vcfquery.c": "21c17b4e774ca739a63db3ee73d6c593769092a22a0d3b3819425c920cd926a4",
+      "vcfview.c": "497740cf8d19583d84e8d4f265c7fcc92c64683c7a8a1d8d2fb5c64919dfc15a",
+      "vcfannotate.c": "8096f3dfe39d04cc5598b37ac5b2c928ae7671354c993f5253d4bbe4f07ed9e2",
+      "vcffilter.c": "75b2b00dccf5e1d8e50ee1b07d58bb1b8435c8029539c4bf3bc241b8d7a3dbe7",
+      "reheader.c": "363a0551f0434fe8ff7c7843a92e4b2f8aa6d56e5f4a7eed1d294e1a0a18e929",
+      "plugins/counts.c": "36e7b448387891c685bde692b2b2173f12e0ca1b084e851c0fbb1c4c542d00ad",
+      "plugins/dosage.c": "cf087f423567b6fc07be4faca141883bd78e0bf1c6d03e36169abc13331a2927",
+      "plugins/missing2ref.c": "a288cc3e3955b6cf54679b8e3f2361b90dc8de28538fd2d46339ad7e61fd8134",
+      "plugins/fill-AN-AC.c": "874ca63dd6a2b7a229c30685c512451902d12673dbb8a78840f797001fc7e0ed",
+      "plugins/setGT.c": "2716e304ad20c7f2d1be9f53ee7fbb6b7ef365f7b55f8f1de979a81b3746a08f",
+      "plugins/fixploidy.c": "b5e6a7348c798896c172ede86ddc1add6e314ee6a66c68ad1ee3c88fa7d40457"
+    }
+  },
+  "samtools": {
+    "repository": "https://github.com/samtools/samtools",
+    "revision": "ec8bf989bd852cf46901b3e1a7d06d6fa10a79ff",
+    "license": "MIT",
+    "files": {
+      "LICENSE": "f789a6a4a3683afd368945d46bb3f6b6101e81a3d805036b5c8f43add68b5650",
+      "bam_stat.c": "9a5623b2f3534045627ed7f6ed658a7e3645ab395ef6f5819dbbfca215f50c62",
+      "bam_index.c": "078dd10ff10c4ef2e28a3c3c4dc2cbb11f608326898652f8acb911b76a687161",
+      "bam2depth.c": "1e02d97d4fa51f5e77cf1fb7ede57e9ac96ff7269f490acc767c2f252f27c6b3",
+      "coverage.c": "7b726b9351a9ffd76cf0dc236b6e5b843775dfc595c2bb98d79528e5e04eb41a",
+      "stats.c": "259fced9f96827e58d491f783de8dbf3df6a4a47a150c43b8637673b25722575",
+      "bam_sort.c": "f59dde5d8c5c73d7fa4b6e8c48b791bb587b2f2dc12ea38c918c4f489ab7f6dd",
+      "bam_fastq.c": "dbdde946d8cca9cfd12fde97736196bb47d1d9f4e3033287771537dc4bd97c70",
+      "bam_reheader.c": "abc72e5d4741567ea5e69c67054d19d294bc7713fffa040e99bbcc8f2e28beda",
+      "bam_md.c": "03a06b9799ecc5552467261354a1293760a336d548ff5bfed8148a49d01b4769"
+    }
+  }
+}

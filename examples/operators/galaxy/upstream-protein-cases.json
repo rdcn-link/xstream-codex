@@ -1,0 +1,95 @@
+{
+  "reference": "EMBOSS 6.6.0.0 Debian 6.6.0+dfsg-12ubuntu2",
+  "cases": [
+    {
+      "operator": "emboss_iep",
+      "data": ">x\nA\n",
+      "params": {},
+      "expected": "sequence\tisoelectric_point\nx\t5.55\n",
+      "numeric_tolerance": 0.00011,
+      "native_output": "IEP of x from 1 to 1\nIsoelectric Point = 5.5500\n\n   pH     Bound    Charge\n  1.00     2.00     1.00\n  1.50     1.99     0.99\n  2.00     1.98     0.98\n  2.50     1.93     0.93\n  3.00     1.80     0.80\n  3.50     1.56     0.56\n  4.00     1.28     0.28\n  4.50     1.11     0.11\n  5.00     1.04     0.04\n  5.50     1.00     0.00\n  6.00     0.97    -0.03\n  6.50     0.91    -0.09\n  7.00     0.76    -0.24\n  7.50     0.50    -0.50\n  8.00     0.24    -0.76\n  8.50     0.09    -0.91\n  9.00     0.03    -0.97\n  9.50     0.01    -0.99\n 10.00     0.00    -1.00\n 10.50     0.00    -1.00\n 11.00     0.00    -1.00\n 11.50     0.00    -1.00\n 12.00     0.00    -1.00\n 12.50     0.00    -1.00\n 13.00     0.00    -1.00\n 13.50     0.00    -1.00\n 14.00     0.00    -1.00\n",
+      "reference_command": [
+        "iep",
+        "-sequence",
+        "<input>",
+        "-outfile",
+        "<output>",
+        "-graph",
+        "none",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_iep",
+      "data": ">x\nDD\n",
+      "params": {},
+      "expected": "sequence\tisoelectric_point\nx\t3.4918\n",
+      "numeric_tolerance": 0.00011,
+      "native_output": "IEP of x from 1 to 2\nIsoelectric Point = 3.4918\n\n   pH     Bound    Charge\n  1.00     3.99     0.99\n  1.50     3.98     0.98\n  2.00     3.95     0.95\n  2.50     3.85     0.85\n  3.00     3.58     0.58\n  3.50     2.99    -0.01\n  4.00     2.17    -0.83\n  4.50     1.51    -1.49\n  5.00     1.18    -1.82\n  5.50     1.05    -1.95\n  6.00     0.99    -2.01\n  6.50     0.92    -2.08\n  7.00     0.76    -2.24\n  7.50     0.50    -2.50\n  8.00     0.24    -2.76\n  8.50     0.09    -2.91\n  9.00     0.03    -2.97\n  9.50     0.01    -2.99\n 10.00     0.00    -3.00\n 10.50     0.00    -3.00\n 11.00     0.00    -3.00\n 11.50     0.00    -3.00\n 12.00     0.00    -3.00\n 12.50     0.00    -3.00\n 13.00     0.00    -3.00\n 13.50     0.00    -3.00\n 14.00     0.00    -3.00\n",
+      "reference_command": [
+        "iep",
+        "-sequence",
+        "<input>",
+        "-outfile",
+        "<output>",
+        "-graph",
+        "none",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_iep",
+      "data": ">x\nKK\n",
+      "params": {},
+      "expected": "sequence\tisoelectric_point\nx\t10.8004\n",
+      "numeric_tolerance": 0.00011,
+      "native_output": "IEP of x from 1 to 2\nIsoelectric Point = 10.8004\n\n   pH     Bound    Charge\n  1.00     4.00     3.00\n  1.50     3.99     2.99\n  2.00     3.98     2.98\n  2.50     3.93     2.93\n  3.00     3.80     2.80\n  3.50     3.56     2.56\n  4.00     3.28     2.28\n  4.50     3.11     2.11\n  5.00     3.04     2.04\n  5.50     3.00     2.00\n  6.00     2.97     1.97\n  6.50     2.91     1.91\n  7.00     2.76     1.76\n  7.50     2.50     1.50\n  8.00     2.24     1.24\n  8.50     2.08     1.08\n  9.00     2.00     1.00\n  9.50     1.91     0.91\n 10.00     1.73     0.73\n 10.50     1.33     0.33\n 11.00     0.77    -0.23\n 11.50     0.33    -0.67\n 12.00     0.12    -0.88\n 12.50     0.04    -0.96\n 13.00     0.01    -0.99\n 13.50     0.00    -1.00\n 14.00     0.00    -1.00\n",
+      "reference_command": [
+        "iep",
+        "-sequence",
+        "<input>",
+        "-outfile",
+        "<output>",
+        "-graph",
+        "none",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_iep",
+      "data": ">x\nACDEFGHIKLMNPQRSTVWY\n",
+      "params": {},
+      "expected": "sequence\tisoelectric_point\nx\t6.9681\n",
+      "numeric_tolerance": 0.00011,
+      "native_output": "IEP of x from 1 to 20\nIsoelectric Point = 6.9681\n\n   pH     Bound    Charge\n  1.00     9.00     4.00\n  1.50     8.99     3.99\n  2.00     8.96     3.96\n  2.50     8.86     3.86\n  3.00     8.61     3.61\n  3.50     8.07     3.07\n  4.00     7.28     2.28\n  4.50     6.59     1.59\n  5.00     6.19     1.19\n  5.50     5.97     0.97\n  6.00     5.75     0.75\n  6.50     5.41     0.41\n  7.00     4.97    -0.03\n  7.50     4.50    -0.50\n  8.00     4.02    -0.98\n  8.50     3.57    -1.43\n  9.00     3.18    -1.82\n  9.50     2.85    -2.15\n 10.00     2.45    -2.55\n 10.50     1.95    -3.05\n 11.00     1.47    -3.53\n 11.50     1.11    -3.89\n 12.00     0.83    -4.17\n 12.50     0.52    -4.48\n 13.00     0.25    -4.75\n 13.50     0.09    -4.91\n 14.00     0.03    -4.97\n",
+      "reference_command": [
+        "iep",
+        "-sequence",
+        "<input>",
+        "-outfile",
+        "<output>",
+        "-graph",
+        "none",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_iep",
+      "data": ">x\nWYYKED\n",
+      "params": {},
+      "expected": "sequence\tisoelectric_point\nx\t4.184\n",
+      "numeric_tolerance": 0.00011,
+      "native_output": "IEP of x from 1 to 6\nIsoelectric Point = 4.1840\n\n   pH     Bound    Charge\n  1.00     7.00     2.00\n  1.50     6.99     1.99\n  2.00     6.96     1.96\n  2.50     6.86     1.86\n  3.00     6.61     1.61\n  3.50     6.07     1.07\n  4.00     5.28     0.28\n  4.50     4.60    -0.40\n  5.00     4.22    -0.78\n  5.50     4.07    -0.93\n  6.00     3.99    -1.01\n  6.50     3.92    -1.08\n  7.00     3.76    -1.24\n  7.50     3.50    -1.50\n  8.00     3.22    -1.78\n  8.50     3.04    -1.96\n  9.00     2.87    -2.13\n  9.50     2.56    -2.44\n 10.00     1.98    -3.02\n 10.50     1.24    -3.76\n 11.00     0.61    -4.39\n 11.50     0.24    -4.76\n 12.00     0.08    -4.92\n 12.50     0.03    -4.97\n 13.00     0.01    -4.99\n 13.50     0.00    -5.00\n 14.00     0.00    -5.00\n",
+      "reference_command": [
+        "iep",
+        "-sequence",
+        "<input>",
+        "-outfile",
+        "<output>",
+        "-graph",
+        "none",
+        "-auto"
+      ]
+    }
+  ]
+}

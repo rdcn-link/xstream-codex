@@ -1,0 +1,240 @@
+{
+  "status": "passed",
+  "case_count": 39,
+  "cases": [
+    {
+      "reference": "bedtools",
+      "case": 0,
+      "operator": "bed_intersect",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 1,
+      "operator": "bed_intersect",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 2,
+      "operator": "bed_intersect",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 3,
+      "operator": "bed_intersect",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 4,
+      "operator": "bed_subtract",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 5,
+      "operator": "bed_subtract",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 6,
+      "operator": "bed_subtract",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 7,
+      "operator": "bed_subtract",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 8,
+      "operator": "bed_window",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 9,
+      "operator": "bed_window",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 10,
+      "operator": "bed_window",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 11,
+      "operator": "bed_window",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 12,
+      "operator": "bed_closest",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 13,
+      "operator": "bed_closest",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 14,
+      "operator": "bed_closest",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 15,
+      "operator": "bed_closest",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 16,
+      "operator": "bed_coverage",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 17,
+      "operator": "bed_coverage",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 18,
+      "operator": "bed_coverage",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 19,
+      "operator": "bed_coverage",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 20,
+      "operator": "bed_map",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 21,
+      "operator": "bed_map",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 22,
+      "operator": "bed_map",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 23,
+      "operator": "bed_map",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 24,
+      "operator": "bed_annotate",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 25,
+      "operator": "bed_annotate",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 26,
+      "operator": "bed_annotate",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 27,
+      "operator": "bed_annotate",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 28,
+      "operator": "bed_jaccard",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 29,
+      "operator": "bed_jaccard",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 30,
+      "operator": "bed_jaccard",
+      "status": "passed"
+    },
+    {
+      "reference": "bedtools",
+      "case": 31,
+      "operator": "bed_jaccard",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 0,
+      "operator": "seqtk_mergefa",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 1,
+      "operator": "seqtk_mergefa",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 2,
+      "operator": "seqtk_mergefa",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 3,
+      "operator": "seqtk_mergepe",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 4,
+      "operator": "seqtk_mergepe",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 5,
+      "operator": "seqtk_mutfa",
+      "status": "passed"
+    },
+    {
+      "reference": "seqtk",
+      "case": 6,
+      "operator": "seqtk_mutfa",
+      "status": "passed"
+    }
+  ]
+}

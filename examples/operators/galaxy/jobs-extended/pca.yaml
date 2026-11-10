@@ -1,0 +1,15 @@
+name: Compute centered covariance principal-component scores.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/pca.txt
+    view: bytes
+- id: process
+  operator: galaxy_pca@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

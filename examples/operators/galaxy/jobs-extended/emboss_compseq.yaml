@@ -1,0 +1,15 @@
+name: Count observed k-mer composition in each DNA sequence.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_compseq.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_compseq@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

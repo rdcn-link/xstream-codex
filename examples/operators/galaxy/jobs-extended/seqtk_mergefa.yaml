@@ -1,0 +1,22 @@
+name: Merge paired FASTA sequences using IUPAC allele unions.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_mergefa.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_mergefa-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_mergefa@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

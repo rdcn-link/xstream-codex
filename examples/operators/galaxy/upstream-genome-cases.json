@@ -1,0 +1,252 @@
+{
+  "reference": "614e9a5c5935ab86e873dab9072fbbaf003c1b7e",
+  "cases": [
+    {
+      "operator": "bed12_to_bed6",
+      "data": "chr1\t2\t10\tx\t5\t+\t2\t10\t0\t2\t2,3\t0,5\n",
+      "inputs": {},
+      "params": {},
+      "expected": "chr1\t2\t4\tx\t5\t+\nchr1\t7\t10\tx\t5\t+\n",
+      "native_output": "chr1\t2\t4\tx\t5\t+\nchr1\t7\t10\tx\t5\t+\n",
+      "reference_command": [
+        "bedtools",
+        "bed12tobed6",
+        "-i",
+        "<source>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_extract_fasta",
+      "data": "chr1\t2\t6\n",
+      "inputs": {
+        "reference": ">chr1\nACGTACGT\n"
+      },
+      "params": {},
+      "expected": ">chr1:2-6\nGTAC\n",
+      "native_output": ">chr1:2-6\nGTAC\n",
+      "reference_command": [
+        "bedtools",
+        "getfasta",
+        "-fi",
+        "<reference>",
+        "-bed",
+        "<source>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_extract_fasta",
+      "data": "chr1\t0\t4\tx\t0\t-\n",
+      "inputs": {
+        "reference": ">chr1\nACGTACGT\n"
+      },
+      "params": {
+        "stranded": true
+      },
+      "expected": ">chr1:0-4(-)\nACGT\n",
+      "native_output": ">chr1:0-4(-)\nACGT\n",
+      "reference_command": [
+        "bedtools",
+        "getfasta",
+        "-fi",
+        "<reference>",
+        "-bed",
+        "<source>",
+        "-s"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_mask_fasta",
+      "data": ">chr1\nACGTACGT\n",
+      "inputs": {
+        "reference": "chr1\t2\t5\n"
+      },
+      "params": {},
+      "expected": ">chr1\nACNNNCGT\n",
+      "native_output": ">chr1\nACNNNCGT\n",
+      "reference_command": [
+        "bedtools",
+        "maskfasta",
+        "-fi",
+        "<source>",
+        "-bed",
+        "<reference>",
+        "-fo",
+        "/dev/stdout"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_mask_fasta",
+      "data": ">chr1\nACGTACGT\n",
+      "inputs": {
+        "reference": "chr1\t0\t4\nchr1\t2\t6\n"
+      },
+      "params": {
+        "soft": true
+      },
+      "expected": ">chr1\nacgtacGT\n",
+      "native_output": ">chr1\nacgtacGT\n",
+      "reference_command": [
+        "bedtools",
+        "maskfasta",
+        "-fi",
+        "<source>",
+        "-bed",
+        "<reference>",
+        "-fo",
+        "/dev/stdout",
+        "-soft"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_nucleotide_content",
+      "data": "chr1\t2\t6\n",
+      "inputs": {
+        "reference": ">chr1\nACGTACGT\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t6\t0.500000\t0.500000\t1\t1\t1\t1\t0\t0\t4\n",
+      "native_output": "#1_usercol\t2_usercol\t3_usercol\t4_pct_at\t5_pct_gc\t6_num_A\t7_num_C\t8_num_G\t9_num_T\t10_num_N\t11_num_oth\t12_seq_len\nchr1\t2\t6\t0.500000\t0.500000\t1\t1\t1\t1\t0\t0\t4\n",
+      "reference_command": [
+        "bedtools",
+        "nuc",
+        "-fi",
+        "<reference>",
+        "-bed",
+        "<source>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_nucleotide_content",
+      "data": "chr1\t0\t8\n",
+      "inputs": {
+        "reference": ">chr1\nACGTNRYW\n"
+      },
+      "params": {},
+      "expected": "chr1\t0\t8\t0.250000\t0.250000\t1\t1\t1\t1\t1\t3\t8\n",
+      "native_output": "#1_usercol\t2_usercol\t3_usercol\t4_pct_at\t5_pct_gc\t6_num_A\t7_num_C\t8_num_G\t9_num_T\t10_num_N\t11_num_oth\t12_seq_len\nchr1\t0\t8\t0.250000\t0.250000\t1\t1\t1\t1\t1\t3\t8\n",
+      "reference_command": [
+        "bedtools",
+        "nuc",
+        "-fi",
+        "<reference>",
+        "-bed",
+        "<source>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_union_bedgraph",
+      "data": "chr1\t2\t6\t3\n",
+      "inputs": {
+        "reference": "chr1\t4\t8\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t4\t3\t0\nchr1\t4\t6\t3\t5\nchr1\t6\t8\t0\t5\n",
+      "native_output": "chr1\t2\t4\t3\t0\nchr1\t4\t6\t3\t5\nchr1\t6\t8\t0\t5\n",
+      "reference_command": [
+        "bedtools",
+        "unionbedg",
+        "-i",
+        "<source>",
+        "<reference>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_union_bedgraph",
+      "data": "chr1\t0\t2\t3\nchr1\t2\t4\t3\n",
+      "inputs": {
+        "reference": "chr1\t1\t3\t3\n"
+      },
+      "params": {},
+      "expected": "chr1\t0\t1\t3\t0\nchr1\t1\t2\t3\t3\nchr1\t2\t3\t3\t3\nchr1\t3\t4\t3\t0\n",
+      "native_output": "chr1\t0\t1\t3\t0\nchr1\t1\t2\t3\t3\nchr1\t2\t3\t3\t3\nchr1\t3\t4\t3\t0\n",
+      "reference_command": [
+        "bedtools",
+        "unionbedg",
+        "-i",
+        "<source>",
+        "<reference>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_union_bedgraph",
+      "data": "chr1\t0\t2\t3\n",
+      "inputs": {
+        "reference": "chr2\t1\t3\t3\n"
+      },
+      "params": {},
+      "expected": "chr1\t0\t2\t3\t0\nchr2\t1\t3\t0\t3\n",
+      "native_output": "chr1\t0\t2\t3\t0\nchr2\t1\t3\t0\t3\n",
+      "reference_command": [
+        "bedtools",
+        "unionbedg",
+        "-i",
+        "<source>",
+        "<reference>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_multi_intersect",
+      "data": "chr1\t2\t6\n",
+      "inputs": {
+        "reference": "chr1\t4\t8\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t4\t1\t1\t1\t0\nchr1\t4\t6\t2\t1,2\t1\t1\nchr1\t6\t8\t1\t2\t0\t1\n",
+      "native_output": "chr1\t2\t4\t1\t1\t1\t0\nchr1\t4\t6\t2\t1,2\t1\t1\nchr1\t6\t8\t1\t2\t0\t1\n",
+      "reference_command": [
+        "bedtools",
+        "multiinter",
+        "-i",
+        "<source>",
+        "<reference>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_multi_intersect",
+      "data": "chr1\t0\t2\nchr1\t2\t4\n",
+      "inputs": {
+        "reference": "chr1\t1\t3\n"
+      },
+      "params": {},
+      "expected": "chr1\t0\t1\t1\t1\t1\t0\nchr1\t1\t3\t2\t1,2\t1\t1\nchr1\t3\t4\t1\t1\t1\t0\n",
+      "native_output": "chr1\t0\t1\t1\t1\t1\t0\nchr1\t1\t3\t2\t1,2\t1\t1\nchr1\t3\t4\t1\t1\t1\t0\n",
+      "reference_command": [
+        "bedtools",
+        "multiinter",
+        "-i",
+        "<source>",
+        "<reference>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    },
+    {
+      "operator": "bed_multi_intersect",
+      "data": "chr1\t0\t2\n",
+      "inputs": {
+        "reference": "chr2\t1\t3\n"
+      },
+      "params": {},
+      "expected": "chr1\t0\t2\t1\t1\t1\t0\nchr2\t1\t3\t1\t2\t0\t1\n",
+      "native_output": "chr1\t0\t2\t1\t1\t1\t0\nchr2\t1\t3\t1\t2\t0\t1\n",
+      "reference_command": [
+        "bedtools",
+        "multiinter",
+        "-i",
+        "<source>",
+        "<reference>"
+      ],
+      "normalization": "Headerless six-decimal composition fractions where applicable."
+    }
+  ]
+}

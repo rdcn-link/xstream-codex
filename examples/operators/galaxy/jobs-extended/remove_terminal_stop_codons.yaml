@@ -1,0 +1,15 @@
+name: Remove trailing standard-code stop codons from nucleotide FASTA.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/remove_terminal_stop_codons.txt
+    view: bytes
+- id: process
+  operator: galaxy_remove_terminal_stop_codons@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

@@ -1,0 +1,15 @@
+name: Set called genotypes to missing while preserving ploidy.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/vcf_set_missing_genotypes.txt
+    view: bytes
+- id: process
+  operator: galaxy_vcf_set_missing_genotypes@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

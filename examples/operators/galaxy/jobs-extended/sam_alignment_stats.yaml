@@ -1,0 +1,15 @@
+name: Summarize primary alignment lengths and mapping quality.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_alignment_stats.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_alignment_stats@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

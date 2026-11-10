@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """Run every extended sample through the standalone engine after public publication."""
-import json,subprocess,time
+import argparse,json,subprocess,time
 from pathlib import Path
 from urllib.request import urlopen
 from urllib.error import HTTPError,URLError
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[2]
 def main():
- specs=json.loads((HERE/'extra-specs.json').read_text());results=[]
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--only',nargs='+');args=parser.parse_args()
+ specs=json.loads((HERE/'extra-specs.json').read_text());all_specs=specs
+ if args.only:
+  assert all(n in specs for n in args.only),'unknown adapter'
+  specs={n:specs[n] for n in args.only}
+ report=HERE/'verification-extended-jobs.json';previous=json.loads(report.read_text()) if report.exists() else {};results=[v for v in previous.get('jobs',[]) if v['operator'].split('@')[0] not in {s['name'] for s in specs.values()}]
  for name,s in specs.items():
   deadline=time.monotonic()+3600
   while True:
@@ -24,6 +29,6 @@ def main():
   assert result.returncode==0,(name,result.stderr.decode(errors='replace')[-6000:])
   assert result.stdout.decode()==s['fixture']['expected'],(name,result.stdout,s['fixture']['expected'])
   results.append({'operator':s['name']+'@1.0','job':f'jobs-extended/{name}.yaml','status':'passed','output':result.stdout.decode()})
-  (HERE/'verification-extended-jobs.json').write_text(json.dumps({'status':'passed' if len(results)==len(specs) else 'running','completed':len(results),'total':len(specs),'jobs':results},indent=2)+'\n')
+  (HERE/'verification-extended-jobs.json').write_text(json.dumps({'status':'passed' if len(results)==len(all_specs) else 'running','completed':len(results),'total':len(all_specs),'jobs':results},indent=2)+'\n')
   print('PASS standalone Job',name,flush=True)
 if __name__=='__main__':main()

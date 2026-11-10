@@ -1,0 +1,15 @@
+name: Expand synchronized comma-separated lists across selected table columns.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/expand_columns.txt
+    view: bytes
+- id: process
+  operator: galaxy_expand_columns@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

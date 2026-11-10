@@ -1,0 +1,517 @@
+{
+  "reference": "614e9a5c5935ab86e873dab9072fbbaf003c1b7e",
+  "cases": [
+    {
+      "operator": "bed_intersect",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t4\t6\n",
+      "native_output": "chr1\t4\t6\n",
+      "reference_command": [
+        "bedtools",
+        "intersect"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_intersect",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "",
+      "native_output": "",
+      "reference_command": [
+        "bedtools",
+        "intersect"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_intersect",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t5\nchr1\t4\t8\n",
+      "native_output": "chr1\t2\t5\nchr1\t4\t8\n",
+      "reference_command": [
+        "bedtools",
+        "intersect"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_intersect",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "",
+      "native_output": "",
+      "reference_command": [
+        "bedtools",
+        "intersect"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_subtract",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t4\nchr1\t6\t8\n",
+      "native_output": "chr1\t2\t4\nchr1\t6\t8\n",
+      "reference_command": [
+        "bedtools",
+        "subtract"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_subtract",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\n",
+      "native_output": "chr1\t2\t8\n",
+      "reference_command": [
+        "bedtools",
+        "subtract"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_subtract",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "",
+      "native_output": "",
+      "reference_command": [
+        "bedtools",
+        "subtract"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_subtract",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\n",
+      "native_output": "chr1\t2\t8\n",
+      "reference_command": [
+        "bedtools",
+        "subtract"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_window",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\tchr1\t4\t6\t5\n",
+      "native_output": "chr1\t2\t8\tchr1\t4\t6\t5\n",
+      "reference_command": [
+        "bedtools",
+        "window",
+        "-w",
+        "1000"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_window",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\tchr1\t0\t2\t2\nchr1\t2\t8\tchr1\t8\t10\t4\n",
+      "native_output": "chr1\t2\t8\tchr1\t0\t2\t2\nchr1\t2\t8\tchr1\t8\t10\t4\n",
+      "reference_command": [
+        "bedtools",
+        "window",
+        "-w",
+        "1000"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_window",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\tchr1\t0\t5\t2\nchr1\t2\t8\tchr1\t4\t9\t4\n",
+      "native_output": "chr1\t2\t8\tchr1\t0\t5\t2\nchr1\t2\t8\tchr1\t4\t9\t4\n",
+      "reference_command": [
+        "bedtools",
+        "window",
+        "-w",
+        "1000"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_window",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "",
+      "native_output": "",
+      "reference_command": [
+        "bedtools",
+        "window",
+        "-w",
+        "1000"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_closest",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\tchr1\t4\t6\t5\t0\n",
+      "native_output": "chr1\t2\t8\tchr1\t4\t6\t5\t0\n",
+      "reference_command": [
+        "bedtools",
+        "closest",
+        "-d"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_closest",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\tchr1\t0\t2\t2\t1\nchr1\t2\t8\tchr1\t8\t10\t4\t1\n",
+      "native_output": "chr1\t2\t8\tchr1\t0\t2\t2\t1\nchr1\t2\t8\tchr1\t8\t10\t4\t1\n",
+      "reference_command": [
+        "bedtools",
+        "closest",
+        "-d"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_closest",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\tchr1\t0\t5\t2\t0\nchr1\t2\t8\tchr1\t4\t9\t4\t0\n",
+      "native_output": "chr1\t2\t8\tchr1\t0\t5\t2\t0\nchr1\t2\t8\tchr1\t4\t9\t4\t0\n",
+      "reference_command": [
+        "bedtools",
+        "closest",
+        "-d"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_closest",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t.\t-1\t-1\t-1\n",
+      "native_output": "chr1\t2\t8\t.\t-1\t-1\t.\t-1\n",
+      "reference_command": [
+        "bedtools",
+        "closest",
+        "-d"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_coverage",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t1\t2\t6\t0.333333\n",
+      "native_output": "chr1\t2\t8\t1\t2\t6\t0.3333333\n",
+      "reference_command": [
+        "bedtools",
+        "coverage"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_coverage",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t0\t0\t6\t0.000000\n",
+      "native_output": "chr1\t2\t8\t0\t0\t6\t0.0000000\n",
+      "reference_command": [
+        "bedtools",
+        "coverage"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_coverage",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t2\t6\t6\t1.000000\n",
+      "native_output": "chr1\t2\t8\t2\t6\t6\t1.0000000\n",
+      "reference_command": [
+        "bedtools",
+        "coverage"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_coverage",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t0\t0\t6\t0.000000\n",
+      "native_output": "chr1\t2\t8\t0\t0\t6\t0.0000000\n",
+      "reference_command": [
+        "bedtools",
+        "coverage"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_map",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t5.000000\n",
+      "native_output": "chr1\t2\t8\t5\n",
+      "reference_command": [
+        "bedtools",
+        "map",
+        "-c",
+        "4",
+        "-o",
+        "mean"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_map",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t.\n",
+      "native_output": "chr1\t2\t8\t.\n",
+      "reference_command": [
+        "bedtools",
+        "map",
+        "-c",
+        "4",
+        "-o",
+        "mean"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_map",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t3.000000\n",
+      "native_output": "chr1\t2\t8\t3\n",
+      "reference_command": [
+        "bedtools",
+        "map",
+        "-c",
+        "4",
+        "-o",
+        "mean"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_map",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t.\n",
+      "native_output": "chr1\t2\t8\t.\n",
+      "reference_command": [
+        "bedtools",
+        "map",
+        "-c",
+        "4",
+        "-o",
+        "mean"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_annotate",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t1\t0.333333\n",
+      "native_output": "chr1\t2\t8\t1\t0.333333\n",
+      "reference_command": [
+        "bedtools",
+        "annotate",
+        "-both"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_annotate",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t0\t0.000000\n",
+      "native_output": "chr1\t2\t8\t0\t0.000000\n",
+      "reference_command": [
+        "bedtools",
+        "annotate",
+        "-both"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_annotate",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t2\t1.000000\n",
+      "native_output": "chr1\t2\t8\t2\t1.000000\n",
+      "reference_command": [
+        "bedtools",
+        "annotate",
+        "-both"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_annotate",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "chr1\t2\t8\t0\t0.000000\n",
+      "native_output": "chr1\t2\t8\t0\t0.000000\n",
+      "reference_command": [
+        "bedtools",
+        "annotate",
+        "-both"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_jaccard",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t4\t6\t5\n"
+      },
+      "params": {},
+      "expected": "intersection\tunion\tjaccard\n2\t6\t0.333333\n",
+      "native_output": "intersection\tunion\tjaccard\tn_intersections\n2\t6\t0.333333\t1\n",
+      "reference_command": [
+        "bedtools",
+        "jaccard"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_jaccard",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t2\t2\nchr1\t8\t10\t4\n"
+      },
+      "params": {},
+      "expected": "intersection\tunion\tjaccard\n0\t10\t0.000000\n",
+      "native_output": "intersection\tunion\tjaccard\tn_intersections\n0\t10\t0\t0\n",
+      "reference_command": [
+        "bedtools",
+        "jaccard"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_jaccard",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr1\t0\t5\t2\nchr1\t4\t9\t4\n"
+      },
+      "params": {},
+      "expected": "intersection\tunion\tjaccard\n6\t9\t0.666667\n",
+      "native_output": "intersection\tunion\tjaccard\tn_intersections\n6\t9\t0.666667\t1\n",
+      "reference_command": [
+        "bedtools",
+        "jaccard"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    },
+    {
+      "operator": "bed_jaccard",
+      "data": "chr1\t2\t8\n",
+      "inputs": {
+        "reference": "chr2\t0\t5\t2\n"
+      },
+      "params": {},
+      "expected": "intersection\tunion\tjaccard\n0\t11\t0.000000\n",
+      "native_output": "intersection\tunion\tjaccard\tn_intersections\n0\t11\t0\t0\n",
+      "reference_command": [
+        "bedtools",
+        "jaccard"
+      ],
+      "normalization": "Six-decimal numeric output; normalized documented output columns."
+    }
+  ]
+}

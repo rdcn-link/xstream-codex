@@ -1,0 +1,15 @@
+name: Count numeric observations in fixed-width histogram bins.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/histogram.txt
+    view: bytes
+- id: process
+  operator: galaxy_histogram@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

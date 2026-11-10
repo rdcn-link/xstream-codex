@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "distinct_operators": 50,
+  "distinct_operators": 200,
   "operators": [
     {
       "operator": "galaxy_change_case@1.0",
@@ -1032,6 +1032,3306 @@
           "path": "compute_motif_frequencies_for_all_motifs/compute_motif_frequencies_for_all_motifs.pl"
         },
         "scope": "Input has an odd number of tab-separated windows with literal indel in the middle. Motifs are literal case-insensitive DNA strings configured by name=sequence or sequence. Output is row-major then motif order to stream without replaying input; upstream uses motif-major order. Regex motifs are not supported.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_karyotype_fasta@1.0",
+      "artifact_sha256": "ad81b5f57bea3c2814bdb6ca16e400467fc0fbb531b67aca08a49e8e2ee72e55",
+      "source_sha256": "4906ac5f5fac282b94e0454eb39e7ac59490aa5a3db09be3e1be5600037645c3",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_karyotype_fasta@1.0",
+        "artifact_sha256": "ad81b5f57bea3c2814bdb6ca16e400467fc0fbb531b67aca08a49e8e2ee72e55",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/karyotype-from-fasta.py"
+        },
+        "scope": "FASTA text; sequence IDs must be unique. Colors are indexed from zero. No image rendering.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_karyotype_lengths@1.0",
+      "artifact_sha256": "98900d52b59e032860f82e65b67f1dcccf2a2fa6a6dafa07a8951741c82b83cc",
+      "source_sha256": "2aab5edf50edd2fd0732b4a68bde453da288a1b2f32ffb3ffa0268454685cd90",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_karyotype_lengths@1.0",
+        "artifact_sha256": "98900d52b59e032860f82e65b67f1dcccf2a2fa6a6dafa07a8951741c82b83cc",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/karyotype-from-lengths.py"
+        },
+        "scope": "Unquoted tab-separated ID and positive length; unlike upstream, malformed rows fail explicitly.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_tiles_bed@1.0",
+      "artifact_sha256": "3696410acaa313a0e4e2be1ca8a7ac4760d103b8788b61c75cdbb07ac2811fc0",
+      "source_sha256": "039d9020cc8af1e7330f6412b6a65f17087ce57fe4f7d2a7b035fe2628999290",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_tiles_bed@1.0",
+        "artifact_sha256": "3696410acaa313a0e4e2be1ca8a7ac4760d103b8788b61c75cdbb07ac2811fc0",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/tiles-from-bed.py"
+        },
+        "scope": "BED3 or BED6+; zero-based half-open coordinates. Extra BED fields are ignored.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_text_bed@1.0",
+      "artifact_sha256": "fc4d23126aecbefdebc166adefcec9a2778b57eebcc5d9be54f7e50894ccc2e7",
+      "source_sha256": "ebabc5f7a76ba492b3039767c0ef6aaa08f04902951ba6c2825ed3463fd4cb71",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_text_bed@1.0",
+        "artifact_sha256": "fc4d23126aecbefdebc166adefcec9a2778b57eebcc5d9be54f7e50894ccc2e7",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/text-from-bed.py"
+        },
+        "scope": "BED6+ required; zero-based half-open coordinates. Extra BED fields are ignored.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_tiles_gff3@1.0",
+      "artifact_sha256": "71ca1903edc4c543295d6029082ad8603edf43ae684f64aed8b70ea36f34f4a6",
+      "source_sha256": "f740d37e047f0a97ff5b331a89788cd9738100a524aa429c735b124f87ceb4ab",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_tiles_gff3@1.0",
+        "artifact_sha256": "71ca1903edc4c543295d6029082ad8603edf43ae684f64aed8b70ea36f34f4a6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/tiles-from-gff3.py"
+        },
+        "scope": "Flat GFF3 only: Parent hierarchies are rejected rather than flattened. Input chromosome order is preserved; features sort by start. One-based inclusive GFF becomes zero-based half-open. Up to 100000 rows and 8 MiB characters.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_text_gff3@1.0",
+      "artifact_sha256": "65fa6408a124b81d12ced89bc7c65cbb828a5179e3c41d497fd607866a540a3c",
+      "source_sha256": "e243631e72772fcbbe8d4a3da6f177bfc0ac61933bd9e06a5e84de9f1452fbb2",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_text_gff3@1.0",
+        "artifact_sha256": "65fa6408a124b81d12ced89bc7c65cbb828a5179e3c41d497fd607866a540a3c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/text-from-gff3.py"
+        },
+        "scope": "Flat GFF3 only; Parent hierarchies rejected. Features without the selected attribute are skipped. Coordinates converted to zero-based half-open; at most 100000 rows and 8 MiB characters.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_remove_terminal_stop_codons@1.0",
+      "artifact_sha256": "ba1e1b8d4d31465cc06344ad82a379792322035f62feedf49279c32748c5a541",
+      "source_sha256": "32f95e0daba4816a794225fbf875a016e957062a31017a3151d4bf3bcbaefb41",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_remove_terminal_stop_codons@1.0",
+        "artifact_sha256": "ba1e1b8d4d31465cc06344ad82a379792322035f62feedf49279c32748c5a541",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/remove_terminal_stop_codons/remove_terminal_stop_codons.py"
+        },
+        "scope": "NCBI translation table 1 only; uppercase normalization and U-to-T conversion. All terminal stops removed; partial terminal codons retained. At most 8 MiB characters per sequence.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_windowmasker_to_bed@1.0",
+      "artifact_sha256": "c028ad63ae6c671678d03732191dbc888cbecd9a2cd6e008b9b76b0e00c30780",
+      "source_sha256": "0c222db2fb96874e6b6206a5cc0abeccf5865dac485da117df84f5fe4ea7b0fd",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_windowmasker_to_bed@1.0",
+        "artifact_sha256": "c028ad63ae6c671678d03732191dbc888cbecd9a2cd6e008b9b76b0e00c30780",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/windowmasker/windowmasker_to_bed.pl"
+        },
+        "scope": "Text interval mode only. Zero-based inclusive input becomes half-open BED; global wm_N labels begin at zero.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_count_gff_features@1.0",
+      "artifact_sha256": "31f5b660120fd2afa0ae8f836431409e499422de2390f45a0e01aeb55181a222",
+      "source_sha256": "339a6be90c9ad181e99a5825093c36231808a2cfa3b9cb1b438f31ed5b6c2db1",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_count_gff_features@1.0",
+        "artifact_sha256": "31f5b660120fd2afa0ae8f836431409e499422de2390f45a0e01aeb55181a222",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "tools/count_gff_features/count_gff_features.py"
+        },
+        "scope": "Counts syntactically valid nine-column GFF records, not logical exon groups. Malformed rows fail rather than silently skipping. FASTA sections are rejected.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_resize_coordinate_window@1.0",
+      "artifact_sha256": "98586cbba5ae114d939de84e425cd6057a0332a578eb767dcf78dab0d339c65d",
+      "source_sha256": "d1fbe1d69becd8ea81a4e8354edfdb01487efbcb0f6ecace4329e726e0203085",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_resize_coordinate_window@1.0",
+        "artifact_sha256": "98586cbba5ae114d939de84e425cd6057a0332a578eb767dcf78dab0d339c65d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/resize_coordinate_window/resize_coordinate_window.py"
+        },
+        "scope": "Nine-column GFF; uses a common chromosome-length parameter rather than a chromosome-length file. Midpoint uses floor division; comments skipped, malformed rows rejected.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_sort@1.0",
+      "artifact_sha256": "6b26a4b23d2b177bdc1d67119675d1bd7e58bda4445bf72416468cc7af63e236",
+      "source_sha256": "4f12c205f999067ead8cdebea2acdf827b692e021095fa4d7fe21eb2fd1f32b6",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_sort@1.0",
+        "artifact_sha256": "6b26a4b23d2b177bdc1d67119675d1bd7e58bda4445bf72416468cc7af63e236",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/sortBed.xml"
+        },
+        "scope": "Stable start sort, no genome-order file. Buffer at most 100000 rows or 8 MiB characters. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_merge@1.0",
+      "artifact_sha256": "7b6295a69ecff4f0734434dc9f23ac470c5eba2286a6ac80386033ddb3c2d294",
+      "source_sha256": "15575c48836b01aafd08b8c6045cf9769b59230db1dfdc5565e545733f9821e3",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_merge@1.0",
+        "artifact_sha256": "7b6295a69ecff4f0734434dc9f23ac470c5eba2286a6ac80386033ddb3c2d294",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/mergeBed.xml"
+        },
+        "scope": "Sorted input required, output BED3. Distance zero merges book-ended intervals; no strand or extra-column aggregations. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_cluster@1.0",
+      "artifact_sha256": "004c0bb0f2d74f0959d14887536e4fbc7e18573fb15b88bdca35039ac087bf70",
+      "source_sha256": "56795904549b6709509acab14afa31c2b4e4ca3907a2da389a751513ab41771c",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_cluster@1.0",
+        "artifact_sha256": "004c0bb0f2d74f0959d14887536e4fbc7e18573fb15b88bdca35039ac087bf70",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/clusterBed.xml"
+        },
+        "scope": "Sorted input required, global IDs start at one; unstranded mode, original columns retained. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_spacing@1.0",
+      "artifact_sha256": "5a3d15b0a48475010809671f8508861ec14dea28cdb13e2ab397b92af8ff54e5",
+      "source_sha256": "3d28df8c58cda60c3b78a6df1adf079c6eb3e93632e4dad6d08726b91cf07299",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_spacing@1.0",
+        "artifact_sha256": "5a3d15b0a48475010809671f8508861ec14dea28cdb13e2ab397b92af8ff54e5",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/spacingBed.xml"
+        },
+        "scope": "Sorted input required. First interval per chromosome uses dot; any overlap uses -1; touching uses zero. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_slop@1.0",
+      "artifact_sha256": "12158449b21e93ae482965ea2e3058bdd84002d6832841e4d4b9ff20ca07d05e",
+      "source_sha256": "4e3ffcfcd9a215ed686292b855b748132b873c7bb73eb852a39669ae46039207",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_slop@1.0",
+        "artifact_sha256": "12158449b21e93ae482965ea2e3058bdd84002d6832841e4d4b9ff20ca07d05e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/slopBed.xml"
+        },
+        "scope": "Integer base distances and optional strand awareness. Chromosome lengths are explicit parameters, not a local file. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_flank@1.0",
+      "artifact_sha256": "840a94f71856d9886c4754da428d46bd1b8fdda5eca17f2f24c91664cfb76bf6",
+      "source_sha256": "b084c46f429015e91c8ad7fbbadfa4ad780e43f0010b1dd8e001ef92ce91b722",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_flank@1.0",
+        "artifact_sha256": "840a94f71856d9886c4754da428d46bd1b8fdda5eca17f2f24c91664cfb76bf6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/flankBed.xml"
+        },
+        "scope": "Left flank then right flank; zero-length flanks omitted. Integer distances, optional strand awareness, explicit chromosome lengths. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_complement@1.0",
+      "artifact_sha256": "e2d3a3f183081af43697658c9432e7226cffb60187bc71282f576009d71b14ce",
+      "source_sha256": "c194f547536f75905f31a8304832d80db458b83e3821351d5fbf2b2049012f6b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_complement@1.0",
+        "artifact_sha256": "e2d3a3f183081af43697658c9432e7226cffb60187bc71282f576009d71b14ce",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/complementBed.xml"
+        },
+        "scope": "Sorts and unions input, reports all configured chromosomes in parameter order. Buffer at most 100000 rows or 8 MiB characters. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_genome_coverage@1.0",
+      "artifact_sha256": "bc37218a6991be900d17d16c09254a02d9646fc10a949ed34cf3fdda65b3059c",
+      "source_sha256": "4e7336a1c26efae8343404f6f4a3cbf3956d3a54d819e62208b508bed433a03d",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_genome_coverage@1.0",
+        "artifact_sha256": "bc37218a6991be900d17d16c09254a02d9646fc10a949ed34cf3fdda65b3059c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/genomeCoverageBed.xml"
+        },
+        "scope": "BED interval coverage, no BAM/CIGAR or split blocks. Emits bedGraph rather than histograms. At most 100000 rows or 8 MiB characters, plus two events per interval. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_interval_overlap@1.0",
+      "artifact_sha256": "1ae6869930a78de96a3d19e4f333e0945554a5415a51e2c6e531791c3182a8c0",
+      "source_sha256": "5c1914df1e732a1ae81c69665b45320bd480a5e0c4073439ee66944774840a46",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_interval_overlap@1.0",
+        "artifact_sha256": "1ae6869930a78de96a3d19e4f333e0945554a5415a51e2c6e531791c3182a8c0",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/overlapBed.xml"
+        },
+        "scope": "Coordinates are taken from configured columns on the same row; chromosome identity is the caller responsibility, matching upstream. Positive overlap, zero touching, negative separation. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_expand_columns@1.0",
+      "artifact_sha256": "ad39fc9dab7bce6eb1f43a9f7cc8a214988a1db89435cc89d850e743b0326042",
+      "source_sha256": "960189b8224f6c9f58a3f2ea4dc32a6910cc3ba56a04c9158e0898a67805aaed",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_expand_columns@1.0",
+        "artifact_sha256": "ad39fc9dab7bce6eb1f43a9f7cc8a214988a1db89435cc89d850e743b0326042",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/expandBed.xml"
+        },
+        "scope": "UTF-8 TSV, no BED coordinate interpretation. Columns must be unique and increasing; no Cartesian product. At most 10000 expansions and 16 MiB estimated output per row. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_group_table@1.0",
+      "artifact_sha256": "17d4abd9573954a5216f353a2c5859f1eb2a3cd109a1e5a79061094f5d53c337",
+      "source_sha256": "e6cbdda2c05d2ae27cfb03864f86cd7ad5f1313191588ff7a7ab4b7d3cca1c01",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_group_table@1.0",
+        "artifact_sha256": "17d4abd9573954a5216f353a2c5859f1eb2a3cd109a1e5a79061094f5d53c337",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/groupbyBed.xml"
+        },
+        "scope": "One grouping key and one value column. Input must group equal keys consecutively; no automatic global sorting. Text aggregation bounded to 8 MiB characters and 100000 values per group. Comments are skipped; invalid records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_to_tabular@1.0",
+      "artifact_sha256": "88832860a5dfcd5e2a3bd37c27353a7f47644e2e1e3efbbaa137ba23866a9fad",
+      "source_sha256": "e3b34c6ce11ed919a24f6139ad7ccffa8220ccf2cd3e94505860877f67f427a0",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_to_tabular@1.0",
+        "artifact_sha256": "88832860a5dfcd5e2a3bd37c27353a7f47644e2e1e3efbbaa137ba23866a9fad",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_to_tabular/fastq_to_tabular.xml"
+        },
+        "scope": "Title tabs become spaces; short descriptions are padded to exactly the requested width. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_tabular_to_fastq@1.0",
+      "artifact_sha256": "2bb94e0f8acae2f80965aaea31a11405143041adcd99a679aeba0fd98b31072c",
+      "source_sha256": "d599da7cb5879bccccd2858a8226d8513b1532d9f6362f540fa1ce0cb5318688",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_tabular_to_fastq@1.0",
+        "artifact_sha256": "2bb94e0f8acae2f80965aaea31a11405143041adcd99a679aeba0fd98b31072c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/tabular_to_fastq/tabular_to_fastq.xml"
+        },
+        "scope": "Malformed rows fail instead of being silently skipped. Output Phred+33. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_mask_quality@1.0",
+      "artifact_sha256": "ee5437d5a15ad6e2b4586a52c9db401d65730deb17e42041b39e9e93b454a4d7",
+      "source_sha256": "2165b41847804d61ae0c2ca65fff25e630f0d71704375685c9e208f69850be51",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_mask_quality@1.0",
+        "artifact_sha256": "ee5437d5a15ad6e2b4586a52c9db401d65730deb17e42041b39e9e93b454a4d7",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_masker_by_quality/fastq_masker_by_quality.xml"
+        },
+        "scope": "ASCII Phred+33. Quality strings are retained unchanged. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_filter_quality@1.0",
+      "artifact_sha256": "5f3e201327aa3ff21e3768b3636c2333f436d1e80632422a046fa07dcf70a8ae",
+      "source_sha256": "e79dbe1be5e0a1637899897590a19d84c1a07ba8ad40012d002de9b05166cdc9",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_filter_quality@1.0",
+        "artifact_sha256": "5f3e201327aa3ff21e3768b3636c2333f436d1e80632422a046fa07dcf70a8ae",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_filter/fastq_filter.xml"
+        },
+        "scope": "ASCII Phred+33, whole-read ranges only; no generated Python predicates or per-window expressions. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_join_mates@1.0",
+      "artifact_sha256": "0b63f91ec0bae6ffc167c19788e7c955e547605937590f9b38c4149e3835be05",
+      "source_sha256": "ec02d3e9639009a2987e4d3feeb8cfeee4160c7aca6aa34a818d9342a0166029",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_join_mates@1.0",
+        "artifact_sha256": "0b63f91ec0bae6ffc167c19788e7c955e547605937590f9b38c4149e3835be05",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_paired_end_joiner/fastq_paired_end_joiner.xml"
+        },
+        "scope": "Adjacent /1 and /2 mates with equal base IDs, either order; no identifier-indexed second input. Unmatched or misordered pairs fail. Does not reverse-complement mate 2. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_deinterlace@1.0",
+      "artifact_sha256": "004368b90134ff5ffb8a099f8a733fb3f4f512fd47f588573c4a9fafe89d6dbe",
+      "source_sha256": "91842565ceb89e80534412f80efc899f276a463eabea073b26f364f9a140e9a8",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_deinterlace@1.0",
+        "artifact_sha256": "004368b90134ff5ffb8a099f8a733fb3f4f512fd47f588573c4a9fafe89d6dbe",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_paired_end_deinterlacer/fastq_paired_end_deinterlacer.xml"
+        },
+        "scope": "Slash /1 and /2 IDs only. Matches mates regardless of adjacency using a bounded 8 MiB-character / 100000-read buffer. Duplicate full IDs fail; original first-pair encounter order is preserved. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_groom@1.0",
+      "artifact_sha256": "ea71cd22e004d6f74b7f4d996a39e6254ef976db0d2d6356012ab10976424537",
+      "source_sha256": "c97a8e135b24da7c8d360abb3eab2aaf8cb5b0e2feefe4e4376a2b95d899d1f7",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_groom@1.0",
+        "artifact_sha256": "ea71cd22e004d6f74b7f4d996a39e6254ef976db0d2d6356012ab10976424537",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_groomer/fastq_groomer.xml"
+        },
+        "scope": "Sanger Phred+33, Illumina Phred+64, Solexa log-odds+64; scores are rounded and clipped to the output convention. Existing titles must agree; no automatic repair. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_fastq_quality_stats@1.0",
+      "artifact_sha256": "7ed04461ffd28a1b6367cdc734e51f93ddd18c0e1c3666c5c7951a695084ab63",
+      "source_sha256": "281e2027d5b1475ed44cd5595cd0769c8d0e9d7daa4917a5285cb9cf533598cc",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_fastq_quality_stats@1.0",
+        "artifact_sha256": "7ed04461ffd28a1b6367cdc734e51f93ddd18c0e1c3666c5c7951a695084ab63",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/galaxy_sequence_utils/fastq_stats/fastq_stats.xml"
+        },
+        "scope": "Normalized TSV columns documented by the header, not the upstream report layout. Linear-interpolated quartiles, ASCII Phred+33, at most 10000 positions; fixed 94-bin quality histograms avoid retaining reads. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_comp@1.0",
+      "artifact_sha256": "91edc5a3db54e497495913b5438730339e39a94dd6c2516f6e2699d0756876d7",
+      "source_sha256": "7b517e0822c4c933dd0de6c41324b913991c320aaebc6df1ea3a8198c4da64fa",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_comp@1.0",
+        "artifact_sha256": "91edc5a3db54e497495913b5438730339e39a94dd6c2516f6e2699d0756876d7",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_comp.xml"
+        },
+        "scope": "Full sequences only; no BED subset. CpG counts both contributing positions, including C/Y and G/R ambiguity contexts. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_listhet@1.0",
+      "artifact_sha256": "acf73f108567f0ac4967695f485158039d74f985254fe13180898a61cbc2a841",
+      "source_sha256": "c594181c3133c9bbb34582bc194b86339b859f413e7d19d700610c41c74b5c6b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_listhet@1.0",
+        "artifact_sha256": "acf73f108567f0ac4967695f485158039d74f985254fe13180898a61cbc2a841",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_listhet.xml"
+        },
+        "scope": "Only two-base ambiguity symbols qualify; original character case is retained. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_cutN@1.0",
+      "artifact_sha256": "1968a801e1abf2fc3506d8ac3bf18fade8178243cf01003a53adf8af9d9cb38d",
+      "source_sha256": "642e5da856ad2594bab4b38f5f6c2154bff4ad4c6c0dda1c3e94d09254b46f52",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_cutN@1.0",
+        "artifact_sha256": "1968a801e1abf2fc3506d8ac3bf18fade8178243cf01003a53adf8af9d9cb38d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_cutN.xml"
+        },
+        "scope": "Scored forward/backward N-tract extension; no gap-only channel. Output names use one-based inclusive segment endpoints. Leading gaps are removed consistently. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_randbase@1.0",
+      "artifact_sha256": "63517e1431e6e0fd019036515bba66dd544fe1345b9bcbc4b479ef72abec8f5c",
+      "source_sha256": "43bc34aa705866649765886758ca0e0f70e8e079a13652d63067889ddaba079a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_randbase@1.0",
+        "artifact_sha256": "63517e1431e6e0fd019036515bba66dd544fe1345b9bcbc4b479ef72abec8f5c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_randbase.xml"
+        },
+        "scope": "Only two-allele symbols are resolved; other ambiguity symbols remain. JVM RNG intentionally differs from seqtk drand48; case preserved. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_sample@1.0",
+      "artifact_sha256": "efc7c3e26eb43f2374d510a10e1820deafd588a6ba850d75796cf2041763acd5",
+      "source_sha256": "0e0727cca378bd388b5225f33873d718b3489797946570436627252146fd2dbc",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_sample@1.0",
+        "artifact_sha256": "efc7c3e26eb43f2374d510a10e1820deafd588a6ba850d75796cf2041763acd5",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 3,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_sample.xml"
+        },
+        "scope": "Single-pass count-based sampling; no fraction or two-pass mode. JVM RNG differs from seqtk. Reservoir output order; total retained characters limited to 8 MiB. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_subseq@1.0",
+      "artifact_sha256": "1454459cdf7bf2377166b1418836a55e114893a6f30f2003b211fac96610625f",
+      "source_sha256": "66b73c50ad999239634cf46df0da5ef08b56bec844967357a3f83450d759c7c9",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_subseq@1.0",
+        "artifact_sha256": "1454459cdf7bf2377166b1418836a55e114893a6f30f2003b211fac96610625f",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_subseq.xml"
+        },
+        "scope": "Coordinates are zero-based half-open, names contain one-based inclusive endpoints. Out-of-bounds matching regions fail; absent sequence IDs produce no output. Regions are emitted in input sequence order then configuration order. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_seq@1.0",
+      "artifact_sha256": "ab08627c7c7fd72bd3ed1e939573a16761c56a799c21f58596da4f569292cc79",
+      "source_sha256": "20dee5fc064a286a78242467a63375578ff27af643fc32491681000ceacd26e0",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_seq@1.0",
+        "artifact_sha256": "ab08627c7c7fd72bd3ed1e939573a16761c56a799c21f58596da4f569292cc79",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_seq.xml"
+        },
+        "scope": "Subset of seqtk seq: case normalization, comments, minimum length, ambiguous-sequence removal and wrapping. No region masks, quality transformation or random subsampling. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_hety@1.0",
+      "artifact_sha256": "087ea041ff8383d39f9826b9180ecc029bb0d7618f6521b0af748f9d4514a5f2",
+      "source_sha256": "48e60d5762bfa5e410ce3f9b120e127aa8d6068947badbbb8583a15e9bdac360",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_hety@1.0",
+        "artifact_sha256": "087ea041ff8383d39f9826b9180ecc029bb0d7618f6521b0af748f9d4514a5f2",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_hety.xml"
+        },
+        "scope": "seqtk sliding-window labeling: later rows start at the previous emission boundary, even for overlapping windows. Two-base IUPAC codes are heterozygous; three/four-base codes uncallable. No division by zero; at most 64 million window-base visits. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_telo@1.0",
+      "artifact_sha256": "8744640c936e2ac3d2ad4f2b45ef19bdeacdc7b23b0ecd38a7ffe2fcd6df8459",
+      "source_sha256": "2ad621da845b6e7976e7eec071ba5a905b7e4dbe4b1ad0c0ec5587106b066a6f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_telo@1.0",
+        "artifact_sha256": "8744640c936e2ac3d2ad4f2b45ef19bdeacdc7b23b0ecd38a7ffe2fcd6df8459",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_telo.xml"
+        },
+        "scope": "Terminal motif rotations with seqtk 5-prime/3-prime scoring and reverse-complement search. Motif length 1..31; BED4 contains sequence length, no profile channel. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_trimfq@1.0",
+      "artifact_sha256": "7f77553d335bf3a08fd52f29c47b1e58456d5ad3856b0b0d9e97c3a6a4820f58",
+      "source_sha256": "d31c2a74d978c50883b6a39eb7c07c00900c230252ddb7276b81d052ae330276",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_trimfq@1.0",
+        "artifact_sha256": "7f77553d335bf3a08fd52f29c47b1e58456d5ad3856b0b0d9e97c3a6a4820f58",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_trimfq.xml"
+        },
+        "scope": "Four-line nucleotide FASTQ with Phred+33. Maximum scoring segment and best-quality fixed-window fallback; fully trimmed records are omitted rather than empty FASTQ. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_dropse@1.0",
+      "artifact_sha256": "c72f449d32c8312fe12ba3d3ff1fa587ef7559486fd8e8cec02e00ea635e1501",
+      "source_sha256": "4ee123cc618ebfca6a335d8739c72f635ce1ccc778bddf6bae7705c797627772",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_dropse@1.0",
+        "artifact_sha256": "c72f449d32c8312fe12ba3d3ff1fa587ef7559486fd8e8cec02e00ea635e1501",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_dropse.xml"
+        },
+        "scope": "Four-line FASTQ, Phred+33. Adjacent equal IDs or equal IDs after removing /digit form pairs, matching seqtk. A displaced or unmatched record is discarded; no global mate search. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_fqchk@1.0",
+      "artifact_sha256": "ac5b19a9db6371a0cd4abc4f830564bbf326cdcd6a044591695f0842e2502807",
+      "source_sha256": "0145fa3bafa38256f0cfc3b60d2e791776bb47d50d118b7078fbf03d859044c5",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_fqchk@1.0",
+        "artifact_sha256": "ac5b19a9db6371a0cd4abc4f830564bbf326cdcd6a044591695f0842e2502807",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_fqchk.xml"
+        },
+        "scope": "Four-line FASTQ, Phred+33, at most 10000 positions. seqtk probability floor for Q0..Q3; exact -10log10(mean error), without the upstream small smoothing term; normalized table omits the summary preamble and q=0 histogram mode. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_transpose_table@1.0",
+      "artifact_sha256": "c533da9416a78948fb2bb17901c32212ca4e8f808f8bd4830a31e1af71c3e450",
+      "source_sha256": "3e84ca3c61df800f562a7b9ecfc58d607dd1124095bc1ab1de248a9c6bfbccb3",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_transpose_table@1.0",
+        "artifact_sha256": "c533da9416a78948fb2bb17901c32212ca4e8f808f8bd4830a31e1af71c3e450",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/datamash/datamash-transpose.xml"
+        },
+        "scope": "Strict rectangular, unquoted UTF-8 TSV; empty cells preserved. At most 8 MiB characters and 100000 rows; no split files.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_reverse_columns@1.0",
+      "artifact_sha256": "f45ab3777a9dcc78bb12cb74eac79c7aefa176951e16432677cf70e9efc6ca84",
+      "source_sha256": "393e6f6ef7cf059f2dd0f79fbb24f28b09ad69a2a0431fa69f04d5c984990af9",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_reverse_columns@1.0",
+        "artifact_sha256": "f45ab3777a9dcc78bb12cb74eac79c7aefa176951e16432677cf70e9efc6ca84",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/datamash/datamash-reverse.xml"
+        },
+        "scope": "Unquoted UTF-8 TSV; rows may have different widths. Preserves empty fields, without reversing row order.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_numeric_summary@1.0",
+      "artifact_sha256": "7cd53da23bc81f8229bc8ef45be70f2d5eff2aa09d2dd427ecb4e00ca92ebea1",
+      "source_sha256": "7ed85d5f77d17d0d8c3e66d0c05d287a5f85c8911476348acaf50b77bb032b02",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_numeric_summary@1.0",
+        "artifact_sha256": "7cd53da23bc81f8229bc8ef45be70f2d5eff2aa09d2dd427ecb4e00ca92ebea1",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/datamash/datamash-ops.xml"
+        },
+        "scope": "One global column, no grouping. Reports count/sum/min/max/mean/median/population and sample SD in a normalized table, not the datamash CLI layout. Finite magnitudes <=1e100, at most 100000 values.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_annovar_replace_na@1.0",
+      "artifact_sha256": "3171ad2c956857d07fdd262cb908665e51cc441a51b1929b2499e2b95add1f57",
+      "source_sha256": "76268e5aab7876bb59721b86b6d850ba79656ba66e2bd8310f2091ffce8616ce",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_annovar_replace_na@1.0",
+        "artifact_sha256": "3171ad2c956857d07fdd262cb908665e51cc441a51b1929b2499e2b95add1f57",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "tools/table_annovar/replace_NA.py"
+        },
+        "scope": "Matches upstream header-inclusive numeric/string voting, with known numeric headers 1000g2012apr_all and esp6500si_all. Numeric ties choose numeric. Rectangular TSV buffered up to 8 MiB characters and 100000 rows.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_gff_to_bedgraph@1.0",
+      "artifact_sha256": "8db5b839343d029dffb4ef58a4d324c9753d4d30167ead14aabf88b303b516fa",
+      "source_sha256": "46e9d458babae07ee7de95d904cf2821ab0c1dfbaa4c5d1cdf7a4bd670bc7180",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_gff_to_bedgraph@1.0",
+        "artifact_sha256": "8db5b839343d029dffb4ef58a4d324c9753d4d30167ead14aabf88b303b516fa",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bbgbigwig/gff_to_bed_converter.py"
+        },
+        "scope": "Nine-column GFF; one-based inclusive to zero-based half-open. Corrects upstream end-minus-one error; preserves the inclusive end as the BED exclusive endpoint. Malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_gc_skew@1.0",
+      "artifact_sha256": "9db0f3be737856a9ccf2cd8100ca15c2e70bf66dc2a9b41de0b991d142b8558d",
+      "source_sha256": "a0e18ea818c3f48f14dff27b332e40258ab0a65805151d3f84eb918955c07ed9",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_gc_skew@1.0",
+        "artifact_sha256": "9db0f3be737856a9ccf2cd8100ca15c2e70bf66dc2a9b41de0b991d142b8558d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/gc_skew.py"
+        },
+        "scope": "FASTA nucleotide input, bedGraph text rather than upstream BigWig. (G-C)/(G+C), zero when denominator is zero. Final interval clipped to sequence length; one sequence up to 8 MiB characters.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_correlation_matrix@1.0",
+      "artifact_sha256": "d160a39d038418a4bb3e1956b42e5647dcd97639fb30db899c2a14d37689c805",
+      "source_sha256": "15b237c07007c9923ed746823d3e431c581e6cc6d1b6da0824f3072117ec9385",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_correlation_matrix@1.0",
+        "artifact_sha256": "d160a39d038418a4bb3e1956b42e5647dcd97639fb30db899c2a14d37689c805",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "tools/correlation/cor.py"
+        },
+        "scope": "Strict finite numeric rows, no NA imputation or Kendall method. Rectangular output, six decimals. Constant columns reject undefined correlation. At most 100000 rows, 16 columns and 8 MiB-character buffer.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_circos_cytobands@1.0",
+      "artifact_sha256": "350966b3ce3f976ee4e4598c445207ae9bd5fc80c24f6cd7abc68a44084efff8",
+      "source_sha256": "17213ebf2b1d9dc0a096b2df7eeafc047ea16ee50a959a53cf285999a2d549c5",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_circos_cytobands@1.0",
+        "artifact_sha256": "350966b3ce3f976ee4e4598c445207ae9bd5fc80c24f6cd7abc68a44084efff8",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/circos/process-cytogenetic-bands.py"
+        },
+        "scope": "BED9+ with validated 0..255 RGB triplets. Uses inline RGB values so the bytes result is self-contained, unlike upstream separate stderr color definitions. Malformed rows fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_category_totals@1.0",
+      "artifact_sha256": "0c8841c6e04541d10f3be94e7d561d3efd9c3f0f4ee17529c1c2b16ede54ae0f",
+      "source_sha256": "484f6d0f773b936df03be170fadab2b0199d8871592c69b0df697958b3a3ddbb",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_category_totals@1.0",
+        "artifact_sha256": "0c8841c6e04541d10f3be94e7d561d3efd9c3f0f4ee17529c1c2b16ede54ae0f",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-devteam",
+          "path": "tools/categorize_elements_satisfying_criteria/categorize_elements_satisfying_criteria.pl"
+        },
+        "scope": "First TSV row contains criterion names only; following rows contain an element ID then numeric values. Only positive values contribute. Unknown members fail; each member belongs to exactly one category; at most 128 criteria and 128 configured categories.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_list_samples@1.0",
+      "artifact_sha256": "795cd4bc11ad3fd853795ee98add3eec2c492995052ded86bc14716c69a90fe6",
+      "source_sha256": "1824d6aff4e5a3993d02bd6f550a1c8901565d66860668d76166d873ac8bc84e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_list_samples@1.0",
+        "artifact_sha256": "795cd4bc11ad3fd853795ee98add3eec2c492995052ded86bc14716c69a90fe6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_query_list_samples.xml"
+        },
+        "scope": " Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_genotype_dosage@1.0",
+      "artifact_sha256": "b2974390aad40ecda9c2e7853097a9636cf884762dffb0db11d71f7f77961f5c",
+      "source_sha256": "fb5c1485e7a28788fe8694c636707e4a3d6775d033f32fa50508a52773833304",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_genotype_dosage@1.0",
+        "artifact_sha256": "b2974390aad40ecda9c2e7853097a9636cf884762dffb0db11d71f7f77961f5c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_plugin_dosage.xml"
+        },
+        "scope": "GT-only dosage; count all nonreference alleles; any missing allele produces missing dosage. Normalized TSV, no PL/GL likelihoods. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_missing_to_ref@1.0",
+      "artifact_sha256": "f18fb859b64ed019a0af62a9fb26f4eb2a0d6ceae464a1d85257ab7836f28d7e",
+      "source_sha256": "a572fa0ea89c1273b8892ee2666b91c73f02fe8d1ec93b44cd7771cfe2f15979",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_missing_to_ref@1.0",
+        "artifact_sha256": "f18fb859b64ed019a0af62a9fb26f4eb2a0d6ceae464a1d85257ab7836f28d7e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_plugin_missing2ref.xml"
+        },
+        "scope": "Replaces each missing GT allele with zero, retaining phase separators and other FORMAT values; INFO tags remain unchanged. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_fill_allele_counts@1.0",
+      "artifact_sha256": "e9d5427423dbbe2cb28abc2bcca8506b8ea56d46a372431e99bfbbe19aa54f30",
+      "source_sha256": "c65ea36c6ea58a57991628036a6fe004b7691e44d146dd2eddbdf6945e9919b7",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_fill_allele_counts@1.0",
+        "artifact_sha256": "e9d5427423dbbe2cb28abc2bcca8506b8ea56d46a372431e99bfbbe19aa54f30",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_plugin_fill_an_ac.xml"
+        },
+        "scope": "Counts called alleles including partial calls, supports multiallelic and haploid/polyploid GT; replaces existing AN/AC and their declarations. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_variant_counts@1.0",
+      "artifact_sha256": "4122339a8209faba48074adc92cb72daca0a94295fbbdc7e5a59cdb12be7afea",
+      "source_sha256": "d660adb5328b1cbd1f96cb798f74dc3894227ab9b323ca006096a5786000002c",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_variant_counts@1.0",
+        "artifact_sha256": "4122339a8209faba48074adc92cb72daca0a94295fbbdc7e5a59cdb12be7afea",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_plugin_counts.xml"
+        },
+        "scope": "A multiallelic site can contribute to multiple classes; symbolic alleles count as other. Normalized TSV. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_select_samples@1.0",
+      "artifact_sha256": "c87b6bb72ce5f32cda647fb2a7e76f7cf65a3b3169f8a04ad54c0b7912843fa5",
+      "source_sha256": "2a88c57a83aa326b42869b0261f426e272ac6abc05e1dace37cad5077dd22e30",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_select_samples@1.0",
+        "artifact_sha256": "c87b6bb72ce5f32cda647fb2a7e76f7cf65a3b3169f8a04ad54c0b7912843fa5",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_view.xml"
+        },
+        "scope": "Does not recalculate INFO allele counts. Unknown or duplicate names reject input. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_rename_samples@1.0",
+      "artifact_sha256": "8d813ac4974047ed28c6ee879a1cd0a7a037fe7d94b69c2f0724d4ddf12a3407",
+      "source_sha256": "658df4f53c47d5d94c9341e881cb87e942bd5be86cd1c69036a352964df4fa6f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_rename_samples@1.0",
+        "artifact_sha256": "8d813ac4974047ed28c6ee879a1cd0a7a037fe7d94b69c2f0724d4ddf12a3407",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_reheader.xml"
+        },
+        "scope": "Only sample names are changed; chromosome metadata and sample values remain intact. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_remove_annotations@1.0",
+      "artifact_sha256": "8fc201b9dfe61ce2c730fe5524a8072136254d523f1ea096d25de2cc3a24ad06",
+      "source_sha256": "1ae3f02924f228d34be7d5d75df913386c1472387de3aa6be5ac2b17792ae11e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_remove_annotations@1.0",
+        "artifact_sha256": "8fc201b9dfe61ce2c730fe5524a8072136254d523f1ea096d25de2cc3a24ad06",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_annotate.xml"
+        },
+        "scope": "Only INFO tags are removed, not FORMAT or arbitrary columns. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_filter_quality@1.0",
+      "artifact_sha256": "548fa68a7d190ce5ee84065cf12f838c07244fe4897f5b373e064f88f4e06b73",
+      "source_sha256": "31f440676141a8fdf09cbd7d59514feecfb79ea2bc1ea75847a59d6f6ff21b5b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_filter_quality@1.0",
+        "artifact_sha256": "548fa68a7d190ce5ee84065cf12f838c07244fe4897f5b373e064f88f4e06b73",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_filter.xml"
+        },
+        "scope": "Adds LowQual to failing records; existing non-PASS filters retained. No arbitrary expressions. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_set_missing_genotypes@1.0",
+      "artifact_sha256": "2c15cc7cca373ee54bec296b880d9a3181514e40fa21c04a32e088eeb74e0575",
+      "source_sha256": "cb11b0a42f6e6146514f4a4f705f42906150f711c4ac98fcdfb884e8c718badb",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_set_missing_genotypes@1.0",
+        "artifact_sha256": "2c15cc7cca373ee54bec296b880d9a3181514e40fa21c04a32e088eeb74e0575",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_plugin_setgt.xml"
+        },
+        "scope": "Resets all GT alleles to missing; preserves phase, ploidy and other FORMAT values. Does not recalculate INFO tags. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_fix_ploidy@1.0",
+      "artifact_sha256": "04313c2440128ffaa04035c5938fc786902e506cb69782b364bff6d9aced8344",
+      "source_sha256": "fa254aa43b0120c4be5f7018e7a6bc619924c7af13f09bc0152954f80459caad",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_fix_ploidy@1.0",
+        "artifact_sha256": "04313c2440128ffaa04035c5938fc786902e506cb69782b364bff6d9aced8344",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_plugin_fixploidy.xml"
+        },
+        "scope": "Constant ploidy for all samples and contigs; no sex maps or likelihood remapping. Other FORMAT fields unchanged. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_vcf_genotype_table@1.0",
+      "artifact_sha256": "d342ee4a1e704505cb57aaa2a9c5f25c2bdad6bf40ef6b218de6a9377e37b741",
+      "source_sha256": "6869f5c2261686d6aaca2dd91d80bd391a54dabd40632abca8a5fedf51e518fa",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_vcf_genotype_table@1.0",
+        "artifact_sha256": "d342ee4a1e704505cb57aaa2a9c5f25c2bdad6bf40ef6b218de6a9377e37b741",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bcftools/bcftools_query.xml"
+        },
+        "scope": "Fixed explicit CHROM/POS/REF/ALT/SAMPLE/GT schema; all samples, no format-string language. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_flagstat@1.0",
+      "artifact_sha256": "5d1b7da324e4d70c412675bfc5b0119872de633d9ca8ef264dddf81ee4777045",
+      "source_sha256": "d85372d1e459bebfb78c52f22790ab44ca9ffe7cd0e1000eeb685062ca163c06",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_flagstat@1.0",
+        "artifact_sha256": "5d1b7da324e4d70c412675bfc5b0119872de633d9ca8ef264dddf81ee4777045",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_flagstat/samtools_flagstat.xml"
+        },
+        "scope": "Normalized TSV counts; no percentage formatting. Paired/read1/read2/proper-pair/singleton categories count primary alignments, matching samtools; mapped and duplicate totals include all records. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_reference_counts@1.0",
+      "artifact_sha256": "94007daadd7994968916216e23d12f9be1e6fe062ff4c1038679febaa2c57321",
+      "source_sha256": "134eab6706c2339816847100291ff20698a4772db22d19798daca196e7f23a61",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_reference_counts@1.0",
+        "artifact_sha256": "94007daadd7994968916216e23d12f9be1e6fe062ff4c1038679febaa2c57321",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_idxstats/samtools_idxstats.xml"
+        },
+        "scope": "Streaming full-scan equivalent of idxstats; counts records by mapped flag, retaining header reference order. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_depth@1.0",
+      "artifact_sha256": "946164de24a8d6acf1cab4ec4c7c3bdb336a8e863ebdd6e3ffa18de7a029a0b7",
+      "source_sha256": "aef3cf8f79f72d69a3cafb0c765f131f1eff2504274f92bdcf6182bf82f18a8a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_depth@1.0",
+        "artifact_sha256": "946164de24a8d6acf1cab4ec4c7c3bdb336a8e863ebdd6e3ffa18de7a029a0b7",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_depth/samtools_depth.xml"
+        },
+        "scope": "Counts M/=/X only, excluding D/N and flags 0x704. Overlapping mates counted independently, no quality threshold; sparse nonzero positions. Buffers at most 1000000 alignment blocks and 8 MiB input characters. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_coverage@1.0",
+      "artifact_sha256": "356c013ac82f88be0c221bbecac3e5688cc9eaaeff3d59ae96054b911b1eae15",
+      "source_sha256": "cea5f958f9d023ffcb5b64d18e17cec10fb5da5a3964da89d594e6b72540f701",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_coverage@1.0",
+        "artifact_sha256": "356c013ac82f88be0c221bbecac3e5688cc9eaaeff3d59ae96054b911b1eae15",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_coverage/samtools_coverage.xml"
+        },
+        "scope": "M/=/X blocks, flags 0x704 excluded; overlapping mates counted independently. Includes every header reference. Buffers at most 1000000 blocks and 8 MiB input characters. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_alignment_stats@1.0",
+      "artifact_sha256": "613c25f9f27fb9319d32c4cf4eb9f2dad63b5a99508c4452967e822a58416c35",
+      "source_sha256": "c62764db8b81d10a57e5eb92ca6f3c096e5fa495ababd826713db97e1e7319a4",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_alignment_stats@1.0",
+        "artifact_sha256": "613c25f9f27fb9319d32c4cf4eb9f2dad63b5a99508c4452967e822a58416c35",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_stats/samtools_stats.xml"
+        },
+        "scope": "Primary records only, excluding secondary/supplementary. Normalized summary subset, not samtools stats report. Aligned bases count M/=/X. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_sort@1.0",
+      "artifact_sha256": "e02ef031f18ebe9993c0d3fbceb2fc0bd472e56aed7159d9a68712c5d0f4ed42",
+      "source_sha256": "48e0753d132b49eaa313400b783b7bab8e0892713e25e10ea500200803fcb56a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_sort@1.0",
+        "artifact_sha256": "e02ef031f18ebe9993c0d3fbceb2fc0bd472e56aed7159d9a68712c5d0f4ed42",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_sort/samtools_sort.xml"
+        },
+        "scope": "Stable bounded in-memory sort, at most 100000 records and 8 MiB characters; query names use lexical, not natural numeric, order. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_collate@1.0",
+      "artifact_sha256": "b8e8165146d7e9abeb049efa99c3a79fd5dec96f56c8874589de5ed9b2643106",
+      "source_sha256": "d98e052270174aa90064db9c32d5df780dd87aa9d363283dddfc8b3890bc5bcf",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_collate@1.0",
+        "artifact_sha256": "b8e8165146d7e9abeb049efa99c3a79fd5dec96f56c8874589de5ed9b2643106",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_collate/samtools_collate.xml"
+        },
+        "scope": "First-seen query-name order; within-name input order. Buffers at most 100000 records and 8 MiB characters; no randomized ordering. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_to_fastq@1.0",
+      "artifact_sha256": "b0930782d2c651e05e01efa6562e8a6bdbeefe5e111c46a0659c7e396f045a31",
+      "source_sha256": "c202fc4d25a5776b68b4f822d30fbd933a40c0f81d9d1b43c15d740a8f7363c7",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_to_fastq@1.0",
+        "artifact_sha256": "b0930782d2c651e05e01efa6562e8a6bdbeefe5e111c46a0659c7e396f045a31",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_fastx/samtools_fastx.xml"
+        },
+        "scope": "Primary records with sequences; reverse-complement reverse-strand SEQ and reverse QUAL. Does not pair or deduplicate names; absent QUAL becomes configurable Phred quality. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_reheader@1.0",
+      "artifact_sha256": "ff1d53d4bbee39351daf6a714cd916f6864638705b5dd8870a056ae17b0869e3",
+      "source_sha256": "7508f58074e70d1eeb6254a6dd579441b079fd01582c965f4ca8e4423794c795",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_reheader@1.0",
+        "artifact_sha256": "ff1d53d4bbee39351daf6a714cd916f6864638705b5dd8870a056ae17b0869e3",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_reheader/samtools_reheader.xml"
+        },
+        "scope": "Replaces header text only; requires an identical ordered @SQ dictionary, so alignments remain valid. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_sam_calmd@1.0",
+      "artifact_sha256": "022073402d5967409fdea917bef2652743771f4fa97278397971a01ba71237c8",
+      "source_sha256": "8edf900c17cebbff7ba8e9d24b2de524a7bf33d364ffdd476c031608f21e10a1",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_sam_calmd@1.0",
+        "artifact_sha256": "022073402d5967409fdea917bef2652743771f4fa97278397971a01ba71237c8",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tool_collections/samtools/samtools_calmd/samtools_calmd.xml"
+        },
+        "scope": "M/=/X/D/I CIGAR only; N skips rejected. Calculates substitutions/deletions in MD and edit distance NM; no BAQ or reference downloads. Missing reference or unavailable SEQ fails. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_intersect@1.0",
+      "artifact_sha256": "6867bc12f89123d2f5cbd788bea8d4b8067a3d29c044045e17c152b2b0ca57ca",
+      "source_sha256": "7caecb0883b7185266dcdbe1e20c65db9728075c7cd26bd93f58720aebfa664f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_intersect@1.0",
+        "artifact_sha256": "6867bc12f89123d2f5cbd788bea8d4b8067a3d29c044045e17c152b2b0ca57ca",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/intersectBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_subtract@1.0",
+      "artifact_sha256": "42bf307f4959b14bf45700ff931f67d88daad6ad8dc97171d48066b1991ce256",
+      "source_sha256": "5cf10c8306b0fc8b428393049627a9cd965bc7b7abfd343c5eb1102341e1aab2",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_subtract@1.0",
+        "artifact_sha256": "42bf307f4959b14bf45700ff931f67d88daad6ad8dc97171d48066b1991ce256",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/subtractBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_window@1.0",
+      "artifact_sha256": "3511b9a8219deb2a11425156a6b48e6826177534027adbde37d468a6e7722b41",
+      "source_sha256": "5acc10e5c75220ac3223db6c34f1a91646a8ad2a7d3682ad4863951c3e9ad9af",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_window@1.0",
+        "artifact_sha256": "3511b9a8219deb2a11425156a6b48e6826177534027adbde37d468a6e7722b41",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/windowBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_closest@1.0",
+      "artifact_sha256": "14728bd66e28f29f67027ab79f34f973d3a6478bb485d7198bda371aa26c7100",
+      "source_sha256": "654ad96b4e92e20ebc4c425f2dff00e59816b5a5e73b9beddb37c7bb4d7751ad",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_closest@1.0",
+        "artifact_sha256": "14728bd66e28f29f67027ab79f34f973d3a6478bb485d7198bda371aa26c7100",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/closestBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes. All minimum-distance ties are emitted in reference input order. Book-ended intervals have distance one; absent chromosome emits .,-1,-1,-1 placeholders.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_coverage@1.0",
+      "artifact_sha256": "cc8a5c4166f8cf09bfdb8fe7befc9014ad59c275b68f06531c3075564c934a18",
+      "source_sha256": "3e80d6a3168dec21882fa30ed9850e5ff4b9f712f0b2af6eaf05827f10e0c362",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_coverage@1.0",
+        "artifact_sha256": "cc8a5c4166f8cf09bfdb8fe7befc9014ad59c275b68f06531c3075564c934a18",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/coverageBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_map@1.0",
+      "artifact_sha256": "ba9414a074aad4f592ac75ed17a13b0914efbcd23659f4f170af34da27f84e05",
+      "source_sha256": "76138de0f711fd1d4fc84551fea36fde5fae961700e1a6e9e23c639ce0515d95",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_map@1.0",
+        "artifact_sha256": "ba9414a074aad4f592ac75ed17a13b0914efbcd23659f4f170af34da27f84e05",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/mapBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_annotate@1.0",
+      "artifact_sha256": "f111a04ba6eab484035f278a9375dd8844421611be9e1fb8722ac92d098cc803",
+      "source_sha256": "4d6410dd18aff4e2956a2ff311c6d81de86cb6c254e03b5da0d326d997c33b7b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_annotate@1.0",
+        "artifact_sha256": "f111a04ba6eab484035f278a9375dd8844421611be9e1fb8722ac92d098cc803",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/annotateBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_jaccard@1.0",
+      "artifact_sha256": "20faae06b5a028981e2c858212a2caabb9fae722cb014b06ee7dd37ef824ac7b",
+      "source_sha256": "2498bcbfffbeb6287635daf3ba3f615a0fb7afdac6c79f8445d29c191ad2765e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_jaccard@1.0",
+        "artifact_sha256": "20faae06b5a028981e2c858212a2caabb9fae722cb014b06ee7dd37ef824ac7b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/jaccardBed.xml"
+        },
+        "scope": "Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes. Merges overlapping/book-ended intervals before set arithmetic; empty/empty returns zero. Normalized TSV omits pair-count statistics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_mergefa@1.0",
+      "artifact_sha256": "3654c2b43eeea9a8aaeec6878b6007d7bf1ed398262e5128b128ff92df1c3d3f",
+      "source_sha256": "03d2c38096f81475cb911443b768b3b3e02269d6cc7351086432effde86c920b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_mergefa@1.0",
+        "artifact_sha256": "3654c2b43eeea9a8aaeec6878b6007d7bf1ed398262e5128b128ff92df1c3d3f",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_mergefa.xml"
+        },
+        "scope": "FASTA only, matching sequence IDs and lengths in identical order. Standard union mode only; uppercase only when both input bases are uppercase. Output identifiers omit comments; no quality threshold, masking or random alleles. Two Arrow bytes inputs: source and reference; each input at most 100000 records and 8 MiB characters, execution bytes capped at 8 MiB per input. Invalid or unmatched data fails rather than truncating.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_mergepe@1.0",
+      "artifact_sha256": "5ff858cc017529bbb7a63273781df09fb2d22fb2d8f6af12f760a9c4c6cacdc3",
+      "source_sha256": "b264f88dd38c8e7c8604bc16cdaf3030d3dfc5812c3933047cabea2883d005d0",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_mergepe@1.0",
+        "artifact_sha256": "5ff858cc017529bbb7a63273781df09fb2d22fb2d8f6af12f760a9c4c6cacdc3",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_mergepe.xml"
+        },
+        "scope": "Four-line FASTQ only, matching base names after removing /1 or /2. Output preserves headers and qualities but normalizes plus lines to +. Requires equal record counts. Two Arrow bytes inputs: source and reference; each input at most 100000 records and 8 MiB characters, execution bytes capped at 8 MiB per input. Invalid or unmatched data fails rather than truncating.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_seqtk_mutfa@1.0",
+      "artifact_sha256": "7b94b4311956d51dc2089bc8592cf05ba02072a8d9994b77d89d3723de3ef9d6",
+      "source_sha256": "f9ad2bf813470268a13d4090206baae7576990913219523f4df956173c6948d1",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_seqtk_mutfa@1.0",
+        "artifact_sha256": "7b94b4311956d51dc2089bc8592cf05ba02072a8d9994b77d89d3723de3ef9d6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/seqtk/seqtk_mutfa.xml"
+        },
+        "scope": "Source FASTA; reference is a four-column TSV mutation list: sequence ID, one-based position, ignored field, replacement IUPAC base. Rejects duplicates, unknown sequence IDs and positions outside sequence; source headers retained. Two Arrow bytes inputs: source and reference; each input at most 100000 records and 8 MiB characters, execution bytes capped at 8 MiB per input. Invalid or unmatched data fails rather than truncating.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed12_to_bed6@1.0",
+      "artifact_sha256": "1ce264f9885996792625b406a59bd7bc9a645052c89c5cb76ff5ea516303ea5c",
+      "source_sha256": "4f02a91e8853509666a405e69f7141c2456267b0098a41e0c68947d916d169e9",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed12_to_bed6@1.0",
+        "artifact_sha256": "1ce264f9885996792625b406a59bd7bc9a645052c89c5cb76ff5ea516303ea5c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/bed12ToBed6.xml"
+        },
+        "scope": "Exactly BED12; validates block count, positive block lengths, nonoverlap and containment. Does not flatten any other scientific format. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_extract_fasta@1.0",
+      "artifact_sha256": "f5861ad90acfc9d76b56d50e5e541ddbd0e67750d284e1eecffe28d03291396f",
+      "source_sha256": "f011f21bcc5a8179bb319cb69f0a967f3154a26341d4bf7b81a55daea1092531",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_extract_fasta@1.0",
+        "artifact_sha256": "f5861ad90acfc9d76b56d50e5e541ddbd0e67750d284e1eecffe28d03291396f",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/getfastaBed.xml"
+        },
+        "scope": "source BED, reference FASTA with unique IDs. Output coordinate-based titles; no BED12 splicing. Upper/lowercase retained. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_mask_fasta@1.0",
+      "artifact_sha256": "5721e62608b3796eb633a049a6fa731eb1c00d3c920ce606519d7954872b6a78",
+      "source_sha256": "b42f795ab435becb0119b645d8728d3345c5a42c9b86fdf26be8ce1c5aa814d1",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_mask_fasta@1.0",
+        "artifact_sha256": "5721e62608b3796eb633a049a6fa731eb1c00d3c920ce606519d7954872b6a78",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/maskFastaBed.xml"
+        },
+        "scope": "source FASTA, reference BED. Retains complete headers and sequence order; output sequences are unwrapped. All reference interval IDs must exist in FASTA. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_nucleotide_content@1.0",
+      "artifact_sha256": "7fef90a9504c963b557f522c313370eb8b3080025344c245bea75d8543d96de1",
+      "source_sha256": "fb4cee8718769b65275d24f4bde45d3a56cf94fa7648a834e5ff49d0dae63936",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_nucleotide_content@1.0",
+        "artifact_sha256": "7fef90a9504c963b557f522c313370eb8b3080025344c245bea75d8543d96de1",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/nucBed.xml"
+        },
+        "scope": "source BED, reference FASTA; normalized headerless output: original BED fields, AT fraction, GC fraction, A,C,G,T,N,other counts and length. Ambiguous IUPAC bases count as other, denominator includes all bases; no strand or sequence output. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_union_bedgraph@1.0",
+      "artifact_sha256": "f6e34505974471cd64bec695096c05a71c3fda059a1bc343e0655ae5b4e1c73d",
+      "source_sha256": "9b234fde6b09350d10cc1a59ca6ee344f5b2cff0e1d4915e3d786631ec9d9535",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_union_bedgraph@1.0",
+        "artifact_sha256": "f6e34505974471cd64bec695096c05a71c3fda059a1bc343e0655ae5b4e1c73d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/unionBedGraphs.xml"
+        },
+        "scope": "Two BED4 bedGraph inputs. Output columns: chromosome,start,end,source value,reference value. Sorts inputs, rejects overlapping intervals within each input; gaps absent in both inputs omitted. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_bed_multi_intersect@1.0",
+      "artifact_sha256": "9caa4d0507c694bddbe9c7f554709eb7ed8a38b634f8a61e4250c22eefd34346",
+      "source_sha256": "faeb444eca08262054bc28e6905b551fa784547c460fa37bfc807a36e45d8a3f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_bed_multi_intersect@1.0",
+        "artifact_sha256": "9caa4d0507c694bddbe9c7f554709eb7ed8a38b634f8a61e4250c22eefd34346",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/bedtools/multiIntersectBed.xml"
+        },
+        "scope": "Two BED3+ inputs; overlapping intervals within each input unioned. Output chromosome,start,end,set count,one-based membership list,source presence,reference presence. No empty-region output or clustering mode. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_biosed@1.0",
+      "artifact_sha256": "46ca7e9d9f18e9af6e8f0183170708d6c69abdcaef055116ee170d316a8ed6fb",
+      "source_sha256": "b4ab89131a59defd45e16330c995f4a51b44894c8382ae3b5e1292147660a7b5",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_biosed@1.0",
+        "artifact_sha256": "46ca7e9d9f18e9af6e8f0183170708d6c69abdcaef055116ee170d316a8ed6fb",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_biosed.xml"
+        },
+        "scope": "Replaces nonoverlapping literal occurrences, preserving unaffected case. No pattern language; output sequence at most 8 MiB characters. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_checktrans@1.0",
+      "artifact_sha256": "e9430d160f284fe3102cc5510427c89f75089820a77f10464cd1983e517a6509",
+      "source_sha256": "75eca4e0ee2e25a889c430bbe08e1326c90ae46a6f2edb0e0f1006c3a985468e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_checktrans@1.0",
+        "artifact_sha256": "e9430d160f284fe3102cc5510427c89f75089820a77f10464cd1983e517a6509",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_checktrans.xml"
+        },
+        "scope": "Protein sequence input. Counts * markers and reports one-based last-stop coordinate, or zero when absent. No feature-file or ORF output. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_cutseq@1.0",
+      "artifact_sha256": "c17d0dfc5c1bd502c2be2468fd76871e3466310b1568c2940e6af5dca7cc13b5",
+      "source_sha256": "7286e51f1f99499b1236cf4ee2d93360668c799c8ac91fa6b040c5fab17f19bd",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_cutseq@1.0",
+        "artifact_sha256": "c17d0dfc5c1bd502c2be2468fd76871e3466310b1568c2940e6af5dca7cc13b5",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_cutseq.xml"
+        },
+        "scope": "Coordinates apply to every record; out-of-range regions fail. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_degapseq@1.0",
+      "artifact_sha256": "839a4c78c3d028797ee398a422768b8f150e5c83025c759352ab152a3bc4b605",
+      "source_sha256": "eae8adf12acd3b6ffdbd427ca16c89c339e3fe67e224f101729feede29989936",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_degapseq@1.0",
+        "artifact_sha256": "839a4c78c3d028797ee398a422768b8f150e5c83025c759352ab152a3bc4b605",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_degapseq.xml"
+        },
+        "scope": "Removes dash and dot alignment gaps; nucleotide/protein letters and stop markers retained. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_descseq@1.0",
+      "artifact_sha256": "3938986d84966c8fd10e57b938304cb02a29d1440896497de1eb912cc085054d",
+      "source_sha256": "b92e1311ef2c85c12833ad1f7199bf613304ab31494f94857ee96f293b95869f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_descseq@1.0",
+        "artifact_sha256": "3938986d84966c8fd10e57b938304cb02a29d1440896497de1eb912cc085054d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_descseq.xml"
+        },
+        "scope": "Sequence identifier is unchanged; only its description is edited. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_extractseq@1.0",
+      "artifact_sha256": "6f0badef0cdb76bd3857c63803aabad2109844950a02ae85fa34ccbb9ff169b9",
+      "source_sha256": "9af356c687950b540667bf41b3550054ff417e81f8c654ee5a90e184e6a361a8",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_extractseq@1.0",
+        "artifact_sha256": "6f0badef0cdb76bd3857c63803aabad2109844950a02ae85fa34ccbb9ff169b9",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_extractseq.xml"
+        },
+        "scope": "Concatenates regions in parameter order. No feature hierarchy or separate files; out-of-range regions fail. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_getorf@1.0",
+      "artifact_sha256": "aaa268dd1c2062ac5fe1041cae0a8019d853209f129a75aedb9de556c6042a8b",
+      "source_sha256": "bdc1b610dad02c174e998cb679c836b0d5f889f41749a1d5777c8a8114861b43",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_getorf@1.0",
+        "artifact_sha256": "aaa268dd1c2062ac5fe1041cae0a8019d853209f129a75aedb9de556c6042a8b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_getorf.xml"
+        },
+        "scope": "Three forward frames, standard genetic code; stop-to-stop ORFs, terminal partial codons ignored. No reverse/circular/start-codon or alternative-table modes. Coordinates describe translated codons, excluding stop codons. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_maskseq@1.0",
+      "artifact_sha256": "2a4b713e8fccb0192b35cd57b377c85a6af0a0dc27e8beadcdbe045181df4642",
+      "source_sha256": "3dd6c124288d9b3f8d9619833744c19e4b70980327ed3663e822e7db2d46a51e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_maskseq@1.0",
+        "artifact_sha256": "2a4b713e8fccb0192b35cd57b377c85a6af0a0dc27e8beadcdbe045181df4642",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_maskseq.xml"
+        },
+        "scope": "One-based inclusive ranges; overlapping masks applied once; no feature annotations. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_notseq@1.0",
+      "artifact_sha256": "e611030347747fb60689faca296513dc40c452643bac9423f6fd7e242be88898",
+      "source_sha256": "1947dd584a02a281f65b6ef287276486742a051879329bbf636495c7809eea96",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_notseq@1.0",
+        "artifact_sha256": "e611030347747fb60689faca296513dc40c452643bac9423f6fd7e242be88898",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_notseq.xml"
+        },
+        "scope": " FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_nthseq@1.0",
+      "artifact_sha256": "d703786f4d9061f430db3e3cfc077656ca4cfd29d159fffbbb11516bd17147fe",
+      "source_sha256": "2564f36a828dfffa3d6995dc18d131bfcb80fa497af47c0e0bbb10798e3b4a21",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_nthseq@1.0",
+        "artifact_sha256": "d703786f4d9061f430db3e3cfc077656ca4cfd29d159fffbbb11516bd17147fe",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_nthseq.xml"
+        },
+        "scope": "Fails if the requested sequence does not exist. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_shuffleseq@1.0",
+      "artifact_sha256": "99fc6cc858d26544292da436e2bc7e3f38e870526cd39431271e9c40485aa71c",
+      "source_sha256": "11c3ea9e6c430852e4d30b9268da2923b2cf3e7b424113cbf4da2f9f3320b24a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_shuffleseq@1.0",
+        "artifact_sha256": "99fc6cc858d26544292da436e2bc7e3f38e870526cd39431271e9c40485aa71c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_shuffleseq.xml"
+        },
+        "scope": "Fisher-Yates permutation preserves residue counts. Seeded JVM RNG is intentionally different from native EMBOSS. Output IDs add _shuffle_N; original descriptions omitted. At most 16 MiB generated characters per record. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_skipseq@1.0",
+      "artifact_sha256": "4b52db467c1e25aecf6a514e278199af2adf1ae634c257c0930e1802c8f86e4c",
+      "source_sha256": "9b2c12ebec4255b243c902293b96f253cf62826adf2945652d9b53b7b03e160a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_skipseq@1.0",
+        "artifact_sha256": "4b52db467c1e25aecf6a514e278199af2adf1ae634c257c0930e1802c8f86e4c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_skipseq.xml"
+        },
+        "scope": " FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_splitter@1.0",
+      "artifact_sha256": "335c9d84a47c925178d0326c59da36e1f39c7f8c0b0170b88ce3a66c64e4e9dc",
+      "source_sha256": "4892f6105d72bd6c2a29b0cb1d18ff449e2f304d284e8c502d560cdb87805c63",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_splitter@1.0",
+        "artifact_sha256": "335c9d84a47c925178d0326c59da36e1f39c7f8c0b0170b88ce3a66c64e4e9dc",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_splitter.xml"
+        },
+        "scope": "Window starts advance by size-overlap, emitting the final clipped window. Output IDs encode inclusive coordinates. At most 100000 windows and 16 MiB generated characters per record. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_textsearch@1.0",
+      "artifact_sha256": "f9fc183b13b35a7a58cf609154aaf2fa1f85843a571af84723ffcbde8765df59",
+      "source_sha256": "8d73784b8f2ee79e5a8ab68821c94561c4c5d2ed4447911e95dc8d1177277069",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_textsearch@1.0",
+        "artifact_sha256": "f9fc183b13b35a7a58cf609154aaf2fa1f85843a571af84723ffcbde8765df59",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_textsearch.xml"
+        },
+        "scope": "Searches complete headers; outputs matched ID and description as TSV, no HTML, database lookups or regular expressions. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_trimest@1.0",
+      "artifact_sha256": "7119cdeb85b7c6f773f24b4014e689f83f9b45a1e43f2dab951afd90ff31b478",
+      "source_sha256": "555263df3bc41f5640fa6d91ab1b926576604f07db4d4c26b04f64488852cbd6",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_trimest@1.0",
+        "artifact_sha256": "7119cdeb85b7c6f773f24b4014e689f83f9b45a1e43f2dab951afd90ff31b478",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_trimest.xml"
+        },
+        "scope": "Exact 3-prime poly-A only, case-insensitive. No mismatch tolerance, 5-prime poly-T, reverse orientation or lowercase masking. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_trimseq@1.0",
+      "artifact_sha256": "5e9c4f82661097c76d9048e980f74c8a0956d512711c17b5e243940e9b6a8c55",
+      "source_sha256": "18be5475e81e72379fbdb3721ba042090c4d0e84471bf0e73c03267e1aac524e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_trimseq@1.0",
+        "artifact_sha256": "5e9c4f82661097c76d9048e980f74c8a0956d512711c17b5e243940e9b6a8c55",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_trimseq.xml"
+        },
+        "scope": "Strict single-residue terminal N mode only; internal ambiguous bases retained. No window-percentage or protein ambiguity modes. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_transeq@1.0",
+      "artifact_sha256": "4712bb160ad48c56494044f277aabf323efcc71923cb4615c950b34333a13f89",
+      "source_sha256": "447d0c702972b596ebaa48785c4aca88f397bb8a43f27eefc4b4bfefda176f87",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_transeq@1.0",
+        "artifact_sha256": "4712bb160ad48c56494044f277aabf323efcc71923cb4615c950b34333a13f89",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_transeq.xml"
+        },
+        "scope": "All three forward and three reverse-complement frames, standard code; partial terminal codons ignored, ambiguous codons become X. No CDS validation or alternative codon tables. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_fuzzpro@1.0",
+      "artifact_sha256": "dd45c5297f13b3dc0e56cd22e4b1879f4013e614a42d0516be39d4b81679246d",
+      "source_sha256": "92e380e0c305858f4aebb0bc5303182f45ccc54194e687b3498fc9bf755ea851",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_fuzzpro@1.0",
+        "artifact_sha256": "dd45c5297f13b3dc0e56cd22e4b1879f4013e614a42d0516be39d4b81679246d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_fuzzpro.xml"
+        },
+        "scope": "Overlapping matches, one-based inclusive coordinates. No PROSITE brackets/repeats or regex. Sequence length times pattern length <=64000000 and at most 100000 hits per sequence. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_compseq@1.0",
+      "artifact_sha256": "c20b9cb05bcdfbdb5b08c0babf9b189b2fae5fdfe607f6595bf85ff00255d691",
+      "source_sha256": "5c64eb81e3cd7a093d20c5d4c53823fad1d46c4ec218dd268d7aca620689b92c",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_compseq@1.0",
+        "artifact_sha256": "c20b9cb05bcdfbdb5b08c0babf9b189b2fae5fdfe607f6595bf85ff00255d691",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_compseq.xml"
+        },
+        "scope": "All sliding frames; emits observed ACGT words in lexical order. Windows containing ambiguities are omitted from both counts and denominator. No expected-frequency or external composition tables. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_freak@1.0",
+      "artifact_sha256": "45aa0536209a1339f9c2bb370008e803da6078ea89d3cabcf5561aceb6776e4d",
+      "source_sha256": "857d36260af60117a874c60b808f963878f75a55cf26c4b8820c27936afbe214",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_freak@1.0",
+        "artifact_sha256": "45aa0536209a1339f9c2bb370008e803da6078ea89d3cabcf5561aceb6776e4d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_freak.xml"
+        },
+        "scope": "DNA input; only complete windows, one-based inclusive coordinates; ambiguous bases remain in denominator. No graphical output. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_pepstats@1.0",
+      "artifact_sha256": "1d6f8e6ee2192c442ac58193dd08dc598682b9e0e00c8ae58373c4c4f9d1b26e",
+      "source_sha256": "dd9df06a27ec0bc4fa3972fa9627b77cb4f56ea6bbc6907c05079a04b4b9ddb8",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_pepstats@1.0",
+        "artifact_sha256": "1d6f8e6ee2192c442ac58193dd08dc598682b9e0e00c8ae58373c4c4f9d1b26e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_pepstats.xml"
+        },
+        "scope": "Average residue masses plus terminal water 18.01528; Kyte-Doolittle hydropathy; EMBOSS default pKa charge model including termini. Reduced extinction =5500*W+1490*Y; no disulfide contribution. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_iep@1.0",
+      "artifact_sha256": "3e112a822a5bc3d81ae4d624ca4e354245413befe113bbc054b45d43d5cb346a",
+      "source_sha256": "69581da8a02a777306a5b3198780de78f570248391fbd145b06ff2b3ce76d8e0",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_iep@1.0",
+        "artifact_sha256": "3e112a822a5bc3d81ae4d624ca4e354245413befe113bbc054b45d43d5cb346a",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_iep.xml"
+        },
+        "scope": "EMBOSS default pKa: amino7.5, carboxyl3.6, C8.5,D3.9,E4.1,H6.5,K10.8,R12.5,Y10.1. Includes both termini; bisection on pH0..14. No alternative pKa files or modified residues. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_charge@1.0",
+      "artifact_sha256": "f29034307a0d26f744311a92900d5762d46b80e359885ec3b8c0ac2ac8951489",
+      "source_sha256": "1d037d99313a530d359e74ed31e43b2be4c8bbeb87fbb4c0113c96eaa3b21367",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_charge@1.0",
+        "artifact_sha256": "f29034307a0d26f744311a92900d5762d46b80e359885ec3b8c0ac2ac8951489",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_charge.xml"
+        },
+        "scope": "Henderson-Hasselbalch model and default EMBOSS pKa values, including both termini; one configured pH, no graph. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_hmoment@1.0",
+      "artifact_sha256": "74d4ce77001658c1b75db9a83de112273718b2aadaf8518a8fe06368bf2b5643",
+      "source_sha256": "04bc27566e85517b71b7a58627d33b269005adc5b5056b314f8f77cdbeb3650a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_hmoment@1.0",
+        "artifact_sha256": "74d4ce77001658c1b75db9a83de112273718b2aadaf8518a8fe06368bf2b5643",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_hmoment.xml"
+        },
+        "scope": "Eisenberg consensus hydrophobicity; vector-sum magnitude divided by window size, one-residue steps. At most 64000000 residue/window visits and 100000 output windows per sequence. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_pepwindow@1.0",
+      "artifact_sha256": "d2222609947ea06c3d33be5a61b57d14c393a4599a43e63025fe54bda17383c5",
+      "source_sha256": "0a58b48e540ca16df5347c4e9481cf54b77115f8bee59951b4715da9fb291cf6",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_pepwindow@1.0",
+        "artifact_sha256": "d2222609947ea06c3d33be5a61b57d14c393a4599a43e63025fe54bda17383c5",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_pepwindow.xml"
+        },
+        "scope": "Complete one-residue-step windows only; normalized TSV rather than plots. At most 100000 output windows per sequence. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_pepinfo@1.0",
+      "artifact_sha256": "9dd0c05a033567a571bc4a0a4f97956d5b3bcaad21253105ba7d035f5ab82af7",
+      "source_sha256": "75c61d6f39c9d317bc4a5b4b4fa75712eb7907657539a1d29c07f4e5f433f93b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_pepinfo@1.0",
+        "artifact_sha256": "9dd0c05a033567a571bc4a0a4f97956d5b3bcaad21253105ba7d035f5ab82af7",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_pepinfo.xml"
+        },
+        "scope": "Normalized residue-wise average mass, Kyte-Doolittle and Eisenberg consensus values. At most 100000 output residues per sequence, no plots. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_antigenic@1.0",
+      "artifact_sha256": "7b05c3a3619bf716f9757474cd02e7807cc2430f085d1a30312902a5975090fa",
+      "source_sha256": "55d24ebf9f063910abfea025bb9d09283d1cd8b4509ff5379c42ae59e9563ff4",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_antigenic@1.0",
+        "artifact_sha256": "7b05c3a3619bf716f9757474cd02e7807cc2430f085d1a30312902a5975090fa",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_antigenic.xml"
+        },
+        "scope": "Reports seven-residue rolling propensity scores at one-based centers, not final epitope calls or merged determinants; no diagnostic/biological validation claim. At most 100000 windows. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_digest@1.0",
+      "artifact_sha256": "1c4eb72355a22ea80836cfe88bd4cc06ed548ce0d055cdc2f50cd646ae98e9a0",
+      "source_sha256": "29d4de31f018ad069fcf06814bdc01abc0731f703381d6166a2b55785ce9b1d7",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_digest@1.0",
+        "artifact_sha256": "1c4eb72355a22ea80836cfe88bd4cc06ed548ce0d055cdc2f50cd646ae98e9a0",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_digest.xml"
+        },
+        "scope": "Trypsin cleavage after K/R unless the next residue is P. Complete digestion only, zero missed cleavages; includes terminal fragment. No native unfavoured-site rules or other enzymes. At most 100000 peptides per sequence. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_backtranseq@1.0",
+      "artifact_sha256": "f8f6b2da04c61e9dff8f33df4838a9ed9d8ea07cba02818a00bb357650cc5d20",
+      "source_sha256": "a27551d90b827f7f657261b7de74e9dcf93c63308b953ba27360ac570f47142f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_backtranseq@1.0",
+        "artifact_sha256": "f8f6b2da04c61e9dff8f33df4838a9ed9d8ea07cba02818a00bb357650cc5d20",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_backtranseq.xml"
+        },
+        "scope": "Chooses the lexically first standard DNA codon for each amino acid, not native EMBOSS species-frequency codon optimization. No stop/ambiguous residues or host codon table; output DNA at most 8 MiB characters. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_oddcomp@1.0",
+      "artifact_sha256": "ea2cea3c06ed4e42c350708b1a71fcd236c4d1049b87ab38960d68e994a6dfb3",
+      "source_sha256": "9791f1163c5c8874d614766d56a04d84ed874db3d8f4e06e395c31de8c0528ea",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_oddcomp@1.0",
+        "artifact_sha256": "ea2cea3c06ed4e42c350708b1a71fcd236c4d1049b87ab38960d68e994a6dfb3",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_oddcomp.xml"
+        },
+        "scope": "Exact residue-composition thresholds, not native pair-composition files or motif order. One-residue sliding steps; at most 100000 hits per sequence. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_needle@1.0",
+      "artifact_sha256": "2f3ca1ec82d372f18d3e5b1ce42ae1bf4d3efe3727fcf769e5a133d4564f57f6",
+      "source_sha256": "31fe9789e8199addf44fb88fc5c18a975a1ef353ed7757d90a6b051f20263e29",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_needle@1.0",
+        "artifact_sha256": "2f3ca1ec82d372f18d3e5b1ce42ae1bf4d3efe3727fcf769e5a133d4564f57f6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_needle.xml"
+        },
+        "scope": "Global Needleman-Wunsch/Gotoh; terminal gaps penalized, score gap(k)=open+(k-1)*extend. At most 1000000 DP cells. Result contains both aligned sequences and score/one-based source coordinates. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_water@1.0",
+      "artifact_sha256": "93cd5f8039e77985cfb0eefb94bab997768d04dca3377c4ef611fed38e646e78",
+      "source_sha256": "ae4783ad41683d147f9f405fca42b928e331817cd395f19cce03742da8eb7350",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_water@1.0",
+        "artifact_sha256": "93cd5f8039e77985cfb0eefb94bab997768d04dca3377c4ef611fed38e646e78",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_water.xml"
+        },
+        "scope": "Local Smith-Waterman/Gotoh; score gap(k)=open+(k-1)*extend. At most 1000000 DP cells; deterministic first maximum. Zero-score alignments emit empty sequences with zero coordinates. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_diffseq@1.0",
+      "artifact_sha256": "9823de70bd86a3177602c2f3128e25146741a25f7faca40d28b2351ac7bbb72c",
+      "source_sha256": "0c0282c09976ead96a2ca4a83d9d4699650c2d8357f55d3917de3f9779df852f",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_diffseq@1.0",
+        "artifact_sha256": "9823de70bd86a3177602c2f3128e25146741a25f7faca40d28b2351ac7bbb72c",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_diffseq.xml"
+        },
+        "scope": "Uses the same bounded affine global alignment as needle, not EMBOSS exact-match heuristic. Normalized TSV: zero-based offsets before an event, reference/query blocks (dash for empty), and event type. At most 1000000 DP cells. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_dottup@1.0",
+      "artifact_sha256": "12306eb98facc0e7342982104e1c7c7c8c3a703ae057cdb0013a571b71b389fe",
+      "source_sha256": "ebbb20e03e20b27e8e93b4d22d4abb8e31cae6b5d1d645424f21a34c3897931b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_dottup@1.0",
+        "artifact_sha256": "12306eb98facc0e7342982104e1c7c7c8c3a703ae057cdb0013a571b71b389fe",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_dottup.xml"
+        },
+        "scope": "Indexed exact k-mer matches, TSV query ID,reference ID,one-based query start,one-based reference start,word. At most 100000 positions per input and 100000 output pairs; no graphical plot. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_dotmatcher@1.0",
+      "artifact_sha256": "1cd4d1580b45a1611ae53afd24d60b486a4d0f6dadffd7cfe6860b92164824e4",
+      "source_sha256": "460949441a5da2e448a9ab8bef68bf3177df6d34392ae498be8abe29fca3d5f6",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_dotmatcher@1.0",
+        "artifact_sha256": "1cd4d1580b45a1611ae53afd24d60b486a4d0f6dadffd7cfe6860b92164824e4",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_dotmatcher.xml"
+        },
+        "scope": "Normalized TSV matching-window positions and score; no plot or substitution matrix. At most 64000000 character comparisons and 100000 output pairs. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_wordmatch@1.0",
+      "artifact_sha256": "4abb7dbd34cff944c969bae36268d8140c018646848a260993d7a54edda9286e",
+      "source_sha256": "640360ff879c8d27fed6c7aafaa20b0d3f842a9ad19c163def4b15e82fc4f23a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_wordmatch@1.0",
+        "artifact_sha256": "4abb7dbd34cff944c969bae36268d8140c018646848a260993d7a54edda9286e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_wordmatch.xml"
+        },
+        "scope": "Reports left- and right-maximal exact matches, not every contained k-mer. One-based positions, length and matched sequence. At most 16000000 start comparisons, 64000000 extension comparisons and 100000 hits. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_merger@1.0",
+      "artifact_sha256": "f139b06fd46f56f213cf4a0f702794d07e0d56d525f5b7efb3a771ca71bccd37",
+      "source_sha256": "258e39c9e9930c5d3d01ca94271e7cac38a42fbf34641d00560a400c274498ad",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_merger@1.0",
+        "artifact_sha256": "f139b06fd46f56f213cf4a0f702794d07e0d56d525f5b7efb3a771ca71bccd37",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_merger.xml"
+        },
+        "scope": "Exact forward overlap only, using KMP; no mismatch consensus, reverse orientation or quality weighting. Fails if minimum overlap is absent; output <=2000000 bases. Exactly one nonempty ACGT FASTA record per source/reference Arrow bytes input. Uppercase-normalized output; each sequence <=1000000 characters. No protein substitution matrices, database searches or native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_palindrome@1.0",
+      "artifact_sha256": "d294aeeae08b4376cbc63fd6b09bec6c0e55ce33e336cd53c16c966171ccd664",
+      "source_sha256": "1b8aae8b5d913e250a0536c6972e3ee8916b8438274784c5fe821a15153e899b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_palindrome@1.0",
+        "artifact_sha256": "d294aeeae08b4376cbc63fd6b09bec6c0e55ce33e336cd53c16c966171ccd664",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_palindrome.xml"
+        },
+        "scope": "For each left start and loop length report the longest exact reverse-complement stem in the requested range; one-based inclusive coordinates. No mismatched/gapped stems; <=64000000 base comparisons and <=100000 hits. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_equicktandem@1.0",
+      "artifact_sha256": "de419a9c18586d5a6f6cc7deff9a15d0cb38142d33d94c0473c1332aa60da0fa",
+      "source_sha256": "6ff93ecceda057b07dbfdcf83a3c547e86bb673ceb905b8c33715a1a3e801dfa",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_equicktandem@1.0",
+        "artifact_sha256": "de419a9c18586d5a6f6cc7deff9a15d0cb38142d33d94c0473c1332aa60da0fa",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_equicktandem.xml"
+        },
+        "scope": "Exact primitive units only, maximal runs at each phase start; redundant starts within the same run suppressed. No approximate repeat score. <=64000000 comparisons and <=100000 hits. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_fuzznuc@1.0",
+      "artifact_sha256": "a8ed59ae30e0af4fd3f80aeeea6444749cc07bba4e44d35e98bb25558fdd278f",
+      "source_sha256": "ba4996db862cea966d322bb653fc0d434155c27e10360fc60fa68bb156e9062a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_fuzznuc@1.0",
+        "artifact_sha256": "a8ed59ae30e0af4fd3f80aeeea6444749cc07bba4e44d35e98bb25558fdd278f",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_fuzznuc.xml"
+        },
+        "scope": "Conservative sequence ACGT; IUPAC ambiguity belongs to motif. Fixed-length substitutions only, no PROSITE syntax/indels. <=64000000 comparisons and <=100000 hits. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_fuzztran@1.0",
+      "artifact_sha256": "c9a06a1f3e93303106a065ab4a08bd92080f62eac3d309668f2d6736290aa936",
+      "source_sha256": "b45bffb7e65f3be92aa4ddc5d3ef4046712692939f416d694f3cf6a704fde9fb",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_fuzztran@1.0",
+        "artifact_sha256": "c9a06a1f3e93303106a065ab4a08bd92080f62eac3d309668f2d6736290aa936",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_fuzztran.xml"
+        },
+        "scope": "Standard code, complete codons, six frames; one-based inclusive genomic coordinates always increasing, signed frame indicates orientation. No PROSITE syntax, partial codons or ambiguous DNA. <=64000000 comparisons and <=100000 hits. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_cpgreport@1.0",
+      "artifact_sha256": "88b284756f18ae4ac28efc5e28e415f294d8504546b68a5a2abd2966f7b5b3b2",
+      "source_sha256": "999aaca4ffd20b87c48b6665e6de697a5901b8c0e1d3815f5d7b55094ffc3736",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_cpgreport@1.0",
+        "artifact_sha256": "88b284756f18ae4ac28efc5e28e415f294d8504546b68a5a2abd2966f7b5b3b2",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_cpgreport.xml"
+        },
+        "scope": "CpG observed/expected = CpG_count * length / (C_count * G_count), zero when denominator zero; global per-sequence TSV, no island prediction. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_cpgplot@1.0",
+      "artifact_sha256": "b1887d2c2b482bcfbff95f23d8c0b00cfdefc37f8aabc22cd66c32edf0308cb6",
+      "source_sha256": "e7d9acb13b44ecf6594029a78012a414e262080df8ff707a36d13d015369791c",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_cpgplot@1.0",
+        "artifact_sha256": "b1887d2c2b482bcfbff95f23d8c0b00cfdefc37f8aabc22cd66c32edf0308cb6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_cpgplot.xml"
+        },
+        "scope": "Full windows, step1, inclusive thresholds; merge touching/overlapping accepted windows. O(length) sliding counts. Normalized TSV, not graphical output or the upstream smoothing algorithm. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_newcpgseek@1.0",
+      "artifact_sha256": "f32ff51c37744c29979bbf57a626f298884b89d31b63f6d0d93673e357dd3a94",
+      "source_sha256": "75ff6421e2dbcd73918c90b34441cac30848727f94e8c0a1df4f5b6b36437b52",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_newcpgseek@1.0",
+        "artifact_sha256": "f32ff51c37744c29979bbf57a626f298884b89d31b63f6d0d93673e357dd3a94",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_newcpgseek.xml"
+        },
+        "scope": "Each adjacent CG rewards cpg_score; every other dinucleotide costs1. Reset at nonpositive score, report start through first peak before reset/end. One-based base coordinates. Explicit score-walk subset, not native report formatting. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_syco@1.0",
+      "artifact_sha256": "ce375f60bb4d97ef00b321de689faadd866826f0ae0ca17bb75169305b35f91d",
+      "source_sha256": "1ddff38564082c7ce7ffe8cbcbfddd42b6de9fd8a4b1652195b62e1e2db04d36",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_syco@1.0",
+        "artifact_sha256": "ce375f60bb4d97ef00b321de689faadd866826f0ae0ca17bb75169305b35f91d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_syco.xml"
+        },
+        "scope": "Standard code, DNA length multiple3; exclude stop codons. Shannon entropy across synonymous codons for each observed amino acid; not EMBOSS graphical codon-preference profile. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_wobble@1.0",
+      "artifact_sha256": "2d705f0303bfecb204b21889b2003f5c20b10f228fd140d12fff7cf80a9aef9a",
+      "source_sha256": "136263039b439a32af217610898e7bc0b145d427c26e35e1106bfcba891ff11b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_wobble@1.0",
+        "artifact_sha256": "2d705f0303bfecb204b21889b2003f5c20b10f228fd140d12fff7cf80a9aef9a",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_wobble.xml"
+        },
+        "scope": "Standard frame1, DNA length multiple3. Full windows step1, selected-base fraction at codon position3 versus positions1+2; normalized TSV rather than plot. O(codons) sliding counts. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_cai@1.0",
+      "artifact_sha256": "36b35ba6977d3f80acdf42ee64430f4db7d08d1f1388eecceb651410638c6291",
+      "source_sha256": "020f0c601194e7d38ad550ec7b1516f848a6794654598e275aa6c4fb3728874a",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_cai@1.0",
+        "artifact_sha256": "36b35ba6977d3f80acdf42ee64430f4db7d08d1f1388eecceb651410638c6291",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_cai.xml"
+        },
+        "scope": "Geometric mean of caller weights for all non-stop codons; standard code, length multiple3, no host-specific default or optimization. Weights must be unique and complete for used codons. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_codcmp@1.0",
+      "artifact_sha256": "985e34978785545c60186027ce5d48838c257c456c0192904881da6ace951b45",
+      "source_sha256": "65545e0e8288c97724170dd26347a07e47f29202aa667595ce77b647ca114b94",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_codcmp@1.0",
+        "artifact_sha256": "985e34978785545c60186027ce5d48838c257c456c0192904881da6ace951b45",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_codcmp.xml"
+        },
+        "scope": "Exactly one nonempty ACGT coding FASTA record per source/reference; lengths multiple3, <=1000000 bases each. Compare 64-codon frequency vectors using symmetric Jensen-Shannon divergence in bits, including stops. Normalized comparison, not native codon-usage file format.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_linear_regression@1.0",
+      "artifact_sha256": "029a323d7cf1ed57fc570d365658d0f235e965405c506a292477cad9300fbf96",
+      "source_sha256": "1186f3fa0693441fea2276203199a4cbf868d923454d9cbb9e7544388f4dc17e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_linear_regression@1.0",
+        "artifact_sha256": "029a323d7cf1ed57fc570d365658d0f235e965405c506a292477cad9300fbf96",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/rpy_statistics_collection/linear_regression.xml"
+        },
+        "scope": "Modified Gram-Schmidt with reorthogonalization, centered/scaled predictors; rejects rank deficiency. Coefficients and R-squared, no inferential p-values. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_partial_r_square@1.0",
+      "artifact_sha256": "38d8c3d869b02e229c8b1f5d242f889d6c88a9b762e28483d6c303b5901ab26e",
+      "source_sha256": "3b10a992a38c3ac6af44a2f62c5270ee1c28704e4477eec1d937259dd9378d35",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_partial_r_square@1.0",
+        "artifact_sha256": "38d8c3d869b02e229c8b1f5d242f889d6c88a9b762e28483d6c303b5901ab26e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/rpy_statistics_collection/partialR_square.xml"
+        },
+        "scope": "Drop-one partial R-squared = (SSE_reduced-SSE_full)/SSE_reduced. Unlike native all-subsets reporting, one row per selected predictor; zero when reduced SSE is zero. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_pca@1.0",
+      "artifact_sha256": "24f50424819502d197f3e5af6f125467869736d07888a760d568248a3c4350d6",
+      "source_sha256": "b67b5af731765cc2a5ea5305cabe994db382d2abed0ba543a7890c42fb136fdd",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_pca@1.0",
+        "artifact_sha256": "24f50424819502d197f3e5af6f125467869736d07888a760d568248a3c4350d6",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/rpy_statistics_collection/pca.xml"
+        },
+        "scope": "Sample covariance PCA using symmetric Jacobi eigenvectors, <=16 variables; components ordered by descending eigenvalue. Largest absolute loading is nonnegative, ties lowest column. Scores only; covariance rather than correlation scaling. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_histogram@1.0",
+      "artifact_sha256": "fe1609a7ffefe9ce04c2c92eb7fe76208242c41622ad7e597c6e68343ac60757",
+      "source_sha256": "aabf331f55f8cc730bc805785224f8f2ba5ed83a6e3ff61389689a01af90ac18",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_histogram@1.0",
+        "artifact_sha256": "fe1609a7ffefe9ce04c2c92eb7fe76208242c41622ad7e597c6e68343ac60757",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/rpy_statistics_collection/histogram.xml"
+        },
+        "scope": "Range is observed min/max; half-open bins except inclusive final upper edge. Constant samples use [value-0.5,value+0.5]. Numeric histogram rather than plot. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_scatterplot@1.0",
+      "artifact_sha256": "5b50424f9ac0f797afa8bb9e90e57d53c89c731b85f0746851c8f23b8f3e78f8",
+      "source_sha256": "1a41b232583ecc4c28dd8dcb5cccbe90dfd8314eab8b8d3bffcd7f688f8ed492",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_scatterplot@1.0",
+        "artifact_sha256": "5b50424f9ac0f797afa8bb9e90e57d53c89c731b85f0746851c8f23b8f3e78f8",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/rpy_statistics_collection/scatterplot.xml"
+        },
+        "scope": "Fixed640x420 SVG bytes; only generated numeric coordinates, no embedded input text or scripts; no regression overlay. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_logistic_regression@1.0",
+      "artifact_sha256": "08f5f850a89b657c54aa76b959f8e44a04836cc2c971632eff0fb3725bb03f9b",
+      "source_sha256": "3d4ab7052902368df87508e27d73eba4e51d2e5815c2a5332f41c94eb6b8ccd4",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_logistic_regression@1.0",
+        "artifact_sha256": "08f5f850a89b657c54aa76b959f8e44a04836cc2c971632eff0fb3725bb03f9b",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/rpy_statistics_collection/logistic_regression_vif.xml"
+        },
+        "scope": "Binary response0/1 with both classes, <=16 standardized predictors, <=100 damped Newton steps; rejects singularity and nonconvergence. Coefficients only, not native VIF diagnostics. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_statistical_hypothesis_testing@1.0",
+      "artifact_sha256": "2037e9a0a4908131bbfc02cdf5362a90c8d72cbd8b96e7a9d506c39d74fc2557",
+      "source_sha256": "2946633a5535ef80a61f958260cfd909de38ee22c11f064c61acd750ea741db3",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_statistical_hypothesis_testing@1.0",
+        "artifact_sha256": "2037e9a0a4908131bbfc02cdf5362a90c8d72cbd8b96e7a9d506c39d74fc2557",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/statistics/statistical_hypothesis_testing.xml"
+        },
+        "scope": "One-sample Student t only, sample variance and regularized incomplete beta tail; >=2 observations and positive variance. Does not expose all tests of native SciPy collection. Strict headerless numeric TSV; finite values of magnitude <=1e12, <=10000 rows,128 columns,8 MiB characters. Missing/non-numeric data rejected; no R subprocesses or PDF diagnostics.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_join_files_by_id@1.0",
+      "artifact_sha256": "e81a1e04e0b48683076531b79798a3064d3db3f87e3e201b046208f019709bfe",
+      "source_sha256": "b3f9b31cdf7a452470dc3d2a92832eab06fd565e90262fbd8f768dd716ea9f20",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_join_files_by_id@1.0",
+        "artifact_sha256": "e81a1e04e0b48683076531b79798a3064d3db3f87e3e201b046208f019709bfe",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/join_files_by_id/join_files_by_id.xml"
+        },
+        "scope": "Headerless TSV, exact case-sensitive keys; both key columns retained, unmatched fields are dots. Duplicate keys produce Cartesian matches in source/reference input order. Up to100000 rows,128 columns,8 MiB characters each input and100000 output rows,16 MiB output; full join appends unmatched references. Not arbitrary multi-file join.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_join_files_on_column_fuzzy@1.0",
+      "artifact_sha256": "bcfb25864aa1ba4c8d3e5c273fc465fc75a6b00affe0267def7d33f33e62843e",
+      "source_sha256": "aa0e4bb32d993a8c98758efeac4b4093f300dfc0c8b397d093aac2d3e23aa265",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_join_files_on_column_fuzzy@1.0",
+        "artifact_sha256": "bcfb25864aa1ba4c8d3e5c273fc465fc75a6b00affe0267def7d33f33e62843e",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/bgruening/galaxytools",
+          "path": "tools/text_processing/join_files_on_column_fuzzy/join_files_on_column_fuzzy.xml"
+        },
+        "scope": "Headerless TSV, finite keys magnitude<=1e12; absolute numeric distance only, no ppm/edit-distance. Any input order, bounded pair comparisons<=16000000; <=100000 rows,128 columns,8 MiB characters per input; <=100000 output rows,16 MiB output. Extra distance column always present.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_pasteseq@1.0",
+      "artifact_sha256": "59757dc3cd5964804e2817bb8f8018426623acaa615f5a4278c6d6f55c84b140",
+      "source_sha256": "232e7e994cd0fa27823fbcc22d1b8675202f7756f338ba0dccdcaaf8b218463b",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_pasteseq@1.0",
+        "artifact_sha256": "59757dc3cd5964804e2817bb8f8018426623acaa615f5a4278c6d6f55c84b140",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_pasteseq.xml"
+        },
+        "scope": "Exactly one nonempty ACGT FASTA record per source/reference, each<=1000000 bases. Insert reference into source, retain source header, reject out-of-range position. FASTA output, standard DNA only.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_tranalign@1.0",
+      "artifact_sha256": "bbeb1e3e7db489a5821ccea4b9abbd028505d0a96b4c869e948583afb37a7d22",
+      "source_sha256": "dfa865bcec2b350ff1e4a85e7fd275ff0dcd23ba87086fef7745d46112295ad7",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_tranalign@1.0",
+        "artifact_sha256": "bbeb1e3e7db489a5821ccea4b9abbd028505d0a96b4c869e948583afb37a7d22",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_tranalign.xml"
+        },
+        "scope": "Source coding DNA FASTA and reference aligned-protein FASTA must have the same unique IDs; output source order. Standard code, complete frame1 codons, protein gap becomes three dashes; every non-gap protein residue must equal its source codon translation, including stop. No ORF search or alternative codes. Both inputs<=1000000 total characters and10000 records.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_octanol@1.0",
+      "artifact_sha256": "fbee9b17af06b1a1de37c6fcffbf960e27ea78ec8fbf0ed59d8cb40018d0b86d",
+      "source_sha256": "82a66d2aa2169c334160da4afe1cc9774d5202db24f0b5b79ebfcd96418d5e9e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_octanol@1.0",
+        "artifact_sha256": "fbee9b17af06b1a1de37c6fcffbf960e27ea78ec8fbf0ed59d8cb40018d0b86d",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_octanol.xml"
+        },
+        "scope": "Standard20-residue FASTA; factual Wimley-White whole-residue transfer free energies, kcal/mol, window means and octanol-minus-interface difference. Full windows only, no PNG plot; <=100000 residues per record,10000 records and100000 output windows overall. EMBOSS Ewhite-wimley table values: charged Asp/Glu, neutral His; documented normalized means rather than native energy sums.",
+        "status": "passed"
+      }
+    },
+    {
+      "operator": "galaxy_emboss_pepwheel@1.0",
+      "artifact_sha256": "b1f5d74bc904dd68c3b4d2c5629bd630016658e487188113b7eeacf0a1ca6b56",
+      "source_sha256": "7721ba92258e833baea4203d074cd6721e939147226db2656b86a2e9b8e00c1e",
+      "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+      "status": "passed",
+      "artifact_tests": {
+        "operator": "galaxy_emboss_pepwheel@1.0",
+        "artifact_sha256": "b1f5d74bc904dd68c3b4d2c5629bd630016658e487188113b7eeacf0a1ca6b56",
+        "runtime": "sha256:23732819bf6777f314efc0454034fb8509caac9dc81b84538e52104274cb4af3",
+        "execution_cases": 1,
+        "inference_preview_cases": 1,
+        "invalid_parameter_cases": 2,
+        "encoding_cases": 1,
+        "upstream": {
+          "repository": "https://github.com/galaxyproject/tools-iuc",
+          "path": "tools/emboss_5/emboss_pepwheel.xml"
+        },
+        "scope": "Exactly one standard20-residue FASTA sequence,1..36 residues. Fixed400x400 SVG, first residue at right, later residues advance clockwise by angle; repeated angles use inward ring offsets. Numeric geometry and validated residue labels only, no scripts; no native custom shape markup.",
         "status": "passed"
       }
     }

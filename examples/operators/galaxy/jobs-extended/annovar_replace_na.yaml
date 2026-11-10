@@ -1,0 +1,15 @@
+name: Replace NA values in columns classified as numeric.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/annovar_replace_na.txt
+    view: bytes
+- id: process
+  operator: galaxy_annovar_replace_na@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

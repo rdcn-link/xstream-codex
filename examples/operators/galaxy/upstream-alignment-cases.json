@@ -1,0 +1,325 @@
+{
+  "reference": "EMBOSS 6.6.0.0 Debian 6.6.0+dfsg-12ubuntu2; explicit 2/-1 substitution matrix, affine gap3/1, penalized global terminal gaps",
+  "cases": [
+    {
+      "operator": "emboss_needle",
+      "data": ">query\nACGT\n",
+      "inputs": {
+        "reference": ">reference\nACGT\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 8.0,
+      "native_score": 8.0,
+      "reference_command": [
+        "needle",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto",
+        "-endweight",
+        "Y",
+        "-endopen",
+        "3",
+        "-endextend",
+        "1"
+      ]
+    },
+    {
+      "operator": "emboss_needle",
+      "data": ">query\nACGT\n",
+      "inputs": {
+        "reference": ">reference\nAGT\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 3.0,
+      "native_score": 3.0,
+      "reference_command": [
+        "needle",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto",
+        "-endweight",
+        "Y",
+        "-endopen",
+        "3",
+        "-endextend",
+        "1"
+      ]
+    },
+    {
+      "operator": "emboss_needle",
+      "data": ">query\nACCCCCGT\n",
+      "inputs": {
+        "reference": ">reference\nACGT\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 2.0,
+      "native_score": 2.0,
+      "reference_command": [
+        "needle",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto",
+        "-endweight",
+        "Y",
+        "-endopen",
+        "3",
+        "-endextend",
+        "1"
+      ]
+    },
+    {
+      "operator": "emboss_needle",
+      "data": ">query\nTTACGTAA\n",
+      "inputs": {
+        "reference": ">reference\nGGACGTCC\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 4.0,
+      "native_score": 4.0,
+      "reference_command": [
+        "needle",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto",
+        "-endweight",
+        "Y",
+        "-endopen",
+        "3",
+        "-endextend",
+        "1"
+      ]
+    },
+    {
+      "operator": "emboss_needle",
+      "data": ">query\nAGCTTAGC\n",
+      "inputs": {
+        "reference": ">reference\nACTTAGAC\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 8.0,
+      "native_score": 8.0,
+      "reference_command": [
+        "needle",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto",
+        "-endweight",
+        "Y",
+        "-endopen",
+        "3",
+        "-endextend",
+        "1"
+      ]
+    },
+    {
+      "operator": "emboss_water",
+      "data": ">query\nACGT\n",
+      "inputs": {
+        "reference": ">reference\nACGT\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 8.0,
+      "native_score": 8.0,
+      "reference_command": [
+        "water",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_water",
+      "data": ">query\nACGT\n",
+      "inputs": {
+        "reference": ">reference\nAGT\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 4.0,
+      "native_score": 4.0,
+      "reference_command": [
+        "water",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_water",
+      "data": ">query\nACCCCCGT\n",
+      "inputs": {
+        "reference": ">reference\nACGT\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 6.0,
+      "native_score": 6.0,
+      "reference_command": [
+        "water",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_water",
+      "data": ">query\nTTACGTAA\n",
+      "inputs": {
+        "reference": ">reference\nGGACGTCC\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 8.0,
+      "native_score": 8.0,
+      "reference_command": [
+        "water",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_water",
+      "data": ">query\nAGCTTAGC\n",
+      "inputs": {
+        "reference": ">reference\nACTTAGAC\n"
+      },
+      "params": {},
+      "expected": "Validated affine alignment",
+      "alignment_score": 10.0,
+      "native_score": 10.0,
+      "reference_command": [
+        "water",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-outfile",
+        "<output>",
+        "-datafile",
+        "<matrix>",
+        "-gapopen",
+        "3",
+        "-gapextend",
+        "1",
+        "-aformat",
+        "pair",
+        "-auto"
+      ]
+    }
+  ]
+}

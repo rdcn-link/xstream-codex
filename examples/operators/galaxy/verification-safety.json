@@ -3,8 +3,8 @@
   "commands": [
     "sbt 'Test/runMain xstream.galaxy.SafetyCheck' 'Test/runMain xstream.galaxy.GenomicSafetyCheck' 'Test/runMain xstream.galaxy.FastqSafetyCheck' 'Test/runMain xstream.galaxy.ExtendedSafetyCheck'"
   ],
-  "extended_checks": 249,
-  "upstream_files_sha256_verified": 354,
+  "extended_checks": 2039,
+  "upstream_files_sha256_verified": 620,
   "checks": [
     "fixture output",
     "unknown parameters",
@@ -15,6 +15,20 @@
     "upstream golden fixtures",
     "biological input validation",
     "output expansion budgets",
-    "coordinate boundaries"
-  ]
+    "coordinate boundaries",
+    "paired input port contracts",
+    "affine-gap optimal scores and reconstruction",
+    "scientific numerical tolerances",
+    "QR rank checks and nonconvergence rejection"
+  ],
+  "reference_programs": [
+    "seqtk 94e707082d39b0a038f234df676e32d9802c0dc7",
+    "bedtools2 614e9a5c5935ab86e873dab9072fbbaf003c1b7e",
+    "bcftools1.19 (MIT/GPL dual; MIT source evidence pinned1.21)",
+    "samtools1.19.2 (MIT source evidence pinned1.21)",
+    "EMBOSS6.6.0.0 (test-only; no native runtime dependency)",
+    "NumPy least-squares/eigh; SciPy1.18 Student t and BFGS (test-only)"
+  ],
+  "upstream_generated_golden_cases": 271,
+  "independent_numerical_cases": 30
 }

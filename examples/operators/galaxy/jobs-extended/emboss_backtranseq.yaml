@@ -1,0 +1,15 @@
+name: Construct a deterministic standard-code DNA encoding for a protein.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_backtranseq.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_backtranseq@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

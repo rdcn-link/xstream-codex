@@ -1,0 +1,110 @@
+{
+  "reference": "94e707082d39b0a038f234df676e32d9802c0dc7",
+  "cases": [
+    {
+      "operator": "seqtk_mergefa",
+      "data": ">x description\nACGT\n",
+      "inputs": {
+        "reference": ">x\nAGGT\n"
+      },
+      "params": {},
+      "expected": ">x\nASGT\n",
+      "reference_command": [
+        "seqtk",
+        "mergefa",
+        "<source>",
+        "<reference>"
+      ]
+    },
+    {
+      "operator": "seqtk_mergefa",
+      "data": ">x\nACGTNR\n",
+      "inputs": {
+        "reference": ">x\nccgryn\n"
+      },
+      "params": {},
+      "expected": ">x\nmcgdnn\n",
+      "reference_command": [
+        "seqtk",
+        "mergefa",
+        "<source>",
+        "<reference>"
+      ]
+    },
+    {
+      "operator": "seqtk_mergefa",
+      "data": ">x\nMRWSYKBDHVN\n",
+      "inputs": {
+        "reference": ">x\nACGTACGTACG\n"
+      },
+      "params": {},
+      "expected": ">x\nMVDBHBBDHVN\n",
+      "reference_command": [
+        "seqtk",
+        "mergefa",
+        "<source>",
+        "<reference>"
+      ]
+    },
+    {
+      "operator": "seqtk_mergepe",
+      "data": "@x/1\nAC\n+\nII\n",
+      "inputs": {
+        "reference": "@x/2\nGT\n+\nJJ\n"
+      },
+      "params": {},
+      "expected": "@x/1\nAC\n+\nII\n@x/2\nGT\n+\nJJ\n",
+      "reference_command": [
+        "seqtk",
+        "mergepe",
+        "<source>",
+        "<reference>"
+      ]
+    },
+    {
+      "operator": "seqtk_mergepe",
+      "data": "@x/1\nAC\n+\nII\n@y/1\nTG\n+\nHH\n",
+      "inputs": {
+        "reference": "@x/2\nGT\n+\nJJ\n@y/2\nCA\n+\nGG\n"
+      },
+      "params": {},
+      "expected": "@x/1\nAC\n+\nII\n@x/2\nGT\n+\nJJ\n@y/1\nTG\n+\nHH\n@y/2\nCA\n+\nGG\n",
+      "reference_command": [
+        "seqtk",
+        "mergepe",
+        "<source>",
+        "<reference>"
+      ]
+    },
+    {
+      "operator": "seqtk_mutfa",
+      "data": ">x\nACGT\n",
+      "inputs": {
+        "reference": "x\t2\t.\tT\n"
+      },
+      "params": {},
+      "expected": ">x\nATGT\n",
+      "reference_command": [
+        "seqtk",
+        "mutfa",
+        "<source>",
+        "<reference>"
+      ]
+    },
+    {
+      "operator": "seqtk_mutfa",
+      "data": ">x\nACGT\n",
+      "inputs": {
+        "reference": "x\t1\t.\tG\nx\t4\t.\tA\n"
+      },
+      "params": {},
+      "expected": ">x\nGCGA\n",
+      "reference_command": [
+        "seqtk",
+        "mutfa",
+        "<source>",
+        "<reference>"
+      ]
+    }
+  ]
+}

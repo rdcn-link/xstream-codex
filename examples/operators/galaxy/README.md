@@ -2,13 +2,13 @@
 
 [中文](README_zh.md)
 
-Fifty source-published Scala operators adapt reviewed Galaxy Devteam, Community and IUC tools for Arrow bytes streams. This page covers the original twenty adapters; the [complete extension reference](../../../docs/galaxy-operators.md) describes thirty additional text, table and biological adapters, their supported scope and limitations. Original scripts, XML definitions, golden fixtures and licenses are retained in `upstream/` and `upstream-extended/`; the corresponding manifests record pinned revisions and SHA-256 hashes. These are independent adaptations of selected tools, not the complete Galaxy tool collection or a Galaxy workflow importer.
+200 source-published Scala operators adapt reviewed Galaxy Devteam, Community and IUC tools for Arrow bytes streams. This page covers twenty text and core genomics adapters; the [complete extension reference](../../../docs/galaxy-operators.md) describes the remaining 180 text, table and biological adapters, their supported scope and limitations. Original scripts, XML definitions, golden fixtures and licenses are retained in `upstream/` and `upstream-extended/` and `upstream-dependencies/`; the corresponding manifests record pinned revisions and SHA-256 hashes. These are independent adaptations of selected tools, not the complete Galaxy tool collection or a Galaxy workflow importer.
 
 ## Choose an operator
 
-For the additional thirty adapters, see [Galaxy streaming operator adapters](../../../docs/galaxy-operators.md).
+For the remaining 180 adapters, see [Galaxy streaming operator adapters](../../../docs/galaxy-operators.md).
 
-Operators use version `1.0` (`galaxy_tabular_to_fasta`: `1.0.1`), one `source` bytes input and one `result` bytes output. Text is UTF-8. They implement structure inference and bounded output samples using the JVM SDK. A `bytes` output describes tabular text; these tools do not claim an Arrow records schema. Connect a suitable text/TSV parser when records are required. The shared runtime is `jvm-arrow@2.1`; artifacts are thin JARs with no new runtime dependencies.
+The twenty operators below use version `1.0` (`galaxy_tabular_to_fasta`: `1.0.1`), one `source` bytes input and one `result` bytes output. Text is UTF-8. They implement structure inference and bounded output samples using the JVM SDK. A `bytes` output describes tabular text; these tools do not claim an Arrow records schema. Connect a suitable text/TSV parser when records are required. The shared runtime is `jvm-arrow@2.1`; artifacts are thin JARs with no new runtime dependencies.
 
 | Operator | Parameters (defaults) | Behavior / upstream tool |
 | --- | --- | --- |
@@ -81,7 +81,7 @@ python3 publish.py --url http://localhost:8820 \
   --token-file /secure/publisher.token --output /tmp/galaxy-publication
 ```
 
-This submits fifty source archives for the repository's isolated Scala build and leaves them pending review. To submit one tool, append its short name, such as `cut_columns`. An administrator can add `--approve-password-file /secure/admin-password`; this mode waits for the build, downloads and verifies each candidate artifact, assigns the `Galaxy`, `Text processing` and `Tabular data` categories (or `Galaxy`, `FASTA` and `Bioinformatics` for FASTA tools, and `Galaxy`, `SAM`, `Bioinformatics` for SAM tools) and a trust score of 4, approves it, and checks that the public download matches the verified candidate. Test failure stops publication. Credentials are read from separate files and never packaged or printed. HTTPS is required for remote publication. The trust score is an assessment, not a safety guarantee. Review records and artifact test reports are written under `--output`.
+This submits 200 source archives for the repository's isolated Scala build and leaves them pending review. To submit one tool, append its short name, such as `cut_columns`. An administrator can add `--approve-password-file /secure/admin-password`; this mode waits for the build, downloads and verifies each candidate artifact, assigns the `Galaxy`, `Text processing` and `Tabular data` categories (or `Galaxy`, `FASTA` and `Bioinformatics` for FASTA tools, and `Galaxy`, `SAM`, `Bioinformatics` for SAM tools) and a trust score of 4, approves it, and checks that the public download matches the verified candidate. Test failure stops publication. Credentials are read from separate files and never packaged or printed. HTTPS is required for remote publication. The trust score is an assessment, not a safety guarantee. Review records and artifact test reports are written under `--output`.
 
 Each archive contains the Scala implementation, upstream evidence, bilingual instructions, validation scripts and complete license texts; the published JAR includes `META-INF/LICENSE`, `META-INF/NOTICE` and its operator definition. Source visibility is public. See [source submission](../../../docs/operator-submission.md) for repository administration and build prerequisites.
 
@@ -109,7 +109,7 @@ seq1	12	sequence-0
 seq3	20	sequence-1
 ```
 
-Every catalog entry includes `documentation` describing all inputs, outputs and parameters, a schema-valid example value and a complete Job. The publisher sends it with the source submission; the repository validates it before accepting the submission. `catalog.json` also serves as the local reference for all fifty operator definitions. See [verification results](verification.json) for the pinned runtime and tests.
+Every catalog entry includes `documentation` describing all inputs, outputs and parameters, a schema-valid example value and a complete Job. The publisher sends it with the source submission; the repository validates it before accepting the submission. `catalog.json` also serves as the local reference for all 200 operator definitions. See [verification results](verification.json) for the pinned runtime and tests.
 
 ## SAM and tabular sequence examples
 
@@ -187,4 +187,12 @@ xstream-engine/target/universal/stage/bin/xstream-runner examples/operators/gala
 
 ## Extended collection
 
-See [Galaxy operators](../../../docs/galaxy-operators.md) for 30 additional adapters, supported scope, memory bounds, provenance and run commands. Every tool has a complete Job, input fixture and regression expectation. Reviewed sources and license notices accompany the submission.
+See [Galaxy operators](../../../docs/galaxy-operators.md) for 180 additional adapters, supported scope, memory bounds, provenance and run commands. Every tool has a complete Job, input fixture and regression expectation. Reviewed sources and license notices accompany the submission.
+
+## Composed examples
+
+`job-fastq-quality-pipeline.yaml` converts Phred+64 to Phred+33, masks low-quality bases, tabulates reads and selects the nucleotide column. `job-interval-coverage-pipeline.yaml` sorts, merges and measures genomic intervals. Each step uses its own public operator package and the shared JVM runtime. The other four examples cover genotype normalization and dosage, edited DNA word counts, paired codon projection and adaptation, and joined numeric regression. Run `python3 verify-pipelines.py` after publication to verify all seven composed examples.
+
+## Source packages and examples
+
+Source packages include complete Scala source, contracts, tests, licenses and pinned upstream evidence, plus the selected operator’s generated sample. Recreate all generated inputs and Jobs with `python3 extend-catalog.py` followed by `python3 make-catalog.py` (PyYAML required). This keeps each source submission within the repository archive limits.

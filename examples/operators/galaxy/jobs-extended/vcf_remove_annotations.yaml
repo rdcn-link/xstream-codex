@@ -1,0 +1,15 @@
+name: Remove selected INFO annotations and declarations.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/vcf_remove_annotations.txt
+    view: bytes
+- id: process
+  operator: galaxy_vcf_remove_annotations@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

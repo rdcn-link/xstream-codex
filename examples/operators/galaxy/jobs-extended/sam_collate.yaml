@@ -1,0 +1,15 @@
+name: Group SAM records sharing the same query name.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_collate.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_collate@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

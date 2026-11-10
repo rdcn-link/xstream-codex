@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "pipelines": [
+    {
+      "job": "job-vcf-dosage-pipeline.yaml",
+      "status": "passed",
+      "expected": "CHROM\tPOS\tREF\tALT\tA\tB\n1\t10\tA\tG\t1\t0\n",
+      "output": "CHROM\tPOS\tREF\tALT\tA\tB\n1\t10\tA\tG\t1\t0\n"
+    },
+    {
+      "job": "job-dna-word-pipeline.yaml",
+      "status": "passed",
+      "expected": "sequence\tword\tcount\tfraction\nx\tAT\t1\t0.333333\nx\tTT\t2\t0.666667\n",
+      "output": "sequence\tword\tcount\tfraction\nx\tAT\t1\t0.333333\nx\tTT\t2\t0.666667\n"
+    },
+    {
+      "job": "job-codon-projection-pipeline.yaml",
+      "status": "passed",
+      "expected": "sequence\tcodons\tcai\ngene\t2\t0.707107\n",
+      "output": "sequence\tcodons\tcai\ngene\t2\t0.707107\n"
+    },
+    {
+      "job": "job-joined-regression-pipeline.yaml",
+      "status": "passed",
+      "expected": "term\tcoefficient\nintercept\t1.000000\ncolumn_1\t2.000000\nr_squared\t1.000000\n",
+      "output": "term\tcoefficient\nintercept\t1.000000\ncolumn_1\t2.000000\nr_squared\t1.000000\n"
+    },
+    {
+      "job": "job-extended-pipeline.yaml",
+      "status": "passed",
+      "expected": "seq1\t4\trun1\n",
+      "output": "seq1\t4\trun1\n"
+    },
+    {
+      "job": "job-fastq-quality-pipeline.yaml",
+      "status": "passed",
+      "expected": "NC\n",
+      "output": "NC\n"
+    },
+    {
+      "job": "job-interval-coverage-pipeline.yaml",
+      "status": "passed",
+      "expected": "chr1\t0\t4\t1\nchr1\t9\t10\t1\nchr2\t1\t4\t1\n",
+      "output": "chr1\t0\t4\t1\nchr1\t9\t10\t1\nchr2\t1\t4\t1\n"
+    }
+  ]
+}

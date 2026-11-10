@@ -1,0 +1,4 @@
+>x sample one
+AC
+>y control
+GT

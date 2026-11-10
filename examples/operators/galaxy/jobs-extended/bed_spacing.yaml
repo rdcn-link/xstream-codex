@@ -1,0 +1,15 @@
+name: Append the distance from each BED interval to its predecessor.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_spacing.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed_spacing@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

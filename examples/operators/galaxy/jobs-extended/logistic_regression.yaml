@@ -1,0 +1,15 @@
+name: Fit binary logistic regression with ridge-stabilized IRLS.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/logistic_regression.txt
+    view: bytes
+- id: process
+  operator: galaxy_logistic_regression@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

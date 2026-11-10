@@ -1,0 +1,964 @@
+{
+  "status": "passed",
+  "references": {
+    "seqtk": "94e707082d39b0a038f234df676e32d9802c0dc7",
+    "bedtools2": "614e9a5c5935ab86e873dab9072fbbaf003c1b7e"
+  },
+  "case_count": 159,
+  "cases": [
+    {
+      "case": 0,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 1,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 2,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 3,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 4,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 5,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 6,
+      "operator": "seqtk_dropse",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 7,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 8,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 9,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 10,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 11,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 12,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 13,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 14,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 15,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 16,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 17,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 18,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 19,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 20,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 21,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 22,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 23,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 24,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 25,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 26,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 27,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 28,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 29,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 30,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 31,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 32,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 33,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 34,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 35,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 36,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 37,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 38,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 39,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 40,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 41,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 42,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 43,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 44,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 45,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 46,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 47,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 48,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 49,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 50,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 51,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 52,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 53,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 54,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 55,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 56,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 57,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 58,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 59,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 60,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 61,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 62,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 63,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 64,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 65,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 66,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 67,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 68,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 69,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 70,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 71,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 72,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 73,
+      "operator": "seqtk_comp",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 74,
+      "operator": "seqtk_listhet",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 75,
+      "operator": "seqtk_hety",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 76,
+      "operator": "seqtk_cutN",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 77,
+      "operator": "seqtk_trimfq",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 78,
+      "operator": "seqtk_telo",
+      "reference": "seqtk",
+      "status": "passed"
+    },
+    {
+      "case": 79,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 80,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 81,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 82,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 83,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 84,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 85,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 86,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 87,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 88,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 89,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 90,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 91,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 92,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 93,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 94,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 95,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 96,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 97,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 98,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 99,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 100,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 101,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 102,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 103,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 104,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 105,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 106,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 107,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 108,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 109,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 110,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 111,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 112,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 113,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 114,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 115,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 116,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 117,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 118,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 119,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 120,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 121,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 122,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 123,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 124,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 125,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 126,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 127,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 128,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 129,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 130,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 131,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 132,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 133,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 134,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 135,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 136,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 137,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 138,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 139,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 140,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 141,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 142,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 143,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 144,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 145,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 146,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 147,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 148,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 149,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 150,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 151,
+      "operator": "bed_sort",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 152,
+      "operator": "bed_merge",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 153,
+      "operator": "bed_cluster",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 154,
+      "operator": "bed_spacing",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 155,
+      "operator": "bed_slop",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 156,
+      "operator": "bed_flank",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 157,
+      "operator": "bed_complement",
+      "reference": "bedtools2",
+      "status": "passed"
+    },
+    {
+      "case": 158,
+      "operator": "bed_genome_coverage",
+      "reference": "bedtools2",
+      "status": "passed"
+    }
+  ]
+}

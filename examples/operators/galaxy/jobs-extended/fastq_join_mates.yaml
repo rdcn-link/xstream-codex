@@ -1,0 +1,15 @@
+name: Concatenate adjacent paired FASTQ reads into one read.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fastq_join_mates.txt
+    view: bytes
+- id: process
+  operator: galaxy_fastq_join_mates@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

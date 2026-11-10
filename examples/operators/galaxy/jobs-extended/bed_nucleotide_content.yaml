@@ -1,0 +1,22 @@
+name: Report nucleotide composition of BED-selected FASTA regions.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_nucleotide_content.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_nucleotide_content-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed_nucleotide_content@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

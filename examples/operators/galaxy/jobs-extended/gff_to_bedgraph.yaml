@@ -1,0 +1,15 @@
+name: Convert GFF feature intervals to zero-valued bedGraph rows.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/gff_to_bedgraph.txt
+    view: bytes
+- id: process
+  operator: galaxy_gff_to_bedgraph@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

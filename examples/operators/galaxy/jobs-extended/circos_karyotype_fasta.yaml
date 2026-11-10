@@ -1,0 +1,15 @@
+name: Generate Circos chromosome definitions from FASTA sequence lengths.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/circos_karyotype_fasta.txt
+    view: bytes
+- id: process
+  operator: galaxy_circos_karyotype_fasta@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

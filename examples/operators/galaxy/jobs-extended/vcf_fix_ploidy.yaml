@@ -1,0 +1,15 @@
+name: Convert GT calls to a requested constant ploidy.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/vcf_fix_ploidy.txt
+    view: bytes
+- id: process
+  operator: galaxy_vcf_fix_ploidy@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

@@ -1,0 +1,15 @@
+name: Find literal text in FASTA identifiers and descriptions.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_textsearch.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_textsearch@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

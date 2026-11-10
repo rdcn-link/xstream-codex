@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit all fifty public Galaxy manifests, source archives and runnable artifacts."""
+"""Audit all public public Galaxy manifests, source archives and runnable artifacts."""
 import argparse
 import hashlib
 import io
@@ -18,6 +18,7 @@ def main():
     parser.add_argument('--url', default='http://127.0.0.1:8820')
     parser.add_argument('--verification-directory', type=Path, help='Private publisher output parent; match passed artifact tests by SHA-256.')
     parser.add_argument('--report', type=Path, default=HERE / 'verification-public-catalog.json')
+    parser.add_argument('--expected-count', type=int, default=200)
     args = parser.parse_args()
     def fetch(path):
         with urlopen(args.url.rstrip('/') + path, timeout=60) as response:
@@ -28,10 +29,10 @@ def main():
         assert hashlib.sha256(data).hexdigest() == ref['sha256'], ref
         return data
     specs = json.loads((HERE / 'catalog.json').read_text())
-    assert len(specs) == 50
+    assert len(specs) == args.expected_count
     public = json.loads(fetch('/v1/operators'))
     galaxy = {x['name'] for x in public if x['name'].startswith('galaxy_')}
-    assert len(galaxy) == 50, ('public distinct count', len(galaxy))
+    assert len(galaxy) == args.expected_count, ('public distinct count', len(galaxy))
     tests = {}
     if args.verification_directory:
         for path in args.verification_directory.glob('*/*-test.json'):
@@ -72,6 +73,10 @@ def main():
                 for family, evidence in json.loads(archive.read('upstream-extended-manifest.json')).items():
                     for path, digest in evidence['files'].items():
                         assert hashlib.sha256(archive.read('upstream-extended/' + family + '/' + path)).hexdigest() == digest
+            if 'upstream-dependencies-manifest.json' in entries:
+                for family, evidence in json.loads(archive.read('upstream-dependencies-manifest.json')).items():
+                    for path, digest in evidence['files'].items():
+                        assert hashlib.sha256(archive.read('upstream-dependencies/' + family + '/' + path)).hexdigest() == digest
         if args.verification_directory:
             assert manifest['artifact']['sha256'] in tests, ('missing artifact tests', spec['name'])
         results.append({'operator': spec['name'] + '@' + spec['version'],

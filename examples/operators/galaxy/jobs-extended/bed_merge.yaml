@@ -1,0 +1,15 @@
+name: Merge sorted overlapping or nearby BED intervals.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_merge.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed_merge@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

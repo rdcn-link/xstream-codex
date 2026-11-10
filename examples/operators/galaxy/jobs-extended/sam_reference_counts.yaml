@@ -1,0 +1,15 @@
+name: Count mapped and unmapped segments by reference.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_reference_counts.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_reference_counts@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

@@ -1,0 +1,15 @@
+name: Search a protein motif across all six translated DNA frames.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_fuzztran.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_fuzztran@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

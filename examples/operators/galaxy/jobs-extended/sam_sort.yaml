@@ -1,0 +1,15 @@
+name: Sort SAM records by coordinates or query name.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_sort.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_sort@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

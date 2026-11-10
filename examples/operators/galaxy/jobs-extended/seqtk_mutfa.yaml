@@ -1,0 +1,22 @@
+name: Apply point mutations from a coordinate stream to FASTA.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_mutfa.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/seqtk_mutfa-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_seqtk_mutfa@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

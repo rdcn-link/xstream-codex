@@ -1,0 +1,22 @@
+name: Compute local affine-gap pairwise DNA alignment.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_water.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_water-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_water@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

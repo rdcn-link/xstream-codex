@@ -1,0 +1,22 @@
+name: Find maximal exact common DNA substrings.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_wordmatch.txt
+    view: bytes
+- id: read_reference
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_wordmatch-reference.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_wordmatch@1.0
+  inputs:
+    source: read
+    reference: read_reference
+  params: {}
+outputs:
+  result: process

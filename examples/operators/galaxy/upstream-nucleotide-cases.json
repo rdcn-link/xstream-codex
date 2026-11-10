@@ -1,0 +1,155 @@
+{
+  "reference": "EMBOSS6.6, GFF coordinates and FASTA sequence oracle; negative-strand hits ordered by reverse-complement scan, normalized headers",
+  "cases": [
+    {
+      "operator": "emboss_fuzznuc",
+      "data": ">dna\nACGCGTACGT\n",
+      "params": {
+        "pattern": "ACR",
+        "both_strands": true
+      },
+      "expected": "sequence\tstart\tend\tstrand\tmismatches\tmatch\ndna\t1\t3\t+\t0\tACG\ndna\t7\t9\t+\t0\tACG\ndna\t8\t10\t-\t0\tACG\ndna\t4\t6\t-\t0\tACG\n",
+      "native_output": "##gff-version 3\n##sequence-region dna 1 10\n#!Date 2026-11-09\n#!Type DNA\n#!Source-version EMBOSS 6.6.0.0\ndna\tfuzznuc\tnucleotide_motif\t1\t3\t3\t+\t.\tID=dna.1;note=*pat pattern:ACR\ndna\tfuzznuc\tnucleotide_motif\t7\t9\t3\t+\t.\tID=dna.2;note=*pat pattern:ACR\ndna\tfuzznuc\tnucleotide_motif\t4\t6\t3\t-\t.\tID=dna.3;note=*pat pattern:ACR\ndna\tfuzznuc\tnucleotide_motif\t8\t10\t3\t-\t.\tID=dna.4;note=*pat pattern:ACR\n",
+      "reference_command": [
+        "fuzznuc",
+        "-sequence",
+        "<source>",
+        "-pattern",
+        "ACR",
+        "-complement",
+        "Y",
+        "-rformat",
+        "gff",
+        "-outfile",
+        "<output>",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_fuzznuc",
+      "data": ">dna\nAAAAAAAA\n",
+      "params": {
+        "pattern": "NAA",
+        "both_strands": false
+      },
+      "expected": "sequence\tstart\tend\tstrand\tmismatches\tmatch\ndna\t1\t3\t+\t0\tAAA\ndna\t2\t4\t+\t0\tAAA\ndna\t3\t5\t+\t0\tAAA\ndna\t4\t6\t+\t0\tAAA\ndna\t5\t7\t+\t0\tAAA\ndna\t6\t8\t+\t0\tAAA\n",
+      "native_output": "##gff-version 3\n##sequence-region dna 1 8\n#!Date 2026-11-09\n#!Type DNA\n#!Source-version EMBOSS 6.6.0.0\ndna\tfuzznuc\tnucleotide_motif\t1\t3\t3\t+\t.\tID=dna.1;note=*pat pattern:NAA\ndna\tfuzznuc\tnucleotide_motif\t2\t4\t3\t+\t.\tID=dna.2;note=*pat pattern:NAA\ndna\tfuzznuc\tnucleotide_motif\t3\t5\t3\t+\t.\tID=dna.3;note=*pat pattern:NAA\ndna\tfuzznuc\tnucleotide_motif\t4\t6\t3\t+\t.\tID=dna.4;note=*pat pattern:NAA\ndna\tfuzznuc\tnucleotide_motif\t5\t7\t3\t+\t.\tID=dna.5;note=*pat pattern:NAA\ndna\tfuzznuc\tnucleotide_motif\t6\t8\t3\t+\t.\tID=dna.6;note=*pat pattern:NAA\n",
+      "reference_command": [
+        "fuzznuc",
+        "-sequence",
+        "<source>",
+        "-pattern",
+        "NAA",
+        "-complement",
+        "N",
+        "-rformat",
+        "gff",
+        "-outfile",
+        "<output>",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_fuzznuc",
+      "data": ">dna\nTGCATGCA\n",
+      "params": {
+        "pattern": "YGC",
+        "both_strands": true
+      },
+      "expected": "sequence\tstart\tend\tstrand\tmismatches\tmatch\ndna\t1\t3\t+\t0\tTGC\ndna\t5\t7\t+\t0\tTGC\ndna\t6\t8\t-\t0\tTGC\ndna\t2\t4\t-\t0\tTGC\n",
+      "native_output": "##gff-version 3\n##sequence-region dna 1 8\n#!Date 2026-11-09\n#!Type DNA\n#!Source-version EMBOSS 6.6.0.0\ndna\tfuzznuc\tnucleotide_motif\t1\t3\t3\t+\t.\tID=dna.1;note=*pat pattern:YGC\ndna\tfuzznuc\tnucleotide_motif\t5\t7\t3\t+\t.\tID=dna.2;note=*pat pattern:YGC\ndna\tfuzznuc\tnucleotide_motif\t2\t4\t3\t-\t.\tID=dna.3;note=*pat pattern:YGC\ndna\tfuzznuc\tnucleotide_motif\t6\t8\t3\t-\t.\tID=dna.4;note=*pat pattern:YGC\n",
+      "reference_command": [
+        "fuzznuc",
+        "-sequence",
+        "<source>",
+        "-pattern",
+        "YGC",
+        "-complement",
+        "Y",
+        "-rformat",
+        "gff",
+        "-outfile",
+        "<output>",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_pasteseq",
+      "data": ">main\nACGT\n",
+      "inputs": {
+        "reference": ">insert\nTT\n"
+      },
+      "params": {
+        "position": 0
+      },
+      "expected": ">main\nTTACGT\n",
+      "native_output": ">main\nTTACGT\n",
+      "reference_command": [
+        "pasteseq",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-pos",
+        "0",
+        "-outseq",
+        "<output>",
+        "-osformat",
+        "fasta",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_pasteseq",
+      "data": ">main\nACGT\n",
+      "inputs": {
+        "reference": ">insert\nTT\n"
+      },
+      "params": {
+        "position": 2
+      },
+      "expected": ">main\nACTTGT\n",
+      "native_output": ">main\nACTTGT\n",
+      "reference_command": [
+        "pasteseq",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-pos",
+        "2",
+        "-outseq",
+        "<output>",
+        "-osformat",
+        "fasta",
+        "-auto"
+      ]
+    },
+    {
+      "operator": "emboss_pasteseq",
+      "data": ">main\nACGT\n",
+      "inputs": {
+        "reference": ">insert\nTT\n"
+      },
+      "params": {
+        "position": 4
+      },
+      "expected": ">main\nACGTTT\n",
+      "native_output": ">main\nACGTTT\n",
+      "reference_command": [
+        "pasteseq",
+        "-asequence",
+        "<source>",
+        "-bsequence",
+        "<reference>",
+        "-pos",
+        "4",
+        "-outseq",
+        "<output>",
+        "-osformat",
+        "fasta",
+        "-auto"
+      ]
+    }
+  ]
+}

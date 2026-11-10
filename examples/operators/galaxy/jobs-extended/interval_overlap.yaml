@@ -1,0 +1,15 @@
+name: Append signed overlap or distance between two intervals on each row.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/interval_overlap.txt
+    view: bytes
+- id: process
+  operator: galaxy_interval_overlap@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

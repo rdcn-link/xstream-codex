@@ -1,0 +1,15 @@
+name: Convert FASTQ quality encoding and normalize the plus line.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fastq_groom.txt
+    view: bytes
+- id: process
+  operator: galaxy_fastq_groom@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

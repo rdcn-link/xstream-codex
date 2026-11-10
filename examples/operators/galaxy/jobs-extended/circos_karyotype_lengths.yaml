@@ -1,0 +1,15 @@
+name: Generate Circos chromosome definitions from a sequence-length table.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/circos_karyotype_lengths.txt
+    view: bytes
+- id: process
+  operator: galaxy_circos_karyotype_lengths@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

@@ -1,0 +1,15 @@
+name: Filter FASTQ reads by length and count of out-of-range qualities.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/fastq_filter_quality.txt
+    view: bytes
+- id: process
+  operator: galaxy_fastq_filter_quality@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

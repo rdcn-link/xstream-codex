@@ -1,0 +1,15 @@
+name: Remove alignment gap characters from FASTA.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/emboss_degapseq.txt
+    view: bytes
+- id: process
+  operator: galaxy_emboss_degapseq@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

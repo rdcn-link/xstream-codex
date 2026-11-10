@@ -1,0 +1,15 @@
+name: Convert named flat GFF3 features to sorted Circos text records.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/circos_text_gff3.txt
+    view: bytes
+- id: process
+  operator: galaxy_circos_text_gff3@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

@@ -1,0 +1,15 @@
+name: Build validated FASTQ records from selected TSV columns.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/tabular_to_fastq.txt
+    view: bytes
+- id: process
+  operator: galaxy_tabular_to_fastq@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

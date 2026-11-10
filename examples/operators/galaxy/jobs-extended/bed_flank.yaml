@@ -1,0 +1,15 @@
+name: Emit left and right flanking intervals around each BED feature.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_flank.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed_flank@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

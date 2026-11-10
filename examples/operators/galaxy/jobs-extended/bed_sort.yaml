@@ -1,0 +1,15 @@
+name: Sort BED records lexically by chromosome and numerically by start.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/bed_sort.txt
+    view: bytes
+- id: process
+  operator: galaxy_bed_sort@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

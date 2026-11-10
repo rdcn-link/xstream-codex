@@ -1,0 +1,25 @@
+name: Normalize missing genotypes and recompute allele counts before dosage
+steps:
+- id: read
+  operator: read_item@1.0
+  params:
+    uri: context:/galaxy/extended/vcf_missing_to_ref.txt
+    view: bytes
+  inputs: {}
+- id: normalize
+  operator: galaxy_vcf_missing_to_ref@1.0
+  params: {}
+  inputs:
+    source: read
+- id: counts
+  operator: galaxy_vcf_fill_allele_counts@1.0
+  params: {}
+  inputs:
+    source: normalize
+- id: dosage
+  operator: galaxy_vcf_genotype_dosage@1.0
+  params: {}
+  inputs:
+    source: counts
+outputs:
+  result: dosage

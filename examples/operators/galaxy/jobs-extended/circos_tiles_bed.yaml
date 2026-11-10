@@ -1,0 +1,15 @@
+name: Convert BED intervals to Circos tile records.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/circos_tiles_bed.txt
+    view: bytes
+- id: process
+  operator: galaxy_circos_tiles_bed@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

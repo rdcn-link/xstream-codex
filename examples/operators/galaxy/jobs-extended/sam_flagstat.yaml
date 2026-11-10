@@ -1,0 +1,15 @@
+name: Count alignment flag categories with QC-pass/fail totals.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/sam_flagstat.txt
+    view: bytes
+- id: process
+  operator: galaxy_sam_flagstat@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

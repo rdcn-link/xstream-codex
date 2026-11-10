@@ -1,0 +1,15 @@
+name: Replace missing genotype alleles with reference alleles.
+steps:
+- id: read
+  operator: read_item@1.0
+  inputs: {}
+  params:
+    uri: context:/galaxy/extended/vcf_missing_to_ref.txt
+    view: bytes
+- id: process
+  operator: galaxy_vcf_missing_to_ref@1.0
+  inputs:
+    source: read
+  params: {}
+outputs:
+  result: process

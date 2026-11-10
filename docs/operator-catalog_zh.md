@@ -12,9 +12,9 @@ curl http://localhost:8820/v1/operators
 
 ## Galaxy 流式工具
 
-示例仓库还发布了 50 个 Scala 文本、表格和生物信息工具。原有 20 个工具的版本为 `1.0`（`galaxy_tabular_to_fasta` 为 `1.0.1`）：`galaxy_change_case`、`galaxy_condense_characters`、`galaxy_convert_delimiters`、`galaxy_cut_columns`、`galaxy_merge_columns`、`galaxy_add_column`、`galaxy_fasta_length`、`galaxy_fasta_filter_length`、`galaxy_fasta_to_tabular`、`galaxy_remove_beginning`、`galaxy_head`、`galaxy_tail`、`galaxy_tabular_to_fasta`、`galaxy_sam_filter_flags`、`galaxy_sam_to_interval`、`galaxy_trim`、`galaxy_make_windows`、`galaxy_vcf_extract`、`galaxy_fastq_to_fasta`、`galaxy_fastq_to_qual`。它们通过 Arrow 算子协议读写受内存限制的 UTF-8 bytes 流，并提供结构推导及输出样例。读取 Item 时选择 bytes 视图。参数表、完整 Job、上游归属、行为差异和可复现测试见 [Galaxy 示例](../examples/operators/galaxy/README_zh.md)。运行时采用 `jvm-arrow@2.1`，无额外依赖；通过源码提交和管理员审核发布。
+示例仓库还发布了 200 个 Scala 文本、表格和生物信息工具。20 个文本与基础基因组工具的版本为 `1.0`（`galaxy_tabular_to_fasta` 为 `1.0.1`）：`galaxy_change_case`、`galaxy_condense_characters`、`galaxy_convert_delimiters`、`galaxy_cut_columns`、`galaxy_merge_columns`、`galaxy_add_column`、`galaxy_fasta_length`、`galaxy_fasta_filter_length`、`galaxy_fasta_to_tabular`、`galaxy_remove_beginning`、`galaxy_head`、`galaxy_tail`、`galaxy_tabular_to_fasta`、`galaxy_sam_filter_flags`、`galaxy_sam_to_interval`、`galaxy_trim`、`galaxy_make_windows`、`galaxy_vcf_extract`、`galaxy_fastq_to_fasta`、`galaxy_fastq_to_qual`。它们通过 Arrow 算子协议读写受内存限制的 UTF-8 bytes 流，并提供结构推导及输出样例。读取 Item 时选择 bytes 视图。参数表、完整 Job、上游归属、行为差异和可复现测试见 [Galaxy 示例](../examples/operators/galaxy/README_zh.md)。运行时采用 `jvm-arrow@2.1`，无额外依赖；通过源码提交和管理员审核发布。
 
-[Galaxy 扩展参考](galaxy-operators_zh.md)列出另外 30 个适配器，涵盖排序、去重、列重排、字面量检索替换、色彩空间解码、双端读段、pileup、pgSnp、反向互补、翻译、密码子及碱基统计、模式匹配和 FASTA 统计。每个适配器均有完整可运行 Job 及明确的支持范围。[目录核验报告](../examples/operators/galaxy/verification-public-catalog.json)记录公开定义、源码归档及产物校验和。
+[Galaxy 扩展参考](galaxy-operators_zh.md)列出另外 180 个适配器，涵盖排序、去重、列重排、字面量检索替换、色彩空间解码、双端读段、pileup、pgSnp、反向互补、翻译、密码子及碱基统计、模式匹配、FASTA 统计、BED 区间分析、FASTQ 质量处理、seqtk 序列处理及表格科学分析。每个适配器均有完整可运行 Job 及明确的支持范围。[目录核验报告](../examples/operators/galaxy/verification-public-catalog.json)记录公开定义、源码归档及产物校验和。
 
 ## 端口、参数和执行方式
 
