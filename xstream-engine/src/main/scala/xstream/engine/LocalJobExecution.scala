@@ -150,7 +150,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
                           require(members.contains(id),"unknown group step")
                           if(h.path("type").asText=="task_state")members(id).update(h.path("state").asText,Json.obj().put("runtime_pid",h.path("runtime_pid").asLong))
                         }
-                        try executor.execute(t,inputs.toMap,output,token,resolved=group.map(_.operator),onEvent=group.map(_=>event _),onRuntime=Some(runtime=>child.update("running",runtime)))
+                        try executor.execute(t,inputs.toMap,output,token,resolved=group.map(_.operator),onEvent=group.map(_=>event _),onRuntime=Some(runtime=>child.update("running",runtime)),resources=policy.resources)
                         catch{case error:Throwable=>members.values.foreach(_.update("failed",message=Option(error.getMessage)));throw error}
                     }
                   }finally {inputs.values.foreach(_.close());if(acquired)config.taskSlots.release()}

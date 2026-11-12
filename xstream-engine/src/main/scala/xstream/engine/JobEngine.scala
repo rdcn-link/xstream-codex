@@ -18,18 +18,19 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
   def dataCatalog:DataCatalog=DataCatalogRuntime.catalog
   val executor=suppliedExecutor.getOrElse(new TaskExecutor(environment,allocator))
   def execute(plan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,replay:Option[String],emit:OperatorFrame=>Unit,cancel:StreamCancel):Unit={
+    environment.executionResourceLimits.validate(policy.resources)
     require(!closed.get(),"JobEngine is closed");active.add(cancel)
     try {
       if(closed.get())cancel.close()
       cancel.active()
-      if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty && fused(plan,record,emit,cancel))() else {
+      if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty && fused(plan,policy.resources,record,emit,cancel))() else {
         val units=if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty)ExecutionUnits.prepare(environment,plan,()=>cancel.active())else ExecutionUnits(plan,Map.empty,Json.obj())
-        val effective=if(units.groups.nonEmpty)ExecutionPolicy.parse(Json.obj(),units.plan)else policy
+        val effective=if(units.groups.nonEmpty)ExecutionPolicy.parse(Json.obj().set[JsonNode]("resources",policy.resources.json),units.plan)else policy
         new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,preparedUnits=units).run(units.plan,effective,owner,record,replay,emit,cancel)
       }
     }finally active.remove(cancel)
   }
-  private def fused(plan:JobPlan,record:ExecutionHistory#Record,emit:OperatorFrame=>Unit,c:StreamCancel):Boolean={
+  private def fused(plan:JobPlan,resources:ExecutionResources,record:ExecutionHistory#Record,emit:OperatorFrame=>Unit,c:StreamCancel):Boolean={
     val config=environment;val permits=environment.taskSlots
     def source(b:InputBinding,c:StreamCancel):FrameSource=openSource(b,c)
       OperatorGroups.prepare(config,plan,()=>c.active()) match {
@@ -71,7 +72,7 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
               executor.execute(group.task,inputs.toMap,f=>{
               val port=StreamProtocol.header(f).path("port").asText;val (task,label)=group.outputs(port)
               emit(StreamProtocol.rename(f,label,task))
-            },c,Some(group.operator),Some(onEvent))
+            },c,Some(group.operator),Some(onEvent),resources=resources)
             }
             catch{case t:Throwable=>
               val reason=c.cause(t) match {case _:java.util.concurrent.TimeoutException=>"expired";case _:java.util.concurrent.CancellationException=>"cancelled";case _=>"failed"}

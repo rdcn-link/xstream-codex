@@ -93,7 +93,20 @@ function point(t){return positions[t.id]||(positions[t.id]={x:70+job.steps.index
 function addOperator(op,x,y){const before=snapshot();let i=1;while(job.steps.some(t=>t.id==='step_'+i))i++;const id='step_'+i;const t={id,title:op.name,operator:op.name+'@'+op.version,inputs:{},params:{}};if(op.name==='read_item'){t.params={uri:'$INPUT_URI',view:'records'};automaticReadViews.add(id);}job.steps.push(t);positions[id]={x:Math.max(30,x),y:Math.max(55,y)};selected=id;selectedSteps=new Set([id]);outletSelected=false;render();avoidSteps(dragLayout(),new Set([id]),false);recordSnapshot(before);changed();}
 
 const libraryExpanded=new Map();
+const operatorViewKey='xstream-designer-operator-view';
+function setOperatorView(view){
+ const selected=view==='icons'?'icons':'list';
+ $('library-operators-panel').dataset.operatorView=selected;
+ document.querySelectorAll('button[data-operator-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.operatorView===selected)));
+ hideOperatorTip();
+ try{localStorage.setItem(operatorViewKey,selected);}catch(_){}
+}
+document.querySelectorAll('button[data-operator-view]').forEach(b=>b.addEventListener('click',()=>setOperatorView(b.dataset.operatorView)));
+let savedOperatorView='list';try{savedOperatorView=localStorage.getItem(operatorViewKey)||'list';}catch(_){}
+
+
 let operatorTipTimer;
+setOperatorView(savedOperatorView);
 function hideOperatorTip(){clearTimeout(operatorTipTimer);document.querySelectorAll('[aria-describedby=operator-tooltip]').forEach(e=>e.removeAttribute('aria-describedby'));$('operator-tooltip')?.remove();}
 function showOperatorTip(card,o,group){hideOperatorTip();const tip=el('div',undefined,'operator-tooltip');tip.id='operator-tooltip';tip.setAttribute('role','tooltip');tip.append(el('strong',o.name),el('small','Version '+o.version+' · '+group.category),el('p',o.description||'No description supplied.'));const ports=Object.entries(o.inputs||{}).map(([name,p])=>name+' ('+(p.representations||[]).join(' / ')+')');tip.append(el('div','Inputs: '+(ports.join(', ')||'None — source operator'),'tooltip-detail'));const params=Object.entries(o.parameters?.properties||{}).map(([name,p])=>name+': '+(Array.isArray(p.type)?p.type.join(' / '):p.type||'any')+((o.parameters?.required||[]).includes(name)?' *':''));const builtin=o.name==='read_item'&&o.version==='1.0',trustRow=el('div',undefined,'tooltip-detail tooltip-rating');trustRow.append(el('span','Trust'),operatorRating(o,builtin));const score=operatorTrust(o,builtin).score;if(score!==undefined)trustRow.append(el('span',score+' / 5'));tip.append(trustRow,el('div','Downloads: '+(builtin?'Not applicable':Number.isSafeInteger(o.download_count)&&o.download_count>=0?o.download_count.toLocaleString():'Unavailable'),'tooltip-detail tooltip-downloads'));tip.append(el('div','Parameters: '+(params.join(', ')||'None'),'tooltip-detail'),el('div','Executor: '+(o.execution?.executor||'Built-in'),'tooltip-detail'),el('small','Drag onto canvas or double-click to add.'));document.body.append(tip);card.setAttribute('aria-describedby',tip.id);const r=card.getBoundingClientRect(),height=tip.getBoundingClientRect().height;tip.style.left=Math.min(r.right+12,Math.max(8,innerWidth-tip.offsetWidth-8))+'px';tip.style.top=Math.max(8,Math.min(r.top,innerHeight-height-8))+'px';}
 // Match repository natural version ordering, including numeric runs and prereleases.

@@ -16,6 +16,7 @@ final class LocalEngine(settings:JsonNode,val plugins:PluginEnvironment,
   require(!settings.has("execution_targets") && !settings.has("compute_pushdown_enabled"),"XStream executes Jobs locally; remote Job submission belongs to DACP")
   private val catalogHost=new ConfiguredDataCatalog(settings,plugins)
   val allocator=new RootAllocator(Long.MaxValue)
+  override val executionResourceLimits=ExecutionResourceLimits.parse(Option(settings.get("execution_resources")).getOrElse(_root_.xstream.util.Json.obj()))
   val engine=new JobEngine(this,allocator)
   override val localOperatorBase:Option[Path]=Some(Path.of(settings.path("job_working_directory").asText(".")).toAbsolutePath.normalize)
   def debug:Boolean=false

@@ -19,8 +19,8 @@ class LocalExecutionBoundarySpec extends AnyFunSuite {
       new FrameSource {def next():Option[OperatorFrame]=if(frames.hasNext)Some(frames.next())else None;def close():Unit=()}
     })
     val executor=new TaskExecutor(host,host.allocator) {
-      override def execute(t:Task,inputs:Map[String,FrameSource],emit:OperatorFrame=>Unit,c:StreamCancel,resolved:Option[ResolvedOperator],onEvent:Option[JsonNode=>Unit],onRuntime:Option[JsonNode=>Unit]):Unit={
-        runs+=1;assert(t.id=="process");val source=inputs("source");var f=source.next()
+      override def execute(t:Task,inputs:Map[String,FrameSource],emit:OperatorFrame=>Unit,c:StreamCancel,resolved:Option[ResolvedOperator],onEvent:Option[JsonNode=>Unit],onRuntime:Option[JsonNode=>Unit],resources:_root_.xstream.engine.ExecutionResources):Unit={
+        runs+=1;assert(resources==ExecutionResources(768,2048));assert(t.id=="process");val source=inputs("source");var f=source.next()
         while(f.nonEmpty){emit(StreamProtocol.rename(f.get,"result"));f=if(StreamProtocol.header(f.get).path("type").asText=="end")None else source.next()}
       }
     }
@@ -38,7 +38,7 @@ class LocalExecutionBoundarySpec extends AnyFunSuite {
       |""".stripMargin
     try {
       val bytes=new java.io.ByteArrayOutputStream()
-      val id=engine.run(yaml,f=>if(StreamProtocol.header(f).path("type").asText=="data")bytes.write(f.data),cancel)
+      val id=engine.run(yaml,f=>if(StreamProtocol.header(f).path("type").asText=="data")bytes.write(f.data),cancel,policy=Json.obj().set[JsonNode]("resources",ExecutionResources(768,2048).json))
       assert(reads==1 && runs==1 && bytes.toString("UTF-8")=="input")
       assert(!host.executionHistory.list().exists(_.path("kind").asText=="remote_job"))
       assert(host.executionHistory.get(id).get.path("state").asText=="succeeded")

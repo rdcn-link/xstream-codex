@@ -19,7 +19,8 @@ import com.github.dockerjava.api.async.ResultCallback
 
 /** Receives already-authorized named item streams; never creates/publishes an output dataset. */
 class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
-  def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,onRuntime:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None): Unit = {
+  def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,onRuntime:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,resources:ExecutionResources=ExecutionResources()): Unit = {
+    config.executionResourceLimits.validate(resources)
     Jobs.authorizeSource(config,task)
     Jobs.readBinding(task).foreach { binding=>
       require(inputs.isEmpty,"read_item has no input ports")
@@ -79,9 +80,9 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       val binds=Seq(new Bind(temporary.toAbsolutePath.toString,new Volume("/input"),AccessMode.ro)) ++
         op.artifact.zip(op.artifactPath).map{case(file,path)=>new Bind(file.toAbsolutePath.toString,new Volume(path),AccessMode.ro)}
       val extraBinds=op.command.mounts.toVector.map{case(path,file)=>new Bind(file.toAbsolutePath.toString,new Volume(path),AccessMode.ro)}
-      val scratch=Map("/tmp"->"rw,noexec,nosuid,nodev,size=512m") ++
+      val scratch=Map("/tmp"->resources.tmpMount) ++
         (if(op.command.executableScratch) Map("/operator-work"->"rw,exec,nosuid,nodev,size=512m") else Map.empty[String,String])
-      val host=HostConfig.newHostConfig().withBinds((binds++extraBinds).asJava).withNetworkMode("none").withMemory(1024L*1024*1024).withPidsLimit(128L)
+      val host=HostConfig.newHostConfig().withBinds((binds++extraBinds).asJava).withNetworkMode("none").withMemory(resources.memoryBytes).withPidsLimit(128L)
         .withReadonlyRootfs(true).withTmpFs(scratch.asJava)
         .withLogConfig(new LogConfig(LogConfig.LoggingType.NONE))
       val create=docker.createContainerCmd(op.image).withHostConfig(host)

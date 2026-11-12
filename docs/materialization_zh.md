@@ -81,3 +81,27 @@ stateDiagram-v2
 公共契约在 `xstream-execution-api`：`MaterializationStoreProvider`、`MaterializationStore`、`MaterializationWriter`、`MaterializedTask` 和 `MaterializedFrames`。外部实现通过 `META-INF/services/xstream.execution.MaterializationStoreProvider` 注册提供者类，将 JAR 与依赖安装到节点 `plugin_directory`，并将 `provider` 设置为其 `id`，无须修改核心注册表。
 
 插件负责私有配置、配额、过期清理、原子任务提交、持久化、租约与读取完整性；核心负责授权、策略校验、帧协议、取消及运行资源。`append(port, OperatorFrame)` 接收类型化帧，重放返回 `MaterializedFrames`。帧头上限 64 KiB，载荷上限 8 MiB；插件不得缓存整个任务。文件插件先写零行 Arrow File 分段，再写独立的数据分段，清单记录有序文件名、大小及校验和。append 失败后禁止提交。关闭未提交 writer 必须中止，提交后才可 `get`，到期后不可新建租约；清理不得破坏现有租约。新实现应通过发现、提交/中止、重启读取、配额、过期/租约、截断/损坏和关闭清理契约测试；可参考 `MaterializationSpec` 中的契约示例。
+
+## 容器临时空间与内存
+
+执行策略支持每个执行单元的资源请求，单位为 MiB：
+
+```yaml
+resources:
+  tmp_size_mb: 2048
+  memory_mb: 4096
+```
+
+默认 `/tmp` 为 512 MiB，容器总内存为 1024 MiB。`/tmp` 仍是私有、不可执行的 tmpfs，实际用量计入容器内存。`tmp_size_mb` 必须严格小于 `memory_mb`，并为程序与 Arrow 缓冲留出足够内存。增加容量不会预分配内存，也不保证整机总容量充足。独立进程各自获得限制；融合步骤共享其执行单元的一份限制。宿主机格式读取暂存，以及原生程序副本所在的 `/operator-work` tmpfs 属于独立空间，不受此配置影响。本功能不意味着磁盘工作区或磁盘配额。
+
+请求适用于本地、融合、重试/重放及 Union 下发执行。生效策略包含解析后的默认值。未知配置、非整数及超范围值在执行前被拒绝。`tmp_size_mb` 范围为 1–1048576，`memory_mb` 为 128–1048576，同时受下述宿主上限限制。耗尽 tmpfs 容量通常导致程序写入失败，耗尽总内存可能触发 OOM。
+
+管理员在节点/独立引擎启动配置中设置上限：
+
+```yaml
+execution_resources:
+  max_tmp_size_mb: 8192
+  max_memory_mb: 16384
+```
+
+以上为默认的单容器请求上限，不是整机预留或全局配额。管理员上限最低分别为 512 和 1024 MiB，以容纳默认请求；两项最高均为 1048576 MiB。Union 准备阶段由成员在启动前验证请求，超限直接失败，不静默缩减。Job 不能指定宿主路径或新增挂载。应结合实际机器容量设置上限及任务并发。

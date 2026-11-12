@@ -74,3 +74,27 @@ stateDiagram-v2
 Public contracts live in `xstream-execution-api`: `MaterializationStoreProvider`, `MaterializationStore`, `MaterializationWriter`, `MaterializedTask`, and `MaterializedFrames`. Register an external provider class through `META-INF/services/xstream.execution.MaterializationStoreProvider`, install its JAR and dependencies in the node `plugin_directory`, and configure `provider` to its `id`. No core registry edits are needed.
 
 Plugins own private configuration, quotas, expiration, atomic step commit, durability, leases, and read integrity. Core owns authorization, policy validation, frame protocol, cancellation, and execution resources. `append(port, OperatorFrame)` accepts typed frames; replay returns `MaterializedFrames`. Frame headers are bounded by 64 KiB and payloads by 8 MiB. Plugins must not buffer a whole step. The file plugin stores an initial zero-row Arrow File segment and independent data segments, with ordered names, sizes and checksums in a manifest. A failed append prevents commit. Closing an uncommitted writer must abort it, `get` may expose committed artifacts only, and expired artifacts cannot receive new leases. Cleanup must preserve existing leases. New implementations should test discovery, commit/abort, restart reads, quota, expiration/leases, truncation/corruption, and close cleanup. See `MaterializationSpec` for executable contract examples.
+
+## Container temporary space and memory
+
+Execution policy accepts a per-execution-unit resource request (MiB):
+
+```yaml
+resources:
+  tmp_size_mb: 2048
+  memory_mb: 4096
+```
+
+Defaults are 512 MiB for `/tmp` and 1024 MiB total container memory. `/tmp` remains a private, non-executable tmpfs; its actual usage counts toward container memory. `tmp_size_mb` must be strictly less than `memory_mb`; leave enough memory for the program and Arrow buffers. Increasing its capacity does not preallocate that memory or guarantee aggregate host capacity. Separate processes each receive this limit; fused steps share one limit for their execution unit. Host-side format-reader staging and the native executable-copy `/operator-work` tmpfs are separate and unaffected. No disk-backed workspace or disk quota is implied.
+
+The request applies to local, fused, retry/replay, and Union-dispatched execution. The effective policy includes resolved defaults. Unknown keys, non-integers, and values outside the accepted ranges fail before execution. `tmp_size_mb` accepts 1–1048576 and `memory_mb` 128–1048576, subject to the host caps below. Reaching tmpfs capacity normally fails the program's write; reaching total memory can cause an OOM termination.
+
+Administrators set node/standalone-engine startup limits:
+
+```yaml
+execution_resources:
+  max_tmp_size_mb: 8192
+  max_memory_mb: 16384
+```
+
+These are the default per-container request ceilings, not host reservations or global quotas. Minimum administrator ceilings are 512 and 1024 MiB respectively, preserving default requests; each ceiling is at most 1048576 MiB. Members validate requests during Union preparation before execution starts; an excessive request fails rather than silently shrinking. Jobs cannot select host paths or add mounts. Choose limits and task concurrency to fit the actual machine.

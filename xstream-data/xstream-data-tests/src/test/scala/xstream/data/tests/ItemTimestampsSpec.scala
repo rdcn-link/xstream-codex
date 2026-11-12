@@ -35,6 +35,27 @@ class ItemTimestampsSpec extends AnyFunSuite {
       assert(access.describe("/data/weather.jsonl").creationTimeMs==item.creationTimeMs)
     }finally {access.close();published.close();plugins.close();Files.delete(file);Files.delete(folder);Files.delete(root)}
   }
+  test("native bytes remain readable when optional record schema inference fails") {
+    val root=Files.createTempDirectory("item-bytes-schema-");val file=Files.writeString(root.resolve("mixed.csv"),"temperature\n12.5\nunknown\n")
+    val plugins=new PluginEnvironment();val allocator=new org.apache.arrow.memory.RootAllocator()
+    val published=new DirectoryDatasetProvider().create(DatasetDefinition("directory",source=Map("root"->root.toString)),context(plugins))
+    val access=published.open(()=>());val out=new java.io.ByteArrayOutputStream()
+    try {
+      val item=access.describe("/mixed.csv");assert(item.schema.isEmpty);assert(item.views.get.contains("bytes"))
+      val wrapped=ItemByteViews.wrap(access,_.views.get,32)
+      val stream=wrapped.requireView("/mixed.csv",DataViews.Bytes).open(AllBytes,StreamContext(allocator))
+      try ArrowBlocks.consume(stream,new DataConsumer[ByteChunk]{
+        def start(d:DataDescriptor[ByteChunk]):Unit=()
+        def accept(b:ByteChunk):Unit=out.write(b.bytes,b.offset,b.length)
+      })finally stream.close()
+      assert(out.toByteArray.sameElements(Files.readAllBytes(file)))
+      val records=access.requireView("/mixed.csv",DataViews.Records).open(Scan(),StreamContext(allocator))
+      try intercept[IllegalArgumentException](records.consume(new ArrowConsumer {
+        def start(s:org.apache.arrow.vector.types.pojo.Schema,d:org.apache.arrow.vector.dictionary.DictionaryProvider):Unit=()
+        def accept(b:ArrowBatch):Unit=()
+      }))finally records.close()
+    }finally{access.close();published.close();allocator.close();plugins.close();Files.delete(file);Files.delete(root)}
+  }
   test("unknown times remain absent and zero is a known timestamp") {
     val unknown=Item("/remote","bin",None)
     assert(unknown.creationTimeMs.isEmpty && unknown.lastModifiedTimeMs.isEmpty)

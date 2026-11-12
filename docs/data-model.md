@@ -169,3 +169,5 @@ Every View emits one schema followed by ordered batches; even an empty stream ha
 For API ownership, backpressure and cancellation, read [Data views and Arrow streams](data-streams.md) and [Arrow stream contracts](arrow-streams.md). For complete Job syntax, see [Jobs](jobs.md).
 
 For built-in reader options, container limits and publication metadata, see the [file format and container reference](file-formats.md).
+
+Record schema metadata is optional when inference fails. A file with conflicting record field types can still expose its original `bytes` view; selecting `records` retains schema validation and reports the parsing error. Native bytes do not require successful record inference.

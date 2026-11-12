@@ -20,7 +20,12 @@ class DirectoryAdapter(base: Path, batchSize: Int, inferSample: Int, excludeMeta
   }
   def describe(item: String): Item = {
     val p = resolve(item); val handler = Formats.detect(ByteSource.local(p),options)
-    Item(item,handler.id,Some(if (handler.isInstanceOf[StructuredFileHandler]) PluginSchemas.bytes else handler.schema(ByteSource.local(p),options,batchSize,inferSample)))
+    // Record schema inference is optional metadata. A malformed record representation
+    // must not prevent reading the same file through its native bytes view.
+    val schema=if(handler.isInstanceOf[StructuredFileHandler])Some(PluginSchemas.bytes)else
+      try Some(handler.schema(ByteSource.local(p),options,batchSize,inferSample))
+      catch {case _:IllegalArgumentException=>None}
+    Item(item,handler.id,schema)
   }
   def list(path: String): Seq[Item] = {
     require(path == "/", "listing requires root")

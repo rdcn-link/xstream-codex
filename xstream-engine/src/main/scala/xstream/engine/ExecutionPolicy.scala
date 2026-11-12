@@ -6,11 +6,12 @@ import _root_.xstream.util.Json
 import scala.jdk.CollectionConverters._
 
 /** Policy covers connected output streams, never arbitrary operator side effects. */
-final case class ExecutionPolicy(submitted:JsonNode,effective:JsonNode,materialized:Set[(String,String)],maxRetries:Int,timeoutSeconds:Option[Long])
+final case class ExecutionPolicy(submitted:JsonNode,effective:JsonNode,materialized:Set[(String,String)],maxRetries:Int,timeoutSeconds:Option[Long],resources:ExecutionResources)
 object ExecutionPolicy {
   def connected(plan:JobPlan):Set[(String,String)]=plan.outputs.values.toSet++plan.steps.flatMap(_.inputs.values.flatMap(b=>b.task.map(_->b.port)))
   def parse(raw:JsonNode,plan:JobPlan):ExecutionPolicy={
-    Json.fields(raw,Set.empty,Set("materialization","max_retries","timeout_seconds"))
+    Json.fields(raw,Set.empty,Set("materialization","max_retries","timeout_seconds","resources"))
+    val resources=ExecutionResources.parse(Option(raw.get("resources")).getOrElse(Json.obj()))
     val maxRetries=if(raw.has("max_retries"))Json.number(raw,"max_retries",0,10).toInt else 0
     val timeout=if(raw.has("timeout_seconds"))Some(Json.number(raw,"timeout_seconds",1,86400))else None
     val m=Option(raw.get("materialization")).getOrElse(Json.obj())
@@ -29,9 +30,9 @@ object ExecutionPolicy {
     }.toMap
     val selected=ports.filter(p=>overrides.getOrElse(p,default)=="materialize")
     require(allowed || selected.isEmpty,"workflow forbids materialization")
-    val effective=Json.obj().put("max_retries",maxRetries);timeout.foreach(effective.put("timeout_seconds",_));val em=effective.putObject("materialization").put("allowed",allowed).put("default",default);val ts=em.putObject("steps")
+    val effective=Json.obj().put("max_retries",maxRetries);effective.set[JsonNode]("resources",resources.json);timeout.foreach(effective.put("timeout_seconds",_));val em=effective.putObject("materialization").put("allowed",allowed).put("default",default);val ts=em.putObject("steps")
     ports.toVector.sorted.groupBy(_._1).toVector.sortBy(_._1).foreach {case(task,ps)=>val out=ts.putObject(task).putObject("outputs");ps.foreach(p=>out.put(p._2,if(selected(p))"materialize"else "stream"))}
-    ExecutionPolicy(raw.deepCopy[JsonNode](),effective,selected,maxRetries,timeout)
+    ExecutionPolicy(raw.deepCopy[JsonNode](),effective,selected,maxRetries,timeout,resources)
   }
   def key(execution:String,task:String):String=java.security.MessageDigest.getInstance("SHA-256").digest(Json.mapper.writeValueAsBytes(Json.obj().put("execution_id",Json.id(execution)).put("task",Json.id(task)))).map(b=>f"${b & 255}%02x").mkString
   def signature(task:JsonNode):JsonNode={val n=Json.obj();Seq("id","operator","params","inputs").foreach(k=>n.set[JsonNode](k,task.path(k)));n}

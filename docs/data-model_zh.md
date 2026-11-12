@@ -169,3 +169,5 @@ Item 是可寻址的数据来源，View 提供其表示形式。步骤输入端�
 API 的资源归属、背压和取消见[数据视图与 Arrow 流](data-streams_zh.md)及 [Arrow 流契约](arrow-streams_zh.md)。完整 Job 语法见 [Jobs](jobs_zh.md)。
 
 内置读取器的参数、容器限制及发布元数据见[文件格式与容器参考](file-formats_zh.md)。
+
+记录模式推导失败时，元数据中的 schema 可以缺省。记录字段类型冲突的文件仍可通过 `bytes` 视图读取原始内容；选择 `records` 时仍会校验模式并报告解析错误。原始字节读取不要求记录模式推导成功。
