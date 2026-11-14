@@ -11,6 +11,32 @@ import java.nio.charset.StandardCharsets.UTF_8
 import scala.jdk.CollectionConverters._
 
 class DesignerSpec extends AnyFunSuite {
+  test("Client Sink retains its identity, description and normal step layout; only drafts may be disconnected") {
+    val job="""name: Return data
+      |steps:
+      |  - id: read
+      |    operator: item_source@1.0
+      |    inputs: {}
+      |    params: {uri: 'context:/files/input.txt', view: bytes}
+      |  - id: receive
+      |    title: Client Sink
+      |    description: Return the selected data to this caller
+      |    operator: client_sink@1.0
+      |    inputs: {data: 'read:result'}
+      |designer:
+      |  version: 1
+      |  positions: {receive: {x: 600, y: 200}}
+      |""".stripMargin
+    val parsed=Documents.job(job)
+    assert(Documents.job(YamlDocument.dump(parsed))==parsed)
+    assert(parsed.path("steps").get(1).path("id").asText=="receive")
+    assert(!parsed.has("outputs"))
+    val disconnected=job.replace("inputs: {data: 'read:result'}","inputs: {}")
+    Documents.job(disconnected,true)
+    intercept[IllegalArgumentException](Documents.job(disconnected))
+    intercept[IllegalArgumentException](Documents.job(job+"outputs: {data: read}\n"))
+    intercept[IllegalArgumentException](Documents.job(job.replace("positions: {receive: {x: 600, y: 200}}","client_sink: {x: 600, y: 200}")))
+  }
   test("inline definitions survive authoring export and are excluded from remote Targets") {
     val local="""name: Local script
       |operators:
@@ -154,7 +180,6 @@ class DesignerSpec extends AnyFunSuite {
       |  generator: {name: XStream Designer, version: 0.1.0-SNAPSHOT}
       |  exported_at: '2026-10-28T12:34:56Z'
       |  positions: {read: {x: 120, y: 250}, parse: {x: 600, y: 90}}
-      |  client_sink: {x: 1200, y: 400}
       |  viewport: {zoom: 0.8, scroll_left: 100, scroll_top: 200}
       |""".stripMargin
     val parsed=Documents.job(text)

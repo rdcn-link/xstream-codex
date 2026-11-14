@@ -10,7 +10,7 @@
   function visit(id){if(Object.hasOwn(result,id))return result[id];if(visiting.has(id))throw Error('Inference graph contains a cycle');const t=byId.get(id);if(!t)return 'missing:'+id;visiting.add(id);const inputs=Object.fromEntries(Object.entries(t.inputs||{}).map(([port,value])=>{const b=binding(value);return [port,{...b,upstream:visit(b.task)}];}));const local={operator:t.operator,params:t.params||{},inputs};if(usesContext(t.params))local.context_target=request.target||'local';if(variables([t.params,t.inputs]))local.variables=request.variables_yaml;result[id]=hash(stable(local));visiting.delete(id);return result[id];}
   for(const t of steps)visit(t.id);return result;
  }
- function outputs(report,job){if(!report)return;report.outputs={};for(const [name,value] of Object.entries(job.outputs||{})){const b=binding(value),d=report.steps?.[b.task]?.outputs?.[b.port];if(d)report.outputs[name]=d;}}
+ function outputs(report,job){if(!report)return;report.outputs={};for(const [name,value] of Object.entries(job.steps.find(t=>t.operator==='client_sink@1.0')?.inputs||{})){const b=binding(value),d=report.steps?.[b.task]?.outputs?.[b.port];if(d)report.outputs[name]=d;}}
  function retain(report,previous,next,job){if(!report)return null;const result={...report,steps:Object.fromEntries(Object.entries(report.steps||{}).filter(([id])=>Object.hasOwn(next,id)&&previous[id]===next[id]))};outputs(result,job);return result;}
  root.InferenceChanges={stable,keys,outputs,retain};
 })(globalThis);

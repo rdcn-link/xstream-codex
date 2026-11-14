@@ -58,7 +58,7 @@
       "redo",
       "duplicate-step"
     ],
-    "description": "Undo: Ctrl/Command+Z; Redo: Ctrl/Command+Shift+Z or Ctrl+Y. These operate on canvas history, while CodeMirror editor undo is separate. Duplicate step or Ctrl/Command+D requires exactly one selected step and no selected Outlet. It copies parameters and description with a new ID but no input connections; reconnect its inputs. Disabled buttons indicate unavailable operations."
+    "description": "Undo: Ctrl/Command+Z; Redo: Ctrl/Command+Shift+Z or Ctrl+Y. These operate on canvas history, while CodeMirror editor undo is separate. Duplicate step or Ctrl/Command+D requires exactly one selected step. It copies parameters and description with a new ID but no input connections; reconnect its inputs. Disabled buttons indicate unavailable operations."
   },
   {
     "id": "canvas-layout",
@@ -70,21 +70,19 @@
       "fit",
       "zoom"
     ],
-    "description": "Arrange lays steps out by upstream/downstream rank and supports Undo. Minus/plus zoom the canvas (35–160%); the percentage is a readout, not an editable input. Fit scales the entire design into view and scrolls to the origin. Canvas scrollbars navigate a large design. Drag steps or Outlet to move them. Dragging selected multiple elements moves them together; steps automatically avoid overlap."
+    "description": "Arrange lays steps out by upstream/downstream rank and supports Undo. Minus/plus zoom the canvas (35–160%); the percentage is a readout, not an editable input. Fit scales the entire design into view and scrolls to the origin. Canvas scrollbars navigate a large design. Drag steps to move them. Dragging selected multiple elements moves them together; steps automatically avoid overlap."
   },
   {
     "id": "selection-deletion",
     "location": "Canvas",
     "control_ids": [],
-    "description": "Single-click a step or curve to select; double-click a step opens its properties. Drag a rectangle on empty canvas to select fully enclosed steps and Outlet; Shift extends selection. Shift-click toggles selection. Click blank canvas to clear selection. Delete/Backspace deletes selected steps or a selected connection; deleting multiple steps asks for confirmation. Deleting a step also removes dependent connections. Text editor/input typing is excluded from canvas shortcuts. Undo restores removed elements."
+    "description": "Single-click a step or curve to select; double-click a step opens its properties. Drag a rectangle on empty canvas to select fully enclosed steps; Shift extends selection. Shift-click toggles selection. Click blank canvas to clear selection. Delete/Backspace deletes selected steps or a selected connection; deleting multiple steps asks for confirmation. Deleting a step also removes dependent connections. Text editor/input typing is excluded from canvas shortcuts. Undo restores removed elements."
   },
   {
-    "id": "ports-outlet",
-    "location": "Canvas ports and Outlet",
-    "control_ids": [
-      "outlet-input"
-    ],
-    "description": "Connect by clicking an output port, moving the preview line, then clicking an input port. Right-click or Escape cancels unfinished wiring on the canvas; there is no drag-to-connect gesture. Click a curve and Delete/Backspace to remove it; right-sidebar input rows also have a remove button. Connect one step output to Outlet to define the Job output. There is exactly one Outlet; it is movable but cannot be deleted or duplicated, accepts only one output port and cannot overlap a node region. A step output cannot have multiple consumers. Source steps may have empty inputs; empty Job outputs are permitted."
+    "id": "ports-client-sink",
+    "location": "Canvas ports and Client Sink",
+    "control_ids": [],
+    "description": "Connect by clicking an output port and then an input port. Right-click or Escape cancels unfinished wiring. Delete a selected curve or remove its binding in the inspector to disconnect it. Client Sink is an explicit client_sink@1.0 step returning one stream to the caller. It has one input, no output and no parameters. Add it from the operator library, connect an upstream output, and edit its ID, title and description as with other steps. It can be moved or deleted; a Job allows at most one Client Sink. Its identity and position are retained on import and export. Each output can have only one consumer. Other Sink operators can terminate branches too."
   },
   {
     "id": "step-properties",
@@ -138,7 +136,7 @@
     "control_ids": [
       "validate"
     ],
-    "description": "Validate checks disconnected/stray steps, missing paths to Outlet, input/operator/parameter mismatches and unapplied edits. It displays error/warning counts and per-issue messages. Click a step link in an issue to select, locate and open that step. It neither executes a Job nor guarantees an unavailable external service will work."
+    "description": "Validate checks disconnected/stray steps, missing paths to a Sink, input/operator/parameter mismatches and unapplied edits. It displays error/warning counts and per-issue messages. Click a step link in an issue to select, locate and open that step. It neither executes a Job nor guarantees an unavailable external service will work."
   },
   {
     "id": "logs",
@@ -160,7 +158,7 @@
       "export-print",
       "export-download"
     ],
-    "description": "Export job YAML opens a read-only syntax-highlighted preview. Include designer metadata is checked by default and preserves positions, viewport, Outlet, designer name/version/time and preferred Target; execution ignores presentation metadata. Uncheck it to export only the Job definition. Copy copies text, Print opens browser printing, Download saves YAML. The close button closes preview; copying may require clipboard permissions. Export never submits or runs a Job."
+    "description": "Export job YAML opens a read-only syntax-highlighted preview. Include designer metadata is checked by default and preserves positions, viewport, designer name/version/time and preferred Target; execution ignores presentation metadata. Uncheck it to export only the Job definition. Copy copies text, Print opens browser printing, Download saves YAML. The close button closes preview; copying may require clipboard permissions. Export never submits or runs a Job."
   },
   {
     "id": "confirmations",

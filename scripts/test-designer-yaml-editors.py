@@ -128,7 +128,7 @@ with sync_playwright() as playwright:
     page.locator('#export-close').dispatch_event('click')
     page.evaluate('(text)=>loadDocument(text)', full)
     restored = page.evaluate('designLayout()')
-    for key in ['positions', 'outlet', 'viewport']:
+    for key in ['positions', 'viewport']:
         assert restored[key] == layout[key], key
     assert not errors, errors
     assert not external, external

@@ -23,7 +23,7 @@ object DesignerLayout {
     def fields(value:JsonNode,allowed:Set[String]):Unit=require(value.isObject && value.fieldNames.asScala.toSet.subsetOf(allowed),"invalid designer layout fields")
     def number(value:JsonNode,min:Double,max:Double):Unit=require(value.isNumber && java.lang.Double.isFinite(value.asDouble) && value.asDouble>=min && value.asDouble<=max,"invalid designer layout coordinate")
     def point(value:JsonNode):Unit={fields(value,Set("x","y"));number(value.path("x"),0,100000);number(value.path("y"),0,100000)}
-    fields(n,Set("version","positions","client_sink","viewport","generator","exported_at","target"))
+    fields(n,Set("version","positions","viewport","generator","exported_at","target"))
     Option(n.get("target")).foreach { t=>
       require(t.isTextual && t.asText.nonEmpty && t.asText.length<=2048,"invalid designer target")
       if(t.asText!="local"){
@@ -45,7 +45,6 @@ object DesignerLayout {
       values.fields.asScala.foreach{e=>require(e.getKey.matches(pattern),"invalid designer layout element");point(e.getValue)}
     }
     points("positions","[A-Za-z_][A-Za-z0-9_-]{0,127}")
-    Option(n.get("client_sink")).foreach(point)
     Option(n.get("viewport")).foreach { v=>
       fields(v,Set("zoom","scroll_left","scroll_top"))
       number(v.path("zoom"),0.35,1.6);number(v.path("scroll_left"),0,200000);number(v.path("scroll_top"),0,200000)

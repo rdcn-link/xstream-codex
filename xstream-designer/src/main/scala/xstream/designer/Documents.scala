@@ -19,7 +19,7 @@ object Documents {
     val ids=steps.map(t=>t.path("id").asText)
     val clientSinks=steps.filter(_.path("operator").asText=="client_sink@1.0")
     require(clientSinks.size<=1,"Job accepts one client_sink step")
-    clientSinks.foreach(t=>require(t.path("inputs").isObject && t.path("inputs").size()==1 && (!t.has("params") || t.path("params").size()==0),"client_sink requires exactly one input and no parameters"))
+    clientSinks.foreach(t=>require(t.path("inputs").isObject && (t.path("inputs").size()==1 || (allowEmpty && t.path("inputs").size()==0)) && (!t.has("params") || t.path("params").size()==0),"client_sink requires exactly one input and no parameters"))
     require(ids.distinct.size==ids.size && ids.forall(_.matches("[A-Za-z_][A-Za-z0-9_-]{0,127}")),"Step IDs must be unique identifiers")
     val dependencies=scala.collection.mutable.Map.empty[String,Vector[String]]
     val consumed=scala.collection.mutable.Set.empty[(String,String)]

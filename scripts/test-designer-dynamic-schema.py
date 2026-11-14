@@ -30,7 +30,7 @@ async def main():
   await page.goto(args.url)
   await expect(page.locator('#connection')).to_contain_text('Connected',timeout=25000)
   await expect(page.locator('#repository-state')).to_contain_text('published',timeout=25000)
-  draft={'name':'Dynamic schemas','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}],'outputs':{'result':'filter'}}
+  draft={'name':'Dynamic schemas','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}]}
   await page.evaluate('(draft)=>loadDocument(JSON.stringify(draft))',draft)
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial',timeout=15000)
   await expect(page.locator('[data-schema-port="filter:result"]')).to_contain_text('initial')
@@ -43,7 +43,7 @@ async def main():
   await page.wait_for_function('()=>!inferenceRunning',polling=100)
   count=len(requests)
   # Deleting a downstream step must not request schemas for its retained upstream.
-  await page.evaluate("job.steps=job.steps.filter(t=>t.id!=='filter');job.outputs={result:'read'};changed()")
+  await page.evaluate("job.steps=job.steps.filter(t=>t.id!=='filter');changed()")
   await page.wait_for_timeout(900)
   assert len(requests)==count,requests
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial')
@@ -100,7 +100,7 @@ async def main():
   await page.locator('#undo').dispatch_event('click')
   assert await page.evaluate('job.steps.length')==2
   # Move the existing multi-selection using a real pointer drag.
-  await page.evaluate("selectedSteps=new Set(['read','filter']);selected=null;outletSelected=false;positions={read:{x:80,y:120},filter:{x:380,y:120}};setInspector(false);render();document.getElementById('canvas').scrollTo(0,0)")
+  await page.evaluate("selectedSteps=new Set(['read','filter']);selected=null;positions={read:{x:80,y:120},filter:{x:380,y:120}};setInspector(false);render();document.getElementById('canvas').scrollTo(0,0)")
   before=await page.evaluate('JSON.parse(JSON.stringify(positions))')
   head=await page.locator('[data-task="read"] .card-head').bounding_box()
   x,y=head['x']+25,head['y']+12
@@ -109,9 +109,9 @@ async def main():
   for axis in ('x','y'):assert abs((after['read'][axis]-before['read'][axis])-(after['filter'][axis]-before['filter'][axis]))<1
   assert after['read']!=before['read'],after
   # Validation reports unconnected and disconnected steps in a separate panel.
-  await page.evaluate("job.outputs={};invalidate()")
+  await page.evaluate("invalidate()")
   await page.locator('#validate').dispatch_event('click')
-  await expect(page.locator('#validation-results')).to_contain_text('Outlet must connect')
+  await expect(page.locator('#validation-results')).to_contain_text('Connect Client Sink')
   await expect(page.locator('#validation-results')).to_contain_text('No dataflow path')
   assert not errors,errors
   await browser.close()

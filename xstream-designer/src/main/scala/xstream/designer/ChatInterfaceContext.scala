@@ -31,7 +31,7 @@ Chat provides instructions and complete Job proposals, not UI automation. Never 
   }
   val browser=request.path("ui_state");val state=out.putObject("current_ui")
   Seq("library_tab"->Set("operators","datasets","examples"),"details_tab"->Set("yaml","variables","validation","logs"),"inspector_tab"->Set("properties","parameters","outputs")).foreach{case(key,values)=>val v=browser.path(key).asText;if(values(v))state.put(key,v)}
-  Seq("details_open","inspector_open","library_open","unapplied_yaml","outlet_selected","edge_selected","has_pending_proposal").foreach(key=>if(browser.path(key).isBoolean)state.put(key,browser.path(key).asBoolean))
+  Seq("details_open","inspector_open","library_open","unapplied_yaml","edge_selected","has_pending_proposal").foreach(key=>if(browser.path(key).isBoolean)state.put(key,browser.path(key).asBoolean))
   val ids=Documents.job(request.path("job_yaml").asText,true).path("steps").elements.asScala.map(_.path("id").asText).toSet
   val selected=state.putArray("selected_steps");browser.path("selected_steps").elements.asScala.map(_.asText).filter(ids).take(100).foreach(selected.add)
   val statuses=state.putArray("controls")

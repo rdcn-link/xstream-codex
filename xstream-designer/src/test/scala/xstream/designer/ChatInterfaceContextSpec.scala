@@ -33,7 +33,7 @@ class ChatInterfaceContextSpec extends AnyFunSuite {
   val covered=ChatInterfaceContext.features.elements.asScala.flatMap(_.path("control_ids").elements.asScala.map(_.asText)).toSet
   assert(controls.subsetOf(covered),"Missing interface descriptions: "+(controls--covered).mkString(", "))
   val sections=ChatInterfaceContext.features.elements.asScala.map(_.path("id").asText).toSet
-  assert(Set("catalogs","examples","selection-deletion","ports-outlet","parameter-editing","outputs-inference","variables","logs","export","confirmations","chat","dynamic-controls").subsetOf(sections))
+  assert(Set("catalogs","examples","selection-deletion","ports-client-sink","parameter-editing","outputs-inference","variables","logs","export","confirmations","chat","dynamic-controls").subsetOf(sections))
  }
 
 }
