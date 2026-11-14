@@ -186,11 +186,7 @@ object OperatorLibrary {
         }
       }
     }
-    val bases = config.remoteOperatorLibraryUrls
-    val (cached, uncached) = bases.partition { base =>
-      Files.exists(config.operatorCache.resolve("manifests").resolve(sha(base.getBytes(java.nio.charset.StandardCharsets.UTF_8))).resolve(p(0)).resolve(p(1)+".json"))
-    }
-    (cached ++ uncached).foreach { base =>
+    config.remoteOperatorLibraryUrls.foreach { base =>
       try return remote(base) catch { case _: MissingOperator => () }
     }
     throw new IllegalArgumentException(s"operator not found locally or in configured libraries: $reference")

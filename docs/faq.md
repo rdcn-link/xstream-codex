@@ -2,50 +2,109 @@
 
 [中文](faq_zh.md)
 
-## 1. How is the Job Designer Target list configured?
+- [1. Which workloads suit XStream compared with workflow engines such as Airflow?](#1-which-workloads-suit-xstream-compared-with-workflow-engines-such-as-airflow)
+- [2. How should I understand XStream's logical filesystem?](#2-how-should-i-understand-xstreams-logical-filesystem)
+- [3. How do Item, View and stream relate, and what does an operator actually process?](#3-how-do-item-view-and-stream-relate-and-what-does-an-operator-actually-process)
+- [4. How can a XStream Job read local files, and what does `context:` refer to?](#4-how-can-a-xstream-job-read-local-files-and-what-does-context-refer-to)
+- [5. How do I define an Item collection (itemset) data source from a folder or CSV manifest?](#5-how-do-i-define-an-item-collection-itemset-data-source-from-a-folder-or-csv-manifest)
+- [6. How is the Job Designer Target list configured?](#6-how-is-the-job-designer-target-list-configured)
+- [7. Is schema inference available anonymously?](#7-is-schema-inference-available-anonymously)
+- [8. What are operator roles, implementation types and executors, and how do I choose and develop one?](#8-what-are-operator-roles-implementation-types-and-executors-and-how-do-i-choose-and-develop-one)
+- [9. How do I define, develop and run inline operators in a Job, and can I submit them remotely?](#9-how-do-i-define-develop-and-run-inline-operators-in-a-job-and-can-i-submit-them-remotely)
+- [10. How does a custom operator process an `items` reference stream?](#10-how-does-a-custom-operator-process-an-items-reference-stream)
+- [11. Can I configure multiple operator repositories, and how are duplicate operators resolved?](#11-can-i-configure-multiple-operator-repositories-and-how-are-duplicate-operators-resolved)
+- [12. Why use an operator repository when inline operators are simpler?](#12-why-use-an-operator-repository-when-inline-operators-are-simpler)
 
-The Designer always provides **Local**. Administrators add remote Targets through `nodes` in the Designer startup YAML; a Target may be an ordinary DACP node or a Union service.
+## 1. Which workloads suit XStream compared with workflow engines such as Airflow?
 
-```yaml
-local_catalog:
-  datasets:
-    weather:
-      provider: directory
-      source:
-        root: /srv/weather
+XStream is a dataflow-oriented workflow execution engine. It is particularly useful when data processing is the main workload, applications need early results, or execution must be embedded in another application.
 
-nodes:
-  - url: dacp://union.example.org:19860
-    ca: /etc/xstream/ca.crt
-    token_file: /etc/xstream/union.token
-  - url: dacp://node-a.example.org:18861
-    ca: /etc/xstream/ca.crt
-    token_file: /etc/xstream/node-a.token
+| Scenario | What XStream provides |
+|---|---|
+| Interactive scientific analysis | Parameterized Jobs, visual authoring, schema inference and bounded output previews |
+| Multi-step data transformation | Stream connections between parsing, filtering, transformation and aggregation steps, reducing intermediate file handoffs |
+| Cross-language algorithm composition | Named ports and a shared Arrow data contract for Scala, Java, Python and other supported executors |
+| Complex files and scientific data | Item/View access to ordinary files, archive members and structured scientific data |
+| Embedded analysis | A local engine that JVM applications can embed directly |
+| Reusable analysis services | Parameterized Jobs composed of operators that avoid modifying external business state |
+
+A typical pipeline is:
+
+```mermaid
+flowchart LR
+  A[Read observations] --> B[Parse]
+  B --> C[Quality filtering]
+  C --> D[Analysis]
+  D --> E[Result stream]
 ```
 
-Replace the addresses and paths with deployment values. `local_catalog` supplies the Designer's local data catalog; `nodes` supplies the available remote connections. CA and token files are read by the Designer server and are not sent to the browser. Store only the token value in `token_file`, not a complete credential JSON response. Use an upstream account authorized for schema/sample requests; listing public metadata alone does not grant execution permissions.
+When operators process data incrementally, downstream steps can begin before upstream output is complete. Compatible steps can also share an execution unit. Sorting, some joins and global aggregations may still buffer substantial data; streaming and process fusion do not guarantee a speedup for every workload.
 
-Edit the configuration file passed to the Designer at startup, restart the Designer, then reload the browser:
+Airflow is particularly useful for scheduled workflows that coordinate external systems: periodic extraction, waiting for upstream services, updating databases, triggering other platforms, historical backfills and notifications. Its strengths include scheduling, integrations and operational tooling. Airflow does not require file-based data exchange; its XCom mechanism is designed for small values, while tasks can use external storage or compute systems for larger data. See the official [Airflow introduction](https://airflow.apache.org/docs/apache-airflow/stable/), [XCom documentation](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html) and [backfill documentation](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/backfill.html).
 
-```bash
-xstream-designer /etc/xstream/designer.yaml
+XStream is therefore a useful foundation for scientific analysis, interactive analysis applications and embedded cross-language data pipelines. Its engine executes steps locally; remote Item access uses data connectors, and DACP/Union supplies remote Job invocation and cross-node collaboration. Continuous stream processing with time windows and durable state recovery requires further capabilities.
+
+The systems can work together: Airflow schedules and supervises an analysis Job, while XStream executes its internal data-processing pipeline. For measured results and their limits, see the [workflow performance comparison](orchestration-llm-benchmark.md).
+
+## 2. How should I understand XStream's logical filesystem?
+
+XStream organizes and accesses data through a **unified logical catalog**, abstracting its physical storage and file formats. It is a data-resource namespace rather than an operating-system filesystem or a mounted disk.
+
+```text
+DataCatalog
+└── Dataset
+    ├── Data Item
+    └── Folder Item
+        └── Child Item
 ```
 
-Visitors select an administrator-configured Target through **Target: … → Change… → Use selected target**; they cannot enter arbitrary server addresses or credentials.
+A DataCatalog discovers Datasets; each Dataset provides a logical Item tree. For example, assuming the corresponding backend and format plugins are installed:
 
-Selecting a Target changes **Target catalog** and the context used for schema and output-sample inference. An Item chosen from that catalog uses `context:/dataset/item`; an Item from another catalog uses its full remote URI. The selected Target is omitted from the other catalog roots to avoid duplicate entries. Switching Target requires reviewing context Item paths because the same path can mean different data on different targets.
+| Logical address | Possible backing resource |
+|---|---|
+| `context:/science/observations.csv` | A local CSV file |
+| `context:/science/archive.zip/labels/a.csv` | A member inside a ZIP, without manual extraction |
+| `context:/science/climate.nc/temperature` | A variable inside a NetCDF file |
+| A table Item exposed by a database Dataset | A database table or configured query result |
 
-The optional `designer.target` field saves the design context with exported YAML. It does not submit a Job, route execution or grant permissions. Job submission is a separate operation; the execution target's catalog must match the Job's `context:` references.
+The logical path is not necessarily a physical file path. Archive children and scientific variables need not exist as separate files. Plugins determine which resources and structures are exposed.
 
-See the [Designer guide](designer-guide.md) and [Designer configuration reference](../xstream-designer/README.md).
+**An Item identifies a resource; a View defines how to read it.** A CSV Item can expose `bytes` for the original file and `records` for parsed rows. Scientific Items can expose `array` while preserving multidimensional structure. Reading a supported View produces an Arrow stream for downstream operators. Inspect advertised capabilities rather than assuming every Item supports every View.
 
-## 2. Is schema inference available anonymously?
+Hierarchy and readability are separate: folder Items support browsing through `list()`. A ZIP root has `kind: folder` and `views: [bytes, items]`: `bytes` returns the original ZIP and `items` streams its member references without reading their content. An internal archive folder supports `items`, while an individual member supports its own advertised views. Folder `records` is rejected.
 
-The Designer website requires no visitor login, and inference for the local Target runs on the Designer server. Remote DACP node and Union inference APIs require `job:execute`; ordinary accounts typically need the `runner` role. Designer uses the `token_file` configured in `nodes` to access upstream services on behalf of visitors, without asking them to enter a token or sending it to the browser.
+`context:` refers to the DataCatalog bound to the current execution environment, not an arbitrary local disk path. A remote DACP URI accesses a remote catalog through a connector. Together, logical Items, explicit Views and streams let a Job handle files, archive members, scientific variables and database resources without implementing a separate storage reader in each operator.
 
-A public Designer therefore does not make the remote inference API anonymous. Catalogs and metadata can be read anonymously; inference and output samples can execute operator code, read data and consume resources, and remain subject to upstream permission checks.
+See the [data model](data-model.md), [file formats and containers](file-formats.md), [DataView examples](data-view-examples.md) and [local-file FAQ](#4-how-can-a-xstream-job-read-local-files-and-what-does-context-refer-to).
 
-## 3. How can a XStream Job read local files, and what does `context:` refer to?
+## 3. How do Item, View and stream relate, and what does an operator actually process?
+
+An **Item** identifies a logical resource; a **View** selects a supported representation of that resource; opening the View produces an **Arrow stream**. Steps exchange streams through named ports, rather than passing host filesystem paths.
+
+```mermaid
+flowchart LR
+  I[Item URI] --> S[item_source: choose View]
+  S --> B[bytes / records / array / sequence]
+  B --> T[Downstream operator]
+  F[Folder or CSV manifest] --> C[Collection Source]
+  C --> R[items: ordered references]
+  R --> O[Collection operator]
+  O --> L[Open each member View when needed]
+```
+
+| Representation | What the operator consumes |
+|---|---|
+| `bytes` | Incremental byte chunks, for example original ZIP or TIFF bytes |
+| `records` | Batches of typed rows, for example parsed CSV records |
+| `array` | Scientific arrays with their dimensions and structure preserved |
+| `sequence` | Biological sequence data in the declared scientific schema |
+| `items` | Ordered Item references and metadata; member contents are opened lazily |
+
+A stream contains ordered frames/batches; `array` describes its data representation, not a requirement to load everything into one in-memory array. Each port declares supported representations. An SDK operator processes that declared stream; a command/script adapter can bind bytes to stdin/stdout or temporary files. Materializing files inside an adapter does not change the inter-step stream contract.
+
+`item_source` selects the View in its parameters. Collection Sources output `items`; a collection-aware operator can traverse them and open member Views with the SDK. Collection iteration is internal to that operator, not a Job-level map/reduce instruction. See [data model](data-model.md), [View examples](data-view-examples.md) and [Item reference streams](items-stream.md).
+
+## 4. How can a XStream Job read local files, and what does `context:` refer to?
 
 Publish the directory through the engine's DataCatalog, then read its Items with `item_source@1.0`. For example, save this engine configuration as `engine.yaml`:
 
@@ -88,69 +147,173 @@ For original file bytes, set `view: bytes`. The `records` View requires a format
 
 See the [quick start](quickstart.md), [data model](data-model.md) and [local execution guide](xstream.md).
 
-## 4. Which workloads suit XStream compared with workflow engines such as Airflow?
+## 5. How do I define an Item collection (itemset) data source from a folder or CSV manifest?
 
-XStream is a dataflow-oriented workflow execution engine. It is particularly useful when data processing is the main workload, applications need early results, or execution must be embedded in another application.
+Use the `items` representation: an ordered stream of Item references, rather than a new Dataset provider or a mathematical Set. It preserves order and duplicates. Publish the underlying files in a catalog, for example in the runner's `engine.yaml`:
 
-| Scenario | What XStream provides |
-|---|---|
-| Interactive scientific analysis | Parameterized Jobs, visual authoring, schema inference and bounded output previews |
-| Multi-step data transformation | Stream connections between parsing, filtering, transformation and aggregation steps, reducing intermediate file handoffs |
-| Cross-language algorithm composition | Named ports and a shared Arrow data contract for Scala, Java, Python and other supported executors |
-| Complex files and scientific data | Item/View access to ordinary files, archive members and structured scientific data |
-| Embedded analysis | A local engine that JVM applications can embed directly |
-| Reusable analysis services | Parameterized Jobs composed of operators that avoid modifying external business state |
-
-A typical pipeline is:
-
-```mermaid
-flowchart LR
-  A[Read observations] --> B[Parse]
-  B --> C[Quality filtering]
-  C --> D[Analysis]
-  D --> E[Result stream]
+```yaml
+datasets:
+  science:
+    provider: directory
+    source:
+      root: /srv/science
 ```
 
-When operators process data incrementally, downstream steps can begin before upstream output is complete. Compatible steps can also share an execution unit. Sorting, some joins and global aggregations may still buffer substantial data; streaming and process fusion do not guarantee a speedup for every workload.
+For files under `/srv/science/labels`, use a folder Source:
 
-Airflow is particularly useful for scheduled workflows that coordinate external systems: periodic extraction, waiting for upstream services, updating databases, triggering other platforms, historical backfills and notifications. Its strengths include scheduling, integrations and operational tooling. Airflow does not require file-based data exchange; its XCom mechanism is designed for small values, while tasks can use external storage or compute systems for larger data. See the official [Airflow introduction](https://airflow.apache.org/docs/apache-airflow/stable/), [XCom documentation](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html) and [backfill documentation](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/backfill.html).
-
-XStream is therefore a useful foundation for scientific analysis, interactive analysis applications and embedded cross-language data pipelines. Its engine executes steps locally; remote Item access uses data connectors, and DACP/Union supplies remote Job invocation and cross-node collaboration. Continuous stream processing with time windows and durable state recovery requires further capabilities.
-
-The systems can work together: Airflow schedules and supervises an analysis Job, while XStream executes its internal data-processing pipeline. For measured results and their limits, see the [workflow performance comparison](orchestration-llm-benchmark.md).
-
-## 5. How should I understand XStream's logical filesystem?
-
-XStream organizes and accesses data through a **unified logical catalog**, abstracting its physical storage and file formats. It is a data-resource namespace rather than an operating-system filesystem or a mounted disk.
-
-```text
-DataCatalog
-└── Dataset
-    ├── Data Item
-    └── Folder Item
-        └── Child Item
+```yaml
+name: Inspect an Item collection
+steps:
+  - id: list
+    operator: folder_items_source@1.0
+    inputs: {}
+    params: {uri: 'context:/science/labels', recursive: true}
+  - id: inspect
+    operator: item_byte_count@1.0
+    inputs: {source: 'list:result'}
+    params: {}
+  - id: receive
+    operator: client_sink@1.0
+    inputs: {result: 'inspect:result'}
 ```
 
-A DataCatalog discovers Datasets; each Dataset provides a logical Item tree. For example, assuming the corresponding backend and format plugins are installed:
+Alternatively, save `/srv/science/manifest.csv`:
 
-| Logical address | Possible backing resource |
+```csv
+uri,sample_id,role
+labels/001.txt,001,label
+labels/001.tfw,001,world
+```
+
+Replace the `list` step with:
+
+```yaml
+id: list
+operator: csv_items_source@1.0
+inputs: {}
+params: {uri: 'context:/science/manifest.csv', uri_column: uri}
+```
+
+The folder Source lists direct children by default; `recursive: true` includes descendants, including folder references. The CSV Source turns each row into a reference, resolves relative paths against the manifest's logical parent and preserves other columns in metadata. Both output references without eagerly reading member contents. `item_byte_count` opens each supported bytes View lazily and skips folders without bytes; pairing label/world files by `sample_id` belongs to a custom downstream operator.
+
+Configure Designer's local datasets under `local_catalog.datasets`; `context:` always refers to the execution host's catalog. Install the approved Source, Transform and Sink packages and their Runtimes through the configured operator repository. Remote Item URIs also require the corresponding data connector and connection configuration. See [Item operator examples](../examples/operators/item-sources/README.md) and [Item reference streams](items-stream.md).
+
+## 6. How is the Job Designer Target list configured?
+
+The Designer always provides **Local**. Administrators add remote Targets through `nodes` in the Designer startup YAML; a Target may be an ordinary DACP node or a Union service.
+
+```yaml
+local_catalog:
+  datasets:
+    weather:
+      provider: directory
+      source:
+        root: /srv/weather
+
+nodes:
+  - url: dacp://union.example.org:19860
+    ca: /etc/xstream/ca.crt
+    token_file: /etc/xstream/union.token
+  - url: dacp://node-a.example.org:18861
+    ca: /etc/xstream/ca.crt
+    token_file: /etc/xstream/node-a.token
+```
+
+Replace the addresses and paths with deployment values. `local_catalog` supplies the Designer's local data catalog; `nodes` supplies the available remote connections. CA and token files are read by the Designer server and are not sent to the browser. Store only the token value in `token_file`, not a complete credential JSON response. Use an upstream account authorized for schema/sample requests; listing public metadata alone does not grant execution permissions.
+
+Edit the configuration file passed to the Designer at startup, restart the Designer, then reload the browser:
+
+```bash
+xstream-designer /etc/xstream/designer.yaml
+```
+
+Visitors select an administrator-configured Target through **Target: … → Change… → Use selected target**; they cannot enter arbitrary server addresses or credentials.
+
+Selecting a Target changes **Target catalog** and the context used for schema and output-sample inference. An Item chosen from that catalog uses `context:/dataset/item`; an Item from another catalog uses its full remote URI. The selected Target is omitted from the other catalog roots to avoid duplicate entries. Switching Target requires reviewing context Item paths because the same path can mean different data on different targets.
+
+The optional `designer.target` field saves the design context with exported YAML. It does not submit a Job, route execution or grant permissions. Job submission is a separate operation; the execution target's catalog must match the Job's `context:` references.
+
+See the [Designer guide](designer-guide.md) and [Designer configuration reference](../xstream-designer/README.md).
+
+## 7. Is schema inference available anonymously?
+
+The Designer website requires no visitor login, and inference for the local Target runs on the Designer server. Remote DACP node and Union inference APIs require `job:execute`; ordinary accounts typically need the `runner` role. Designer uses the `token_file` configured in `nodes` to access upstream services on behalf of visitors, without asking them to enter a token or sending it to the browser.
+
+A public Designer therefore does not make the remote inference API anonymous. Catalogs and metadata can be read anonymously; inference and output samples can execute operator code, read data and consume resources, and remain subject to upstream permission checks.
+
+## 8. What are operator roles, implementation types and executors, and how do I choose and develop one?
+
+These are independent choices, not competing classifications:
+
+| Dimension | Options | Meaning |
+|---|---|---|
+| Graph `role` | `source`, `transform`, `sink` | Produces streams without inputs; consumes and produces streams; consumes streams without outputs |
+| Integration `type` | `sdk`, `command`, `script` | SDK program, existing executable, or script |
+| `executor` | `jvm`, `python`, `command`, `container` | Launcher/protocol inside the configured Runtime container |
+| Definition location | Public repository, local library, Job-local `operators` | Distribution and selection of the definition |
+
+| Development approach | What to provide |
 |---|---|
-| `context:/science/observations.csv` | A local CSV file |
-| `context:/science/archive.zip/labels/a.csv` | A member inside a ZIP, without manual extraction |
-| `context:/science/climate.nc/temperature` | A variable inside a NetCDF file |
-| A table Item exposed by a database Dataset | A database table or configured query result |
+| SDK (`jvm` / `python`) | Scala/Java or Python processing code, input/output contracts, parameters, structure inference and bounded samples; provide build/dependency declarations |
+| Command | Existing tool, Runtime with its dependencies, argument mapping and bytes stdin/stdout or file bindings; the adapter supplies the stream bridge |
+| Script | Interpreter plus embedded source or a script file, arguments and bytes bindings; no SDK import is needed for the script itself |
+| Custom container executor | Image entrypoint implementing the operator process/inference protocol; placing an arbitrary CLI in an image alone does not implement this protocol |
 
-The logical path is not necessarily a physical file path. Archive children and scientific variables need not exist as separate files. Plugins determine which resources and structures are exposed.
+Scala is preferred for new SDK operators; Java and Python are supported. Choose a role and port contracts first, then implementation and Runtime. Test empty/multi-batch inputs, output structure, parameters, inference, samples, cancellation and resource cleanup. File bindings use quota-controlled temporary storage; generic command adapters do not execute commands for sample inference. Every executor runs in a container.
 
-**An Item identifies a resource; a View defines how to read it.** A CSV Item can expose `bytes` for the original file and `records` for parsed rows. Scientific Items can expose `array` while preserving multidimensional structure. Reading a supported View produces an Arrow stream for downstream operators. Inspect advertised capabilities rather than assuming every Item supports every View.
+`item_source@1.0` is a Source; `client_sink@1.0` is an explicit Sink returning results to the caller. Both come from the operator repository. A role does not determine implementation language. Start with the [complete operator authoring guide](operator-authoring.md), [Scala endpoints](../examples/operators/scala-endpoints/README.md), [dependency environments](dependency-environments.md) and [submission guide](operator-submission.md).
 
-Hierarchy and readability are separate: folder Items support browsing through `list()`. A ZIP root has `kind: folder` and `views: [bytes, items]`: `bytes` returns the original ZIP and `items` streams its member references without reading their content. An internal archive folder supports `items`, while an individual member supports its own advertised views. Folder `records` is rejected.
+## 9. How do I define, develop and run inline operators in a Job, and can I submit them remotely?
 
-`context:` refers to the DataCatalog bound to the current execution environment, not an arbitrary local disk path. A remote DACP URI accesses a remote catalog through a connector. Together, logical Items, explicit Views and streams let a Job handle files, archive members, scientific variables and database resources without implementing a separate storage reader in each operator.
+For local development, put definitions in the Job's top-level `operators` mapping and select one with `operator: {inline: name}`. Use `sdk` for a Scala/Java JAR or Python SDK program, `command` for an executable, or `script` for embedded/local script source.
 
-See the [data model](data-model.md), [file formats and containers](file-formats.md), [DataView examples](data-view-examples.md) and [local-file FAQ](#3-how-can-a-xstream-job-read-local-files-and-what-does-context-refer-to).
+Configure a preinstalled Runtime in `engine.yaml` (alongside the Dataset configuration used by this Job):
 
-## 6. How does a custom operator process an `items` reference stream?
+```yaml
+inline_runtimes:
+  python_tools:
+    image: xstream/operator-python:1.0
+    executor: python
+```
+
+The image must contain `/usr/local/bin/python`, PyArrow and any script dependencies. A complete Job using stdin/stdout bindings is:
+
+```yaml
+name: Local uppercase
+operators:
+  upper:
+    type: script
+    role: transform
+    runtime: python_tools
+    interpreter: /usr/local/bin/python
+    script:
+      source: |
+        import sys
+        while chunk := sys.stdin.buffer.read(65536):
+            sys.stdout.buffer.write(chunk.upper())
+    inputs:
+      source: {view: bytes, binding: stdin}
+    outputs:
+      result: {view: bytes, binding: stdout, format: text}
+steps:
+  - id: read
+    operator: item_source@1.0
+    inputs: {}
+    params: {uri: 'context:/files/input.txt', view: bytes}
+  - id: upper
+    operator: {inline: upper}
+    inputs: {source: 'read:result'}
+    params: {}
+  - id: receive
+    operator: client_sink@1.0
+    inputs: {result: 'upper:result'}
+```
+
+Run `xstream-runner engine.yaml job.yaml`. Publish a `files` Dataset containing `input.txt` and configure the repository/cache supplying `item_source` and `client_sink`. Local program paths resolve against the Job directory; referenced files are staged privately, and cancellation/cleanup remain framework-managed. Programs run in the configured containers, not unrestricted host processes.
+
+**DACP nodes and Union reject Jobs containing `operators`, including unused definitions.** To run remotely, publish operators for public approval and replace inline references with `name@version`. Designer supports inline YAML and local inference using its configured `inline_runtimes`; select Local. See [inline operators](inline-operators.md) for SDK entrypoints, command mappings, script files, limits and registration, and [local libraries](local-operators.md) for reusable local packages.
+
+## 10. How does a custom operator process an `items` reference stream?
 
 Declare `representations: [items]` on the input port. This processing code traverses references and metadata without opening member contents:
 
@@ -166,3 +329,25 @@ def process(ctx: OperatorContext): Unit = {
 To read content, call `ctx.openItem(item, "bytes") { stream => … }` inside the callback. It returns an incremental Arrow stream; the framework owns cleanup, authorization and cancellation. Do not collect the entire collection into a Map/Set without explicit count and memory bounds. Pairing rules belong to the operator, not implicit Job execution.
 
 See [Item operator examples](../examples/operators/item-sources/README.md) for compilable Sources and a Transform, and [Item reference streams](items-stream.md) for the contract.
+
+## 11. Can I configure multiple operator repositories, and how are duplicate operators resolved?
+
+Runner and Designer both accept repository base URLs in startup configuration:
+
+```yaml
+remote_operator_library_urls:
+  - https://operators.example.org
+  - https://science-operators.example.org
+```
+
+Designer merges their public catalogs for the operator palette and Chat context; local schema/sample inference resolves packages from the same list. Different versions remain available to existing Jobs, while the palette normally shows the latest version per name. The same `name@version` from multiple repositories uses the first configured repository that provides it. Keep the ordering consistent across Designer and execution hosts; do not publish different implementations under the same identity.
+
+Repository configuration is server-side; browser requests cannot replace the list. Restart after editing startup configuration. An unavailable/invalid catalog fails the Designer catalog request rather than silently presenting an incomplete inventory. Package resolution proceeds to the next repository only when an operator is absent; connection, integrity and validation failures remain errors. Verified package manifests and blobs can be reused from cache. Remote Target execution uses that server's own repository configuration, so install the same required operators there. See [operator packages and cache](operator-packaging.md).
+
+## 12. Why use an operator repository when inline operators are simpler?
+
+Inline operators are convenient for local experiments: keep a script, command mapping or SDK program next to the Job and run it immediately in an administrator-configured Runtime. A local library also supports reuse across local Jobs.
+
+A repository provides shared versioned identities, declared ports/parameters/examples, build and dependency environments, approval, source/provenance information, trust metadata and verified downloads. Other users and execution hosts can obtain the same approved package instead of copying private scripts and paths.
+
+Remote DACP nodes and Union accept publicly approved operators and reject inline/local definitions. This gives server administrators a defined code publication boundary; approval is not a guarantee that code is harmless, and container isolation, authorization and resource limits still apply. Develop locally, test the stream contract, then [submit for review](operator-submission.md) when sharing or remote execution is needed. See [local operators](local-operators.md) and [inline operators](inline-operators.md).

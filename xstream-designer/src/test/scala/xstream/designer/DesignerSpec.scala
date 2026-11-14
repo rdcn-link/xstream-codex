@@ -118,7 +118,7 @@ class DesignerSpec extends AnyFunSuite {
     val jobFile=dir.resolve("demo.yaml");val varsFile=dir.resolve("vars.yaml")
     java.nio.file.Files.writeString(jobFile,workflow);java.nio.file.Files.writeString(varsFile,"INPUT_URI: context:/weather/demo.csv\nN: 123\n")
     val config=Json.obj().put("host","127.0.0.1").put("port",0)
-    config.putObject("repository").put("url","http://localhost:8820")
+    config.putArray("remote_operator_library_urls").add("http://localhost:8820")
     config.putObject("showcase").put("job_file",jobFile.toString).put("variables_file",varsFile.toString).put("label","Load demo")
     val site=new Designer(config);site.start()
     try {
@@ -198,8 +198,8 @@ class DesignerSpec extends AnyFunSuite {
                                   |port: 0
                                   |nodes:
                                   |  - {url: 'dacp://localhost:18861', token_file: '/private/secret.token'}
-                                  |repository:
-                                  |  {url: 'http://127.0.0.1:${repo.getAddress.getPort}'}
+                                  |remote_operator_library_urls:
+                                  |  - 'http://127.0.0.1:${repo.getAddress.getPort}'
                                   |""".stripMargin)
     val site=new Designer(config);site.start();val client=HttpClient.newHttpClient()
     def get(path:String)=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}"+path)).GET().build(),HttpResponse.BodyHandlers.ofString())
@@ -252,7 +252,7 @@ class DesignerSpec extends AnyFunSuite {
     try {archive.putNextEntry(new java.util.zip.ZipEntry("labels/points.txt"));archive.write("points".getBytes(UTF_8));archive.closeEntry()}finally archive.close()
     val config=Documents.mapping(s"""host: 127.0.0.1
       |port: 0
-      |repository: {url: 'http://127.0.0.1:1'}
+      |remote_operator_library_urls: ['http://127.0.0.1:1']
       |nodes:
       |- {url: 'dacp://127.0.0.1:1', token_file: '/private/not-exposed.token'}
       |local_catalog:
@@ -314,7 +314,7 @@ class DesignerSpec extends AnyFunSuite {
     val config=Json.obj().put("host","127.0.0.1").put("port",0)
     config.putObject("local_catalog").putObject("datasets").putObject("weather").put("provider","directory").putObject("source").put("root",data.toString)
     val origin=s"http://127.0.0.1:${model.getAddress.getPort}"
-    config.putObject("repository").put("url",origin)
+    config.putArray("remote_operator_library_urls").add(origin)
     config.putObject("chat").put("url",origin+"/completions").put("model","test-model")
     val site=new Designer(config);site.start()
     val client=HttpClient.newHttpClient()
@@ -327,7 +327,7 @@ class DesignerSpec extends AnyFunSuite {
       assert(Json.mapper.readTree(clarification.body()).path("job_yaml").isNull)
       val context=observed.get.path("messages").get(1).path("content").asText
       assert(context.contains("server_catalogs") && context.contains("context:/weather/weather.csv"),context)
-      assert(context.contains("repository_url") && context.contains("records"),context)
+      assert(context.contains("repository_urls") && context.contains("records"),context)
       assert(context.contains("designer_interface") && context.contains("Choose design target") && context.contains("Load example"),context)
       assert(context.contains("read-records") && context.contains("available_to_load"),context)
 

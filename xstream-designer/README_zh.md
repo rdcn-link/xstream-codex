@@ -23,7 +23,7 @@ target/universal/stage/bin/xstream-designer /etc/dacp/designer.yaml
 ## 设计流程
 
 1. Target 默认为 **Local**，可选择配置的远程节点。Target catalog 随 Target 变化，选择 Item 生成 `context:` URI；其他目录入口不重复显示该节点。目录分支按需展开加载。Target 选择编排上下文，远程 Job 提交由 DACP 提供，自动放置由 Union 提供。
-2. 自动从配置文件的 `repository` 读取 `/v1/operators`。可搜索算子名称和说明、选择版本、拖到画布。`item_source@1.0` 是内置数据源。
+2. 自动从配置文件的 `remote_operator_library_urls` 读取 `/v1/operators`。可搜索算子名称和说明、选择版本、拖到画布。`item_source@1.0` 是由仓库提供的数据源。
 3. 打开左侧 **Catalogs** 标签页，展开目录时加载数据集，展开数据集和文件夹时加载 Item。点击 Item 后，旁边浮动显示各个可用视图和复制路径的操作图标，悬停或键盘聚焦显示用途。选择视图后，为选中或新建的读取步骤设置 URI 和显式视图。复制路径保留数据集名称（如 `/science/climate.nc/temperature`）。仅点击文件夹左侧箭头展开或收起；点击名称显示操作图标。Union 连接使用 Union 的公开 URI。
 4. 拖动卡片调整位置，点击输出端口启动随鼠标移动的预览线，再点击输入端口建立流依赖；右键或 Esc 取消。在右侧修改标题和参数；支持删除步骤、移除连接、撤销、重做与自动排列。
 5. 画布提供一个可移动的 **Client Sink（调用方接收）**，用于向调用方返回数据流。将算子输出端口连接到它；新连接替换旧连接。导出时写入显式的 `client_sink@1.0` 步骤及其输入，不再写顶层 `outputs` 字段。Job 也可以由已发布的 Sink 算子收尾，此时不向调用方返回流。画布中的 Client Sink 不可删除或复制；删除连线后保持未连接。浏览器草案和可选的 `designer` 元数据保存其位置。每个生产者端口最多有一个消费者；输出端口显示表示、格式及已知 Schema 字段。
@@ -73,7 +73,7 @@ HTTP API 不要求网页用户认证，仅供本设计器使用。除配置与�
 | 路径 | 功能 |
 |---|---|
 | `GET /api/config` | 公开服务、仓库名称与聊天能力，不返回凭据文件 |
-| `/api/operators` | 使用 `repository` 查询仓库实时算子列表 |
+| `/api/operators` | 使用 `remote_operator_library_urls` 查询仓库实时算子列表 |
 | `/api/datasets`、`/api/items` | 读取所连接服务的目录与数据项元数据 |
 | `/api/document`、`/api/mapping` | 解析／规范化 Job、参数或变量 YAML |
 | `/api/export` | 检查图结构，返回 Job 与变量 YAML |
@@ -98,7 +98,7 @@ python3 scripts/test-job-designer.py --url http://localhost:8840 \
 
 属性面板分为 **Step**、**Parameters** 和 **Outputs** 三个标签页。Parameters 根据算子必需的静态 `parameters` 契约生成：名称和类型来自声明，同时显示说明、默认值、枚举及范围。可选参数需显式启用，未启用的参数不写入 Job。对象、数组及完整值变量（`$VAR_NAME`）通过表单配置。属性和参数的合法修改自动保存并同步 YAML，保留类型；连续输入合并为可撤销的编辑操作。详见[参数契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-parameters_zh.md)。
 
-启动配置提供 `local_catalog`、`nodes` 和 `repository`。浏览器 Target 默认为 Local，可切换到配置节点；不能输入任意服务地址或凭据。打开页面时独立加载两个服务，精简页头显示状态及故障信息；上游恢复后刷新页面即可重试。
+启动配置提供 `local_catalog`、`nodes` 和 `remote_operator_library_urls`。浏览器 Target 默认为 Local，可切换到配置节点；不能输入任意服务地址或凭据。打开页面时独立加载两个服务，精简页头显示状态及故障信息；上游恢复后刷新页面即可重试。
 
 点击流连线后高亮选中，可在画布获得焦点时按 Delete / Backspace 删除；选中时仅高亮连线，不出现矩形框或额外的工具栏按钮，支持撤销和重做。在表单输入框中编辑文字不会触发连线删除。一个已连接到下游步骤的端口不能同时作为 Job 输出，需要先删除该连线。导入文件中的输出绑定也会显示为连到 Client Sink 的线。
 
@@ -118,7 +118,7 @@ python3 scripts/test-job-designer.py --url http://localhost:8840 \
 
 拖动步骤或 Client Sink、以及从算子库新增步骤时，与其重叠的其他步骤及 Client Sink 会自动向下避让，并在需要时连锁调整，保留间距。多选步骤保持相对位置，停留在拖动目标位置。每次预览均基于拖动开始前的布局重新计算，移开鼠标后邻近元素恢复；取消拖动会恢复全部位置且不修改历史。放下后整次移动及避让作为一次操作支持撤销和重做。连线不计入放置障碍。
 
-步骤框的右上角显示算子声明的图标及颜色，与左侧算子库一致；内置 `item_source` 使用相同的数据源图标。尚未加载到算子元信息时显示灰色占位图标。
+步骤框的右上角显示算子声明的图标及颜色，与左侧算子库一致；`item_source` 使用相同的数据源图标。尚未加载到算子元信息时显示灰色占位图标。
 
 Parameters 使用紧凑表单，参数名为固定标签。已声明单一类型的参数显示类型标注和小型 `$` 变量切换按钮。说明、默认值与约束通过信息提示查看；可选参数用复选框启用。仍支持多行字符串、嵌套对象、数组、枚举及联合类型。自定义参数仅在新增时输入名称，已有参数名均显示为标签。
 
@@ -256,7 +256,7 @@ designer:
 
 左侧 **Examples** 标签页列出十个随包提供的 Job：记录流读取、筛选并导出 CSV、变量化流程、双流合并、NetCDF 数组视图。每张卡片说明用途和步骤数。**Load example** 将图和变量值加载到当前 Target，不执行或提交 Job。当前画布有内容、存在未应用的 YAML 或变量值时，需要确认替换；Undo 可恢复原来的图和变量。
 
-示例通过 `context:` 引用样例 `weather` 数据集。请根据所选 Target 修改 Item 路径或变量。合并示例将同一个样例 Item 读取两次，因此仅有一个样例目录也能使用；修改任一 URI 即可合并不同来源。卡片会提示不可用的算子版本，并在配置仓库提供对应版本前禁用加载。仅使用内置 `item_source` 的示例不依赖仓库算子。
+示例通过 `context:` 引用样例 `weather` 数据集。请根据所选 Target 修改 Item 路径或变量。合并示例将同一个样例 Item 读取两次，因此仅有一个样例目录也能使用；修改任一 URI 即可合并不同来源。卡片会提示不可用的算子版本，并在配置仓库提供对应版本前禁用加载。示例要求配置的仓库提供所需算子包。
 
 `/api/examples` 返回随包提供的 YAML、变量、描述及依赖算子引用。示例文件和索引位于 `xstream-designer/src/main/resources/examples/`；所有示例均校验 Job 定义及变量解析结果。资源中不包含服务凭据或执行节点分配。
 
@@ -281,3 +281,7 @@ designer:
 在新窗口打开 Designer，提供参数 `integration=window`、`parent_origin`（调用方 HTTP/S 来源）、`channel`（32 位小写十六进制字符串）及可选的 `return_label`。Designer 发送 `xstream-designer:ready`，调用方回复 `xstream-designer:load`，包含 `job_yaml` 和可选的 `variables_yaml`。加载后，用户点击返回按钮，发送包含 `job_yaml` 的 `xstream-designer:job`。所有消息都包含通道标识；双方必须校验来源窗口、来源和通道，只向配置的来源发送消息。
 
 集成会话不恢复或覆盖常规浏览器草稿，仅编辑调用方的 Job，不执行任务。禁止 iframe 嵌入的限制保持启用。调用方切换应用后必须使旧的回传通道失效。
+
+## 多个算子仓库
+
+在启动配置中使用 `remote_operator_library_urls` 数组列出一个或多个仓库地址。Designer 合并目录供列表与 Chat 使用，本地推导使用同一列表。同名同版本优先选择配置顺序中最先提供的仓库，缓存不会改变此顺序。保持执行主机配置一致；远程 Target 使用自身仓库配置。仓库不可用或目录不合法时请求报错，不静默忽略。浏览器不能覆盖仓库列表。详见 [FAQ](../docs/faq_zh.md)。

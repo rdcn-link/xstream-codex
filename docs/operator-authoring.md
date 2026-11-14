@@ -244,4 +244,4 @@ Inline definitions are only accepted for local execution. To submit the Job to a
 
 ## Item collection inputs
 
-`items` is a peer representation to bytes, records and array. See [Item reference streams](items-stream.md), [complete Source and Transform examples](../examples/operators/item-sources/README.md), and [FAQ 6](faq.md#6-how-does-a-custom-operator-process-an-items-reference-stream).
+`items` is a peer representation to bytes, records and array. See [Item reference streams](items-stream.md), [complete Source and Transform examples](../examples/operators/item-sources/README.md), and [FAQ 10](faq.md#10-how-does-a-custom-operator-process-an-items-reference-stream).

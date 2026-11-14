@@ -141,7 +141,7 @@ ItemReferences.foreach(stream) { item =>
 }
 ```
 
-Operators iterate references with `ctx.input("source").foreachItem` and open content with `ctx.openItem(item, "bytes") { stream => … }`. Streams close at callback exit; no archive-wide collection is required. Relative CSV paths resolve against the manifest logical parent. See [Item reference streams](items-stream.md) and [FAQ 6](faq.md#6-how-does-a-custom-operator-process-an-items-reference-stream).
+Operators iterate references with `ctx.input("source").foreachItem` and open content with `ctx.openItem(item, "bytes") { stream => … }`. Streams close at callback exit; no archive-wide collection is required. Relative CSV paths resolve against the manifest logical parent. See [Item reference streams](items-stream.md) and [FAQ 10](faq.md#10-how-does-a-custom-operator-process-an-items-reference-stream).
 
 ## Encode a view stream as IPC Stream
 

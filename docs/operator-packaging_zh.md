@@ -88,7 +88,7 @@ ${REPOSITORY_HOME}/target/universal/stage/bin/xstream-operator-repository publis
 
 元数据按仓库 URL 隔离；校验后的 blob 在名称、版本和仓库之间共享。锁保护并发发布/下载，原子移动防止不完整缓存。执行前校验远程和缓存文件；损坏 blob 明确失败，可删除后重下。`operator_max_bytes` 对单个文件生效，不是总量或容器解压大小。缓存暂不自动回收。
 
-本地定义和已安装镜像优先。先尝试完整缓存清单，再按配置顺序请求远程仓库。只有清单 404 才尝试下一仓库；校验和、HTTP 和验证错误使任务失败。缓存清单及 blob 支持离线执行；Docker 中缺少固定 image ID 时才加载镜像。
+本地定义和已安装镜像优先。按配置顺序查找远程仓库，每个仓库有完整缓存清单时优先使用其缓存。只有清单 404 才尝试下一仓库；校验和、HTTP 和验证错误使任务失败。当查找到缓存仓库前无需访问不可用的更前方仓库时，缓存清单及 blob 支持离线执行；Docker 中缺少固定 image ID 时才加载镜像。
 
 Docker 层在本地共享，JVM 构建器把运行环境层与可选完整镜像代码层分开。当前仓库传输完整内容寻址镜像归档；OCI 按层传输及不同运行环境之间的层传输去重尚未实现。
 
@@ -131,3 +131,5 @@ API v2 支持可选 `provenance` 元数据，以及 SHA-256 寻址的源码、�
 算子还必须提供 `icon`；公开 `categories` 由管理员指定，规则和发布示例见[分类与图标](operator-presentation_zh.md)。
 
 `REPOSITORY_HOME` 为独立[算子仓库项目](https://github.com/rdcn-link/xstream-operator-repository)的本地目录。
+
+仓库查找遵循 `remote_operator_library_urls` 的配置顺序，即使后方仓库已有缓存清单也不会优先。仅缺少该算子时才继续查找；连接、验证和完整性错误直接报错。编制与执行主机应保持身份及仓库顺序一致。

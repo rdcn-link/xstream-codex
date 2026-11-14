@@ -88,7 +88,7 @@ Execution node layout:
 
 Metadata stays scoped to the repository URL; verified blobs are shared across names, versions, and repositories. Locks protect concurrent publishers/downloaders and atomic moves prevent partial cache entries. Every remote/cached artifact is checked before execution; a corrupt blob fails explicitly. Remove that blob to download it again. `operator_max_bytes` applies to each artifact, not the sum or extracted container size. Caches currently have no automatic garbage collection.
 
-Local definitions and installed images take precedence. Completed cached manifests are tried before network requests, then configured remote URLs in order. Only a manifest 404 tries the next repository; checksum, HTTP, and validation errors fail the step. Cached manifests and blobs allow offline execution. The runtime image is loaded only when its pinned ID is absent from Docker.
+Local definitions and installed images take precedence. Configured remote URLs are tried in order, using each repository’s cached manifest when available. Only a manifest 404 tries the next repository; checksum, HTTP, and validation errors fail the step. Cached manifests and blobs allow offline execution when lookup reaches the cached repository without requiring an unavailable earlier repository. The runtime image is loaded only when its pinned ID is absent from Docker.
 
 Docker layers are shared locally, and the JVM builder separates the runtime layer from the optional complete-image code layer. Repository transport currently transfers whole content-addressed image archives; OCI registry layer-by-layer delivery and cross-runtime layer transfer deduplication remain future work.
 
@@ -131,3 +131,5 @@ API v2 supports optional `provenance` metadata and SHA-256-addressed source, lic
 Operators must also provide `icon`; administrators assign public `categories`; see [categories and icons](operator-presentation.md) for the contract and publication examples.
 
 `REPOSITORY_HOME` is the path to the independent [operator repository checkout](https://github.com/rdcn-link/xstream-operator-repository).
+
+Repository lookup follows `remote_operator_library_urls` order, including when a later repository already has a cached manifest. Only a missing operator advances lookup; connection, validation and integrity errors fail explicitly. Keep identities and repository ordering consistent across authoring and execution hosts.

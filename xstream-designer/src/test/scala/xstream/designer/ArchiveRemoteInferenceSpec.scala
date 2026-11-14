@@ -35,7 +35,7 @@ class ArchiveRemoteInferenceSpec extends AnyFunSuite {
     }
     val server=FlightServer.builder(allocator,Location.forGrpcTls("localhost",0),producer).useTls(cert.toFile,key.toFile).build().start()
     val origin=s"dacp://localhost:${server.getPort}"
-    val config=Documents.mapping(s"host: 127.0.0.1\nport: 0\nrepository: {url: 'http://127.0.0.1:1'}\nnodes:\n- {url: '$origin', ca: '$cert'}\n")
+    val config=Documents.mapping(s"host: 127.0.0.1\nport: 0\nremote_operator_library_urls: ['http://127.0.0.1:1']\nnodes:\n- {url: '$origin', ca: '$cert'}\n")
     val site=new Designer(config);site.start();val client=HttpClient.newHttpClient()
     def post(path:String,body:com.fasterxml.jackson.databind.JsonNode)=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}"+path)).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(body.toString)).build(),HttpResponse.BodyHandlers.ofString())
     try {

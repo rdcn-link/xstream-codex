@@ -17,7 +17,7 @@ class ScientificDesignerSpec extends AnyFunSuite {
     val fits=new nom.tam.fits.Fits();fits.addHDU(nom.tam.fits.Fits.makeHDU(Array(Array[Short](1,2,3),Array[Short](4,5,6))));fits.write(dir.resolve("sky.fits").toFile);fits.close()
     val config=Documents.mapping(s"""host: 127.0.0.1
       |port: 0
-      |repository: {url: 'http://127.0.0.1:1'}
+      |remote_operator_library_urls: ['http://127.0.0.1:1']
       |operator_cache: '${dir.resolve("cache")}'
       |local_catalog:
       |  datasets:

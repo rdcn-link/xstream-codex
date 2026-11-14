@@ -141,7 +141,7 @@ ItemReferences.foreach(stream) { item =>
 }
 ```
 
-算子使用 `ctx.input("source").foreachItem` 增量遍历引用；需要内容时使用 `ctx.openItem(item, "bytes") { stream => … }`。流在回调结束时关闭，不收集整个归档。CSV 清单中的相对路径以清单的逻辑父目录为基准。完整代码见 [Item 引用流](items-stream_zh.md)及 [FAQ 第 6 条](faq_zh.md#6-自定义算子如何处理-items-引用流)。
+算子使用 `ctx.input("source").foreachItem` 增量遍历引用；需要内容时使用 `ctx.openItem(item, "bytes") { stream => … }`。流在回调结束时关闭，不收集整个归档。CSV 清单中的相对路径以清单的逻辑父目录为基准。完整代码见 [Item 引用流](items-stream_zh.md)及 [FAQ 第 10 条](faq_zh.md#10-自定义算子如何处理-items-引用流)。
 
 ## 将视图流编码为 IPC Stream
 

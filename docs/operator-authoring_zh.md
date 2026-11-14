@@ -244,4 +244,4 @@ stdout 保留给流协议，日志写 stderr。输入须消费到 EOS；成功�
 
 ## Item 集合输入
 
-`items` 与 bytes、records、array 是并列的流表示。参见 [Item 引用流](items-stream_zh.md)、[完整 Source 与 Transform 示例](../examples/operators/item-sources/README_zh.md)和 [FAQ 第 6 条](faq_zh.md#6-自定义算子如何处理-items-引用流)。
+`items` 与 bytes、records、array 是并列的流表示。参见 [Item 引用流](items-stream_zh.md)、[完整 Source 与 Transform 示例](../examples/operators/item-sources/README_zh.md)和 [FAQ 第 10 条](faq_zh.md#10-自定义算子如何处理-items-引用流)。

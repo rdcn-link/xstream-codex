@@ -23,7 +23,7 @@ The distribution bundles `xstream-data-archives` for the Target catalog: ZIP, TA
 ## Design workflow
 
 1. Target defaults to **Local** and can select a configured remote node. The Target catalog follows Target and generates `context:` Item URIs; other catalog roots exclude that target. Catalog branches load on expansion. Target selects the authoring context; DACP provides remote Job submission and Union owns automatic placement.
-2. The configured `repository` loads automatically through `/v1/operators`. Search names and descriptions, choose versions and drag operators onto the canvas. `item_source@1.0` is a built-in data source.
+2. The configured `remote_operator_library_urls` loads automatically through `/v1/operators`. Search names and descriptions, choose versions and drag operators onto the canvas. `item_source@1.0` is a repository-provided data source.
 3. Open the left **Catalogs** tab. Expand a catalog to load its datasets, then expand datasets and folders to browse Items. Click an Item to reveal floating action icons at the lower right of the end of its name: one per available view and one for **Copy path**. Hover or keyboard focus identifies each icon. Choosing a view sets its URI and explicit view on the selected or a new read step. Copying preserves the complete path including dataset name, such as `/science/climate.nc/temperature`. Folders expand or collapse only through their left arrow; clicking a folder name reveals its actions without expanding. Item rows use compact spacing. Union connections use public Union URIs.
 4. Drag cards, click an output to start a pointer-following preview line, then click an input to establish the stream dependency. Right-click or press Esc to cancel. Edit titles and parameters in the inspector. Delete steps, remove connections, undo, redo and arrange automatically.
 5. The canvas provides one movable **Client Sink** for returning a stream to the caller. Connect an operator output port to it; a new connection replaces the previous one. Export writes an explicit `client_sink@1.0` step with that input and no top-level `outputs` field. A Job can instead end in a published Sink operator and return no stream. The Client Sink cannot be deleted or duplicated on the canvas; deleting its connection leaves it unconnected. The browser draft stores its position and optional `designer` metadata restores it. Each producer port has at most one consumer, and output ports show their representation, format and known Schema fields.
@@ -73,7 +73,7 @@ HTTP APIs do not authenticate website visitors and serve this designer. Except c
 | Path | Purpose |
 |---|---|
 | `GET /api/config` | Public service / repository names and chat capability, without credential files |
-| `/api/operators` | Query a live repository catalog using `repository` |
+| `/api/operators` | Query and merge live repository catalogs using `remote_operator_library_urls` |
 | `/api/datasets`, `/api/items` | Browse connected catalogs and Item metadata |
 | `/api/document`, `/api/mapping` | Parse / normalize Job, parameter or variable YAML |
 | `/api/export` | Check graph structure and return Job and variable YAML |
@@ -98,7 +98,7 @@ The properties panel is a docked right sidebar, initially hidden, and opens when
 
 The inspector has **Step**, **Parameters**, and **Outputs** tabs. Parameters are generated from the operator’s required static `parameters` contract: names and types come from the declaration, alongside descriptions, defaults, enums and bounds. Enable optional fields to set them explicitly; omitted fields stay omitted. Nested objects, arrays and whole-value variables (`$VAR_NAME`) use forms. Valid property and parameter edits save automatically and synchronize YAML while preserving types. Consecutive edits are grouped for undo. See [parameter contracts](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-parameters.md).
 
-Startup configuration supplies `local_catalog`, `nodes` and `repository`. The browser Target selector defaults to Local and can select a configured node; arbitrary service addresses and credentials cannot be entered. Both services load independently when opening the page. The compact header shows status and failures; reload the page after service recovery.
+Startup configuration supplies `local_catalog`, `nodes` and `remote_operator_library_urls`. The browser Target selector defaults to Local and can select a configured node; arbitrary service addresses and credentials cannot be entered. Both services load independently when opening the page. The compact header shows status and failures; reload the page after service recovery.
 
 Click a stream connection to highlight it, then press Delete / Backspace while the canvas has focus. Selection highlights only the connection, without a rectangular frame or extra toolbar button. Deletion supports undo and redo. Keyboard deletion never edits a connection while typing in a form field. A port already consumed by another step cannot simultaneously be a Job output; remove the connection first. Imported output bindings also appear as connections to Client Sink.
 
@@ -252,7 +252,7 @@ Use `local` for the Designer server’s local catalog. Loading a Job offers its 
 
 The left sidebar’s **Examples** tab lists ten packaged Jobs: record-stream reading, filtering to CSV, a parameterized workflow, merging two streams, and a NetCDF array view. Each card describes its purpose and step count. **Load example** loads its graph and variable values into the current Target; loading does not execute or submit a Job. Existing canvas content, unapplied YAML or variable values require replacement confirmation. Undo restores the previous graph and variables.
 
-Examples address the sample `weather` dataset through `context:`. Adjust Item paths or variables to match the chosen Target. The merge example reads the same sample Item twice so it works with one sample catalog; change either URI to combine distinct sources. Cards identify unavailable operator versions and disable loading until those versions are available from the configured repository. Built-in `item_source` examples remain available without repository operators.
+Examples address the sample `weather` dataset through `context:`. Adjust Item paths or variables to match the chosen Target. The merge example reads the same sample Item twice so it works with one sample catalog; change either URI to combine distinct sources. Cards identify unavailable operator versions and disable loading until those versions are available from the configured repository. Examples require their operator packages in the configured repositories.
 
 `/api/examples` returns the packaged YAML documents, variables, descriptions and required operator references. Example files and their index reside in `xstream-designer/src/main/resources/examples/`; all are validated as Job definitions with resolved variables. These resources contain no server credentials or execution-node assignments.
 
@@ -277,3 +277,7 @@ Examples are numbered `01`, `02`, … in index order for quick reference. The nu
 Open Designer in a new window with `integration=window`, `parent_origin` (the calling HTTP/S origin), `channel` (32 lowercase hexadecimal characters) and optional `return_label`. Designer sends `xstream-designer:ready`; the caller replies with `xstream-designer:load`, `job_yaml` and optional `variables_yaml`. After loading, the user can click the return button to send `xstream-designer:job` with `job_yaml`. All messages include the channel. Both sides must validate the source window, origin and channel; send messages only to the configured origin.
 
 Integrated sessions do not restore or overwrite the ordinary browser draft. They edit a caller-owned Job and do not execute it. The normal iframe restriction remains enabled. Switching applications in the caller must invalidate earlier handoffs.
+
+## Multiple operator repositories
+
+List one or more base URLs in the startup `remote_operator_library_urls` array. Designer merges catalogs for the palette and Chat; local inference uses the same list. For identical names and versions, the first configured repository providing the operator wins; caches do not change this order. Keep execution-host configuration consistent; remote Targets use their own repositories. Unavailable or invalid catalogs fail the request instead of being silently omitted. Browser requests cannot override repositories. See the [FAQ](../docs/faq.md).

@@ -33,7 +33,7 @@ private[designer] object CatalogConnections {
 }
 
 final class Designer(config:JsonNode) extends AutoCloseable {
-  require(!config.has("target") && !config.has("targets") && !config.has("repositories"),"Configure nodes and one repository")
+  require(!config.has("target") && !config.has("targets") && !config.has("repository") && !config.has("repositories"),"Configure nodes and remote_operator_library_urls")
   private val exampleJobs=ExampleJobs.load(Option(config.get("examples_directory")).map(n=>Path.of(n.asText)))
   private val showcase = Option(config.get("showcase")).map { settings =>
     def text(key:String):String={
@@ -47,9 +47,16 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     Json.obj().put("job_yaml",job).put("variables_yaml",variables)
       .put("label",settings.path("label").asText("Load demo"))
   }
-  private val configuredRepository=config.path("repository")
-  private val repositoryUri=URI.create(configuredRepository.path("url").asText)
-  require(Set("http","https")(repositoryUri.getScheme) && repositoryUri.getHost!=null,"Repository requires HTTP URL")
+  private val repositoryUrls={
+    val urls=config.path("remote_operator_library_urls")
+    require(urls.isArray && urls.size()>0,"Configure at least one remote_operator_library_urls entry")
+    urls.elements.asScala.map { value=>
+      require(value.isTextual,"Repository URL must be a string")
+      val uri=URI.create(value.asText)
+      require(Set("http","https")(uri.getScheme) && uri.getHost!=null && uri.getUserInfo==null && uri.getQuery==null && uri.getFragment==null,"Repository requires an HTTP(S) base URL without credentials, query or fragment")
+      value.asText.stripSuffix("/")
+    }.toVector.distinct
+  }
   private val chat=ChatPlanner.configured(config.path("chat"))
   private val http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()
   private val pool=new ThreadPoolExecutor(8,8,0L,TimeUnit.MILLISECONDS,new ArrayBlockingQueue[Runnable](64),new ThreadPoolExecutor.AbortPolicy())
@@ -62,11 +69,20 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   server.setExecutor(pool)
   private def tls(n:JsonNode):TlsConfig=TlsConfig(ca=Option(n.get("ca")).map(v=>Path.of(v.asText)),tokenFile=Option(n.get("token_file")).map(v=>Path.of(v.asText)))
   private def fetchOperators():JsonNode={
-    val repo=configuredRepository
-    val response=http.send(HttpRequest.newBuilder(URI.create(repo.path("url").asText.stripSuffix("/")+"/v1/operators")).timeout(Duration.ofSeconds(15)).GET().build(),HttpResponse.BodyHandlers.ofInputStream())
-    val in=response.body();val bytes=try in.readNBytes(4*1024*1024+1)finally in.close()
-    require(response.statusCode()==200,"Operator repository is unavailable");require(bytes.length<=4*1024*1024,"Operator list exceeds 4 MiB")
-    val n=Json.mapper.readTree(bytes);require(n.isArray,"Invalid operator catalog");n.elements.asScala.foreach{o=>xstream.operator.OperatorPresentation.validate(o);xstream.operator.ParameterSchema.validate(o.get("parameters"))};n
+    val merged=Json.mapper.createArrayNode()
+    val seen=scala.collection.mutable.HashSet.empty[(String,String)]
+    repositoryUrls.foreach { base=>
+      val response=http.send(HttpRequest.newBuilder(URI.create(base+"/v1/operators")).timeout(Duration.ofSeconds(15)).GET().build(),HttpResponse.BodyHandlers.ofInputStream())
+      val in=response.body();val bytes=try in.readNBytes(4*1024*1024+1)finally in.close()
+      require(response.statusCode()==200,s"Operator repository is unavailable: $base");require(bytes.length<=4*1024*1024,"Operator list exceeds 4 MiB")
+      val n=Json.mapper.readTree(bytes);require(n!=null && n.isArray,"Invalid operator catalog")
+      n.elements.asScala.foreach { o=>
+        xstream.operator.OperatorPresentation.validate(o);xstream.operator.ParameterSchema.validate(o.get("parameters"))
+        require(o.path("name").isTextual && o.path("version").isTextual,"Operator requires name and version")
+        if(seen.add((o.path("name").asText,o.path("version").asText)))merged.add(o)
+      }
+    }
+    merged
   }
   private val inferenceCache=Path.of(config.path("operator_cache").asText(".designer-operator-cache")).toAbsolutePath
   private val inferencePlugins=new PluginEnvironment(Option(config.get("plugin_directory")).map(n=>Path.of(n.asText)))
@@ -75,7 +91,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private val nodeConnections=config.path("nodes").elements.asScala.toVector
   private val connections=nodeConnections.groupBy(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)).values.map(_.head).toVector.sortBy(_.path("url").asText)
   private def connection(value:String):JsonNode=connections.find(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)==CatalogConnections.origin(value)).getOrElse(throw new IllegalArgumentException("Node is not configured"))
-  private val inferenceRuntime=new OperatorInferenceService(inferenceCache.resolve("local"),Seq(configuredRepository.path("url").asText),
+  private val inferenceRuntime=new OperatorInferenceService(inferenceCache.resolve("local"),repositoryUrls,
     inferenceCache,if(config.has("operator_max_bytes"))Json.number(config,"operator_max_bytes",1,8L*1024*1024*1024)else 8L*1024*1024*1024,inferencePlugins,workerSettings)
   private def selectedTarget(n:JsonNode):Option[JsonNode]={
     val value=n.path("target")
@@ -313,14 +329,14 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         }
       })
       try {
-        val(operators,operatorsCached)=chatOperatorCache.get(configuredRepository.path("url").asText){ChatPlanner.operatorContext(fetchOperators())}
+        val(operators,operatorsCached)=chatOperatorCache.get(repositoryUrls.mkString("\n")){ChatPlanner.operatorContext(fetchOperators())}
         request.set[JsonNode]("operators",operators)
         val(catalogContext,dataCached)=catalogs.get(20,TimeUnit.SECONDS)
         request.set[JsonNode]("server_catalogs",catalogContext)
         progress(if(operatorsCached&&dataCached)"Reusing cached data and operator catalogs"else "Data and operator catalogs ready")
       }finally catalogs.cancel(true)
       request.remove("ui_state");request.set[JsonNode]("designer_interface",ChatInterfaceContext.build(publicConfig.path("targets"),exampleJobs,request.path("operators"),n))
-      request.put("repository_url",configuredRepository.path("url").asText)
+      request.set[JsonNode]("repository_urls",Json.mapper.valueToTree(repositoryUrls.asJava))
       request.put("origin",selectedTarget(n).map(_.path("url").asText).getOrElse("context:/"))
       require(!n.has("catalog_items") || (n.path("catalog_items").isArray && n.path("catalog_items").size<=100),"At most 100 catalog items may be supplied")
       progress("Waiting for the model response")
@@ -333,7 +349,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         require(result.path("job_yaml").isTextual && result.path("variables_yaml").isTextual,"Job proposals must include job_yaml and variables_yaml")
         Documents.job(result.path("job_yaml").asText);Documents.variables(result.path("variables_yaml").asText)
         val available=request.path("operators").elements.asScala.map(o=>o.path("name").asText+"@"+o.path("version").asText).toSet
-        Documents.job(result.path("job_yaml").asText,true).path("steps").elements.asScala.foreach(t=>require(available(t.path("operator").asText),"Chat proposed an operator outside the connected repository"))
+        Documents.job(result.path("job_yaml").asText,true).path("steps").elements.asScala.foreach(t=>require(available(t.path("operator").asText),"Chat proposed an operator outside the connected repositories"))
       }
       result
   }
@@ -386,7 +402,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         require(Option(x.getRequestHeaders.getFirst("Content-Type")).exists(_.startsWith("application/json")),"Expected application/json")
         Option(x.getRequestHeaders.getFirst("Origin")).foreach(o=>require(URI.create(o).getAuthority==x.getRequestHeaders.getFirst("Host"),"Cross-origin request denied"))
         val body=try x.getRequestBody.readNBytes(1024*1024+1)finally x.getRequestBody.close();require(body.length<=1024*1024,"Request exceeds 1 MiB")
-        val n=Json.mapper.readTree(body);require(n!=null && n.isObject,"Expected JSON object");require(!n.has("repository"),"Repository is selected by server configuration");selectedTarget(n)
+        val n=Json.mapper.readTree(body);require(n!=null && n.isObject,"Expected JSON object");require(!Seq("repository","repositories","remote_operator_library_urls").exists(n.has),"Repositories are selected by server configuration");selectedTarget(n)
         if(path=="/api/chat_stream")chatStream(x,n)else if(path=="/api/infer_stream")inferStream(x,n)else send(x,200,"application/json",Json.mapper.writeValueAsBytes(api(path,n)))
       }else if(x.getRequestMethod=="GET" && assets.contains(path)){
         val(file,mime)=assets(path);val in=getClass.getResourceAsStream("/web/"+file);require(in!=null,"Asset unavailable");val data=try in.readAllBytes()finally in.close();send(x,200,mime,data)
