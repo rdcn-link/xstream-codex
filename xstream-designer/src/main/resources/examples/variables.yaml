@@ -2,7 +2,7 @@ name: Parameterized weather screening
 steps:
 - id: read
   title: Read observations
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: $INPUT_URI
@@ -19,8 +19,10 @@ steps:
     source: filter
   params:
     header: $INCLUDE_HEADER
-outputs:
-  result: csv
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: csv
 designer:
   version: 1
   target: local

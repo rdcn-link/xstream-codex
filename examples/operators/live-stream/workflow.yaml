@@ -33,5 +33,7 @@ steps:
     source: rename
   params:
     header: true
-outputs:
-  weather_csv: csv
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    weather_csv: csv

@@ -46,3 +46,12 @@ final class ScalaBuildRecipe extends SourceBuildRecipe {
   def verifyArtifact(path:Path,entrypoint:String):Unit=ArtifactEntrypoint.check(path,Seq(entrypoint.replace('.','/')+".class"))
   def command=Seq("/opt/java/bin/java","-cp","/builder/helper.jar:/opt/lib/*","xstream.repository.build.JvmCompiler","scala")
 }
+
+/** Copy and validate the declarative transport program in the isolated builder. */
+final class StreamBuildRecipe extends SourceBuildRecipe {
+  def language="stream"
+  def executor="stream"
+  def artifactFilename="endpoint.json"
+  def command=Seq("/opt/java/bin/java","-cp","/builder/helper.jar","xstream.repository.build.JvmCompiler","copy","endpoint.json")
+  def verifyArtifact(path:Path,entrypoint:String):Unit={xstream.operator.StreamEndpoint.read(path,entrypoint);()}
+}

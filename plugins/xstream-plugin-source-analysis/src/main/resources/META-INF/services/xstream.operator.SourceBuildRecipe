@@ -1,3 +1,4 @@
 xstream.plugins.analysis.PythonBuildRecipe
 xstream.plugins.analysis.JavaBuildRecipe
 xstream.plugins.analysis.ScalaBuildRecipe
+xstream.plugins.analysis.StreamBuildRecipe

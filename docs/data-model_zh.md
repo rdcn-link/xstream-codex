@@ -34,7 +34,7 @@ flowchart LR
 假设 `/srv/weather` 包含以下物理文件：
 
 
-可浏览的容器根项可以具有 `kind: folder` 并明确声明 `views: [bytes]`。读取其 `bytes` 视图返回原始归档或结构化文件，不会解压其内容。例如，`read_item@1.0` 使用 `uri: context:/weather/stations.zip` 和 `view: bytes` 时传递 ZIP 原文件；`context:/weather/stations.zip/metadata/stations.csv` 则读取内部文件。`context:/weather/stations.zip/metadata` 等内部目录可浏览，但不提供可读内容。先选择视图再校验可读类型：folder 只允许读取明确声明的 `bytes` 视图，请求其 `records` 或其他视图会被拒绝。远程 Item URI、结构推导与实际执行遵循同一规则。
+可浏览的 ZIP/TAR 根项为 `kind: folder`，声明 `views: [bytes, items]`。`bytes` 返回原始归档；`items` 列举成员的资源引用，不读取成员内容。内部目录声明 `items`，普通成员保留自己的 View 能力。文件目录与 CSV 清单分别通过 `folder_items_source`、`csv_items_source` 输出引用集合。folder 的 `records` 请求会被拒绝。见 [Item 引用流](items-stream_zh.md)。
 
 ```text
 /srv/weather/
@@ -71,7 +71,7 @@ DataCatalog
 
 这里的科学文件子节点取决于实际文件内容，NetCDF 变量也可能位于 group 中。FITS 暴露 HDU：图像 HDU 提供数组，表格 HDU 提供记录。JPEG 当前提供 bytes，可在算子中解码图像。Scala 消费示例见[视图示例](data-view-examples_zh.md)。
 
-浏览与读取是两个独立能力。普通文件夹具有子节点，但没有内容流；归档文件以类似文件夹的 Item 展示，既有子节点，**又**有读取原始归档文件的 `bytes` View。应查看其声明的 Views，不能只凭 `kind` 判断能否读取。容器的总大小和记录数可以未知，即使仍能读取原始 bytes。
+浏览与读取相互独立。`items`、`bytes`、`records`、`array`、`sequence` 是并列的流表示；`items` 传资源引用，其余表示传递打开 View 后的内容。集合由算子内部遍历；Job 不提供 map/reduce 控制结构。科学文件 group 仅声明插件实际支持的视图，不凭 kind 推测读取能力。
 
 ## GZIP 如何映射成 Item
 
@@ -131,7 +131,7 @@ datasets:
       root: /srv/weather
 ```
 
-在 Designer 配置中，将相同的 `datasets` 映射放到 `local_catalog` 下。目录根节点显示在 Catalogs 标签页；展开 Dataset，再展开文件夹或归档 Item，便会加载子节点。选择可读 View 可以创建 `read_item` 步骤。本地 Item 使用 `context:` URI；展开目录树不会执行 Job。
+在 Designer 配置中，将相同的 `datasets` 映射放到 `local_catalog` 下。目录根节点显示在 Catalogs 标签页；展开 Dataset，再展开文件夹或归档 Item，便会加载子节点。选择可读 View 可以创建 `item_source` 步骤。本地 Item 使用 `context:` URI；展开目录树不会执行 Job。
 
 归档浏览除目录和格式插件外，还需要 `xstream-data-archives` 及其运行依赖。Designer 发行包包含归档支持；Runner 发行包当前未内置这个模块，使用上述归档示例前，需要将归档插件及其依赖放入运行 classpath，或配置的 `plugin_directory`。插件通过 `META-INF/services/xstream.data.ContainerReader` 注册；归档插件提供 `zip`、`gzip`、`tar`、`tar-gzip`。CSV 子 Item 还需要 CSV 格式读取器。见[插件发现与部署](plugins_zh.md)。
 
@@ -142,20 +142,22 @@ name: Read compressed station observations
 steps:
   - id: read
     title: Read observations from GZIP
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/weather/observations.csv.gz/observations.csv
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 读取归档中的报告时，将 URI 替换为 `context:/weather/reports.tar.gz/daily/east.csv`。读取原始归档文件时，使用 `context:/weather/reports.tar.gz` 和 `view: bytes`。`context:` 由执行环境绑定的 DataCatalog 解析，并非操作系统路径；同一命名空间也可通过可选的已配置远程数据服务浏览和读取。
 
 ## 算子端口之间传递什么
 
-Item 是可寻址的数据来源，View 提供其表示形式。步骤输入端口接收的是上游步骤输出的流，不是 Dataset 对象或者需要重新打开的文件名。`read_item` 将目录接入处理图；后续步骤引用上游输出，例如 `inputs: {source: read}`。
+Item 是可寻址的数据来源，View 提供其表示形式。步骤输入端口接收的是上游步骤输出的流，不是 Dataset 对象或者需要重新打开的文件名。`item_source` 将目录接入处理图；后续步骤引用上游输出，例如 `inputs: {source: read}`。
 
 | View | 有界 Arrow 批次的内容 |
 | --- | --- |

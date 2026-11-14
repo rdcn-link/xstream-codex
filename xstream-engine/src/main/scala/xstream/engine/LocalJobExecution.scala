@@ -15,7 +15,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
   def run(plan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,
     replay:Option[String],emit:OperatorFrame=>Unit,root:StreamCancel):Unit={
     val execution=Json.obj();val units=execution.putArray("execution_units")
-    plan.steps.foreach { t=>val unit=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ReadItem)"host_stream_source"else "isolated_step");unit.putArray("steps").add(t.id) }
+    plan.steps.foreach { t=>val unit=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ItemSource)"host_stream_source"else "isolated_step");unit.putArray("steps").add(t.id) }
     record.update("running",if(preparedUnits.groups.nonEmpty)preparedUnits.description else execution)
     val store=config.materializationStore.map(config.openMaterialization)
     require(policy.materialized.isEmpty || store.nonEmpty,"materialization_store is not configured")
@@ -25,7 +25,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
     def signature(t:Task):JsonNode={
       val n=Json.obj().put("id",t.id).put("operator",t.operator)
       n.set[JsonNode]("params",Data.mapper.valueToTree(t.params))
-      t.source.foreach(x=>n.putObject("source").put("runtime",x.runtime).put("source",x.source).put("entrypoint",x.entrypoint))
+      t.inlineOperator.foreach(x=>n.set[com.fasterxml.jackson.databind.JsonNode]("inline_operator",x.definition))
       val ins=n.putObject("inputs");t.inputs.toVector.sortBy(_._1).foreach{case(p,b)=>val v=ins.putObject(p).put("port",b.port).put("view",b.view);b.uri.foreach(v.put("uri",_));b.task.foreach(v.put("task",_))};n
     }
     val reusable=scala.collection.mutable.Map.empty[String,String]
@@ -73,7 +73,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
         val edges=plan.steps.filter(t=>needed(t.id) && !attemptReuse.contains(t.id)).flatMap(t=>t.inputs.toVector.flatMap{case(p,b)=>b.task.map(up=>(up,b.port,t.id,p))})
         require(edges.map(e=>e._1->e._2).distinct.size==edges.size,"fan-out requires an explicit duplicating operator")
         require(plan.outputs.values.toSet.size==plan.outputs.size && !plan.outputs.values.exists(p=>edges.exists(e=>(e._1,e._2)==p)),"output is consumed more than once")
-        require(plan.steps.count(t=>needed(t.id) && t.operator!=Jobs.ReadItem)<=config.maxConcurrentTasks,"pipeline needs more local task slots; increase max_concurrent_tasks")
+        require(plan.steps.count(t=>needed(t.id) && t.operator!=Jobs.ItemSource)<=config.maxConcurrentTasks,"pipeline needs more local task slots; increase max_concurrent_tasks")
         val queues=edges.map(e=>(e._3,e._4)->new FrameQueue(token)).toMap
         val terminal=new FrameQueue(token)
         val completed=java.util.concurrent.ConcurrentHashMap.newKeySet[String]()
@@ -128,7 +128,7 @@ final class LocalJobExecution(config:EngineEnvironment,executor:TaskExecutor,
                   }finally a.close()
                 case None=>
                   val inputs=scala.collection.mutable.Map.empty[String,FrameSource]
-                  val acquired=t.operator!=Jobs.ReadItem
+                  val acquired=t.operator!=Jobs.ItemSource
                   if(acquired)require(config.taskSlots.tryAcquire(),"node task capacity reached")
                   try {
                     t.inputs.foreach{case(p,b)=>

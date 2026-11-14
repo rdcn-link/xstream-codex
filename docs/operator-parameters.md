@@ -9,6 +9,8 @@ Input streams are declared in `inputs`, parameters in `parameters`, and output s
 ```yaml
 name: weather_filter
 version: "1.0"
+role: transform
+type: sdk
 image: example/python:1
 executor: python
 entrypoint: weather_filter

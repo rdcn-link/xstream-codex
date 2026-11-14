@@ -93,7 +93,7 @@ Speedup is the Airflow-file median / the corresponding XStream median; greater t
 | join | 250,000 | 0.95× | 1.12× |
 | aggregate | 250,000 | 1.39× | 1.23× |
 
-Operator process counts come from actual execution-unit records, excluding framework processes and host read_item sources. Fusion respects language and locked dependency environments.
+Operator process counts come from actual execution-unit records, excluding framework processes and host item_source sources. Fusion respects language and locked dependency environments.
 
 | Workload | Steps sharing an execution unit | Runtime |
 |---|---|---|

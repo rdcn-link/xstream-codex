@@ -6,11 +6,11 @@ import java.util.Locale
 import java.util.concurrent.CancellationException
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import scala.jdk.CollectionConverters._
-import xstream.operator.{Operator,ByteStreamOperator,OperatorContext}
+import xstream.operator.{TransformOperator,ByteStreamOperator,OperatorContext}
 import xstream.execution.{StreamDescriptor,InferenceResult,OutputSample,PreviewLimits}
 
 /** Common stream and resource contracts for independently documented Galaxy adapters. */
-abstract class ExtendedOperator(val operation:String) extends Operator {
+abstract class ExtendedOperator(val operation:String) extends TransformOperator {
  protected def active():Unit=if(Thread.currentThread.isInterrupted)throw new CancellationException("operator cancelled")
  protected def spec:JsonNode=ExtendedContract.specs.path(operation)
  protected def validate(p:JsonNode):Unit={

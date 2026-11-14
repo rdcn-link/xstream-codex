@@ -17,7 +17,7 @@ class DesignerInferenceSpec extends AnyFunSuite {
         seen+=uri;assert(view=="records" && scan.columns.contains(Seq("station")))
         StreamDescriptor(Set("records"),Set("arrow"),Some(scan.bind(schema).outputSchema),"known")
       }),querySample=Some((_,_,_,limits,_)=>Some(OutputSample("records","json",Vector(Json.obj().put("station","A"))).bounded(limits))),origin=Some("dacp://union:19860"))
-    val yaml="name: Query\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: context:/ds-example/observations, sql: 'SELECT station FROM source LIMIT 1'}\noutputs: {result: read}\n"
+    val yaml="name: Query\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: context:/ds-example/observations, sql: 'SELECT station FROM source LIMIT 1'}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
     val cancel=new StreamCancel()
     try {
       val result=inference.infer(Documents.job(yaml),cancel,Some(PreviewLimits(1,1024)))
@@ -37,14 +37,14 @@ class DesignerInferenceSpec extends AnyFunSuite {
       reads+=1;assert(view=="records")
       Some(OutputSample("records","json",Vector.fill(8)(Json.obj().put("temperature",20.5))).bounded(limits))
     })
-    val source="name: Preview\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'dacp://union.example/ds-weather/benchmark'}\noutputs: {result: read}\n"
+    val source="name: Preview\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'dacp://union.example/ds-weather/benchmark'}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
     val cancel=new StreamCancel()
     try {
       val plain=inference.infer(Documents.job(source),cancel)
       assert(reads==0 && plain.path("steps").path("read").path("outputs").path("result").has("schema"))
       val preview=inference.infer(Documents.job(source),cancel,Some(PreviewLimits(2,256)))
       assert(reads==1 && preview.path("outputs").path("result").path("sample").path("rows").size==2)
-      val broken=source.replace("outputs: {result: read}","- id: broken\n  operator: join@1\n  inputs: {source: read}\noutputs: {result: broken}")
+      val broken=source.replace("- id: client_sink","- id: broken\n  operator: join@1\n  inputs: {source: read}\n- id: client_sink").replace("inputs: {result: read}","inputs: {result: broken}")
       val partial=inference.infer(Documents.job(broken),cancel,Some(PreviewLimits(2,256)))
       assert(partial.path("steps").path("read").path("outputs").path("result").has("schema"))
       assert(partial.path("steps").path("broken").path("diagnostics").get(0).path("message").asText.contains("missing: left, right"))
@@ -60,14 +60,16 @@ class DesignerInferenceSpec extends AnyFunSuite {
     val yaml="""name: Local preview
       |steps:
       |- id: read
-      |  operator: read_item@1.0
+      |  operator: item_source@1.0
       |  inputs: {}
       |  params: {uri: 'dacp://union.example/ds-weather/observations', view: bytes}
       |- id: convert
       |  operator: convert@1
       |  inputs: {source: read:result}
       |  params: {format: $FORMAT}
-      |outputs: {result: convert}
+      |- id: client_sink
+      |  operator: client_sink@1.0
+      |  inputs: {result: convert}
       |""".stripMargin
     val cancel=new StreamCancel()
     try {
@@ -82,7 +84,7 @@ class DesignerInferenceSpec extends AnyFunSuite {
   test("source-free generators do not contact any node and cancellation stops local inference") {
     var calls=0
     val inference=new DesignerInference((_,request,_)=>{calls+=1;assert(request.inputs.isEmpty);InferenceResult(Map.empty)},(_,_,_)=>throw new AssertionError("no metadata request expected"))
-    val job=Documents.job("name: Generator\nsteps:\n- id: generator\n  operator: generate@1\n  inputs: {}\noutputs: {}\n")
+    val job=Documents.job("name: Generator\nsteps:\n- id: generator\n  operator: generate@1\n  inputs: {}\n")
     val cancel=new StreamCancel()
     inference.infer(job,cancel);assert(calls==1);cancel.close()
     intercept[java.util.concurrent.CancellationException](inference.infer(job,cancel));assert(calls==1)
@@ -129,14 +131,16 @@ class DesignerInferenceSpec extends AnyFunSuite {
     val text="""name: Variables
       |steps:
       |- id: read
-      |  operator: read_item@1.0
+      |  operator: item_source@1.0
       |  inputs: {}
       |  params: {uri: 'dacp://example/weather/data'}
       |- id: filter
       |  operator: filter@1
       |  inputs: {source: read}
       |  params: {threshold: $THRESHOLD}
-      |outputs: {result: filter}
+      |- id: client_sink
+      |  operator: client_sink@1.0
+      |  inputs: {result: filter}
       |""".stripMargin
     val cancel=new StreamCancel()
     def run(threshold:Int,unused:Int):Unit={calls.clear();inference.infer(Documents.job(WorkflowVariables.resolve(text,Json.obj().put("THRESHOLD",threshold).put("UNUSED",unused))),cancel,editSession=Some("c"*32))}

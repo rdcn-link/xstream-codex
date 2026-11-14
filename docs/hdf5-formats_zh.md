@@ -34,7 +34,7 @@ datasets:
 
 扩展名 `.h5`、`.hdf5`、`.hdf` 和偏移零处的 HDF5 签名可以选择此处理器；`.hdf` 不表示支持 HDF4。含 HDF5 user block 的文件可显式指定 `format: hdf5`。`.nc`/`.nc4` 仍由独立 `netcdf` 插件负责，普通 HDF5 不会自动套用 NetCDF 约定模型。
 
-通过普通 `read_item@1.0` 参数读取真实数据集路径：
+通过普通 `item_source@1.0` 参数读取真实数据集路径：
 
 ```yaml
 uri: context:/science/experiment.h5/observations/temperature

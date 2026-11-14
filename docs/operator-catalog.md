@@ -8,7 +8,7 @@ The collaboration-example deployment provides these six operators at recommended
 curl http://localhost:8820/v1/operators
 ```
 
-This endpoint and the repository homepage show the versions actually published. `read_item@1.0` is a built-in XStream data-reading step and requires no repository publication. Java, Python, script, native-command, common-operator collections and other PiFlow adaptations in the source tree are buildable examples, not necessarily published operators.
+This endpoint and the repository homepage show the versions actually published. `item_source@1.0` and `client_sink@1.0` are published repository stream endpoint operators. Java, Python, script, native-command, common-operator collections and other PiFlow adaptations in the source tree are buildable examples, not necessarily published operators.
 
 ## Galaxy streaming tools
 
@@ -79,7 +79,7 @@ Use this Job to combine parsing, filtering and CSV output. The node example URI 
 name: High-temperature observations
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: $INPUT_URI
@@ -98,8 +98,10 @@ steps:
   operator: piflow_csv_save@2.0
   inputs:
     source: filter
-outputs:
-  result: export
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: export
 ```
 
 Save as `weather.yaml`, and create `variables.yaml`:

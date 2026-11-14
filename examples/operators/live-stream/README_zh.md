@@ -6,14 +6,12 @@
 
 ## 端口声明
 
-算子清单和作业中的输入都为空；只有 `result` 输出端口：
+算子清单声明无输入。结构推导方法报告 `result` 为 NDJSON 格式的字节流；需要向调用方返回时，Job 将该端口连接到 `client_sink@1.0`：
 
 ```yaml
+role: source
+type: sdk
 inputs: {}
-outputs:
-  result:
-    representations: [bytes]
-    formats: [ndjson]
 ```
 
 ## Shell 观察

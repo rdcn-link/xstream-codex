@@ -129,6 +129,20 @@ ViewExamples.inspect(access, "/scientific/climate.nc/temperature", ScientificVie
 ```
 Bytes have a `data: binary` column; records have business columns; arrays use `origin/shape/stride/values`; sequences use `id/offset/symbols/last/description`. An array stream row represents a multidimensional block, not one scalar observation. See [Arrow view-stream contracts](arrow-streams.md) for fields and descriptor metadata.
 
+## Read an Item reference collection
+
+The `items` View of a folder or archive returns resource descriptions. Members retain their own Views and their content is not opened automatically:
+
+```scala
+val stream = access.requireView("/geotrans-input.zip", ItemReferences.View)
+  .open(ItemsSelection(recursive = true), context)
+ItemReferences.foreach(stream) { item =>
+  println(s"${item.uri}: ${item.views}")
+}
+```
+
+Operators iterate references with `ctx.input("source").foreachItem` and open content with `ctx.openItem(item, "bytes") { stream => … }`. Streams close at callback exit; no archive-wide collection is required. Relative CSV paths resolve against the manifest logical parent. See [Item reference streams](items-stream.md) and [FAQ 6](faq.md#6-how-does-a-custom-operator-process-an-items-reference-stream).
+
 ## Encode a view stream as IPC Stream
 
 The output can be a socket or response body; there is no need to collect the complete result or save a file first:

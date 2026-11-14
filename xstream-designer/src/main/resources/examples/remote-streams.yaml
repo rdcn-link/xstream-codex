@@ -2,14 +2,14 @@ name: Combine local and remote observations
 steps:
 - id: left
   title: Read observations
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: $LOCAL_ITEM
     view: records
 - id: right
   title: Read observations
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: $REMOTE_ITEM
@@ -26,8 +26,10 @@ steps:
     source: merge
   params:
     header: true
-outputs:
-  result: csv
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: csv
 designer:
   version: 1
   target: local

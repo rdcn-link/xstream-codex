@@ -34,7 +34,7 @@ A directory Dataset maps files and folders under its configured root into logica
 Suppose `/srv/weather` contains these physical files:
 
 
-A browsable container root can have `kind: folder` and explicitly advertise `views: [bytes]`. Reading its `bytes` View returns the original archive or structured file, without extracting its contents. For example, `read_item@1.0` with `uri: context:/weather/stations.zip` and `view: bytes` streams the ZIP file; `context:/weather/stations.zip/metadata/stations.csv` reads an internal file. Internal folders such as `context:/weather/stations.zip/metadata` are navigable but do not expose readable content. View selection applies before readable-kind validation: a folder is readable only through its explicitly advertised `bytes` View; requesting `records` or another View on a folder is rejected. The same rule applies to remote Item URIs, inference and execution.
+A browsable ZIP/TAR root has `kind: folder` and `views: [bytes, items]`. `bytes` returns the original archive; `items` enumerates member references without reading their content. Internal folders advertise `items`; ordinary members retain their own Views. `folder_items_source` and `csv_items_source` produce reference collections from directories and CSV manifests respectively. Folder `records` requests are rejected. See [Item reference streams](items-stream.md).
 
 ```text
 /srv/weather/
@@ -71,7 +71,7 @@ DataCatalog
 
 The scientific children shown here depend on the actual file contents. A NetCDF variable may be inside groups. FITS exposes HDUs: image HDUs provide arrays and table HDUs provide records. JPEG currently exposes bytes; decode the image inside an operator. See [View examples](data-view-examples.md) for Scala consumers.
 
-Browsing and reading are separate capabilities. A plain folder has children but no content stream. An archive is advertised as a folder-like Item with children **and** a `bytes` View for the original archive. Always inspect its advertised Views rather than deciding readability from `kind` alone. A container's total size and record count can be unknown even when its original bytes are readable.
+Browsing and reading are independent. `items`, `bytes`, `records`, `array` and `sequence` are peer stream representations; `items` carries resource references while the others carry opened content. Operators iterate collections internally; Jobs have no map/reduce control structures. Scientific groups advertise only plugin-implemented Views; kind alone does not imply readability.
 
 ## How GZIP becomes an Item
 
@@ -131,7 +131,7 @@ datasets:
       root: /srv/weather
 ```
 
-For Designer configuration, place the same `datasets` mapping under `local_catalog`. Catalog roots appear in its Catalogs tab; expand a Dataset and then its folders or archive Items to load children. Selecting a readable View creates a `read_item` step. Local Items use `context:` URIs. Expanding the tree does not run a Job.
+For Designer configuration, place the same `datasets` mapping under `local_catalog`. Catalog roots appear in its Catalogs tab; expand a Dataset and then its folders or archive Items to load children. Selecting a readable View creates a `item_source` step. Local Items use `context:` URIs. Expanding the tree does not run a Job.
 
 Archive browsing requires `xstream-data-archives` and its runtime dependencies, in addition to the directory and format plugins. The Designer distribution bundles archive support. The Runner distribution does not currently bundle that module: put the archive plugin and its dependencies on the runtime classpath or in the configured `plugin_directory` before using these archive examples. Plugins register through `META-INF/services/xstream.data.ContainerReader`; the archive plugin supplies `zip`, `gzip`, `tar` and `tar-gzip`. A CSV child additionally needs the CSV format reader. See [plugin discovery and deployment](plugins.md).
 
@@ -142,20 +142,22 @@ name: Read compressed station observations
 steps:
   - id: read
     title: Read observations from GZIP
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/weather/observations.csv.gz/observations.csv
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 To read an archived report, replace the URI with `context:/weather/reports.tar.gz/daily/east.csv`. To read the original archive itself, use `context:/weather/reports.tar.gz` and `view: bytes`. `context:` is resolved by the execution environment's DataCatalog; it is not an operating-system path. The same namespace can be browsed and read through an optional configured remote data service.
 
 ## What crosses an operator port
 
-An Item is an addressable source; a View supplies its representation. A step input receives the stream produced by an upstream step, not a Dataset object or a filename to reopen. `read_item` connects the catalog to the processing graph. Subsequent steps reference upstream outputs, for example `inputs: {source: read}`.
+An Item is an addressable source; a View supplies its representation. A step input receives the stream produced by an upstream step, not a Dataset object or a filename to reopen. `item_source` connects the catalog to the processing graph. Subsequent steps reference upstream outputs, for example `inputs: {source: read}`.
 
 | View | Content of a bounded Arrow batch |
 | --- | --- |

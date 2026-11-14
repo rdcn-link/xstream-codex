@@ -1,7 +1,7 @@
 name: Generate a configured line repeatedly after draining the input stream.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/recurring_lines.txt
@@ -13,5 +13,7 @@ steps:
   params:
     text: abc
     times: 3
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

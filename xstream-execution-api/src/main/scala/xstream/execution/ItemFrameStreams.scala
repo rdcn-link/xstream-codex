@@ -7,7 +7,7 @@ object ItemFrameStreams {
     def start(schema:org.apache.arrow.vector.types.pojo.Schema,d:org.apache.arrow.vector.dictionary.DictionaryProvider):Unit={
       val structure=ArrowStreamMetadata.descriptor(schema).deepCopy[com.fasterxml.jackson.databind.node.ObjectNode]()
       val view=ArrowStreamMetadata.view(schema);structure.put("view",view).put("version",1)
-      emit(StreamProtocol.start("",view,format,Some(schema),Some(structure),d))
+      emit(StreamProtocol.start("",view,if(format.nonEmpty)format else view,Some(schema),Some(structure),d))
     }
     def accept(b:ArrowBatch):Unit=emit(StreamProtocol.frame("data",data=StreamProtocol.batch(b.root,b.dictionaries)))
   }
@@ -17,7 +17,7 @@ object ItemFrameStreams {
     new FrameSource {def next():Option[OperatorFrame]=queue.next();def close():Unit={worker.interrupt();worker.join(5000)}}
   }
 
-  def consume(access:DatasetAccess,path:String,view:String,format:String,scan:Option[Scan],context:StreamContext,codec:Option[DataViewSupport]=None,selection:Option[com.fasterxml.jackson.databind.JsonNode]=None)(emit:OperatorFrame=>Unit):Unit={
+  def consume(access:DatasetAccess,path:String,view:String,format:String,scan:Option[Scan],context:StreamContext,codec:Option[DataViewSupport]=None,selection:Option[com.fasterxml.jackson.databind.JsonNode]=None,origin:Option[String]=None)(emit:OperatorFrame=>Unit):Unit={
     if(view=="records") {
       val stream=access.requireView(path,DataViews.Records).open(scan.getOrElse(Scan()),context)
       try ArrowBlocks.consume(stream,new DataConsumer[RecordBatch] {
@@ -27,7 +27,7 @@ object ItemFrameStreams {
     } else if(view!="bytes") {
       require(scan.isEmpty,"scientific views cannot use SQL")
       val c=codec.getOrElse(throw new IllegalArgumentException("view codec unavailable: "+view))
-      c.send(access,path,selection.getOrElse(Data.mapper.createObjectNode()),context,encoded(format,emit))
+      c.send(access,path,selection.getOrElse(Data.mapper.createObjectNode()),context,origin.fold(encoded(format,emit))(u=>ItemReferences.qualify(encoded(format,emit),u)))
     } else {
       require(view=="bytes" && scan.isEmpty,"unsupported input view or selection")
       val stream=access.requireView(path,DataViews.Bytes).open(AllBytes,context)

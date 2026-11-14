@@ -34,6 +34,8 @@ weather-filter/
 ```yaml
 name: weather_filter
 version: '1.0'
+role: transform
+type: sdk
 description: Filter observation records by quality
 language: python
 entrypoint: weather_filter
@@ -61,7 +63,7 @@ documentation:
     name: Filter observations
     steps:
       - id: read
-        operator: read_item@1.0
+        operator: item_source@1.0
         inputs: {}
         params:
           uri: context:/weather/observations
@@ -71,8 +73,9 @@ documentation:
         inputs:
           source: read
         params: {}
-    outputs:
-      result: filter
+      - id: client_sink
+        operator: client_sink@1.0
+        inputs: {result: filter}
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
@@ -94,7 +97,7 @@ xstream-operator submit /path/weather-filter/submission.yaml \
 
 ## Required usage documentation
 
-Every new submission must include `documentation.inputs`, `documentation.outputs`, `documentation.parameters` and `documentation.example_job`. Describe every declared input and at least one output by name. For each declared parameter, include `help` and a schema-valid `example`; supply `description` here or in the parameter schema. Unknown parameter/port names, missing descriptions and invalid example values are rejected. `example_job` is a complete YAML Job with nonempty `steps` and `outputs`, uses the exact submitted operator version, binds all its inputs and supplies valid required parameters. Use illustrative `context:` Item paths and explain what to replace; examples do not create source datasets. YAML is parsed safely and never executed during validation.
+Every new submission must include `documentation.inputs`, `documentation.outputs`, `documentation.parameters` and `documentation.example_job`. Describe every declared input and every output port by name; Sink operators use `documentation.outputs: {}`. For each declared parameter, include `help` and a schema-valid `example`; supply `description` here or in the parameter schema. Unknown parameter/port names, missing descriptions and invalid example values are rejected. `example_job` is a complete YAML Job with nonempty `steps`, uses the exact submitted operator version, binds all its inputs and supplies valid required parameters. Non-Sink examples connect a `client_sink@1.0`; Sink examples terminate at the Sink step. Job YAML has no top-level `outputs`. Use illustrative `context:` Item paths and explain what to replace; examples do not create source datasets. YAML is parsed safely and never executed during validation.
 
 ```yaml
 documentation:

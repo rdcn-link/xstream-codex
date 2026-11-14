@@ -2,7 +2,7 @@
   "status": "passed",
   "job": "job-fastq.yaml",
   "operators": [
-    "read_item@1.0",
+    "item_source@1.0",
     "galaxy_fastq_to_fasta@1.0",
     "galaxy_fasta_length@1.0"
   ],

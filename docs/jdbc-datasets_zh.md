@@ -79,13 +79,15 @@ SQL 数据项在正常列举和打开时，`recordCount` 保持未知。显式�
 name: Read database orders
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/sales/reports/orders
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 示例路径 `/reports/orders` 来自上面的显式映射。参数、变量与执行方式见 [Job 指南](jobs_zh.md)及[快速入门](quickstart_zh.md)。

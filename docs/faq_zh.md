@@ -47,7 +47,7 @@ Designer 网页本身无需用户登录，本地 Target 的推导由 Designer �
 
 ## 3. 如何在 XStream Job 中读取本地文件？`context:` 指向哪里？
 
-先通过引擎的 DataCatalog 发布目录，再使用 `read_item@1.0` 读取其中的 Item。例如，将以下引擎配置保存为 `engine.yaml`：
+先通过引擎的 DataCatalog 发布目录，再使用 `item_source@1.0` 读取其中的 Item。例如，将以下引擎配置保存为 `engine.yaml`：
 
 ```yaml
 datasets:
@@ -63,13 +63,15 @@ datasets:
 name: Read local CSV
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/local/input.csv
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 使用已安装的启动命令执行：
@@ -82,7 +84,7 @@ xstream-runner engine.yaml read-local.yaml
 
 同一份 Job 在远程服务器执行时，`context:` 指向该服务器的数据目录，而非提交者电脑上的文件。在 Designer 中，Local 指 Designer 服务器的数据目录，而非浏览器访客的文件系统。Designer 的本地目录配置位于 `local_catalog.datasets` 下，独立 runner 则使用上述顶层 `datasets` 配置。
 
-如需读取原始文件字节，将 `view` 设置为 `bytes`。`records` 视图需要支持记录读取的格式插件，例如 CSV。`read_item` 接收数据目录中的 Item 地址，不直接接收 `/data/input.csv` 或 `file:///data/input.csv` 等任意文件系统路径。发布目录使其中的文件可以通过数据目录访问，不会自动将该主机目录挂载到算子容器内；算子通过输入端口接收相连的数据流。
+如需读取原始文件字节，将 `view` 设置为 `bytes`。`records` 视图需要支持记录读取的格式插件，例如 CSV。`item_source` 接收数据目录中的 Item 地址，不直接接收 `/data/input.csv` 或 `file:///data/input.csv` 等任意文件系统路径。发布目录使其中的文件可以通过数据目录访问，不会自动将该主机目录挂载到算子容器内；算子通过输入端口接收相连的数据流。
 
 参见[快速入门](quickstart_zh.md)、[数据模型](data-model_zh.md)和[本地执行指南](xstream_zh.md)。
 
@@ -142,8 +144,25 @@ DataCatalog 发现各 Dataset，每个 Dataset 提供一棵逻辑 Item 树。例
 
 **Item 表示资源，View 表示读取方式。** CSV Item 可以提供原始文件字节的 `bytes` 视图，以及解析后表格记录的 `records` 视图；科学数据 Item 可以提供保留多维结构的 `array` 视图。读取受支持的 View 后，得到供下游算子处理的 Arrow 数据流。应检查资源声明的能力，不能假定所有 Item 都支持所有 View。
 
-层级结构与读取能力相互独立：folder Item 可以通过 `list()` 浏览，但普通目录没有可读取的 View。ZIP 根项可以合法地声明 `kind: folder`、`views: [bytes]`，其 bytes 视图返回原始 ZIP 文件，子项则表示内部资源。没有 bytes 视图的内部目录不可读取，folder 请求 records 也会被拒绝。
+层级结构与读取能力相互独立：folder Item 可以通过 `list()` 浏览。ZIP 根项声明 `kind: folder`、`views: [bytes, items]`：`bytes` 返回原始 ZIP，`items` 输出其中成员的引用，不读取成员内容。归档内部目录支持 `items`，普通成员则支持各自声明的视图。folder 请求 `records` 会被拒绝。
 
 `context:` 指向当前执行环境绑定的 DataCatalog，不是任意本地磁盘路径；远程 DACP URI 则通过连接器访问远程数据目录。这套设计将文件、压缩包成员、科学数据变量和数据库资源统一为逻辑 Item、明确的 View 以及数据流，使 Job 不必为每种存储方式分别实现读取逻辑。
 
 参见[数据模型](data-model_zh.md)、[文件格式与容器](file-formats_zh.md)、[DataView 示例](data-view-examples_zh.md)，以及本页第 3 条本地文件访问问答。
+
+## 6. 自定义算子如何处理 `items` 引用流？
+
+在输入端口声明 `representations: [items]`。下例的业务代码只遍历引用与元数据，不读取成员内容：
+
+```scala
+def process(ctx: OperatorContext): Unit = {
+  val output = ctx.bytesOutput("result", "text")
+  ctx.input("source").foreachItem { item =>
+    output.write(s"${item.uri}\t${item.kind}\n".getBytes("UTF-8"))
+  }
+}
+```
+
+需要内容时，在回调内部通过 `ctx.openItem(item, "bytes") { stream => … }` 读取指定 View。返回的是可增量消费的 Arrow 流，框架负责关闭、授权与取消。不要把整个集合收集到 Map/Set，除非显式设置数量和内存上限。多个文件的配对规则由算子定义，不由 Job 隐式执行。
+
+完整可编译的 Source 与 Transform 见 [Item 算子示例](../examples/operators/item-sources/README_zh.md)，数据契约见 [Item 引用流](items-stream_zh.md)。

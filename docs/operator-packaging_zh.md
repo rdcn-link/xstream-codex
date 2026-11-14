@@ -20,6 +20,8 @@ JVM 环境提供 `/opt/java/bin/java` 和 `/opt/lib/*` 中的依赖；Python 环
 ```yaml
 name: summary
 version: "1"
+role: transform
+type: sdk
 image: example/jvm-arrow:1
 executor: jvm
 entrypoint: example.Summary

@@ -4,9 +4,9 @@ import xstream.util.Json
 class ChatInterfaceContextSpec extends AnyFunSuite {
  test("UI context contains real controls, public Targets, numbered examples and filtered current state"){
   val targets=Json.mapper.createArrayNode();targets.addObject().put("value","local").put("label","Local").put("token","PRIVATE")
-  val examples=Json.mapper.createArrayNode();val example=examples.addObject().put("id","sample").put("title","Sample analysis").put("job_yaml","name: Example\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/data/item'}\noutputs: {result: read}\n");example.putArray("requires").add("filter@2.0")
+  val examples=Json.mapper.createArrayNode();val example=examples.addObject().put("id","sample").put("title","Sample analysis").put("job_yaml","name: Example\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/data/item'}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n");example.putArray("requires").add("filter@2.0")
   val operators=Json.mapper.createArrayNode()
-  val request=Json.obj().put("target","local").put("job_yaml","name: Draft\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/data/item'}\noutputs: {result: read}\n")
+  val request=Json.obj().put("target","local").put("job_yaml","name: Draft\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/data/item'}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n")
   val state=request.putObject("ui_state").put("library_tab","examples").put("details_tab","unknown").put("inspector_open",true).put("library_open",false).put("zoom_percent",115).put("logs_filter","error").put("credential","PRIVATE")
   val buttons=state.putArray("controls");buttons.addObject().put("id","duplicate-step").put("enabled",false);buttons.addObject().put("id","unknown-secret-control").put("enabled",true)
   state.putArray("selected_steps").add("read").add("nonexistent")

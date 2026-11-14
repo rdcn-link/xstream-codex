@@ -19,8 +19,7 @@ final class LocalEngine(settings:JsonNode,val plugins:PluginEnvironment,
   override val executionResourceLimits=ExecutionResourceLimits.parse(Option(settings.get("execution_resources")).getOrElse(_root_.xstream.util.Json.obj()))
   val engine=new JobEngine(this,allocator)
   override val localOperatorBase:Option[Path]=Some(Path.of(settings.path("job_working_directory").asText(".")).toAbsolutePath.normalize)
-  def debug:Boolean=false
-  def sourceRuntimes:Map[String,SourceRuntime]=Map.empty
+  override val inlineRuntimes=InlineRuntime.read(settings.path("inline_runtimes"))
   def operatorFusionEnabled:Boolean=settings.path("operator_fusion_enabled").asBoolean(true)
   def maxConcurrentTasks:Int=settings.path("max_concurrent_tasks").asInt(2)
   val taskSlots=new java.util.concurrent.Semaphore(maxConcurrentTasks)

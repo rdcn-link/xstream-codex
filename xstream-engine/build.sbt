@@ -46,4 +46,4 @@ lazy val dataCore = RootProject(file("../xstream-data/xstream-data-core"))
 dependsOn(dataCore)
 
 lazy val testArchives = RootProject(file("../xstream-data/xstream-data-archives"))
-dependsOn(testArchives % "test->compile")
+dependsOn(testArchives % "runtime->compile;test->compile")

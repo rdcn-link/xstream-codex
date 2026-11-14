@@ -1,7 +1,7 @@
 name: Expand one or two pgSnp alleles, frequencies and scores into separate columns.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/divide_pg_snp.txt
@@ -12,5 +12,7 @@ steps:
     source: read
   params:
     reference_column: 0
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

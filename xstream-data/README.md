@@ -25,7 +25,7 @@ Configure a file item with `format: netcdf`, `format: fits` or `format: fasta`. 
 
 NetCDF children use group/variable paths; FITS children use `/hdu0`, `/hdu1`, etc.; FASTA exposes `/sequences`. The file root retains original bytes. Numeric values retain raw encoding and scaling/null metadata. No implicit scientific-to-records flattening occurs. NetCDF/FITS libraries require local random access: remote ByteSources are explicitly staged to a temporary file and deleted on access close; local files are not copied. NetCDF-4/HDF5 support depends on the installed NetCDF backend and is not promised by the bundled pure Java reader. Compressed FITS images and unsupported column types do not imply supported scientific views.
 
-Scientific network adapters preserve typed descriptors and bounded blocks through nodes, Union proxies and clients. read_item supports scientific selections; the designer provides structure and sample previews. Downstream operators must explicitly support the representation. See [designer scientific views](../docs/designer-scientific.md).
+Scientific network adapters preserve typed descriptors and bounded blocks through nodes, Union proxies and clients. item_source supports scientific selections; the designer provides structure and sample previews. Downstream operators must explicitly support the representation. See [designer scientific views](../docs/designer-scientific.md).
 
 Run parser and Arrow contract tests with `sbt test` from this module root. See the [Arrow representation contract](../docs/arrow-streams.md).
 

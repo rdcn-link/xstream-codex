@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 require('../xstream-designer/src/main/resources/web/validation.js');
 const check=globalThis.WorkflowValidation.check;
-const source=id=>({id,operator:'read_item@1.0',inputs:{},params:{uri:'dacp://example/ds/data'}});
+const source=id=>({id,operator:'item_source@1.0',inputs:{},params:{uri:'dacp://example/ds/data'}});
 const filter={id:'filter',operator:'filter@1',inputs:{source:'read'},params:{}};
 const catalog=[{name:'filter',version:'1',inputs:{source:{representations:['records']}}}];
 const report={steps:{read:{outputs:{result:{representations:['records']}},diagnostics:[]},filter:{outputs:{result:{representations:['records']}},diagnostics:[]}}};

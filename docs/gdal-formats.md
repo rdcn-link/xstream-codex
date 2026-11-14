@@ -52,7 +52,7 @@ datasets:
 
 Only installed drivers in this allowlist can open files. VRT, remote URLs, database connection strings, multi-file Shapefiles, arbitrary subdatasets and external sidecar discovery are not enabled. Keep source format handlers separate; NetCDF/HDF5/FITS use their dedicated plugins. Supported driver does not mean support for every dataset feature: verify advertised Views.
 
-Read a band or layer with normal `read_item@1.0` parameters:
+Read a band or layer with normal `item_source@1.0` parameters:
 
 ```yaml
 uri: context:/geography/terrain.tif/bands/1

@@ -1,4 +1,5 @@
 name: scala_identity
+role: transform
 version: "1.0"
 description: Independently built Scala operator that preserves input bytes.
 image: xstream/operator-jvm:1.1

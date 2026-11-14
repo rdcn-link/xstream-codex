@@ -129,6 +129,20 @@ ViewExamples.inspect(access, "/scientific/climate.nc/temperature", ScientificVie
 ```
 bytes 的 Arrow 列是 `data: binary`；records 为业务字段；array 使用 `origin/shape/stride/values`；sequence 使用 `id/offset/symbols/last/description`。array 流中的“一行”是一个多维块，不是一个标量观测值。完整字段和描述元数据见 [Arrow 视图流契约](arrow-streams_zh.md)。
 
+## 读取 Item 引用集合
+
+目录及归档的 `items` 视图返回资源描述，成员仍有各自的 View，不会自动读取其内容：
+
+```scala
+val stream = access.requireView("/geotrans-input.zip", ItemReferences.View)
+  .open(ItemsSelection(recursive = true), context)
+ItemReferences.foreach(stream) { item =>
+  println(s"${item.uri}: ${item.views}")
+}
+```
+
+算子使用 `ctx.input("source").foreachItem` 增量遍历引用；需要内容时使用 `ctx.openItem(item, "bytes") { stream => … }`。流在回调结束时关闭，不收集整个归档。CSV 清单中的相对路径以清单的逻辑父目录为基准。完整代码见 [Item 引用流](items-stream_zh.md)及 [FAQ 第 6 条](faq_zh.md#6-自定义算子如何处理-items-引用流)。
+
 ## 将视图流编码为 IPC Stream
 
 输出可以是 socket 或响应体，无需先收集完整结果或保存文件：

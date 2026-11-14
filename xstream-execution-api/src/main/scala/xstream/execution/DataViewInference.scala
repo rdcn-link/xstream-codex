@@ -7,13 +7,14 @@ import com.fasterxml.jackson.databind.JsonNode
 object DataViewInference {
   private object Complete extends scala.util.control.ControlThrowable
   def inspect(codec:DataViewSupport)(stream:ArrowDataStream,selection:codec.Selection,format:String,limits:Option[PreviewLimits],check:()=>Unit):StreamDescriptor={
+    val effectiveFormat=if(format.nonEmpty)format else codec.kind.name
     var result:StreamDescriptor=null
     var rows=Vector.empty[JsonNode]
     var truncated=false
     try stream.consume(new ArrowConsumer {
       def start(schema:org.apache.arrow.vector.types.pojo.Schema,d:org.apache.arrow.vector.dictionary.DictionaryProvider):Unit={
         check();codec.validateSelection(selection,schema)
-        result=StreamDescriptor(Set(codec.kind.name),Set(format),certainty="known",structure=Some(codec.descriptor(schema)))
+        result=StreamDescriptor(Set(codec.kind.name),Set(effectiveFormat),certainty="known",structure=Some(codec.descriptor(schema)))
         if(limits.isEmpty)throw Complete
       }
       def accept(batch:ArrowBatch):Unit={
@@ -21,7 +22,7 @@ object DataViewInference {
         if(rows.size>=l.maxRows){truncated=true;throw Complete}
         codec.preview(batch,l.maxRows-rows.size+1,math.max(1,math.min(64,l.maxBytes/32))).foreach { row=>
           if(rows.size>=l.maxRows){truncated=true;throw Complete}
-          val candidate=OutputSample(codec.kind.name,format,rows=rows:+row)
+          val candidate=OutputSample(codec.kind.name,effectiveFormat,rows=rows:+row)
           if(OutputSamples.size(candidate)>l.maxBytes){truncated=true;throw Complete}
           rows=rows:+row
         }
@@ -29,6 +30,6 @@ object DataViewInference {
       }
     })catch{case Complete=>()}finally stream.close()
     require(result!=null,"view did not supply a descriptor")
-    result.copy(sample=limits.map(l=>OutputSample(codec.kind.name,format,rows=rows,truncated=truncated).bounded(l)))
+    result.copy(sample=limits.map(l=>OutputSample(codec.kind.name,effectiveFormat,rows=rows,truncated=truncated).bounded(l)))
   }
 }

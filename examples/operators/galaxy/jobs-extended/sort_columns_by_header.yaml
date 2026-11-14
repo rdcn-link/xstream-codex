@@ -2,7 +2,7 @@ name: Alphabetically reorder table columns by header, optionally pinning one col
   first.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/sort_columns_by_header.txt
@@ -13,5 +13,7 @@ steps:
     source: read
   params:
     key_column: 2
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

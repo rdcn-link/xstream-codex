@@ -1,6 +1,6 @@
 package xstream.designer
 
-import _root_.xstream.execution.{InferenceDiagnostic,InferenceRequest,InferenceResult,OutputSample,OutputSamples,PreviewLimits,ReadItemParameters,StreamCancel,StreamDescriptor,StructureInference}
+import _root_.xstream.execution.{InferenceDiagnostic,InferenceRequest,InferenceResult,OutputSample,OutputSamples,PreviewLimits,ItemSourceParameters,StreamCancel,StreamDescriptor,StructureInference}
 
 import _root_.xstream.operator.inference._
 
@@ -9,32 +9,37 @@ import _root_.xstream.data._
 import com.fasterxml.jackson.databind.JsonNode
 import scala.jdk.CollectionConverters._
 
-/** Editing-time inference ignores execution placement. Only read_item uses remote metadata. */
+/** Editing-time inference ignores execution placement. Only item_source uses remote metadata. */
 final class DesignerInference(
   operator:(String,InferenceRequest,StreamCancel)=>InferenceResult,
   item:(String,String,StreamCancel)=>StreamDescriptor,
   sampleItem:(String,String,PreviewLimits,StreamCancel)=>Option[OutputSample]=(_,_,_,_)=>None,
   queryItem:Option[(String,String,Scan,StreamCancel)=>StreamDescriptor]=None,
   querySample:Option[(String,String,Scan,PreviewLimits,StreamCancel)=>Option[OutputSample]]=None,origin:Option[String]=None,
-  sourceItem:Option[(String,String,Option[com.fasterxml.jackson.databind.JsonNode],Option[PreviewLimits],StreamCancel)=>StreamDescriptor]=None) {
+  sourceItem:Option[(String,String,Option[com.fasterxml.jackson.databind.JsonNode],Option[PreviewLimits],StreamCancel)=>StreamDescriptor]=None,
+  inlineOperator:Option[(_root_.xstream.execution.InlineOperator,InferenceRequest,StreamCancel)=>InferenceResult]=None) {
   private val edits=new InferenceEdits
   def infer(job:JsonNode,cancel:StreamCancel,preview:Option[PreviewLimits]=None,onStep:(String,InferenceResult)=>Unit=(_,_)=>(),editSession:Option[String]=None):JsonNode={
     // Reserve half of the 256 KiB response budget for selected-output copies.
+    val definitions=_root_.xstream.execution.InlineOperators.definitions(job)
     var sampleBudget=131072
     def binding(n:JsonNode):(String,String)={val p=n.asText.split(":",-1);p(0)->(if(p.length==2)p(1)else "result")}
-    val nodes=job.path("steps").elements.asScala.map(t=>InferenceNode(t.path("id").asText,
+    val nodes=job.path("steps").elements.asScala.filterNot(_.path("operator").asText=="client_sink@1.0").map(t=>InferenceNode(t.path("id").asText,
       t.path("inputs").fields.asScala.map(e=>e.getKey->binding(e.getValue)).toMap,t)).toVector
     val edit=edits.session(editSession)
     edit.foreach(_.retain(nodes.map(_.id).toSet))
     val fingerprints=scala.collection.mutable.Map.empty[String,String]
-    val outputs=job.path("outputs").fields.asScala.map(e=>e.getKey->binding(e.getValue)).toMap
+    val outputs=job.path("steps").elements.asScala.find(_.path("operator").asText=="client_sink@1.0")
+      .map(_.path("inputs").fields.asScala.map(e=>e.getKey->binding(e.getValue)).toMap).getOrElse(Map.empty[String,(String,String)])
     InferenceGraph.propagate(nodes,outputs,collectErrors=true,onStep=onStep){(step,inputs)=>
       cancel.active()
-      val reference=step.path("operator").asText
+      val inline=if(step.path("operator").isObject)Some(definitions(step.path("operator").path("inline").asText))else None
+      val reference=inline.map(d=>"inline:"+d.name).getOrElse(step.path("operator").asText)
       val params=Option(step.get("params")).getOrElse(StructureInference.mapper.createObjectNode())
       val limits=preview.filter(_=>sampleBudget>=256).map(p=>p.copy(maxBytes=math.min(p.maxBytes,sampleBudget)))
       val id=step.path("id").asText
       val signature=StructureInference.mapper.createObjectNode().put("operator",reference)
+      inline.foreach(d=>signature.set[JsonNode]("inline_operator",d.definition))
       signature.set[JsonNode]("params",params)
       val bindings=signature.putObject("bindings")
       step.path("inputs").fields.asScala.foreach {e=>
@@ -47,18 +52,18 @@ final class DesignerInference(
       request.set[JsonNode]("inputs",StructureInference.portsJson(inputs))
       limits.foreach(p=>request.set[JsonNode]("preview",OutputSamples.json(p)))
       def compute():InferenceResult={
-      val inferred=if(reference=="read_item@1.0"){
-        require(inputs.isEmpty,"read_item has no inputs")
+      val inferred=if(reference=="item_source@1.0"){
+        require(inputs.isEmpty,"item_source has no inputs")
         val parameters=StructureInference.mapper.convertValue(params,classOf[java.util.LinkedHashMap[String,Object]])
-        val uri=ReadItemParameters.address(parameters,origin)
+        val uri=ItemSourceParameters.address(parameters,origin)
         require(!uri.startsWith("/"),"Item path requires a configured target service")
-        val view=ReadItemParameters.view(parameters)
-        val scan=ReadItemParameters.query(parameters)
+        val view=ItemSourceParameters.view(parameters)
+        val scan=ItemSourceParameters.query(parameters)
         val descriptor=scan.map(q=>queryItem.getOrElse(throw new IllegalArgumentException("Item query inference unavailable"))(uri,view,q,cancel)).getOrElse(item(uri,view,cancel))
         if(scan.isEmpty && sourceItem.nonEmpty && !descriptor.representations.exists(Set("records","bytes"))){
-          InferenceResult(Map("result"->sourceItem.get(uri,view,ReadItemParameters.selection(parameters),limits,cancel)))
+          InferenceResult(Map("result"->sourceItem.get(uri,view,ItemSourceParameters.selection(parameters),limits,cancel)))
         }else {
-        require(ReadItemParameters.selection(parameters).isEmpty,"selection requires a scientific view")
+        require(ItemSourceParameters.selection(parameters).isEmpty,"selection requires a scientific view")
         val base=InferenceResult(Map("result"->descriptor))
         limits.map{limit=>
           try OutputSamples.attach(base,scan.map(q=>querySample.getOrElse(throw new IllegalArgumentException("Item query preview unavailable"))(uri,descriptor.representations.head,q,limit,cancel)).getOrElse(sampleItem(uri,descriptor.representations.head,limit,cancel)).map("result"->_).toMap,limit)
@@ -70,7 +75,7 @@ final class DesignerInference(
         }.getOrElse(base)
         }
 
-      }else operator(reference,InferenceRequest(inputs,params,limits),cancel)
+      }else inline.map(d=>inlineOperator.getOrElse(throw new IllegalArgumentException("Inline inference is available only for local Target"))(d,InferenceRequest(inputs,params,limits),cancel)).getOrElse(operator(reference,InferenceRequest(inputs,params,limits),cancel))
       cancel.active()
       inferred
       }

@@ -12,7 +12,7 @@ XStream 会自动检查 Job 的执行位置、算子环境和执行器能力。�
 - 所有步骤使用同一个支持 `OperatorExecutor.groupCommand` 的执行器。混合 JVM / Python / 原生命令不合并。
 - JVM 算子必须实现 `xstream.operator.Operator`，包括 Scala 的 `BytesOperator`、`ByteStreamOperator` 和 `RecordsOperator` 模板。通过 JAR 类元数据检查能力，不在服务器 JVM 加载用户类。
 - Python 算子必须显式定义线程安全的 `process(ctx)`。不同步骤可以使用不同的 `.py`、wheel 或仓库 ZIP 代码包。每个包使用独立模块命名空间，`process(ctx)` 内的导入也按该包解析，避免同名入口和辅助模块相互覆盖。同一包的多次引用复用其模块；运行环境依赖和分组 SDK 仍由共同镜像共享。
-- 不合并 DEBUG 内联源码、普通容器入口或原生可执行程序。它们仍按原有方式执行。
+- Job 内联命令与脚本适配器、普通容器入口和原生可执行程序均按独立步骤执行。
 
 普通 Job 的所有步骤在同一节点时，直接在该节点尝试合并；如果指定的唯一节点是远端，整个 Job 交给目标节点判断。Union 为每个成员节点的子 Job 分别判断，不移动原始数据或改变任务节点。协调器会先检查节点区域收缩后的依赖图：例如 A → B → A 会形成区域循环，禁止合并，以免等待下游输入时阻塞上游启动。
 
@@ -26,7 +26,7 @@ XStream 会自动检查 Job 的执行位置、算子环境和执行器能力。�
 name: clean-text
 steps:
 - id: read_uppercase_source
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: dacp://localhost:18861/data/message
@@ -46,8 +46,10 @@ steps:
   inputs:
     source: uppercase
   params: {}
-outputs:
-  result: trim
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: trim
 ```
 
 目标节点必须配置这些算子的仓库地址，输入 Item 也必须实际存在并获准访问。合并启动器携带当前 SDK 和调度代码，Arrow / Jackson / Scala 等依赖继续复用镜像；不要求已有镜像预装新的合并启动器。

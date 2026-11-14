@@ -1,4 +1,5 @@
 name: split_orders
+role: transform
 version: '1.0'
 description: Consume left then right and split orders into accepted and rejected streams.
 image: xstream/operator-python:1.0

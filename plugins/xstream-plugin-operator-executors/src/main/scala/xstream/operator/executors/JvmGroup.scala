@@ -55,7 +55,7 @@ private[executors] object JvmGroup {
       val n=steps.addObject().put("id",s.id).put("entrypoint",s.program.entrypoint).put("artifact",s.artifactPath.get)
       n.set[JsonNode]("params",mapper.valueToTree(s.params))
       val bindings=n.putObject("bindings");s.bindings.foreach{case(port,b)=>val v=bindings.putObject(port).put("port",b.port);b.task.foreach(v.put("task",_))}
-      def contracts(key:String,cs:Map[String,OperatorGroupContract]):Unit={val all=n.putObject(key);cs.foreach{case(port,c)=>val v=all.putObject(port);val r=v.putArray("representations");c.representations.toVector.sorted.foreach(r.add);val f=v.putArray("formats");c.formats.toVector.sorted.foreach(f.add);c.schema.foreach(v.put("schema",_))}}
+      def contracts(key:String,cs:Map[String,OperatorGroupContract]):Unit={val all=n.putObject(key);cs.foreach{case(port,c)=>val v=all.putObject(port);val r=v.putArray("representations");c.representations.toVector.sorted.foreach(r.add);val f=v.putArray("formats");c.formats.toVector.sorted.foreach(f.add);c.schema.foreach(v.put("schema",_));c.cardinality.foreach(v.put("cardinality",_))}}
       contracts("inputs",s.inputs);contracts("outputs",s.outputs)
     }
     val outputs=doc.putObject("outputs");group.outputs.foreach{case(port,(task,source))=>outputs.putObject(port).put("task",task).put("port",source)}

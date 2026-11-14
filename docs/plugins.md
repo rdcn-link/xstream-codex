@@ -7,6 +7,7 @@ Built-in implementations and contributed plugins use the same extension contract
 | Extension | Implementation and guide |
 |---|---|
 | DataCatalog / Dataset / Item / DataView | [xstream-data](../xstream-data/README.md) |
+| InlineOperatorProvider | [Job-local operators](inline-operators.md) |
 | OperatorExecutor | [xstream-plugin-operator-executors](../plugins/xstream-plugin-operator-executors/README.md) |
 | SourceAnalyzer / SourceArchive / SourceBuildRecipe | [xstream-plugin-source-analysis](../plugins/xstream-plugin-source-analysis/README.md) |
 | ChatPlanner | [xstream-designer](../xstream-designer/README.md) |
@@ -14,6 +15,8 @@ Built-in implementations and contributed plugins use the same extension contract
 Implement public no-argument classes and list them in `META-INF/services/<fully-qualified-interface>`. Add the plugin JAR and dependencies to the host classpath and restart; do not edit a central registry. Executor contracts are defined in `xstream-execution-api` as `xstream.execution.OperatorExecutor`; bundled implementations use `xstream.operator.executors`. Source-review contracts use `xstream.operator`. Registration filenames must match the actual interface names.
 
 Scientific views preserve arrays and sequences rather than silently flattening them into records. Keep format dependencies in their data plugins. Operator code runs in isolated environments; host-installed plugins themselves are trusted code. Include configuration examples, registration instructions and contract tests for contributions; module guides list current validation commands.
+
+The `items` View support is registered as `xstream.data.ItemsViewSupport` in `META-INF/services/xstream.data.DataViewSupport`. A contributed dataset provider may advertise `views: [items]` and implement `DatasetAccess.view(path, ItemReferences.View)` using the shared Arrow schema. `ItemReferences.foreach` consumes references incrementally. Members retain their View capabilities; their content is opened separately. See [Item reference streams](items-stream.md) and `ItemsSpec` for contract tests.
 
 ## Local development
 

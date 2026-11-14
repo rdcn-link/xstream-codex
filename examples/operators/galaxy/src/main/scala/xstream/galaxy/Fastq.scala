@@ -5,11 +5,11 @@ import java.nio.charset.{StandardCharsets,CodingErrorAction}
 import java.util.concurrent.CancellationException
 import com.fasterxml.jackson.databind.JsonNode
 import scala.jdk.CollectionConverters._
-import xstream.operator.{Operator,ByteStreamOperator,OperatorContext}
+import xstream.operator.{TransformOperator,ByteStreamOperator,OperatorContext}
 import xstream.execution.{StreamDescriptor,InferenceResult,OutputSample,PreviewLimits}
 
 /** Four-line FASTQ conversion with explicit quality encoding and bounded records. */
-abstract class FastqOperator(qualityOutput:Boolean) extends Operator {
+abstract class FastqOperator(qualityOutput:Boolean) extends TransformOperator {
  private def active():Unit=if(Thread.currentThread.isInterrupted)throw new CancellationException("operator cancelled")
  private def encoding(p:JsonNode):String={
   require(p!=null&&p.isObject&&p.fieldNames.asScala.forall(_=="encoding"),"only encoding is supported")

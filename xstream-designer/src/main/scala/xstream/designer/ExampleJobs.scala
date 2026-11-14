@@ -33,7 +33,7 @@ private[designer] object ExampleJobs {
         labels.map(_.asText.trim).distinct.foreach(tags.add)
       }
       val requires=example.putArray("requires")
-      document.path("steps").elements.asScala.map(_.path("operator").asText).filterNot(_=="read_item@1.0").toVector.distinct.sorted.foreach(requires.add)
+      document.path("steps").elements.asScala.map(_.path("operator").asText).toVector.distinct.sorted.foreach(requires.add)
     }
     require(result.elements.asScala.map(_.path("id").asText).toVector.distinct.size==result.size,"duplicate example ID")
     result

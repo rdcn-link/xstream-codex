@@ -47,7 +47,7 @@ A public Designer therefore does not make the remote inference API anonymous. Ca
 
 ## 3. How can a XStream Job read local files, and what does `context:` refer to?
 
-Publish the directory through the engine's DataCatalog, then read its Items with `read_item@1.0`. For example, save this engine configuration as `engine.yaml`:
+Publish the directory through the engine's DataCatalog, then read its Items with `item_source@1.0`. For example, save this engine configuration as `engine.yaml`:
 
 ```yaml
 datasets:
@@ -63,13 +63,15 @@ Save this Job as `read-local.yaml` to read `/data/input.csv` as records:
 name: Read local CSV
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/local/input.csv
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 Run it using the installed launcher:
@@ -82,7 +84,7 @@ xstream-runner engine.yaml read-local.yaml
 
 When the same Job runs on a remote server, `context:` refers to that server's catalog, not files on the submitting computer. In Designer, Local means the Designer server's catalog, not the browser visitor's filesystem. Designer configures its local catalog under `local_catalog.datasets`; the standalone runner uses top-level `datasets` as above.
 
-For original file bytes, set `view: bytes`. The `records` View requires a format plugin that supports records, such as CSV. `read_item` accepts catalog Item addresses rather than arbitrary filesystem paths such as `/data/input.csv` or `file:///data/input.csv`. Publishing a directory makes its files available through the catalog; it does not automatically mount that host directory into operator containers. Operators consume the streams connected to their input ports.
+For original file bytes, set `view: bytes`. The `records` View requires a format plugin that supports records, such as CSV. `item_source` accepts catalog Item addresses rather than arbitrary filesystem paths such as `/data/input.csv` or `file:///data/input.csv`. Publishing a directory makes its files available through the catalog; it does not automatically mount that host directory into operator containers. Operators consume the streams connected to their input ports.
 
 See the [quick start](quickstart.md), [data model](data-model.md) and [local execution guide](xstream.md).
 
@@ -142,8 +144,25 @@ The logical path is not necessarily a physical file path. Archive children and s
 
 **An Item identifies a resource; a View defines how to read it.** A CSV Item can expose `bytes` for the original file and `records` for parsed rows. Scientific Items can expose `array` while preserving multidimensional structure. Reading a supported View produces an Arrow stream for downstream operators. Inspect advertised capabilities rather than assuming every Item supports every View.
 
-Hierarchy and readability are separate: folder Items support browsing through `list()`, but ordinary folders have no readable Views. A ZIP root can legitimately be `kind: folder` with `views: [bytes]`: its bytes View returns the original ZIP file, while its children expose internal resources. Internal folders without a bytes View are not readable, and requesting records on a folder is rejected.
+Hierarchy and readability are separate: folder Items support browsing through `list()`. A ZIP root has `kind: folder` and `views: [bytes, items]`: `bytes` returns the original ZIP and `items` streams its member references without reading their content. An internal archive folder supports `items`, while an individual member supports its own advertised views. Folder `records` is rejected.
 
 `context:` refers to the DataCatalog bound to the current execution environment, not an arbitrary local disk path. A remote DACP URI accesses a remote catalog through a connector. Together, logical Items, explicit Views and streams let a Job handle files, archive members, scientific variables and database resources without implementing a separate storage reader in each operator.
 
 See the [data model](data-model.md), [file formats and containers](file-formats.md), [DataView examples](data-view-examples.md) and [local-file FAQ](#3-how-can-a-xstream-job-read-local-files-and-what-does-context-refer-to).
+
+## 6. How does a custom operator process an `items` reference stream?
+
+Declare `representations: [items]` on the input port. This processing code traverses references and metadata without opening member contents:
+
+```scala
+def process(ctx: OperatorContext): Unit = {
+  val output = ctx.bytesOutput("result", "text")
+  ctx.input("source").foreachItem { item =>
+    output.write(s"${item.uri}\t${item.kind}\n".getBytes("UTF-8"))
+  }
+}
+```
+
+To read content, call `ctx.openItem(item, "bytes") { stream => … }` inside the callback. It returns an incremental Arrow stream; the framework owns cleanup, authorization and cancellation. Do not collect the entire collection into a Map/Set without explicit count and memory bounds. Pairing rules belong to the operator, not implicit Job execution.
+
+See [Item operator examples](../examples/operators/item-sources/README.md) for compilable Sources and a Transform, and [Item reference streams](items-stream.md) for the contract.

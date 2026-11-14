@@ -17,7 +17,7 @@ class ChatPlannerSpec extends AnyFunSuite {
   test("compatible chat model receives current draft and history and returns a JSON proposal"){
     val observed=new AtomicReference[JsonNode]()
     val model=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
-    val proposal=Json.obj().put("reply","Renamed").put("job_yaml","name: Updated\nsteps: []\noutputs: {}\n").put("variables_yaml","N: 123\n")
+    val proposal=Json.obj().put("reply","Renamed").put("job_yaml","name: Updated\nsteps: []\n").put("variables_yaml","N: 123\n")
     model.createContext("/v1/chat/completions",x=>{
       observed.set(Json.mapper.readTree(x.getRequestBody.readAllBytes()))
       val response=Json.obj();response.putArray("choices").addObject().put("finish_reason","stop").putObject("message").put("role","assistant").put("content",proposal.toString)
@@ -26,7 +26,7 @@ class ChatPlannerSpec extends AnyFunSuite {
     try{
       val config=Json.obj().put("url",s"http://127.0.0.1:${model.getAddress.getPort}/v1/chat/completions").put("model","test-model")
       val planner=ChatPlanner.configured(config)
-      val request=Json.obj().put("job_yaml","name: Old\nsteps: []\noutputs: {}\n").put("message","Rename the job");request.putArray("messages").addObject().put("role","user").put("content","Rename the job")
+      val request=Json.obj().put("job_yaml","name: Old\nsteps: []\n").put("message","Rename the job");request.putArray("messages").addObject().put("role","user").put("content","Rename the job")
       request.putArray("operators");request.putArray("nodes")
       assert(planner.plan(request)==proposal)
       assert(observed.get.path("model").asText=="test-model")

@@ -26,6 +26,8 @@ class LocalOperatorLibrarySpec extends AnyFunSuite {
       Files.createDirectories(directory.resolve("src"));Files.writeString(directory.resolve("src/code.scala"),"one")
       Files.writeString(directory.resolve("operator.yaml"),"""name: filter
 version: '1.0'
+role: source
+type: sdk
 language: scala
 runtime: jvm@1.1
 entrypoint: Main

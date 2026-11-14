@@ -20,7 +20,7 @@ def main():
     assert actual == EXPECTED, (actual, EXPECTED)
     (HERE / 'verification-extended-pipeline.json').write_text(json.dumps({
         'status': 'passed', 'job': JOB,
-        'operators': ['read_item@1.0', 'galaxy_colorspace_to_fasta@1.0',
+        'operators': ['item_source@1.0', 'galaxy_colorspace_to_fasta@1.0',
                       'galaxy_reverse_complement@1.0', 'galaxy_fasta_length@1.0',
                       'galaxy_add_input_name@1.0'],
         'expected_output': EXPECTED, 'output': actual

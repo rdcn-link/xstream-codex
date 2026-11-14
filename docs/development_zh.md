@@ -32,6 +32,7 @@ flowchart TD
 | 处理端口、批次、背压、取消及结束 | [流契约](operator-streams_zh.md)、[Arrow 所有权](arrow-streams_zh.md) |
 | 声明依赖并打包代码 | [依赖环境](dependency-environments_zh.md)、[打包参考](operator-packaging_zh.md)、[运行时选择](operator-runtimes_zh.md) |
 | 本地测试 | [本地算子库](local-operators_zh.md)、[命令行工具](../xstream-operator-sdk/cli/README_zh.md) |
+| 在单个本地 Job 中定义算子 | [Job 内联算子：SDK、命令与脚本](inline-operators_zh.md) |
 | 提交源码发布 | [提交流程](operator-submission_zh.md)、[来源材料](operator-provenance_zh.md)、[图标](operator-presentation_zh.md) |
 
 处理、结构推导及有界输出样例均属于算子的实现内容。使用 SDK 管理流帧和资源生命周期。

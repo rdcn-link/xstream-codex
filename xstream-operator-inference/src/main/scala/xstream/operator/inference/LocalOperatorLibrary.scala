@@ -52,7 +52,7 @@ object LocalOperatorLibrary {
     val path=if(versioned){val p=reference.split("@",-1);config.localOperatorLibrary.resolve(p(0)).resolve(p(1))}else base.resolve(reference)
     val directory=path.toRealPath();require(Files.isDirectory(directory),"local operator must be a directory")
     val definition=document(directory.resolve("operator.yaml"));val local=document(directory.resolve("local.yaml"))
-    require(definition.fieldNames.asScala.toSet.subsetOf(Set("name","version","description","icon","inputs","parameters","language","entrypoint","runtime","source_public","provenance","dependencies","submission","binary","execution_config","documentation")),"unknown source operator field")
+    require(definition.fieldNames.asScala.toSet.subsetOf(Set("name","version","role","type","description","icon","inputs","parameters","language","entrypoint","runtime","source_public","provenance","dependencies","submission","binary","execution_config","documentation")),"unknown source operator field")
     val name=definition.path("name").asText;val version=definition.path("version").asText
     require(Seq(name,version).forall(_.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*")),"local operator requires name and version")
     require(!versioned || reference==s"$name@$version","local operator identity mismatch")
@@ -60,6 +60,7 @@ object LocalOperatorLibrary {
     require(definition.path("entrypoint").asText.nonEmpty,"local operator entrypoint required")
     xstream.operator.OperatorPresentation.validate(definition);xstream.operator.ParameterSchema.validate(definition.get("parameters"))
     xstream.execution.OperatorPorts.read(definition.path("inputs"))
+    xstream.operator.OperatorRole.validateInputs(xstream.operator.OperatorRole.read(definition),definition.path("inputs"))
     require(local.fieldNames.asScala.toSet.subsetOf(Set("image","executor","build","dependency_builder_image")),"unknown local runtime setting")
     require(local.path("image").isTextual && local.path("image").asText.nonEmpty && local.path("executor").isTextual,"local image and executor are required")
     val build=local.path("build");require(build.isObject,"local build must be a mapping")

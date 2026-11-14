@@ -30,7 +30,7 @@ async def main():
   await page.goto(args.url)
   await expect(page.locator('#connection')).to_contain_text('Connected',timeout=25000)
   await expect(page.locator('#repository-state')).to_contain_text('published',timeout=25000)
-  draft={'name':'Dynamic schemas','steps':[{'id':'read','operator':'read_item@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}],'outputs':{'result':'filter'}}
+  draft={'name':'Dynamic schemas','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}],'outputs':{'result':'filter'}}
   await page.evaluate('(draft)=>loadDocument(JSON.stringify(draft))',draft)
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial',timeout=15000)
   await expect(page.locator('[data-schema-port="filter:result"]')).to_contain_text('initial')
@@ -50,7 +50,7 @@ async def main():
   await page.evaluate('(draft)=>loadDocument(JSON.stringify(draft))',draft)
   await page.wait_for_function('()=>!inferenceRunning&&!inferencePending',polling=100)
   # Independent branch changes retain the other branch immediately, without flicker.
-  await page.evaluate("job.steps.push({id:'other',operator:'read_item@1.0',inputs:{},params:{uri:'dacp://localhost:19860/example/other'}});changed()")
+  await page.evaluate("job.steps.push({id:'other',operator:'item_source@1.0',inputs:{},params:{uri:'dacp://localhost:19860/example/other'}});changed()")
   await page.wait_for_function('()=>!inferenceRunning&&!inferencePending',polling=100)
   await page.evaluate("job.steps.find(t=>t.id==='other').params.uri='dacp://localhost:19860/example/other2';changed()")
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial')

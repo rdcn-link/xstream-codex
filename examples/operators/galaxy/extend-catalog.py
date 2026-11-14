@@ -26,11 +26,11 @@ for name,s in specs.items():
   desc=prop.get("description",DESCRIPTIONS.get(key,key.replace("_"," ").capitalize()+"."));prop['description']=desc
   docs[key]={'description':desc,'help':desc+' '+s['scope'],'example':s['params'].get(key,prop['default'])}
  source='context:/galaxy/extended/'+name+'.txt'
- job={'name':s['description'],'steps':[{'id':'read','operator':'read_item@1.0','inputs':{},'params':{'uri':source,'view':'bytes'}},{'id':'process','operator':s['name']+'@1.0','inputs':{'source':'read'},'params':s['params']}],'outputs':{'result':'process'}}
+ job={'name':s['description'],'steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':source,'view':'bytes'}},{'id':'process','operator':s['name']+'@1.0','inputs':{'source':'read'},'params':s['params']}],'outputs':{'result':'process'}}
  extra_inputs=s['fixture'].get('inputs',{})
  for port,value in extra_inputs.items():
   read_id='read_'+port
-  job['steps'].insert(1,{'id':read_id,'operator':'read_item@1.0','inputs':{},'params':{'uri':'context:/galaxy/extended/'+name+'-'+port+'.txt','view':'bytes'}})
+  job['steps'].insert(1,{'id':read_id,'operator':'item_source@1.0','inputs':{},'params':{'uri':'context:/galaxy/extended/'+name+'-'+port+'.txt','view':'bytes'}})
   job['steps'][-1]['inputs'][port]=read_id
   (ROOT/'data/extended'/f'{name}-{port}.txt').write_text(value)
  s['inputs']={port:{'representations':['bytes'],'formats':[]} for port in ['source',*extra_inputs]}

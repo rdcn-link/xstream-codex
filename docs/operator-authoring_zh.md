@@ -11,8 +11,19 @@ flowchart LR
 
 每次提交仓库还需在 `documentation` 中提供易读的端口说明、参数描述/填写说明/示例，以及完整的可复制 Job。参见[必填的使用说明](operator-submission_zh.md#必填的使用说明)。仓库接收新提交前会校验这些字段。
 
+## 四个相互独立的选择
 
-## 选择四种开发方式
+| 选择 | 可用值 | 决定什么 |
+|---|---|---|
+| 图角色 `role` | `source`、`transform`、`sink` | 步骤从哪里得到输入、向哪里输出 |
+| 接入类型 `type` | `sdk`、`command`、`script` | 用 SDK 实现、适配命令，还是运行脚本 |
+| `executor` | `jvm`、`python`、`command`、`container` | 由哪个已安装的启动器在 Runtime 中运行算子 |
+| 定义位置 | 算子仓库、本地库、Job 的 `operators` | 定义如何分发和选用 |
+
+`source` 没有输入端口并产生流；`transform` 消费并产生流；`sink` 消费流且没有输出端口。仓库算子 `item_source@1.0` 是 Source，`client_sink@1.0` 是面向调用方的 Sink。Source、Transform、Sink 是图角色，每种角色都可以选择合适的实现类型。在 Job 中，步骤可以引用已发布的 `name@version`、[本地算子库](local-operators_zh.md)或[内联定义](inline-operators_zh.md)。内联定义用于本地 Job；远程节点只接受公开审核通过的算子。[Scala Source 和 Sink 示例](../examples/operators/scala-endpoints/README_zh.md)提供完整代码及发布方法。
+
+
+## 选择四种执行器
 
 `executor` 决定如何启动算子，Runtime 决定其运行环境；四种执行器都在 Docker 容器中执行。
 
@@ -34,6 +45,8 @@ Scala 适合表达类型化的流变换，并可与引擎共用 JVM 接口和库
 语言相同并不自动保证零拷贝或同进程执行；执行单元合并仍取决于依赖兼容性、算子能力和执行策略。参阅[同进程合并](operator-fusion_zh.md)与[依赖环境](dependency-environments_zh.md)。
 
 ## 选择接口与运行环境
+
+每个算子声明两个独立属性。`role` 为 `source`（无输入）、`transform`（有输入和输出）或 `sink`（有输入、无输出）；`type` 为 `sdk`、`command` 或 `script`，表示程序的接入方式。算子仓库把两者动态叠加到算子 ICON 上，不修改原始图形。仓库算子 `item_source@1.0` 启动 Item 数据流，`client_sink@1.0` 显式将流返回调用方。
 
 先在仓库 `/runtimes` 选择实际注册的运行环境及版本。执行和构建依赖必须匹配；JVM 环境需要提供 XStream SDK，Scala 构建环境还需要 Scala 编译器。算子包仅包含业务代码，公共依赖留在共享运行环境中。
 
@@ -142,6 +155,8 @@ xstream-operator submit ./my-operator \
 ```yaml
 name: scala_identity
 version: '1.0'
+role: transform
+type: sdk
 description: Stream bytes unchanged
 language: scala
 entrypoint: example.Identity
@@ -179,7 +194,7 @@ Token 由仓库管理员分配。提交成功返回 submission ID，不意味着
 name: Stream observations
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/science/observations.csv
@@ -188,8 +203,10 @@ steps:
   operator: scala_identity@1.0
   inputs:
     source: read
-outputs:
-  result: identity
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: identity
 ```
 
 把 URI 替换为目标执行目录中的真实 Item。`context:` 使用当前执行服务绑定的目录；远程 URI 显式指定 DACP 地址。独立执行使用 `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。
@@ -216,3 +233,15 @@ stdout 保留给流协议，日志写 stderr。输入须消费到 EOS；成功�
 | 提供参数、结构和样例 | [参数类型](operator-parameters_zh.md)、[结构推导](structure-inference_zh.md) |
 | 使用脚本或第三方程序 | [脚本示例](../examples/operators/scripts/README_zh.md)、[原生命令](native-commands_zh.md) |
 | 准备公开发布 | [提交](operator-submission_zh.md)、[来源材料](operator-provenance_zh.md)、[图标](operator-presentation_zh.md) |
+
+## Job 内联（inline）算子的编写
+
+本地开发时，可直接在 Job 顶层 `operators` 中定义算子，步骤通过 `operator: {inline: name}` 引用。SDK 程序选择 `sdk`，第三方可执行工具选择 `command`，内嵌源码或本地脚本选择 `script`；运行容器通过引擎配置的 `inline_runtimes` 指定。
+
+[查看完整编写教程：运行环境配置、SDK 入口类、命令参数、脚本源码及完整可运行 Job](inline-operators_zh.md)。
+
+内联定义仅用于本地执行。向远程节点或 Union 提交时，需先发布自定义算子，再使用公开审核通过的仓库引用。
+
+## Item 集合输入
+
+`items` 与 bytes、records、array 是并列的流表示。参见 [Item 引用流](items-stream_zh.md)、[完整 Source 与 Transform 示例](../examples/operators/item-sources/README_zh.md)和 [FAQ 第 6 条](faq_zh.md#6-自定义算子如何处理-items-引用流)。

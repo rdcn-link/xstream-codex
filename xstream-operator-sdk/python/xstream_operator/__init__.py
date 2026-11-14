@@ -1,7 +1,9 @@
 """Helpers for packaged DACP operators. stdout is reserved for protocol frames."""
 import base64
-from contextlib import ExitStack, redirect_stdout
+from contextlib import ExitStack, redirect_stdout, contextmanager
 import json
+import os
+import socket
 from pathlib import Path
 import re
 import struct
@@ -99,6 +101,8 @@ class OperatorContext:
         metadata = dict(representation=representation, format=format)
         if schema is not None:
             metadata['schema'] = base64.b64encode(schema.serialize().to_pybytes()).decode('ascii')
+        if representation == 'items':
+            metadata['structure'] = dict(view='items', version=1, cardinality='many')
         self._frame(name, 'start', **metadata)
         value = _Output(self, name, representation, schema)
         self._outputs[name] = value
@@ -110,12 +114,79 @@ class OperatorContext:
     def records_output(self, name, schema, format='arrow'):
         return self._new_output(name, 'records', format, schema)
 
+    def items_output(self, name):
+        return self._new_output(name, 'items', 'items', item_schema())
+
+    @contextmanager
+    def open_item(self, item, view, selection=None):
+        """Borrow a lazy view reader inside a with block; the host retains credentials."""
+        self._active()
+        uri = item['uri'] if isinstance(item, dict) else item
+        request = dict(uri=uri, view=view)
+        if selection is not None:
+            request['selection'] = selection
+        raw = json.dumps(request).encode('utf-8')
+        if len(raw) > 65536:
+            raise ValueError('Item access request too large')
+        with socket.socket(socket.AF_UNIX) as connection:
+            connection.connect(os.environ.get('XSTREAM_ITEM_SOCKET', str(self.directory / 'item-access.sock')))
+            connection.sendall(struct.pack('>I', len(raw)) + raw)
+            with connection.makefile('rb', buffering=0) as stream:
+                status = _item_message(stream)
+                if not status.get('ok'):
+                    raise ValueError('Item read failed: ' + status.get('error', 'unavailable'))
+                with pa.ipc.open_stream(stream) as reader:
+                    yield _ItemView(reader, stream, self)
+
+
+class _ItemView:
+    def __init__(self, reader, stream, context):
+        self.schema, self._reader, self._stream, self._context = reader.schema, reader, stream, context
+        self._consumed = False
+
+    def batches(self):
+        if self._consumed:
+            raise ValueError('view already consumed')
+        self._consumed = True
+        for batch in self._reader:
+            self._context._active()
+            yield batch
+        if not _item_message(self._stream).get('complete'):
+            raise ValueError('incomplete Item read')
+
+    def bytes(self):
+        if self.schema != pa.schema([('data', pa.binary())]):
+            raise ValueError('bytes view required')
+        for batch in self.batches():
+            for value in batch.column(0):
+                yield value.as_py()
+
+
+def _item_message(stream):
+    def exact(n):
+        chunks = bytearray()
+        while len(chunks) < n:
+            chunk = stream.read(n - len(chunks))
+            if not chunk:
+                raise EOFError('incomplete Item read')
+            chunks.extend(chunk)
+        return chunks
+    size = struct.unpack('>I', exact(4))[0]
+    if not 0 < size <= 65536:
+        raise ValueError('invalid Item response')
+    return json.loads(exact(size))
+
+
+def item_schema():
+    return pa.schema([pa.field(n, pa.string(), nullable=n == 'views') for n in ('uri', 'name', 'kind', 'format', 'views', 'metadata')],
+                     metadata={'xstream.view': 'items', 'xstream.view.version': '1', 'xstream.descriptor': '{"version":1}'})
+
 
 class _Input:
     def __init__(self, context, name, entry):
         self._context, self.name, self._entry = context, name, entry
         self.representation, self.format = entry['representation'], entry['format']
-        if self.representation not in ('bytes', 'records'):
+        if self.representation not in ('bytes', 'records', 'items'):
             raise ValueError('unsupported input representation')
         self._reader = None
         self._consumed = False
@@ -161,6 +232,17 @@ class _Input:
         if self.representation != 'records':
             raise ValueError('records input required')
         return self._batches()
+
+    def items(self):
+        if self.representation != 'items':
+            raise ValueError('items input required')
+        for batch in self._batches():
+            if not batch.schema.equals(item_schema(), check_metadata=False):
+                raise ValueError('invalid items schema')
+            for row in batch.to_pylist():
+                row['views'] = None if row['views'] is None else json.loads(row['views'])
+                row['metadata'] = json.loads(row['metadata'])
+                yield row
 
     def bytes(self):
         if self.representation != 'bytes':

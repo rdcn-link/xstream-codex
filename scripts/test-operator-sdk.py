@@ -23,6 +23,24 @@ def frames(data):
 
 
 class SDKTest(unittest.TestCase):
+    def test_items_input_preserves_identity_order_duplicates_and_unknown_views(self):
+        from xstream_operator import item_schema
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            item = dict(uri='context:/science/a.csv', name='a.csv', kind='unknown', format='', views=None, metadata='{"tag":"sample"}')
+            table = pa.Table.from_pylist([item, item], schema=item_schema())
+            with (directory / 'items.arrow').open('wb') as raw:
+                with pa.ipc.new_stream(raw, table.schema) as writer:
+                    writer.write_table(table)
+            (directory / 'manifest.json').write_text(json.dumps([dict(port='source', file='items.arrow', representation='items', format='items')]))
+            (directory / 'params.json').write_text('{}')
+            with OperatorContext(['operator', tmp, str(directory / 'params.json')], io.BytesIO()) as ctx:
+                items = list(ctx.input('source').items())
+                self.assertEqual(len(items), 2)
+                self.assertEqual(items[0], items[1])
+                self.assertEqual(items[0]['metadata'], {'tag': 'sample'})
+                self.assertIsNone(items[0]['views'])
+
     def test_zero_input_zero_output_operator(self):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp)

@@ -101,7 +101,7 @@ def build(name, runtime_catalog, destination):
             os.link(original, target)
         except OSError:
             shutil.copyfile(original, target)
-    manifest = dict(api_version=2, name=item['operator'], version='1.0',
+    manifest = dict(api_version=2, name=item['operator'], version='1.0', role=('source' if not spec['inputs'] else 'transform'), type='sdk',
                     description=spec['description'],  icon=spec['icon'], inputs=spec['inputs'], parameters=spec['parameters'],
                     execution=dict(executor='python', entrypoint=module, config={}),
                     runtime=runtime, artifact=artifact,

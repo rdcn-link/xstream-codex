@@ -1,4 +1,5 @@
 name: filter_amount
+role: transform
 version: '1.0'
 description: Filter amount >= min_amount and append scaled_amount = amount * factor.
 image: xstream/operator-python:1.0

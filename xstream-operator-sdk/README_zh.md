@@ -104,3 +104,9 @@ JVM 模板实现 `Operator`，可由执行器在独立共享 JVM 内调用。Pyt
 必需的 `previewOutputs`（JVM）/ `preview_outputs`（Python）方法通过与结构推导相同的 worker 提供有界输出样例。默认请求上限为 10 行 / 16 KiB，SDK 与宿主都限制行数和 UTF-8 JSON 大小；自定义算子必须实现接口；纯变换模板可代为实现。方法因当前输入无法提供样例时，应说明原因；样例失败不覆盖 Schema。详见[样例接口与示例](../docs/structure-inference_zh.md#有界输出样例接口)。
 
 依赖声明、锁定环境、执行单元和二进制包装：[依赖环境指南](../docs/dependency-environments_zh.md).
+
+## Item 引用输入
+
+输入端口声明 `representations: [items]`，使用 `ctx.input("source").foreachItem` 遍历资源引用，不会自动打开成员内容。需要内容时，调用 `ctx.openItem(item, "bytes") { stream => ... }`，通过宿主已授权的读取接口延迟访问，回调结束时关闭。返回值是 ArrowDataStream，不是整个文件的字节数组。`ctx.itemsOutput("result")` 输出集合；`ctx.itemsOutput("result", single = true)` 声明并强制恰好一个引用。单个 Item 的内容直接通过 `item_source` 的 `view` 参数读取。
+
+Python 算子使用 `ctx.input('source').items()`，通过 `with ctx.open_item(item, 'bytes') as view:` 取得视图，再增量遍历 `view.bytes()` 或 `view.batches()`。单引用/集合是端口与流元数据的契约，不是 Job 层 map/reduce。见[数据契约](../docs/items-stream_zh.md)和 [Scala 示例](../examples/operators/item-sources/README_zh.md)。

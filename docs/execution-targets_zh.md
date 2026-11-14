@@ -1,10 +1,10 @@
 # 本地执行与远程数据
 
-XStream 在本地引擎中执行 Job 的每个步骤。`context:/dataset/item` 引用宿主 JVM 的 DataCatalog。`read_item` 使用远程 `dacp:` URI 时，以流读取该 Item；后续算子仍在本地执行。远程读取权限不代表提交 Job 的权限。
+XStream 在本地引擎中执行 Job 的每个步骤。`context:/dataset/item` 引用宿主 JVM 的 DataCatalog。`item_source` 使用远程 `dacp:` URI 时，以流读取该 Item；后续算子仍在本地执行。远程读取权限不代表提交 Job 的权限。
 
 ```mermaid
 flowchart LR
-  R[远程 Item 服务] -->|Item 流| Read[本地 read_item]
+  R[远程 Item 服务] -->|Item 流| Read[本地 item_source]
   Read --> Process[本地算子] --> Result[结果流]
 ```
 

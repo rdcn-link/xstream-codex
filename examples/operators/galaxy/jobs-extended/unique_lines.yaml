@@ -1,7 +1,7 @@
 name: Sort text lines and retain one occurrence of each comparison key.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/unique_lines.txt
@@ -15,5 +15,7 @@ steps:
     column: 0
     numeric: false
     header: 0
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

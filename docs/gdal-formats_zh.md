@@ -52,7 +52,7 @@ datasets:
 
 只有白名单中且已安装的驱动可以打开文件。未开放 VRT、远程 URL、数据库连接字符串、多文件 Shapefile、任意子数据集和外部伴随文件发现。NetCDF/HDF5/FITS 使用各自独立插件。支持驱动不表示支持其全部数据特性，应检查条目声明的 Views。
 
-通过普通 `read_item@1.0` 参数读取波段或图层：
+通过普通 `item_source@1.0` 参数读取波段或图层：
 
 ```yaml
 uri: context:/geography/terrain.tif/bands/1

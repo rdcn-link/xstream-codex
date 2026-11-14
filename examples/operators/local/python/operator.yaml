@@ -1,4 +1,5 @@
 name: local_uppercase
+role: transform
 version: '1.0'
 description: Stream ASCII bytes as uppercase using the Python SDK.
 language: python

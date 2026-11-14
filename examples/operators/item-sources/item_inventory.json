@@ -1,0 +1,27 @@
+{
+  "name": "item_inventory",
+  "version": "1.0",
+  "description": "List reference metadata without reading member contents",
+  "role": "transform",
+  "type": "sdk",
+  "inputs": {
+    "source": {
+      "representations": [
+        "items"
+      ],
+      "formats": []
+    }
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "execution": {
+    "executor": "jvm",
+    "entrypoint": "xstream.examples.items.ItemInventory",
+    "config": {}
+  },
+  "api_version": 2
+}

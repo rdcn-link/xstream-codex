@@ -5,18 +5,21 @@ import _root_.xstream.execution.{OperatorFrame,StreamCancel,StreamProtocol}
 import _root_.xstream.data._
 import org.scalatest.funsuite.AnyFunSuite
 import java.nio.file.Files
-class LocalEngineSpec extends AnyFunSuite {
-  test("read_item@1.0 executes archive bytes and rejects directory or records requests") {
+class LocalEngineSpec extends AnyFunSuite with org.scalatest.BeforeAndAfterAll {
+  private val repository=new TestEndpointRepository()
+  override def afterAll():Unit=try repository.close()finally super.afterAll()
+
+  test("item_source@1.0 executes archive bytes and rejects directory or records requests") {
     val dir=Files.createTempDirectory("xstream-zip-read-")
     val file=dir.resolve("geotrans-input.zip")
     val zip=new java.util.zip.ZipOutputStream(Files.newOutputStream(file))
     try {zip.putNextEntry(new java.util.zip.ZipEntry("labels/points.txt"));zip.write("points".getBytes("UTF-8"));zip.closeEntry()}finally zip.close()
     Files.writeString(dir.resolve("plain.txt"),"plain")
-    val settings=Data.mapper.createObjectNode();settings.put("execution_directory",dir.resolve("history").toString)
+    val settings=Data.mapper.createObjectNode();settings.putArray("remote_operator_library_urls").add(repository.url);settings.put("execution_directory",dir.resolve("history").toString)
     settings.putObject("datasets").putObject("files").put("provider","directory").putObject("source").put("root",dir.toString)
     val plugins=new PluginEnvironment();val host=new LocalEngine(settings,plugins)
     def run(path:String,view:String):Array[Byte]={
-      val yaml=s"name: ZIP read\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/files/$path', view: $view}\noutputs: {result: read}\n"
+      val yaml=s"name: ZIP read\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/files/$path', view: $view}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
       val out=new java.io.ByteArrayOutputStream();val cancel=new StreamCancel()
       try {host.engine.run(yaml,f=>if(StreamProtocol.header(f).path("type").asText=="data")out.write(f.data),cancel);out.toByteArray}finally cancel.close()
     }
@@ -24,18 +27,32 @@ class LocalEngineSpec extends AnyFunSuite {
       assert(run("plain.txt","bytes").sameElements("plain".getBytes("UTF-8")))
       assert(run("geotrans-input.zip","bytes").sameElements(Files.readAllBytes(file)))
       assert(run("geotrans-input.zip/labels/points.txt","bytes").sameElements("points".getBytes("UTF-8")))
+      val itemsYaml="name: ZIP items\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/files/geotrans-input.zip', view: items, selection: {recursive: true}}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
+      val frames=scala.collection.mutable.ArrayBuffer.empty[OperatorFrame]
+      val itemsCancel=new StreamCancel()
+      try host.engine.run(itemsYaml,frames+=_,itemsCancel)finally itemsCancel.close()
+      val header=frames.map(StreamProtocol.header).find(_.path("type").asText=="start").get
+      assert(header.path("representation").asText=="items")
+      val allocator=new org.apache.arrow.memory.RootAllocator()
+      try {
+        val found=scala.collection.mutable.ArrayBuffer.empty[ItemReference]
+        frames.filter(f=>StreamProtocol.header(f).path("type").asText=="data").foreach { frame=>
+          ItemReferences.foreach(ArrowIpc.readStream(new java.io.ByteArrayInputStream(frame.data),StreamContext(allocator)))(found+=_)
+        }
+        assert(found.exists(_.uri=="context:/files/geotrans-input.zip/labels/points.txt"))
+      }finally allocator.close()
       intercept[IllegalArgumentException](run("geotrans-input.zip/labels","bytes"))
       intercept[IllegalArgumentException](run("geotrans-input.zip","records"))
     }finally {host.close();plugins.close();Data.deleteTree(dir)}
   }
-  test("read_item selection emits scientific structure and block metadata through a complete Job") {
+  test("item_source selection emits scientific structure and block metadata through a complete Job") {
     val dir=Files.createTempDirectory("xstream-scientific-");Files.writeString(dir.resolve("genome.fa"),">chr1\nACGTACGT\n")
-    val settings=Data.mapper.createObjectNode();settings.put("execution_directory",dir.resolve("history").toString)
+    val settings=Data.mapper.createObjectNode();settings.putArray("remote_operator_library_urls").add(repository.url);settings.put("execution_directory",dir.resolve("history").toString)
     settings.putObject("datasets").putObject("files").put("provider","directory").putObject("source").put("root",dir.toString)
     val plugins=new PluginEnvironment();val host=new LocalEngine(settings,plugins)
     val cancel=new StreamCancel()
     try {
-      val yaml="name: Scientific read\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/files/genome.fa/sequences', view: sequence, selection: {offset: 2, length: 4}}\noutputs: {result: read}\n"
+      val yaml="name: Scientific read\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/files/genome.fa/sequences', view: sequence, selection: {offset: 2, length: 4}}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
       val frames=scala.collection.mutable.ArrayBuffer.empty[OperatorFrame]
       host.engine.run(yaml,frames+=_,cancel)
       val start=frames.map(StreamProtocol.header).find(_.path("type").asText=="start").get
@@ -60,13 +77,13 @@ class LocalEngineSpec extends AnyFunSuite {
   }
   test("standalone context reads share the JVM catalog and stream without a DACP server") {
     val dir=Files.createTempDirectory("xstream-local-");Files.writeString(dir.resolve("input.txt"),"local stream\n")
-    val settings=Data.mapper.createObjectNode();settings.put("execution_directory",dir.resolve("history").toString)
+    val settings=Data.mapper.createObjectNode();settings.putArray("remote_operator_library_urls").add(repository.url);settings.put("execution_directory",dir.resolve("history").toString)
     settings.putObject("datasets").putObject("files").put("provider","directory").putObject("source").put("root",dir.toString)
     val plugins=new PluginEnvironment();val host=new LocalEngine(settings,plugins)
     try {
       assert(host.engine.dataCatalog eq DataCatalogRuntime.catalog)
       assert(host.engine.dataCatalog.list().map(_.name)==Seq("files"))
-      val yaml="name: Local read\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/files/input.txt', view: bytes}\noutputs: {result: read}\n"
+      val yaml="name: Local read\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/files/input.txt', view: bytes}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
       val out=new java.io.ByteArrayOutputStream();val cancel=new StreamCancel()
       try {host.engine.run(yaml,f=>if(StreamProtocol.header(f).path("type").asText=="data")out.write(f.data),cancel);assert(out.toString("UTF-8")=="local stream\n")}finally cancel.close()
       val other=new DataCatalog {def list():Seq[DatasetInfo]=Seq.empty;def open(n:String):PublishedDataset=throw new UnsupportedOperationException}
@@ -75,9 +92,9 @@ class LocalEngineSpec extends AnyFunSuite {
     intercept[IllegalArgumentException](DataCatalogRuntime.catalog)
   }
   test("local references are explicit, preserve parameters and reject conflicting declarations") {
-    val text="name: Local\nsteps:\n- id: filter\n  operator: {local: ./filter}\n  inputs: {}\n  params: {limit: 123}\noutputs: {result: filter}\n"
+    val text="name: Local\nsteps:\n- id: filter\n  operator: {local: ./filter}\n  inputs: {}\n  params: {limit: 123}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: filter}\n"
     val task=Jobs.parse(text).steps.head
-    assert(task.localOperator.contains("./filter") && task.operator.isEmpty && task.source.isEmpty)
+    assert(task.localOperator.contains("./filter") && task.operator.isEmpty && task.inlineOperator.isEmpty)
     assert(task.params.get("limit")==Integer.valueOf(123))
     intercept[IllegalArgumentException](Jobs.parse(text.replace("local: ./filter","local: ./filter, runtime: python@1.0")))
     intercept[IllegalArgumentException](Jobs.parse(text.replace("local: ./filter","local: 123")))

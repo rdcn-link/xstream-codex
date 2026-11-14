@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart TD
-  Change["参数或输入端口改变"] --> Vars["填充 Job 变量"] --> Read{"是否为 read_item？"}
+  Change["参数或输入端口改变"] --> Vars["填充 Job 变量"] --> Read{"是否为 item_source？"}
   Read -->|是| Metadata["读取当前 Target 的 Item 元数据"]
   Read -->|否| Worker["复用或启动推导 worker"]
   Metadata --> Result["返回当前步骤的结构和有界样例"]
@@ -16,7 +16,7 @@ flowchart TD
 
 ## 使用方式
 
-设计器通过 `xstream-operator-inference` 在本地执行推导。嵌入式应用使用 `OperatorInferenceService`，提供插件环境、仓库与缓存配置，以及有界 worker 配置，无需数据服务器。参见[模块指南](../xstream-operator-inference/README_zh.md)。宿主从绑定的数据目录或配置的远程连接器为 `read_item` 提供元信息。
+设计器通过 `xstream-operator-inference` 在本地执行推导。嵌入式应用使用 `OperatorInferenceService`，提供插件环境、仓库与缓存配置，以及有界 worker 配置，无需数据服务器。参见[模块指南](../xstream-operator-inference/README_zh.md)。宿主从绑定的数据目录或配置的远程连接器为 `item_source` 提供元信息。
 
 对于已配置的远程执行服务，内置连接器提供：
 
@@ -107,7 +107,7 @@ object Uppercase extends Operator {
 
 ## 隔离与限制
 
-推导方法只能做元信息计算，不能读实际数据、访问外部服务或产生副作用。服务端在无网络、只读根文件系统的隔离 worker 容器中调用，每个 worker 限制为 512 MiB 内存、64 个进程和一个 CPU；请求及响应各最多 1 MiB。只挂载元数据管道、worker 适配代码和只读算子制品，不挂载数据集或凭据。`read_item` 是核心传输算子，使用 Flight 元信息查询而不打开内容流；数据插件描述 Item 时也应避免扫描内容。
+推导方法只能做元信息计算，不能读实际数据、访问外部服务或产生副作用。服务端在无网络、只读根文件系统的隔离 worker 容器中调用，每个 worker 限制为 512 MiB 内存、64 个进程和一个 CPU；请求及响应各最多 1 MiB。只挂载元数据管道、worker 适配代码和只读算子制品，不挂载数据集或凭据。`item_source` 是核心传输算子，使用 Flight 元信息查询而不打开内容流；数据插件描述 Item 时也应避免扫描内容。
 
 修改 SDK 或运行时后需要重新构建相应运行环境与算子包。仓库发布不在仓库进程中执行用户代码；推导能力在执行节点实际调用时验证。
 
@@ -146,7 +146,7 @@ Java/Scala SDK 的 `OperatorRunner.infer` 与 `Operator.main` 支持该模式；
 
 参数类型通过[静态参数契约](operator-parameters_zh.md)声明，读取它们无需启动推导 worker。
 
-在线设计器使用 `xstream-operator-inference` 公共模块在本地启动 worker，从配置的仓库解析算子。普通算子不经 Union 或成员节点推导；`read_item` 仅访问配置目标的 Item 元信息。节点服务器与设计器共用算子解析、worker 池及图结构传播实现。
+在线设计器使用 `xstream-operator-inference` 公共模块在本地启动 worker，从配置的仓库解析算子。普通算子不经 Union 或成员节点推导；`item_source` 仅访问配置目标的 Item 元信息。节点服务器与设计器共用算子解析、worker 池及图结构传播实现。
 
 ## 有界输出样例接口
 
@@ -174,7 +174,7 @@ sample:
   truncated: false
 ```
 
-字节样例使用 `representation: bytes`、`format`、`data_base64` 和 `truncated`，不包含 `rows`。样例不得声称具有输出端口不支持的表示。样例来自算子接口，不由浏览器根据 Schema 合成。普通结构推导不打开数据流；设计器先逐步骤展示结构，随后请求样例，内置 `read_item` 使用受限行数的 records 读取或受限字节读取，并及时关闭源流。
+字节样例使用 `representation: bytes`、`format`、`data_base64` 和 `truncated`，不包含 `rows`。样例不得声称具有输出端口不支持的表示。样例来自算子接口，不由浏览器根据 Schema 合成。普通结构推导不打开数据流；设计器先逐步骤展示结构，随后请求样例，仓库算子 `item_source` 使用受限行数的 records 读取或受限字节读取，并及时关闭源流。
 
 Python 示例（恒等转换，在模块入口注册必需方法）：
 

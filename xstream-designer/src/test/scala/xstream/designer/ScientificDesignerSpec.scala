@@ -33,13 +33,15 @@ class ScientificDesignerSpec extends AnyFunSuite {
     def job(view:String="sequence",selection:String="{ids: [chr1], offset: 2, length: $N}")=s"""name: Scientific preview
       |steps:
       |- id: read
-      |  operator: read_item@1.0
+      |  operator: item_source@1.0
       |  inputs: {}
       |  params:
       |    uri: context:/science/sample.fa/sequences
       |    view: $view
       |    selection: $selection
-      |outputs: {result: read}
+      |- id: client_sink
+      |  operator: client_sink@1.0
+      |  inputs: {result: read}
       |""".stripMargin
     try {
       val views=post("views",Json.obj());assert(views.path("array").path("selection").path("properties").has("stride"));assert(!views.has("image"));assert(views.path("sequence").path("selection").path("properties").has("ids"))

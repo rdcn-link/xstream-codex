@@ -1,7 +1,7 @@
 name: Sort, merge and measure interval coverage
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   params:
     uri: context:/galaxy/extended/bed_sort.txt
     view: bytes
@@ -24,5 +24,7 @@ steps:
     chromosomes:
     - chr1=20
     - chr2=10
-outputs:
-  result: coverage
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: coverage

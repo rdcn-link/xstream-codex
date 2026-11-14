@@ -12,11 +12,11 @@ import java.text.Normalizer
 import java.util.{Base64,Locale}
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import com.fasterxml.jackson.databind.node.{ArrayNode,ObjectNode}
-import xstream.operator.{Operator,OperatorContext}
+import xstream.operator.{TransformOperator,OperatorContext}
 import scala.jdk.CollectionConverters._
 
 /** Document operators explicitly buffer at most 16 MiB; Arrow transport remains streamed. */
-abstract class DocumentOperator(val operation:String) extends Operator {
+abstract class DocumentOperator(val operation:String) extends TransformOperator {
   final def inferOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode):xstream.execution.InferenceResult={
     require(inputs.keySet==Set("source"),"expected source input")
     require(inputs("source").representations.isEmpty || inputs("source").representations==Set("bytes"),"bytes input required")

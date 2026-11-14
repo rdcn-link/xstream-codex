@@ -1,7 +1,7 @@
 name: Normalize missing genotypes and recompute allele counts before dosage
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   params:
     uri: context:/galaxy/extended/vcf_missing_to_ref.txt
     view: bytes
@@ -21,5 +21,7 @@ steps:
   params: {}
   inputs:
     source: counts
-outputs:
-  result: dosage
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: dosage

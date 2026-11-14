@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 require('../xstream-designer/src/main/resources/web/inference-state.js');
 const {keys,retain}=globalThis.InferenceChanges;
 const job={name:'Branches',steps:[
- {id:'read',operator:'read_item@1.0',inputs:{},params:{uri:'dacp://example/weather/observations'}},
+ {id:'read',operator:'item_source@1.0',inputs:{},params:{uri:'dacp://example/weather/observations'}},
  {id:'filter',operator:'filter@1',inputs:{source:'read'},params:{condition:'true'}},
  {id:'tail',operator:'convert@1',inputs:{source:'filter'},params:{}},
  {id:'other',operator:'source@1',inputs:{},params:{value:1}}

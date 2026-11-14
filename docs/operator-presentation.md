@@ -19,7 +19,7 @@ parameters:
   additionalProperties: false
 ```
 
-Approval requires 1–16 unique labels, each 1–80 characters without surrounding whitespace or control characters. Labels differing only in letter case cannot be repeated in one manifest. Administrators select existing labels or add new ones; no registry edits or server rebuilds are needed. Public search matches all assigned labels. The Designer lists an operator in every assigned category and retains the same operator reference when dragged from any category. Built-in `read_item` uses its built-in Data sources category.
+Approval requires 1–16 unique labels, each 1–80 characters without surrounding whitespace or control characters. Labels differing only in letter case cannot be repeated in one manifest. Administrators select existing labels or add new ones; no registry edits or server rebuilds are needed. Public search matches all assigned labels. The Designer lists an operator in every assigned category and retains the same operator reference when dragged from any category. `item_source` uses its administrator-assigned repository tags.
 
 `icon` contains only `path` and `color`. `path` uses SVG's 24×24 coordinate system, starts with M/m, contains at most 2048 characters and accepts only path commands and numeric characters. Multiple subpaths are allowed. `color` is `#RRGGBB`. Rendering uses rounded strokes without fill. Full SVG, scripts, HTML, external URLs and image files are not accepted. Validation checks syntax restrictions, not visual quality.
 

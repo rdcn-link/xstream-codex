@@ -19,11 +19,23 @@ import com.github.dockerjava.api.async.ResultCallback
 
 /** Receives already-authorized named item streams; never creates/publishes an output dataset. */
 class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
+  /** Resolve an authorized repository operator and install its pinned runtime before execution. */
+  def prepare(task:Task,cancel:StreamCancel):ResolvedOperator={
+    Jobs.authorizeSource(config,task)
+    require(task.inlineOperator.isEmpty && task.localOperator.isEmpty,"preparation requires a repository operator")
+    cancel.active()
+    val dc=DefaultDockerClientConfig.createDefaultConfigBuilder().build()
+    val transport=new ApacheDockerHttpClient.Builder().dockerHost(dc.getDockerHost).sslConfig(dc.getSSLConfig).build()
+    val docker=DockerClientImpl.getInstance(dc,transport)
+    try {val result=OperatorLibrary.resolve(config,task.operator,docker);cancel.active();result}
+    finally {docker.close();transport.close()}
+  }
   def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,onRuntime:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,resources:ExecutionResources=ExecutionResources()): Unit = {
     config.executionResourceLimits.validate(resources)
     Jobs.authorizeSource(config,task)
     Jobs.readBinding(task).foreach { binding=>
-      require(inputs.isEmpty,"read_item has no input ports")
+      RepositoryEndpoints.source(config,task.operator)
+      require(inputs.isEmpty,"item_source has no input ports")
       val stream=cancel.add(config.openItem(allocator,binding,cancel))
       try {var f=stream.next();while(f.nonEmpty){cancel.active();emit(StreamProtocol.rename(f.get,"result"));f=stream.next()}}
       finally stream.close()
@@ -33,27 +45,23 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
     val transport=new ApacheDockerHttpClient.Builder().dockerHost(dc.getDockerHost).sslConfig(dc.getSSLConfig).build()
     val docker=DockerClientImpl.getInstance(dc,transport)
     val temporary=Files.createTempDirectory("dacp-stream-input-")
+    var itemReads:ItemReadService=null
     var container: String=null
     val handles=scala.collection.mutable.ArrayBuffer.empty[FileChannel]
     val pipe=new java.io.PipedInputStream(65536);val stdout=new java.io.PipedOutputStream(pipe)
     var callback: ResultCallback.Adapter[Frame]=null
     val stderr=new StringBuilder
     try {
-      val definition=resolved.getOrElse(task.source match {
+      val definition=resolved.orElse(task.preparedInline).getOrElse(task.inlineOperator match {
+        case Some(op)=>InlineOperatorLibrary.resolve(config,config.inlineRuntimes,config.localOperatorBase.get,op,docker,temporary.resolve("inline"),()=>cancel.active())
         case None=>task.localOperator match {
           case Some(reference)=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,reference,docker,()=>cancel.active())
           case None=>OperatorLibrary.resolve(config,task.operator,docker)
         }
-        case Some(code)=>
-          val runtime=config.sourceRuntimes.getOrElse(code.runtime,throw new IllegalArgumentException("source runtime is not configured"))
-          val artifact=temporary.resolve("operator.source")
-          Files.writeString(artifact,code.source)
-          val command=config.plugins.byId(classOf[OperatorExecutor],runtime.executor).sourceCommand(OperatorProgram(code.runtime,code.entrypoint,Some(artifact)),"/operator/operator.source")
-          val contract=PortContract(Set("bytes","records"),Set.empty,None)
-          ResolvedOperator(docker.inspectImageCmd(runtime.image).exec().getId,Some(artifact),Some("/operator/operator.source"),command,inputs.keys.map(_->contract).toMap,Map.empty,runtime.executor,Some(OperatorProgram(code.runtime,code.entrypoint,Some(artifact))))
       })
       onRuntime.foreach(_(OperatorLibrary.runtimeDescriptor(definition)))
       require(inputs.keySet==definition.inputs.keySet,"input ports do not match operator declaration")
+      require(definition.role.forall(_!=xstream.operator.OperatorRole.Sink) || task.outputPorts.isEmpty,"Sink cannot expose output ports")
       val starts=inputs.toVector.sortBy(_._1).map {case(port,source)=>
         val f=source.next().getOrElse(throw new IllegalArgumentException("missing input metadata"));val h=StreamProtocol.header(f)
         require(h.path("type").asText=="start","input must start with metadata");definition.inputs(port).accept(h)
@@ -71,6 +79,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       }
       Files.write(temporary.resolve("manifest.json"),Data.mapper.writeValueAsBytes(manifest))
       Files.write(temporary.resolve("params.json"),Data.mapper.writeValueAsBytes(task.params))
+      itemReads=cancel.add(new ItemReadService(temporary,allocator,cancel,(binding,token)=>config.openItem(allocator,binding,token)))
       op.command.files.foreach {case(name,bytes)=>
         require(name.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*"),"invalid runtime resource name")
         require(!Files.exists(temporary.resolve(name)),"runtime resource shadows input")
@@ -87,7 +96,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
         .withLogConfig(new LogConfig(LogConfig.LoggingType.NONE))
       val create=docker.createContainerCmd(op.image).withHostConfig(host)
         .withLabels(Map("xstream.execution_mode"->(if(onEvent.nonEmpty)"shared_process"else "isolated_step"),"xstream.step"->task.id).asJava)
-        .withEnv((op.command.environment+("XSTREAM_OPERATOR"->task.operator)).map{case(k,v)=>s"$k=$v"}.toSeq.asJava)
+        .withEnv((op.command.environment+("XSTREAM_OPERATOR"->task.operator)+("XSTREAM_ITEM_SOCKET"->"/input/item-access.sock")).map{case(k,v)=>s"$k=$v"}.toSeq.asJava)
         .withCmd(op.command.arguments.asJava)
       op.command.entrypoint.foreach(e=>create.withEntrypoint(e.asJava))
       container=create.exec().getId
@@ -147,7 +156,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
         else {
         require(port.matches("[A-Za-z_][A-Za-z0-9_-]{0,127}"),"invalid output port")
         h.path("type").asText match {
-          case "start"=>require(!begun(port),"duplicate output start");op.outputs.getOrElse(port,PortContract(Set("bytes","records"),Set.empty,None)).accept(h);begun+=port
+          case "start"=>require(op.role.forall(_!=xstream.operator.OperatorRole.Sink),"Sink cannot emit output streams");require(!begun(port),"duplicate output start");op.outputs.getOrElse(port,PortContract(_root_.xstream.execution.OperatorPorts.representations(config.plugins),Set.empty,None)).accept(h);begun+=port
           case "data"=>require(begun(port) && !ended(port),"output data before metadata or after end")
           case "end"=>require(begun(port) && !ended(port),"invalid output end");ended+=port
           case _=>throw new IllegalArgumentException("invalid operator output event")
@@ -167,6 +176,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       if(callback!=null)try callback.close() catch{case _:Throwable=>()}
       try pipe.close() finally stdout.close()
       handles.foreach(c=>try c.close() catch{case _:Throwable=>()})
+      if(itemReads!=null)itemReads.close()
       docker.close();transport.close();Data.deleteTree(temporary)
     }
   }

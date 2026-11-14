@@ -34,7 +34,7 @@
         "result": "Reverse the order of newline-separated text records. Newline records only; a bounded 8 MiB-character buffer is required. No custom separators."
       },
       "parameters": {},
-      "example_job": "name: Reverse the order of newline-separated text records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_lines@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Reverse the order of newline-separated text records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_lines@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -148,7 +148,7 @@
           "example": "rz"
         }
       },
-      "example_job": "name: Number nonempty text lines with configurable starting number, increment and\n  alignment.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/number_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_number_lines@1.0\n  inputs:\n    source: read\n  params:\n    start: 1\n    increment: 1\n    width: 3\n    style: rz\noutputs:\n  result: process\n"
+      "example_job": "name: Number nonempty text lines with configurable starting number, increment and\n  alignment.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/number_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_number_lines@1.0\n  inputs:\n    source: read\n  params:\n    start: 1\n    increment: 1\n    width: 3\n    style: rz\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -266,7 +266,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Stable sort of text rows using a selected tab-separated key.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_lines@1.0\n  inputs:\n    source: read\n  params:\n    column: 2\n    numeric: true\n    reverse: false\n    ignore_case: false\n    header: 1\noutputs:\n  result: process\n"
+      "example_job": "name: Stable sort of text rows using a selected tab-separated key.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_lines@1.0\n  inputs:\n    source: read\n  params:\n    column: 2\n    numeric: true\n    reverse: false\n    ignore_case: false\n    header: 1\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -316,7 +316,7 @@
         "result": "Sort the tab-separated fields within each row alphabetically. As upstream, strips surrounding row whitespace before sorting fields."
       },
       "parameters": {},
-      "example_job": "name: Sort the tab-separated fields within each row alphabetically.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_fields.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_fields@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Sort the tab-separated fields within each row alphabetically.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_fields.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_fields@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -422,7 +422,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Sort text lines and retain one occurrence of each comparison key.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unique_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_unique_lines@1.0\n  inputs:\n    source: read\n  params:\n    ignore_case: false\n    column: 0\n    numeric: false\n    header: 0\noutputs:\n  result: process\n"
+      "example_job": "name: Sort text lines and retain one occurrence of each comparison key.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unique_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_unique_lines@1.0\n  inputs:\n    source: read\n  params:\n    ignore_case: false\n    column: 0\n    numeric: false\n    header: 0\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -518,7 +518,7 @@
           "example": "all"
         }
       },
-      "example_job": "name: Collapse adjacent equal text records, optionally counting or selecting duplicate\n  groups.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unique_consecutive.txt\n    view: bytes\n- id: process\n  operator: galaxy_unique_consecutive@1.0\n  inputs:\n    source: read\n  params:\n    ignore_case: false\n    count: true\n    mode: all\noutputs:\n  result: process\n"
+      "example_job": "name: Collapse adjacent equal text records, optionally counting or selecting duplicate\n  groups.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unique_consecutive.txt\n    view: bytes\n- id: process\n  operator: galaxy_unique_consecutive@1.0\n  inputs:\n    source: read\n  params:\n    ignore_case: false\n    count: true\n    mode: all\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -599,7 +599,7 @@
           "example": ";"
         }
       },
-      "example_job": "name: Expand a delimited list in one tab-separated field into multiple rows.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unfold_column.txt\n    view: bytes\n- id: process\n  operator: galaxy_unfold_column@1.0\n  inputs:\n    source: read\n  params:\n    column: 2\n    separator: ;\noutputs:\n  result: process\n"
+      "example_job": "name: Expand a delimited list in one tab-separated field into multiple rows.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/unfold_column.txt\n    view: bytes\n- id: process\n  operator: galaxy_unfold_column@1.0\n  inputs:\n    source: read\n  params:\n    column: 2\n    separator: ;\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -729,7 +729,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Replace literal text within one tab-separated field.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/replace_text_in_column.txt\n    view: bytes\n- id: process\n  operator: galaxy_replace_text_in_column@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\n    column: 1\noutputs:\n  result: process\n"
+      "example_job": "name: Replace literal text within one tab-separated field.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/replace_text_in_column.txt\n    view: bytes\n- id: process\n  operator: galaxy_replace_text_in_column@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\n    column: 1\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -845,7 +845,7 @@
           "example": false
         }
       },
-      "example_job": "name: Replace literal text within complete lines.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/replace_text_in_line.txt\n    view: bytes\n- id: process\n  operator: galaxy_replace_text_in_line@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\noutputs:\n  result: process\n"
+      "example_job": "name: Replace literal text within complete lines.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/replace_text_in_line.txt\n    view: bytes\n- id: process\n  operator: galaxy_replace_text_in_line@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -961,7 +961,7 @@
           "example": false
         }
       },
-      "example_job": "name: Replace literal text within complete lines.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/find_and_replace.txt\n    view: bytes\n- id: process\n  operator: galaxy_find_and_replace@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\noutputs:\n  result: process\n"
+      "example_job": "name: Replace literal text within complete lines.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/find_and_replace.txt\n    view: bytes\n- id: process\n  operator: galaxy_find_and_replace@1.0\n  inputs:\n    source: read\n  params:\n    find: cat\n    replacement: dog\n    first_only: false\n    ignore_case: false\n    skip_header: false\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1052,7 +1052,7 @@
           "example": true
         }
       },
-      "example_job": "name: Select lines containing a literal search string, with optional inversion and\n  case folding.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/grep_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_grep_lines@1.0\n  inputs:\n    source: read\n  params:\n    pattern: cat\n    invert: false\n    ignore_case: true\noutputs:\n  result: process\n"
+      "example_job": "name: Select lines containing a literal search string, with optional inversion and\n  case folding.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/grep_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_grep_lines@1.0\n  inputs:\n    source: read\n  params:\n    pattern: cat\n    invert: false\n    ignore_case: true\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1147,7 +1147,7 @@
           "example": false
         }
       },
-      "example_job": "name: Reorder table columns by their header names, optionally discarding unselected\n  columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/arrange_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_arrange_columns@1.0\n  inputs:\n    source: read\n  params:\n    names:\n    - C\n    - A\n    discard: false\noutputs:\n  result: process\n"
+      "example_job": "name: Reorder table columns by their header names, optionally discarding unselected\n  columns.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/arrange_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_arrange_columns@1.0\n  inputs:\n    source: read\n  params:\n    names:\n    - C\n    - A\n    discard: false\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1231,7 +1231,7 @@
           "example": "header"
         }
       },
-      "example_job": "name: Add a literal header or footer line to a text stream.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/add_line.txt\n    view: bytes\n- id: process\n  operator: galaxy_add_line@1.0\n  inputs:\n    source: read\n  params:\n    text: header\n    position: header\noutputs:\n  result: process\n"
+      "example_job": "name: Add a literal header or footer line to a text stream.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/add_line.txt\n    view: bytes\n- id: process\n  operator: galaxy_add_line@1.0\n  inputs:\n    source: read\n  params:\n    text: header\n    position: header\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1312,7 +1312,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Generate a configured line repeatedly after draining the input stream.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/recurring_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_recurring_lines@1.0\n  inputs:\n    source: read\n  params:\n    text: abc\n    times: 3\noutputs:\n  result: process\n"
+      "example_job": "name: Generate a configured line repeatedly after draining the input stream.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/recurring_lines.txt\n    view: bytes\n- id: process\n  operator: galaxy_recurring_lines@1.0\n  inputs:\n    source: read\n  params:\n    text: abc\n    times: 3\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1417,7 +1417,7 @@
           "example": ""
         }
       },
-      "example_job": "name: Remove named table columns or keep only the named columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/remove_columns_by_header.txt\n    view: bytes\n- id: process\n  operator: galaxy_remove_columns_by_header@1.0\n  inputs:\n    source: read\n  params:\n    names:\n    - B\n    keep: false\n    strip_prefix: ''\noutputs:\n  result: process\n"
+      "example_job": "name: Remove named table columns or keep only the named columns.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/remove_columns_by_header.txt\n    view: bytes\n- id: process\n  operator: galaxy_remove_columns_by_header@1.0\n  inputs:\n    source: read\n  params:\n    names:\n    - B\n    keep: false\n    strip_prefix: ''\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1485,7 +1485,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Alphabetically reorder table columns by header, optionally pinning one column\n  first.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_columns_by_header.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_columns_by_header@1.0\n  inputs:\n    source: read\n  params:\n    key_column: 2\noutputs:\n  result: process\n"
+      "example_job": "name: Alphabetically reorder table columns by header, optionally pinning one column\n  first.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sort_columns_by_header.txt\n    view: bytes\n- id: process\n  operator: galaxy_sort_columns_by_header@1.0\n  inputs:\n    source: read\n  params:\n    key_column: 2\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1577,7 +1577,7 @@
           "example": true
         }
       },
-      "example_job": "name: Add an input label as a new table column, with optional header and prepending.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/add_input_name.txt\n    view: bytes\n- id: process\n  operator: galaxy_add_input_name@1.0\n  inputs:\n    source: read\n  params:\n    label: run1\n    header: sample\n    prepend: true\noutputs:\n  result: process\n"
+      "example_job": "name: Add an input label as a new table column, with optional header and prepending.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/add_input_name.txt\n    view: bytes\n- id: process\n  operator: galaxy_add_input_name@1.0\n  inputs:\n    source: read\n  params:\n    label: run1\n    header: sample\n    prepend: true\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1674,7 +1674,7 @@
           "example": false
         }
       },
-      "example_job": "name: Convert explicitly configured fixed-width fields into trimmed tab-separated\n  columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fixed_width_to_tabular.txt\n    view: bytes\n- id: process\n  operator: galaxy_fixed_width_to_tabular@1.0\n  inputs:\n    source: read\n  params:\n    widths:\n    - 4\n    - 3\n    pad_short: false\noutputs:\n  result: process\n"
+      "example_job": "name: Convert explicitly configured fixed-width fields into trimmed tab-separated\n  columns.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fixed_width_to_tabular.txt\n    view: bytes\n- id: process\n  operator: galaxy_fixed_width_to_tabular@1.0\n  inputs:\n    source: read\n  params:\n    widths:\n    - 4\n    - 3\n    pad_short: false\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1739,7 +1739,7 @@
           "example": true
         }
       },
-      "example_job": "name: Convert FASTA-like SOLiD color-space sequences to nucleotide FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/colorspace_to_fasta.txt\n    view: bytes\n- id: process\n  operator: galaxy_colorspace_to_fasta@1.0\n  inputs:\n    source: read\n  params:\n    keep_prefix: true\noutputs:\n  result: process\n"
+      "example_job": "name: Convert FASTA-like SOLiD color-space sequences to nucleotide FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/colorspace_to_fasta.txt\n    view: bytes\n- id: process\n  operator: galaxy_colorspace_to_fasta@1.0\n  inputs:\n    source: read\n  params:\n    keep_prefix: true\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1806,7 +1806,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Extract one mate from concatenated equal-length paired FASTQ records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/split_paired_reads.txt\n    view: bytes\n- id: process\n  operator: galaxy_split_paired_reads@1.0\n  inputs:\n    source: read\n  params:\n    mate: 2\noutputs:\n  result: process\n"
+      "example_job": "name: Extract one mate from concatenated equal-length paired FASTQ records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/split_paired_reads.txt\n    view: bytes\n- id: process\n  operator: galaxy_split_paired_reads@1.0\n  inputs:\n    source: read\n  params:\n    mate: 2\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1929,7 +1929,7 @@
           "example": 4
         }
       },
-      "example_job": "name: Collapse consecutive pileup positions meeting a minimum depth into BED-like\n  sequence intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/pileup_interval.txt\n    view: bytes\n- id: process\n  operator: galaxy_pileup_interval@1.0\n  inputs:\n    source: read\n  params:\n    min_coverage: 3\n    sequence_column: 1\n    position_column: 2\n    base_column: 3\n    coverage_column: 4\noutputs:\n  result: process\n"
+      "example_job": "name: Collapse consecutive pileup positions meeting a minimum depth into BED-like\n  sequence intervals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/pileup_interval.txt\n    view: bytes\n- id: process\n  operator: galaxy_pileup_interval@1.0\n  inputs:\n    source: read\n  params:\n    min_coverage: 3\n    sequence_column: 1\n    position_column: 2\n    base_column: 3\n    coverage_column: 4\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -1996,7 +1996,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Expand one or two pgSnp alleles, frequencies and scores into separate columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/divide_pg_snp.txt\n    view: bytes\n- id: process\n  operator: galaxy_divide_pg_snp@1.0\n  inputs:\n    source: read\n  params:\n    reference_column: 0\noutputs:\n  result: process\n"
+      "example_job": "name: Expand one or two pgSnp alleles, frequencies and scores into separate columns.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/divide_pg_snp.txt\n    view: bytes\n- id: process\n  operator: galaxy_divide_pg_snp@1.0\n  inputs:\n    source: read\n  params:\n    reference_column: 0\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2075,7 +2075,7 @@
           "example": true
         }
       },
-      "example_job": "name: Convert called VCF SNP genotypes to pgSnp allele counts.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_to_pgsnp.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_to_pgsnp@1.0\n  inputs:\n    source: read\n  params:\n    sample_column: 0\n    prefix_chr: true\noutputs:\n  result: process\n"
+      "example_job": "name: Convert called VCF SNP genotypes to pgSnp allele counts.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_to_pgsnp.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_to_pgsnp@1.0\n  inputs:\n    source: read\n  params:\n    sample_column: 0\n    prefix_chr: true\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2145,7 +2145,7 @@
           "example": "dna"
         }
       },
-      "example_job": "name: Reverse-complement FASTA nucleotide sequences using the IUPAC alphabet.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_complement.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_complement@1.0\n  inputs:\n    source: read\n  params:\n    alphabet: dna\noutputs:\n  result: process\n"
+      "example_job": "name: Reverse-complement FASTA nucleotide sequences using the IUPAC alphabet.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_complement.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_complement@1.0\n  inputs:\n    source: read\n  params:\n    alphabet: dna\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2222,7 +2222,7 @@
           "example": false
         }
       },
-      "example_job": "name: Translate nucleotide FASTA to protein FASTA with the standard genetic code.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/translate.txt\n    view: bytes\n- id: process\n  operator: galaxy_translate@1.0\n  inputs:\n    source: read\n  params:\n    to_stop: false\n    cds: false\noutputs:\n  result: process\n"
+      "example_job": "name: Translate nucleotide FASTA to protein FASTA with the standard genetic code.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/translate.txt\n    view: bytes\n- id: process\n  operator: galaxy_translate@1.0\n  inputs:\n    source: read\n  params:\n    to_stop: false\n    cds: false\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2271,7 +2271,7 @@
         "result": "Count all 64 unambiguous DNA codons over FASTA sequences in frame zero. Input lengths must be multiples of three. Only A/C/G/T codons are accepted; output is deterministic lexicographic codon/count TSV, including zero counts."
       },
       "parameters": {},
-      "example_job": "name: Count all 64 unambiguous DNA codons over FASTA sequences in frame zero.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/codon_count.txt\n    view: bytes\n- id: process\n  operator: galaxy_codon_count@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count all 64 unambiguous DNA codons over FASTA sequences in frame zero.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/codon_count.txt\n    view: bytes\n- id: process\n  operator: galaxy_codon_count@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2320,7 +2320,7 @@
         "result": "Report per-sequence A/C/G/T counts, sequence length and GC fraction. FASTA input. GC denominator includes ambiguous symbols; zero-length records use GC fraction zero. Output CG% is the upstream fraction, not a percentage."
       },
       "parameters": {},
-      "example_job": "name: Report per-sequence A/C/G/T counts, sequence length and GC fraction.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/base_distribution.txt\n    view: bytes\n- id: process\n  operator: galaxy_base_distribution@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report per-sequence A/C/G/T counts, sequence length and GC fraction.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/base_distribution.txt\n    view: bytes\n- id: process\n  operator: galaxy_base_distribution@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2404,7 +2404,7 @@
           "example": "both"
         }
       },
-      "example_job": "name: Find IUPAC nucleotide motifs in FASTA and emit zero-based half-open BED6 locations.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/find_subsequences.txt\n    view: bytes\n- id: process\n  operator: galaxy_find_subsequences@1.0\n  inputs:\n    source: read\n  params:\n    pattern: AC\n    strand: both\noutputs:\n  result: process\n"
+      "example_job": "name: Find IUPAC nucleotide motifs in FASTA and emit zero-based half-open BED6 locations.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/find_subsequences.txt\n    view: bytes\n- id: process\n  operator: galaxy_find_subsequences@1.0\n  inputs:\n    source: read\n  params:\n    pattern: AC\n    strand: both\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2471,7 +2471,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Compute scaffold, contig and base-composition summary statistics from FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fasta_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_fasta_stats@1.0\n  inputs:\n    source: read\n  params:\n    genome_size: 0\noutputs:\n  result: process\n"
+      "example_job": "name: Compute scaffold, contig and base-composition summary statistics from FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fasta_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_fasta_stats@1.0\n  inputs:\n    source: read\n  params:\n    genome_size: 0\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2564,7 +2564,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Count motif-bearing windows upstream and downstream of each indel.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/motif_flank_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_motif_flank_counts@1.0\n  inputs:\n    source: read\n  params:\n    motifs:\n    - AC\n    windows: 1\noutputs:\n  result: process\n"
+      "example_job": "name: Count motif-bearing windows upstream and downstream of each indel.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/motif_flank_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_motif_flank_counts@1.0\n  inputs:\n    source: read\n  params:\n    motifs:\n    - AC\n    windows: 1\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2615,7 +2615,7 @@
         "result": "Generate Circos chromosome definitions from FASTA sequence lengths. FASTA text; sequence IDs must be unique. Colors are indexed from zero. No image rendering."
       },
       "parameters": {},
-      "example_job": "name: Generate Circos chromosome definitions from FASTA sequence lengths.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_karyotype_fasta.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_karyotype_fasta@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Generate Circos chromosome definitions from FASTA sequence lengths.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_karyotype_fasta.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_karyotype_fasta@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2666,7 +2666,7 @@
         "result": "Generate Circos chromosome definitions from a sequence-length table. Unquoted tab-separated ID and positive length; unlike upstream, malformed rows fail explicitly."
       },
       "parameters": {},
-      "example_job": "name: Generate Circos chromosome definitions from a sequence-length table.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_karyotype_lengths.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_karyotype_lengths@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Generate Circos chromosome definitions from a sequence-length table.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_karyotype_lengths.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_karyotype_lengths@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2717,7 +2717,7 @@
         "result": "Convert BED intervals to Circos tile records. BED3 or BED6+; zero-based half-open coordinates. Extra BED fields are ignored."
       },
       "parameters": {},
-      "example_job": "name: Convert BED intervals to Circos tile records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_tiles_bed.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_tiles_bed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert BED intervals to Circos tile records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_tiles_bed.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_tiles_bed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2768,7 +2768,7 @@
         "result": "Convert labeled BED intervals to Circos text records. BED6+ required; zero-based half-open coordinates. Extra BED fields are ignored."
       },
       "parameters": {},
-      "example_job": "name: Convert labeled BED intervals to Circos text records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_text_bed.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_text_bed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert labeled BED intervals to Circos text records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_text_bed.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_text_bed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2831,7 +2831,7 @@
           "example": "Name"
         }
       },
-      "example_job": "name: Convert flat GFF3 features to sorted Circos tile records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_tiles_gff3.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_tiles_gff3@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert flat GFF3 features to sorted Circos tile records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_tiles_gff3.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_tiles_gff3@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2894,7 +2894,7 @@
           "example": "Name"
         }
       },
-      "example_job": "name: Convert named flat GFF3 features to sorted Circos text records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_text_gff3.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_text_gff3@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert named flat GFF3 features to sorted Circos text records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_text_gff3.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_text_gff3@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -2957,7 +2957,7 @@
           "example": true
         }
       },
-      "example_job": "name: Remove trailing standard-code stop codons from nucleotide FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/remove_terminal_stop_codons.txt\n    view: bytes\n- id: process\n  operator: galaxy_remove_terminal_stop_codons@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Remove trailing standard-code stop codons from nucleotide FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/remove_terminal_stop_codons.txt\n    view: bytes\n- id: process\n  operator: galaxy_remove_terminal_stop_codons@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3008,7 +3008,7 @@
         "result": "Convert WindowMasker inclusive intervals to BED4. Text interval mode only. Zero-based inclusive input becomes half-open BED; global wm_N labels begin at zero."
       },
       "parameters": {},
-      "example_job": "name: Convert WindowMasker inclusive intervals to BED4.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/windowmasker_to_bed.txt\n    view: bytes\n- id: process\n  operator: galaxy_windowmasker_to_bed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert WindowMasker inclusive intervals to BED4.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/windowmasker_to_bed.txt\n    view: bytes\n- id: process\n  operator: galaxy_windowmasker_to_bed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3059,7 +3059,7 @@
         "result": "Count valid feature records in a GFF stream. Counts syntactically valid nine-column GFF records, not logical exon groups. Malformed rows fail rather than silently skipping. FASTA sections are rejected."
       },
       "parameters": {},
-      "example_job": "name: Count valid feature records in a GFF stream.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/count_gff_features.txt\n    view: bytes\n- id: process\n  operator: galaxy_count_gff_features@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count valid feature records in a GFF stream.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/count_gff_features.txt\n    view: bytes\n- id: process\n  operator: galaxy_count_gff_features@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3185,7 +3185,7 @@
           "example": "limit"
         }
       },
-      "example_job": "name: Resize GFF intervals around their midpoint or existing boundaries.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/resize_coordinate_window.txt\n    view: bytes\n- id: process\n  operator: galaxy_resize_coordinate_window@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Resize GFF intervals around their midpoint or existing boundaries.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/resize_coordinate_window.txt\n    view: bytes\n- id: process\n  operator: galaxy_resize_coordinate_window@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3236,7 +3236,7 @@
         "result": "Sort BED records lexically by chromosome and numerically by start. Stable start sort, no genome-order file. Buffer at most 100000 rows or 8 MiB characters. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail."
       },
       "parameters": {},
-      "example_job": "name: Sort BED records lexically by chromosome and numerically by start.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_sort.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_sort@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Sort BED records lexically by chromosome and numerically by start.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_sort.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_sort@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3301,7 +3301,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Merge sorted overlapping or nearby BED intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_merge.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_merge@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Merge sorted overlapping or nearby BED intervals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_merge.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_merge@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3366,7 +3366,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Assign connected-component IDs to sorted BED intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_cluster.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_cluster@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Assign connected-component IDs to sorted BED intervals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_cluster.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_cluster@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3417,7 +3417,7 @@
         "result": "Append the distance from each BED interval to its predecessor. Sorted input required. First interval per chromosome uses dot; any overlap uses -1; touching uses zero. BED input is zero-based half-open with positive interval length. Comments are skipped; invalid records fail."
       },
       "parameters": {},
-      "example_job": "name: Append the distance from each BED interval to its predecessor.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_spacing.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_spacing@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Append the distance from each BED interval to its predecessor.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_spacing.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_spacing@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3524,7 +3524,7 @@
           "example": false
         }
       },
-      "example_job": "name: Extend BED intervals with chromosome-boundary clipping.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_slop.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_slop@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Extend BED intervals with chromosome-boundary clipping.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_slop.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_slop@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3631,7 +3631,7 @@
           "example": false
         }
       },
-      "example_job": "name: Emit left and right flanking intervals around each BED feature.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_flank.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_flank@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Emit left and right flanking intervals around each BED feature.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_flank.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_flank@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3704,7 +3704,7 @@
           ]
         }
       },
-      "example_job": "name: Emit genome intervals not covered by BED features.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_complement.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_complement@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Emit genome intervals not covered by BED features.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_complement.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_complement@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3787,7 +3787,7 @@
           "example": false
         }
       },
-      "example_job": "name: Compute run-length encoded BED coverage as bedGraph.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_genome_coverage.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_genome_coverage@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute run-length encoded BED coverage as bedGraph.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_genome_coverage.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_genome_coverage@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3868,7 +3868,7 @@
           ]
         }
       },
-      "example_job": "name: Append signed overlap or distance between two intervals on each row.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/interval_overlap.txt\n    view: bytes\n- id: process\n  operator: galaxy_interval_overlap@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Append signed overlap or distance between two intervals on each row.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/interval_overlap.txt\n    view: bytes\n- id: process\n  operator: galaxy_interval_overlap@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -3945,7 +3945,7 @@
           ]
         }
       },
-      "example_job": "name: Expand synchronized comma-separated lists across selected table columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/expand_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_expand_columns@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Expand synchronized comma-separated lists across selected table columns.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/expand_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_expand_columns@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4041,7 +4041,7 @@
           "example": "sum"
         }
       },
-      "example_job": "name: Aggregate consecutive tabular groups using a numeric or textual operation.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/group_table.txt\n    view: bytes\n- id: process\n  operator: galaxy_group_table@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Aggregate consecutive tabular groups using a numeric or textual operation.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/group_table.txt\n    view: bytes\n- id: process\n  operator: galaxy_group_table@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4106,7 +4106,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Convert FASTQ titles, sequences and quality strings to TSV.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_to_tabular.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_to_tabular@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert FASTQ titles, sequences and quality strings to TSV.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_to_tabular.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_to_tabular@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4195,7 +4195,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Build validated FASTQ records from selected TSV columns.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/tabular_to_fastq.txt\n    view: bytes\n- id: process\n  operator: galaxy_tabular_to_fastq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Build validated FASTQ records from selected TSV columns.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/tabular_to_fastq.txt\n    view: bytes\n- id: process\n  operator: galaxy_tabular_to_fastq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4292,7 +4292,7 @@
           "example": "N"
         }
       },
-      "example_job": "name: Mask FASTQ bases selected by a quality-score comparison.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_mask_quality.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_mask_quality@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Mask FASTQ bases selected by a quality-score comparison.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_mask_quality.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_mask_quality@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4405,7 +4405,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Filter FASTQ reads by length and count of out-of-range qualities.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_filter_quality.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_filter_quality@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Filter FASTQ reads by length and count of out-of-range qualities.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_filter_quality.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_filter_quality@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4456,7 +4456,7 @@
         "result": "Concatenate adjacent paired FASTQ reads into one read. Adjacent /1 and /2 mates with equal base IDs, either order; no identifier-indexed second input. Unmatched or misordered pairs fail. Does not reverse-complement mate 2. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator."
       },
       "parameters": {},
-      "example_job": "name: Concatenate adjacent paired FASTQ reads into one read.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_join_mates.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_join_mates@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Concatenate adjacent paired FASTQ reads into one read.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_join_mates.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_join_mates@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4525,7 +4525,7 @@
           "example": "paired1"
         }
       },
-      "example_job": "name: Select paired or unpaired mate records from interleaved FASTQ.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_deinterlace.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_deinterlace@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Select paired or unpaired mate records from interleaved FASTQ.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_deinterlace.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_deinterlace@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4608,7 +4608,7 @@
           "example": "sanger"
         }
       },
-      "example_job": "name: Convert FASTQ quality encoding and normalize the plus line.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_groom.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_groom@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert FASTQ quality encoding and normalize the plus line.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_groom.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_groom@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4659,7 +4659,7 @@
         "result": "Summarize per-position FASTQ quality quartiles and nucleotide counts. Normalized TSV columns documented by the header, not the upstream report layout. Linear-interpolated quartiles, ASCII Phred+33, at most 10000 positions; fixed 94-bin quality histograms avoid retaining reads. Four-line nucleotide FASTQ only, at most 1 MiB characters per line; sequence and quality lengths and optional + titles must match. No color-space or compression inside the operator."
       },
       "parameters": {},
-      "example_job": "name: Summarize per-position FASTQ quality quartiles and nucleotide counts.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_quality_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_quality_stats@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Summarize per-position FASTQ quality quartiles and nucleotide counts.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/fastq_quality_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_fastq_quality_stats@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4710,7 +4710,7 @@
         "result": "Compute nucleotide, ambiguity, CpG and substitution-class composition. Full sequences only; no BED subset. CpG counts both contributing positions, including C/Y and G/R ambiguity contexts. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped."
       },
       "parameters": {},
-      "example_job": "name: Compute nucleotide, ambiguity, CpG and substitution-class composition.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_comp.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_comp@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute nucleotide, ambiguity, CpG and substitution-class composition.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_comp.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_comp@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4761,7 +4761,7 @@
         "result": "List one-based positions of two-allele IUPAC nucleotide codes. Only two-base ambiguity symbols qualify; original character case is retained. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped."
       },
       "parameters": {},
-      "example_job": "name: List one-based positions of two-allele IUPAC nucleotide codes.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_listhet.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_listhet@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: List one-based positions of two-allele IUPAC nucleotide codes.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_listhet.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_listhet@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4838,7 +4838,7 @@
           "example": 10
         }
       },
-      "example_job": "name: Split FASTA sequences at scored N-rich tracts.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_cutN.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_cutN@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Split FASTA sequences at scored N-rich tracts.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_cutN.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_cutN@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4903,7 +4903,7 @@
           "example": 11
         }
       },
-      "example_job": "name: Resolve two-allele IUPAC ambiguities using a reproducible random choice.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_randbase.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_randbase@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Resolve two-allele IUPAC ambiguities using a reproducible random choice.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_randbase.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_randbase@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -4980,7 +4980,7 @@
           "example": 11
         }
       },
-      "example_job": "name: Reservoir-sample a bounded number of FASTA records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_sample.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_sample@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Reservoir-sample a bounded number of FASTA records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_sample.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_sample@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5053,7 +5053,7 @@
           ]
         }
       },
-      "example_job": "name: Extract configured half-open sequence regions from FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_subseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_subseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Extract configured half-open sequence regions from FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_subseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_subseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5160,7 +5160,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Normalize FASTA case, wrapping and sequence-selection criteria.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_seq.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_seq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Normalize FASTA case, wrapping and sequence-selection criteria.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_seq.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_seq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5247,7 +5247,7 @@
           "example": false
         }
       },
-      "example_job": "name: Estimate heterozygosity in sliding nucleotide windows.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_hety.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_hety@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Estimate heterozygosity in sliding nucleotide windows.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_hety.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_hety@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5346,7 +5346,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Identify terminal telomere-repeat tracts from FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_telo.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_telo@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Identify terminal telomere-repeat tracts from FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_telo.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_telo@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5447,7 +5447,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Trim FASTQ by maximum quality-score segment or fixed end distances.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_trimfq.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_trimfq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Trim FASTQ by maximum quality-score segment or fixed end distances.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_trimfq.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_trimfq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5498,7 +5498,7 @@
         "result": "Remove unmatched reads from an adjacent-pair FASTQ stream. Four-line FASTQ, Phred+33. Adjacent equal IDs or equal IDs after removing /digit form pairs, matching seqtk. A displaced or unmatched record is discarded; no global mate search. FASTA text only unless explicitly stated; one sequence is limited to 8 MiB characters. Output is LF-normalized and unwrapped."
       },
       "parameters": {},
-      "example_job": "name: Remove unmatched reads from an adjacent-pair FASTQ stream.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_dropse.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_dropse@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Remove unmatched reads from an adjacent-pair FASTQ stream.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_dropse.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_dropse@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5563,7 +5563,7 @@
           "example": 20
         }
       },
-      "example_job": "name: Report per-position FASTQ composition, average quality and error quality.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_fqchk.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_fqchk@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report per-position FASTQ composition, average quality and error quality.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_fqchk.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_fqchk@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5614,7 +5614,7 @@
         "result": "Transpose a rectangular TSV matrix. Strict rectangular, unquoted UTF-8 TSV; empty cells preserved. At most 8 MiB characters and 100000 rows; no split files."
       },
       "parameters": {},
-      "example_job": "name: Transpose a rectangular TSV matrix.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/transpose_table.txt\n    view: bytes\n- id: process\n  operator: galaxy_transpose_table@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Transpose a rectangular TSV matrix.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/transpose_table.txt\n    view: bytes\n- id: process\n  operator: galaxy_transpose_table@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5665,7 +5665,7 @@
         "result": "Reverse column order within each TSV row. Unquoted UTF-8 TSV; rows may have different widths. Preserves empty fields, without reversing row order."
       },
       "parameters": {},
-      "example_job": "name: Reverse column order within each TSV row.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_columns@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Reverse column order within each TSV row.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/reverse_columns.txt\n    view: bytes\n- id: process\n  operator: galaxy_reverse_columns@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5730,7 +5730,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Summarize a numeric TSV column with descriptive statistics.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/numeric_summary.txt\n    view: bytes\n- id: process\n  operator: galaxy_numeric_summary@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Summarize a numeric TSV column with descriptive statistics.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/numeric_summary.txt\n    view: bytes\n- id: process\n  operator: galaxy_numeric_summary@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5781,7 +5781,7 @@
         "result": "Replace NA values in columns classified as numeric. Matches upstream header-inclusive numeric/string voting, with known numeric headers 1000g2012apr_all and esp6500si_all. Numeric ties choose numeric. Rectangular TSV buffered up to 8 MiB characters and 100000 rows."
       },
       "parameters": {},
-      "example_job": "name: Replace NA values in columns classified as numeric.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/annovar_replace_na.txt\n    view: bytes\n- id: process\n  operator: galaxy_annovar_replace_na@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Replace NA values in columns classified as numeric.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/annovar_replace_na.txt\n    view: bytes\n- id: process\n  operator: galaxy_annovar_replace_na@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5832,7 +5832,7 @@
         "result": "Convert GFF feature intervals to zero-valued bedGraph rows. Nine-column GFF; one-based inclusive to zero-based half-open. Corrects upstream end-minus-one error; preserves the inclusive end as the BED exclusive endpoint. Malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Convert GFF feature intervals to zero-valued bedGraph rows.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/gff_to_bedgraph.txt\n    view: bytes\n- id: process\n  operator: galaxy_gff_to_bedgraph@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert GFF feature intervals to zero-valued bedGraph rows.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/gff_to_bedgraph.txt\n    view: bytes\n- id: process\n  operator: galaxy_gff_to_bedgraph@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5897,7 +5897,7 @@
           "example": 4
         }
       },
-      "example_job": "name: Compute windowed FASTA GC skew as bedGraph.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_gc_skew.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_gc_skew@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute windowed FASTA GC skew as bedGraph.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_gc_skew.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_gc_skew@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -5988,7 +5988,7 @@
           "example": "pearson"
         }
       },
-      "example_job": "name: Compute Pearson or Spearman pairwise column correlations.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/correlation_matrix.txt\n    view: bytes\n- id: process\n  operator: galaxy_correlation_matrix@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute Pearson or Spearman pairwise column correlations.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/correlation_matrix.txt\n    view: bytes\n- id: process\n  operator: galaxy_correlation_matrix@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6039,7 +6039,7 @@
         "result": "Convert RGB BED9 bands into Circos band definitions. BED9+ with validated 0..255 RGB triplets. Uses inline RGB values so the bytes result is self-contained, unlike upstream separate stderr color definitions. Malformed rows fail."
       },
       "parameters": {},
-      "example_job": "name: Convert RGB BED9 bands into Circos band definitions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_cytobands.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_cytobands@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert RGB BED9 bands into Circos band definitions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/circos_cytobands.txt\n    view: bytes\n- id: process\n  operator: galaxy_circos_cytobands@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6112,7 +6112,7 @@
           ]
         }
       },
-      "example_job": "name: Sum positive criterion values by configured element categories.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/category_totals.txt\n    view: bytes\n- id: process\n  operator: galaxy_category_totals@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Sum positive criterion values by configured element categories.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/category_totals.txt\n    view: bytes\n- id: process\n  operator: galaxy_category_totals@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6163,7 +6163,7 @@
         "result": "List VCF sample names in header order.  Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: List VCF sample names in header order.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_list_samples.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_list_samples@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: List VCF sample names in header order.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_list_samples.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_list_samples@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6214,7 +6214,7 @@
         "result": "Compute alternate-allele dosage from GT calls. GT-only dosage; count all nonreference alleles; any missing allele produces missing dosage. Normalized TSV, no PL/GL likelihoods. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Compute alternate-allele dosage from GT calls.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_genotype_dosage.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_genotype_dosage@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute alternate-allele dosage from GT calls.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_genotype_dosage.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_genotype_dosage@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6265,7 +6265,7 @@
         "result": "Replace missing genotype alleles with reference alleles. Replaces each missing GT allele with zero, retaining phase separators and other FORMAT values; INFO tags remain unchanged. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Replace missing genotype alleles with reference alleles.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_missing_to_ref.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_missing_to_ref@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Replace missing genotype alleles with reference alleles.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_missing_to_ref.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_missing_to_ref@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6316,7 +6316,7 @@
         "result": "Recalculate INFO AN and per-ALT AC from GT calls. Counts called alleles including partial calls, supports multiallelic and haploid/polyploid GT; replaces existing AN/AC and their declarations. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Recalculate INFO AN and per-ALT AC from GT calls.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_fill_allele_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_fill_allele_counts@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Recalculate INFO AN and per-ALT AC from GT calls.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_fill_allele_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_fill_allele_counts@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6367,7 +6367,7 @@
         "result": "Count VCF samples, sites and variant classes. A multiallelic site can contribute to multiple classes; symbolic alleles count as other. Normalized TSV. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Count VCF samples, sites and variant classes.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_variant_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_variant_counts@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count VCF samples, sites and variant classes.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_variant_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_variant_counts@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6440,7 +6440,7 @@
           ]
         }
       },
-      "example_job": "name: Select VCF sample columns by explicit names.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_select_samples.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_select_samples@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Select VCF sample columns by explicit names.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_select_samples.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_select_samples@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6513,7 +6513,7 @@
           ]
         }
       },
-      "example_job": "name: Rename VCF samples using explicit name pairs.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_rename_samples.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_rename_samples@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Rename VCF samples using explicit name pairs.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_rename_samples.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_rename_samples@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6586,7 +6586,7 @@
           ]
         }
       },
-      "example_job": "name: Remove selected INFO annotations and declarations.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_remove_annotations.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_remove_annotations@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Remove selected INFO annotations and declarations.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_remove_annotations.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_remove_annotations@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6651,7 +6651,7 @@
           "example": 20
         }
       },
-      "example_job": "name: Apply a soft minimum-QUAL filter to VCF records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_filter_quality.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_filter_quality@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Apply a soft minimum-QUAL filter to VCF records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_filter_quality.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_filter_quality@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6702,7 +6702,7 @@
         "result": "Set called genotypes to missing while preserving ploidy. Resets all GT alleles to missing; preserves phase, ploidy and other FORMAT values. Does not recalculate INFO tags. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Set called genotypes to missing while preserving ploidy.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_set_missing_genotypes.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_set_missing_genotypes@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Set called genotypes to missing while preserving ploidy.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_set_missing_genotypes.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_set_missing_genotypes@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6767,7 +6767,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Convert GT calls to a requested constant ploidy.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_fix_ploidy.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_fix_ploidy@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Convert GT calls to a requested constant ploidy.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_fix_ploidy.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_fix_ploidy@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6818,7 +6818,7 @@
         "result": "Extract sample genotypes into long-form TSV. Fixed explicit CHROM/POS/REF/ALT/SAMPLE/GT schema; all samples, no format-string language. Strict uncompressed UTF-8 VCF text with one #CHROM header; no BCF, indexing or expression evaluation. Up to 1024 samples; malformed records fail."
       },
       "parameters": {},
-      "example_job": "name: Extract sample genotypes into long-form TSV.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_genotype_table.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_genotype_table@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Extract sample genotypes into long-form TSV.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/vcf_genotype_table.txt\n    view: bytes\n- id: process\n  operator: galaxy_vcf_genotype_table@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6869,7 +6869,7 @@
         "result": "Count alignment flag categories with QC-pass/fail totals. Normalized TSV counts; no percentage formatting. Paired/read1/read2/proper-pair/singleton categories count primary alignments, matching samtools; mapped and duplicate totals include all records. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences."
       },
       "parameters": {},
-      "example_job": "name: Count alignment flag categories with QC-pass/fail totals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_flagstat.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_flagstat@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count alignment flag categories with QC-pass/fail totals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_flagstat.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_flagstat@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6920,7 +6920,7 @@
         "result": "Count mapped and unmapped segments by reference. Streaming full-scan equivalent of idxstats; counts records by mapped flag, retaining header reference order. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences."
       },
       "parameters": {},
-      "example_job": "name: Count mapped and unmapped segments by reference.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_reference_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_reference_counts@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count mapped and unmapped segments by reference.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_reference_counts.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_reference_counts@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -6971,7 +6971,7 @@
         "result": "Compute per-position depth from aligned CIGAR blocks. Counts M/=/X only, excluding D/N and flags 0x704. Overlapping mates counted independently, no quality threshold; sparse nonzero positions. Buffers at most 1000000 alignment blocks and 8 MiB input characters. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences."
       },
       "parameters": {},
-      "example_job": "name: Compute per-position depth from aligned CIGAR blocks.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_depth.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_depth@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute per-position depth from aligned CIGAR blocks.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_depth.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_depth@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7022,7 +7022,7 @@
         "result": "Summarize reference breadth and mean depth. M/=/X blocks, flags 0x704 excluded; overlapping mates counted independently. Includes every header reference. Buffers at most 1000000 blocks and 8 MiB input characters. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences."
       },
       "parameters": {},
-      "example_job": "name: Summarize reference breadth and mean depth.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_coverage.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_coverage@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Summarize reference breadth and mean depth.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_coverage.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_coverage@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7073,7 +7073,7 @@
         "result": "Summarize primary alignment lengths and mapping quality. Primary records only, excluding secondary/supplementary. Normalized summary subset, not samtools stats report. Aligned bases count M/=/X. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences."
       },
       "parameters": {},
-      "example_job": "name: Summarize primary alignment lengths and mapping quality.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_alignment_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_alignment_stats@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Summarize primary alignment lengths and mapping quality.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_alignment_stats.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_alignment_stats@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7140,7 +7140,7 @@
           "example": "coordinate"
         }
       },
-      "example_job": "name: Sort SAM records by coordinates or query name.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_sort.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_sort@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Sort SAM records by coordinates or query name.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_sort.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_sort@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7191,7 +7191,7 @@
         "result": "Group SAM records sharing the same query name. First-seen query-name order; within-name input order. Buffers at most 100000 records and 8 MiB characters; no randomized ordering. UTF-8 SAM text only, no BAM/CRAM or indexed random access. Requires @SQ for mapped reads; validates flags, coordinates, CIGAR, sequence and quality. At most 100000 reference sequences."
       },
       "parameters": {},
-      "example_job": "name: Group SAM records sharing the same query name.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_collate.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_collate@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Group SAM records sharing the same query name.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_collate.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_collate@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7256,7 +7256,7 @@
           "example": 20
         }
       },
-      "example_job": "name: Export primary SAM sequences to FASTQ in original orientation.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_to_fastq.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_to_fastq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Export primary SAM sequences to FASTQ in original orientation.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_to_fastq.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_to_fastq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7331,7 +7331,7 @@
           ]
         }
       },
-      "example_job": "name: Replace SAM metadata while preserving the reference dictionary.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_reheader.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_reheader@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Replace SAM metadata while preserving the reference dictionary.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_reheader.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_reheader@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7394,7 +7394,7 @@
           "example": "chr1=TACGAAAAAA"
         }
       },
-      "example_job": "name: Recalculate MD and NM tags against an explicit reference.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_calmd.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_calmd@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Recalculate MD and NM tags against an explicit reference.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/sam_calmd.txt\n    view: bytes\n- id: process\n  operator: galaxy_sam_calmd@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7463,7 +7463,7 @@
         "result": "Emit pairwise clipped overlaps between two BED streams. Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes."
       },
       "parameters": {},
-      "example_job": "name: Emit pairwise clipped overlaps between two BED streams.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_intersect.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_intersect-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_intersect@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Emit pairwise clipped overlaps between two BED streams.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_intersect.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_intersect-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_intersect@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7524,7 +7524,7 @@
         "result": "Subtract a union of reference intervals from each query interval. Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes."
       },
       "parameters": {},
-      "example_job": "name: Subtract a union of reference intervals from each query interval.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_subtract.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_subtract-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_subtract@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Subtract a union of reference intervals from each query interval.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_subtract.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_subtract-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_subtract@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7599,7 +7599,7 @@
           "example": 1000
         }
       },
-      "example_job": "name: Report query/reference pairs within a genomic window.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_window.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_window-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_window@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report query/reference pairs within a genomic window.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_window.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_window-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_window@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7660,7 +7660,7 @@
         "result": "Report all nearest same-chromosome reference features per query. Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes. All minimum-distance ties are emitted in reference input order. Book-ended intervals have distance one; absent chromosome emits .,-1,-1,-1 placeholders."
       },
       "parameters": {},
-      "example_job": "name: Report all nearest same-chromosome reference features per query.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_closest.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_closest-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_closest@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report all nearest same-chromosome reference features per query.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_closest.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_closest-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_closest@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7721,7 +7721,7 @@
         "result": "Report overlap count and covered query bases. Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes."
       },
       "parameters": {},
-      "example_job": "name: Report overlap count and covered query bases.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_coverage.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_coverage-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_coverage@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report overlap count and covered query bases.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_coverage.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_coverage-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_coverage@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7812,7 +7812,7 @@
           "example": "mean"
         }
       },
-      "example_job": "name: Aggregate a numeric reference column over query overlaps.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_map.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_map-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_map@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Aggregate a numeric reference column over query overlaps.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_map.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_map-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_map@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7873,7 +7873,7 @@
         "result": "Annotate queries with reference overlap count and coverage fraction. Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes."
       },
       "parameters": {},
-      "example_job": "name: Annotate queries with reference overlap count and coverage fraction.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_annotate.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_annotate-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_annotate@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Annotate queries with reference overlap count and coverage fraction.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_annotate.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_annotate-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_annotate@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7934,7 +7934,7 @@
         "result": "Compute base-pair Jaccard similarity of two interval sets. Two UTF-8 BED streams: source queries and reference features. Positive zero-based half-open intervals; no BAM, BED12 split blocks or strand filtering. Each input at most 100000 rows and 8 MiB characters, process transport capped at 8 MiB bytes per input; at most 16000000 query/reference comparisons. Input order retained; no input files or external processes. Merges overlapping/book-ended intervals before set arithmetic; empty/empty returns zero. Normalized TSV omits pair-count statistics."
       },
       "parameters": {},
-      "example_job": "name: Compute base-pair Jaccard similarity of two interval sets.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_jaccard.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_jaccard-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_jaccard@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute base-pair Jaccard similarity of two interval sets.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_jaccard.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_jaccard-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_jaccard@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -7995,7 +7995,7 @@
         "result": "Merge paired FASTA sequences using IUPAC allele unions. FASTA only, matching sequence IDs and lengths in identical order. Standard union mode only; uppercase only when both input bases are uppercase. Output identifiers omit comments; no quality threshold, masking or random alleles. Two Arrow bytes inputs: source and reference; each input at most 100000 records and 8 MiB characters, execution bytes capped at 8 MiB per input. Invalid or unmatched data fails rather than truncating."
       },
       "parameters": {},
-      "example_job": "name: Merge paired FASTA sequences using IUPAC allele unions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergefa.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergefa-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_mergefa@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Merge paired FASTA sequences using IUPAC allele unions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergefa.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergefa-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_mergefa@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8056,7 +8056,7 @@
         "result": "Interleave two corresponding four-line FASTQ streams. Four-line FASTQ only, matching base names after removing /1 or /2. Output preserves headers and qualities but normalizes plus lines to +. Requires equal record counts. Two Arrow bytes inputs: source and reference; each input at most 100000 records and 8 MiB characters, execution bytes capped at 8 MiB per input. Invalid or unmatched data fails rather than truncating."
       },
       "parameters": {},
-      "example_job": "name: Interleave two corresponding four-line FASTQ streams.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergepe.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergepe-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_mergepe@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Interleave two corresponding four-line FASTQ streams.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergepe.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mergepe-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_mergepe@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8117,7 +8117,7 @@
         "result": "Apply point mutations from a coordinate stream to FASTA. Source FASTA; reference is a four-column TSV mutation list: sequence ID, one-based position, ignored field, replacement IUPAC base. Rejects duplicates, unknown sequence IDs and positions outside sequence; source headers retained. Two Arrow bytes inputs: source and reference; each input at most 100000 records and 8 MiB characters, execution bytes capped at 8 MiB per input. Invalid or unmatched data fails rather than truncating."
       },
       "parameters": {},
-      "example_job": "name: Apply point mutations from a coordinate stream to FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mutfa.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mutfa-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_mutfa@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Apply point mutations from a coordinate stream to FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mutfa.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/seqtk_mutfa-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_seqtk_mutfa@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8168,7 +8168,7 @@
         "result": "Expand BED12 blocks into discrete BED6 intervals. Exactly BED12; validates block count, positive block lengths, nonoverlap and containment. Does not flatten any other scientific format. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails."
       },
       "parameters": {},
-      "example_job": "name: Expand BED12 blocks into discrete BED6 intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed12_to_bed6.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed12_to_bed6@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Expand BED12 blocks into discrete BED6 intervals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed12_to_bed6.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed12_to_bed6@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8241,7 +8241,7 @@
           "example": false
         }
       },
-      "example_job": "name: Extract FASTA subsequences for BED intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_extract_fasta.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_extract_fasta-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_extract_fasta@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Extract FASTA subsequences for BED intervals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_extract_fasta.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_extract_fasta-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_extract_fasta@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8314,7 +8314,7 @@
           "example": false
         }
       },
-      "example_job": "name: Mask FASTA bases covered by BED intervals.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_mask_fasta.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_mask_fasta-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_mask_fasta@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Mask FASTA bases covered by BED intervals.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_mask_fasta.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_mask_fasta-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_mask_fasta@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8375,7 +8375,7 @@
         "result": "Report nucleotide composition of BED-selected FASTA regions. source BED, reference FASTA; normalized headerless output: original BED fields, AT fraction, GC fraction, A,C,G,T,N,other counts and length. Ambiguous IUPAC bases count as other, denominator includes all bases; no strand or sequence output. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails."
       },
       "parameters": {},
-      "example_job": "name: Report nucleotide composition of BED-selected FASTA regions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_nucleotide_content.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_nucleotide_content-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_nucleotide_content@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report nucleotide composition of BED-selected FASTA regions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_nucleotide_content.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_nucleotide_content-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_nucleotide_content@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8448,7 +8448,7 @@
           "example": "0"
         }
       },
-      "example_job": "name: Combine two nonoverlapping bedGraph streams on a shared segmentation.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_union_bedgraph.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_union_bedgraph-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_union_bedgraph@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Combine two nonoverlapping bedGraph streams on a shared segmentation.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_union_bedgraph.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_union_bedgraph-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_union_bedgraph@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8509,7 +8509,7 @@
         "result": "Segment two interval streams by set membership. Two BED3+ inputs; overlapping intervals within each input unioned. Output chromosome,start,end,set count,one-based membership list,source presence,reference presence. No empty-region output or clustering mode. Strict UTF-8 text; positive zero-based half-open BED coordinates. Up to 100000 intervals/records and 8 MiB characters per input; execution inputs capped at 8 MiB bytes when paired. Invalid or out-of-range data fails."
       },
       "parameters": {},
-      "example_job": "name: Segment two interval streams by set membership.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_multi_intersect.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_multi_intersect-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_multi_intersect@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Segment two interval streams by set membership.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_multi_intersect.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/bed_multi_intersect-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_bed_multi_intersect@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8582,7 +8582,7 @@
           "example": "TT"
         }
       },
-      "example_job": "name: Replace literal sequence motifs in FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_biosed.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_biosed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Replace literal sequence motifs in FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_biosed.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_biosed@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8633,7 +8633,7 @@
         "result": "Report stop-codon markers in translated protein FASTA. Protein sequence input. Counts * markers and reports one-based last-stop coordinate, or zero when absent. No feature-file or ORF output. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI."
       },
       "parameters": {},
-      "example_job": "name: Report stop-codon markers in translated protein FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_checktrans.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_checktrans@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report stop-codon markers in translated protein FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_checktrans.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_checktrans@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8710,7 +8710,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Remove a specified inclusive sequence region.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cutseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cutseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Remove a specified inclusive sequence region.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cutseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cutseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8761,7 +8761,7 @@
         "result": "Remove alignment gap characters from FASTA. Removes dash and dot alignment gaps; nucleotide/protein letters and stop markers retained. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI."
       },
       "parameters": {},
-      "example_job": "name: Remove alignment gap characters from FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_degapseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_degapseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Remove alignment gap characters from FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_degapseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_degapseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8834,7 +8834,7 @@
           "example": false
         }
       },
-      "example_job": "name: Replace or append FASTA description text.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_descseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_descseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Replace or append FASTA description text.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_descseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_descseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8907,7 +8907,7 @@
           ]
         }
       },
-      "example_job": "name: Concatenate configured inclusive sequence regions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_extractseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_extractseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Concatenate configured inclusive sequence regions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_extractseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_extractseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -8972,7 +8972,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Translate stop-delimited ORFs in forward reading frames.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_getorf.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_getorf@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Translate stop-delimited ORFs in forward reading frames.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_getorf.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_getorf@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9055,7 +9055,7 @@
           "example": false
         }
       },
-      "example_job": "name: Mask configured FASTA coordinate ranges.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_maskseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_maskseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Mask configured FASTA coordinate ranges.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_maskseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_maskseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9128,7 +9128,7 @@
           ]
         }
       },
-      "example_job": "name: Exclude FASTA records by exact identifiers.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_notseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_notseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Exclude FASTA records by exact identifiers.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_notseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_notseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9193,7 +9193,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Select one FASTA sequence by ordinal.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_nthseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_nthseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Select one FASTA sequence by ordinal.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_nthseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_nthseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9270,7 +9270,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Shuffle residues reproducibly within each FASTA record.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_shuffleseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_shuffleseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Shuffle residues reproducibly within each FASTA record.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_shuffleseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_shuffleseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9335,7 +9335,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Skip initial FASTA sequence records.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_skipseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_skipseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Skip initial FASTA sequence records.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_skipseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_skipseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9412,7 +9412,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Split sequences into overlapping FASTA windows.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_splitter.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_splitter@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Split sequences into overlapping FASTA windows.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_splitter.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_splitter@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9485,7 +9485,7 @@
           "example": true
         }
       },
-      "example_job": "name: Find literal text in FASTA identifiers and descriptions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_textsearch.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_textsearch@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find literal text in FASTA identifiers and descriptions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_textsearch.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_textsearch@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9550,7 +9550,7 @@
           "example": 4
         }
       },
-      "example_job": "name: Trim exact terminal poly-A tails from nucleotide FASTA.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_trimest.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_trimest@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Trim exact terminal poly-A tails from nucleotide FASTA.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_trimest.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_trimest@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9623,7 +9623,7 @@
           "example": true
         }
       },
-      "example_job": "name: Trim ambiguous N residues at nucleotide sequence ends.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_trimseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_trimseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Trim ambiguous N residues at nucleotide sequence ends.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_trimseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_trimseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9674,7 +9674,7 @@
         "result": "Translate six standard-code reading frames. All three forward and three reverse-complement frames, standard code; partial terminal codons ignored, ambiguous codons become X. No CDS validation or alternative codon tables. FASTA UTF-8 bytes input; one result bytes stream. At most 8 MiB characters per sequence, 100000 sequence records; strict parameters and cancellation. Normalized FASTA uses unwrapped sequence lines. This is a documented subset of the Galaxy EMBOSS wrapper, not the EMBOSS CLI."
       },
       "parameters": {},
-      "example_job": "name: Translate six standard-code reading frames.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_transeq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_transeq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Translate six standard-code reading frames.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_transeq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_transeq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9749,7 +9749,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Find protein motifs with bounded substitution mismatches.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_fuzzpro.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_fuzzpro@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find protein motifs with bounded substitution mismatches.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_fuzzpro.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_fuzzpro@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9814,7 +9814,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Count observed k-mer composition in each DNA sequence.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_compseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_compseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count observed k-mer composition in each DNA sequence.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_compseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_compseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9901,7 +9901,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Compute windowed frequency of selected nucleotide residues.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_freak.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_freak@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute windowed frequency of selected nucleotide residues.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_freak.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_freak@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -9952,7 +9952,7 @@
         "result": "Summarize protein mass, charge, pI and composition properties. Average residue masses plus terminal water 18.01528; Kyte-Doolittle hydropathy; EMBOSS default pKa charge model including termini. Reduced extinction =5500*W+1490*Y; no disulfide contribution. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output."
       },
       "parameters": {},
-      "example_job": "name: Summarize protein mass, charge, pI and composition properties.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepstats.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepstats@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Summarize protein mass, charge, pI and composition properties.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepstats.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepstats@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10003,7 +10003,7 @@
         "result": "Calculate protein isoelectric point using Henderson-Hasselbalch charge. EMBOSS default pKa: amino7.5, carboxyl3.6, C8.5,D3.9,E4.1,H6.5,K10.8,R12.5,Y10.1. Includes both termini; bisection on pH0..14. No alternative pKa files or modified residues. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output."
       },
       "parameters": {},
-      "example_job": "name: Calculate protein isoelectric point using Henderson-Hasselbalch charge.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_iep.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_iep@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Calculate protein isoelectric point using Henderson-Hasselbalch charge.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_iep.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_iep@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10068,7 +10068,7 @@
           "example": 700
         }
       },
-      "example_job": "name: Calculate protein charge at a configured pH.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_charge.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_charge@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Calculate protein charge at a configured pH.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_charge.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_charge@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10145,7 +10145,7 @@
           "example": 100
         }
       },
-      "example_job": "name: Calculate sliding Eisenberg hydrophobic moments.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_hmoment.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_hmoment@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Calculate sliding Eisenberg hydrophobic moments.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_hmoment.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_hmoment@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10210,7 +10210,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Calculate sliding Kyte-Doolittle protein hydropathy.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepwindow.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepwindow@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Calculate sliding Kyte-Doolittle protein hydropathy.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepwindow.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepwindow@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10261,7 +10261,7 @@
         "result": "Report per-residue mass and hydrophobicity properties. Normalized residue-wise average mass, Kyte-Doolittle and Eisenberg consensus values. At most 100000 output residues per sequence, no plots. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output."
       },
       "parameters": {},
-      "example_job": "name: Report per-residue mass and hydrophobicity properties.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepinfo.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepinfo@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report per-residue mass and hydrophobicity properties.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepinfo.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepinfo@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10312,7 +10312,7 @@
         "result": "Compute Kolaskar-Tongaonkar seven-residue antigenic propensity. Reports seven-residue rolling propensity scores at one-based centers, not final epitope calls or merged determinants; no diagnostic/biological validation claim. At most 100000 windows. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output."
       },
       "parameters": {},
-      "example_job": "name: Compute Kolaskar-Tongaonkar seven-residue antigenic propensity.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_antigenic.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_antigenic@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute Kolaskar-Tongaonkar seven-residue antigenic propensity.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_antigenic.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_antigenic@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10363,7 +10363,7 @@
         "result": "Generate complete trypsin digestion peptides. Trypsin cleavage after K/R unless the next residue is P. Complete digestion only, zero missed cleavages; includes terminal fragment. No native unfavoured-site rules or other enzymes. At most 100000 peptides per sequence. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output."
       },
       "parameters": {},
-      "example_job": "name: Generate complete trypsin digestion peptides.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_digest.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_digest@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Generate complete trypsin digestion peptides.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_digest.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_digest@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10414,7 +10414,7 @@
         "result": "Construct a deterministic standard-code DNA encoding for a protein. Chooses the lexically first standard DNA codon for each amino acid, not native EMBOSS species-frequency codon optimization. No stop/ambiguous residues or host codon table; output DNA at most 8 MiB characters. Strict standard 20-amino-acid FASTA, nonempty sequences; UTF-8 bytes input/output. At most 8 MiB characters per sequence and 100000 sequence records. No native programs or external files. These are documented EMBOSS-wrapper subsets, with normalized TSV or FASTA output."
       },
       "parameters": {},
-      "example_job": "name: Construct a deterministic standard-code DNA encoding for a protein.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_backtranseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_backtranseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Construct a deterministic standard-code DNA encoding for a protein.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_backtranseq.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_backtranseq@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10499,7 +10499,7 @@
           ]
         }
       },
-      "example_job": "name: Find protein windows meeting specified composition thresholds.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_oddcomp.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_oddcomp@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find protein windows meeting specified composition thresholds.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_oddcomp.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_oddcomp@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10610,7 +10610,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Compute global affine-gap pairwise DNA alignment.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_needle.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_needle-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_needle@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute global affine-gap pairwise DNA alignment.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_needle.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_needle-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_needle@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10721,7 +10721,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Compute local affine-gap pairwise DNA alignment.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_water.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_water-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_water@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute local affine-gap pairwise DNA alignment.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_water.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_water-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_water@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10832,7 +10832,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Report substitution and indel blocks from global DNA alignment.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_diffseq.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_diffseq-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_diffseq@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Report substitution and indel blocks from global DNA alignment.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_diffseq.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_diffseq-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_diffseq@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10907,7 +10907,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Find all exact word matches between two DNA sequences.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dottup.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dottup-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_dottup@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find all exact word matches between two DNA sequences.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dottup.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dottup-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_dottup@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -10994,7 +10994,7 @@
           "example": 5
         }
       },
-      "example_job": "name: Find similar sequence windows using a bounded dot-plot score.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dotmatcher.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dotmatcher-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_dotmatcher@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find similar sequence windows using a bounded dot-plot score.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dotmatcher.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_dotmatcher-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_dotmatcher@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11069,7 +11069,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Find maximal exact common DNA substrings.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_wordmatch.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_wordmatch-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_wordmatch@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find maximal exact common DNA substrings.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_wordmatch.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_wordmatch-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_wordmatch@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11144,7 +11144,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Assemble two DNA sequences at their longest exact suffix-prefix overlap.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_merger.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_merger-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_merger@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Assemble two DNA sequences at their longest exact suffix-prefix overlap.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_merger.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_merger-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_merger@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11233,7 +11233,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Find exact inverted repeats with bounded intervening loops.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_palindrome.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_palindrome@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find exact inverted repeats with bounded intervening loops.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_palindrome.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_palindrome@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11310,7 +11310,7 @@
           "example": 3
         }
       },
-      "example_job": "name: Locate maximal exact tandem repeats of primitive DNA units.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_equicktandem.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_equicktandem@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Locate maximal exact tandem repeats of primitive DNA units.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_equicktandem.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_equicktandem@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11395,7 +11395,7 @@
           "example": false
         }
       },
-      "example_job": "name: Search nucleotide IUPAC motifs allowing bounded substitutions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_fuzznuc.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_fuzznuc@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Search nucleotide IUPAC motifs allowing bounded substitutions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_fuzznuc.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_fuzznuc@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11470,7 +11470,7 @@
           "example": 0
         }
       },
-      "example_job": "name: Search a protein motif across all six translated DNA frames.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_fuzztran.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_fuzztran@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Search a protein motif across all six translated DNA frames.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_fuzztran.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_fuzztran@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11521,7 +11521,7 @@
         "result": "Summarize CpG abundance and observed-to-expected ratio. CpG observed/expected = CpG_count * length / (C_count * G_count), zero when denominator zero; global per-sequence TSV, no island prediction. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses."
       },
       "parameters": {},
-      "example_job": "name: Summarize CpG abundance and observed-to-expected ratio.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cpgreport.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cpgreport@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Summarize CpG abundance and observed-to-expected ratio.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cpgreport.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cpgreport@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11622,7 +11622,7 @@
           "example": 6
         }
       },
-      "example_job": "name: Call CpG-rich islands from thresholded sliding windows.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cpgplot.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cpgplot@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Call CpG-rich islands from thresholded sliding windows.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cpgplot.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cpgplot@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11699,7 +11699,7 @@
           "example": 20
         }
       },
-      "example_job": "name: Find CpG-rich segments using a resettable dinucleotide score walk.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_newcpgseek.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_newcpgseek@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Find CpG-rich segments using a resettable dinucleotide score walk.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_newcpgseek.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_newcpgseek@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11750,7 +11750,7 @@
         "result": "Measure synonymous codon diversity for each encoded amino acid. Standard code, DNA length multiple3; exclude stop codons. Shannon entropy across synonymous codons for each observed amino acid; not EMBOSS graphical codon-preference profile. Nonempty uppercase-normalized ACGT FASTA, <=100000 records and <=1000000 bases per sequence; bounded comparisons and output. No native subprocesses."
       },
       "parameters": {},
-      "example_job": "name: Measure synonymous codon diversity for each encoded amino acid.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_syco.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_syco@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Measure synonymous codon diversity for each encoded amino acid.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_syco.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_syco@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11825,7 +11825,7 @@
           "example": "GC"
         }
       },
-      "example_job": "name: Compute sliding third-codon-base composition.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_wobble.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_wobble@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute sliding third-codon-base composition.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_wobble.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_wobble@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11899,7 +11899,7 @@
           ]
         }
       },
-      "example_job": "name: Calculate codon adaptation from explicitly provided relative weights.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cai.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cai@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Calculate codon adaptation from explicitly provided relative weights.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_cai.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_cai@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -11960,7 +11960,7 @@
         "result": "Compare two coding sequences by normalized codon distributions. Exactly one nonempty ACGT coding FASTA record per source/reference; lengths multiple3, <=1000000 bases each. Compare 64-codon frequency vectors using symmetric Jensen-Shannon divergence in bits, including stops. Normalized comparison, not native codon-usage file format."
       },
       "parameters": {},
-      "example_job": "name: Compare two coding sequences by normalized codon distributions.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_codcmp.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_codcmp-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_codcmp@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compare two coding sequences by normalized codon distributions.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_codcmp.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_codcmp-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_codcmp@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12045,7 +12045,7 @@
           ]
         }
       },
-      "example_job": "name: Fit multivariate ordinary least-squares regression with an intercept.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/linear_regression.txt\n    view: bytes\n- id: process\n  operator: galaxy_linear_regression@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Fit multivariate ordinary least-squares regression with an intercept.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/linear_regression.txt\n    view: bytes\n- id: process\n  operator: galaxy_linear_regression@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12130,7 +12130,7 @@
           ]
         }
       },
-      "example_job": "name: Measure each predictor contribution conditional on all other predictors.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/partial_r_square.txt\n    view: bytes\n- id: process\n  operator: galaxy_partial_r_square@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Measure each predictor contribution conditional on all other predictors.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/partial_r_square.txt\n    view: bytes\n- id: process\n  operator: galaxy_partial_r_square@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12205,7 +12205,7 @@
           ]
         }
       },
-      "example_job": "name: Compute centered covariance principal-component scores.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/pca.txt\n    view: bytes\n- id: process\n  operator: galaxy_pca@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Compute centered covariance principal-component scores.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/pca.txt\n    view: bytes\n- id: process\n  operator: galaxy_pca@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12282,7 +12282,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Count numeric observations in fixed-width histogram bins.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/histogram.txt\n    view: bytes\n- id: process\n  operator: galaxy_histogram@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Count numeric observations in fixed-width histogram bins.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/histogram.txt\n    view: bytes\n- id: process\n  operator: galaxy_histogram@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12359,7 +12359,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Render paired numeric observations into a standalone SVG scatter plot.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/scatterplot.txt\n    view: bytes\n- id: process\n  operator: galaxy_scatterplot@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Render paired numeric observations into a standalone SVG scatter plot.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/scatterplot.txt\n    view: bytes\n- id: process\n  operator: galaxy_scatterplot@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12456,7 +12456,7 @@
           "example": 1
         }
       },
-      "example_job": "name: Fit binary logistic regression with ridge-stabilized IRLS.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/logistic_regression.txt\n    view: bytes\n- id: process\n  operator: galaxy_logistic_regression@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Fit binary logistic regression with ridge-stabilized IRLS.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/logistic_regression.txt\n    view: bytes\n- id: process\n  operator: galaxy_logistic_regression@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12533,7 +12533,7 @@
           "example": 2000
         }
       },
-      "example_job": "name: Perform a two-sided one-sample Student t test.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/statistical_hypothesis_testing.txt\n    view: bytes\n- id: process\n  operator: galaxy_statistical_hypothesis_testing@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Perform a two-sided one-sample Student t test.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/statistical_hypothesis_testing.txt\n    view: bytes\n- id: process\n  operator: galaxy_statistical_hypothesis_testing@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12634,7 +12634,7 @@
           "example": "left"
         }
       },
-      "example_job": "name: Join two tables by exact ID with bounded output.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_by_id.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_by_id-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_join_files_by_id@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Join two tables by exact ID with bounded output.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_by_id.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_by_id-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_join_files_by_id@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12742,7 +12742,7 @@
           "example": true
         }
       },
-      "example_job": "name: Join numeric table keys within an absolute tolerance.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_on_column_fuzzy.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_on_column_fuzzy-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_join_files_on_column_fuzzy@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Join numeric table keys within an absolute tolerance.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_on_column_fuzzy.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/join_files_on_column_fuzzy-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_join_files_on_column_fuzzy@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12816,7 +12816,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Insert one DNA sequence at a specified boundary of another.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pasteseq.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pasteseq-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pasteseq@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Insert one DNA sequence at a specified boundary of another.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pasteseq.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pasteseq-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pasteseq@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12876,7 +12876,7 @@
         "result": "Project aligned proteins into a codon-preserving nucleotide alignment. Source coding DNA FASTA and reference aligned-protein FASTA must have the same unique IDs; output source order. Standard code, complete frame1 codons, protein gap becomes three dashes; every non-gap protein residue must equal its source codon translation, including stop. No ORF search or alternative codes. Both inputs<=1000000 total characters and10000 records."
       },
       "parameters": {},
-      "example_job": "name: Project aligned proteins into a codon-preserving nucleotide alignment.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_tranalign.txt\n    view: bytes\n- id: read_reference\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_tranalign-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_tranalign@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Project aligned proteins into a codon-preserving nucleotide alignment.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_tranalign.txt\n    view: bytes\n- id: read_reference\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_tranalign-reference.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_tranalign@1.0\n  inputs:\n    source: read\n    reference: read_reference\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -12940,7 +12940,7 @@
           "example": 2
         }
       },
-      "example_job": "name: Calculate sliding Wimley-White octanol and interface transfer energies.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_octanol.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_octanol@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Calculate sliding Wimley-White octanol and interface transfer energies.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_octanol.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_octanol@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",
@@ -13004,7 +13004,7 @@
           "example": 100
         }
       },
-      "example_job": "name: Render a protein sequence as an SVG helical wheel.\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepwheel.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepwheel@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
+      "example_job": "name: Render a protein sequence as an SVG helical wheel.\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params:\n    uri: context:/galaxy/extended/emboss_pepwheel.txt\n    view: bytes\n- id: process\n  operator: galaxy_emboss_pepwheel@1.0\n  inputs:\n    source: read\n  params: {}\noutputs:\n  result: process\n"
     },
     "icon": {
       "path": "M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5",

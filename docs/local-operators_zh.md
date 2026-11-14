@@ -20,14 +20,17 @@ temperature-filter/
 name: Local analysis
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params: {uri: 'context:/weather/observations.csv', view: bytes}
   - id: filter
     operator: {local: ./temperature-filter}
     inputs: {source: read}
     params: {min_temperature: 20}
-outputs: {result: filter}
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: filter
 ```
 
 `operator.local` 不能与内联源码定义混用。普通 `operator: name@version` 使用仓库和包查找。采用 `operator: {local: name@version}` 时，从 `local_operator_library/name/version/` 读取源码；目录中的名称和版本必须与 `operator.yaml` 一致。
@@ -41,6 +44,8 @@ Runner 的相对目录引用以 Job 文件所在目录为基准，而非启动�
 ```yaml
 name: temperature_filter
 version: '1.0'
+role: transform
+type: sdk
 description: Filter observation bytes.
 language: python
 runtime: python-arrow@1.0
@@ -93,7 +98,7 @@ build:
 
 成功构建依据源码树、声明及本地配置缓存到 `operator_cache/local-builds/`。源码变更会生成新产物，失败或取消的构建不生成有效缓存项。源码指纹排除标准生成目录 `target`、`build`、`dist`、`.git`、`.venv`、`__pycache__`、`.xstream-operators`、`.xstream-executions` 以及指定构建产物。缓存应放在源码树之外。源码最多 16,384 个文件、64 MiB，不允许符号链接。外部工具链变化后需删除对应构建缓存。
 
-取消与 Job 超时覆盖构建及执行。构建诊断写入 stderr，stdout 仅保留结果流。本地算子固定在当前引擎，并形成同进程合并边界；源码路径和构建命令不会提交到远端。符合条件的纯仓库算子上游区域仍可下推。DACP 和 Union 远程提交拒绝本地目录步骤，包括 DEBUG 模式。这是可信本地开发能力，不是远程任意命令执行接口。
+取消与 Job 超时覆盖构建及执行。构建诊断写入 stderr，stdout 仅保留结果流。本地算子固定在当前引擎，并形成同进程合并边界；源码路径和构建命令不会提交到远端。符合条件的纯仓库算子上游区域仍可下推。DACP 和 Union 远程提交拒绝本地目录步骤，对所有远程请求。这是可信本地开发能力，不是远程任意命令执行接口。
 
 可信嵌入程序可通过 `LocalEngine.inferLocal(reference, request, cancel)` 请求结构及样例，复用相同构建产物和推导 worker。执行不会自动调用推导。目前设计器尚未提供本地算子面板。
 
@@ -109,7 +114,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
   examples/operators/local/engine.yaml examples/operators/local/job.yaml
 ```
 
-示例读取本地 Item，用 Python 将字节转为大写，然后由 Scala 传递流，无需算子仓库。仅源码构建、算子产物、运行资源和执行历史使用磁盘，中间数据保持流式传递。
+示例读取本地 Item，用 Python 将字节转为大写，然后由 Scala 传递流，自定义步骤无需发布到仓库；`item_source` 和 `client_sink` 仍需从仓库或已验证缓存解析。仅源码构建、算子产物、运行资源和执行历史使用磁盘，中间数据保持流式传递。
 
 ## 发布同一份源码
 

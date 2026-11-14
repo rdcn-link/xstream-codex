@@ -9,9 +9,8 @@ import org.apache.arrow.memory.BufferAllocator
 trait EngineEnvironment extends OperatorEnvironment {
   /** None for remote-serving hosts; local paths are a standalone-engine capability. */
   def localOperatorBase:Option[java.nio.file.Path]=None
+  def inlineRuntimes:Map[String,InlineRuntime]=Map.empty
   def executionResourceLimits:ExecutionResourceLimits=ExecutionResourceLimits()
-  def debug:Boolean
-  def sourceRuntimes:Map[String,SourceRuntime]
   def operatorFusionEnabled:Boolean
   def maxConcurrentTasks:Int
   def taskSlots:java.util.concurrent.Semaphore

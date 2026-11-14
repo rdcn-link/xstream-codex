@@ -47,7 +47,7 @@ final class DacpRemoteItemProvider extends RemoteItemProvider {
           val codec=DataViewSupports.named(plugins,view)
           return ItemFrameStreams.remote(metadata.format,cancel){out=>
             try {val stream=item.asView(codec.kind,codec.selection(binding.selection.getOrElse(Data.mapper.createObjectNode())))
-              try stream.consume(out)finally stream.close()
+              try stream.consume(ItemReferences.qualify(out,binding.uri))finally stream.close()
             }finally {item.close();dataset.close()}
           }
         }

@@ -87,7 +87,7 @@ def publish(source, destination):
             base=med(w,n,'airflow-file','wall_s')
             ratios=[base/value if base is not None and (value:=med(w,n,m,'wall_s')) else None for m in ['xstream-isolated','xstream-fused']]
             lines.append(f'| {w} | {n:,} | '+' | '.join(('—' if r is None else f'{r:.2f}×') for r in ratios)+' |')
-        lines += ['', ('算子进程数由实际执行单元记录计算，不含 Airflow/模型/XStream 框架进程及宿主 read_item 数据源。合并受到语言及锁定依赖环境限制。' if zh else 'Operator process counts come from actual execution-unit records, excluding framework processes and host read_item sources. Fusion respects language and locked dependency environments.'), '']
+        lines += ['', ('算子进程数由实际执行单元记录计算，不含 Airflow/模型/XStream 框架进程及宿主 item_source 数据源。合并受到语言及锁定依赖环境限制。' if zh else 'Operator process counts come from actual execution-unit records, excluding framework processes and host item_source sources. Fusion respects language and locked dependency environments.'), '']
         lines += [('| 工作负载 | 合并单元内的步骤 | 运行环境 |' if zh else '| Workload | Steps sharing an execution unit | Runtime |'), '|---|---|---|']
         for w,n in keys:
             samples=groups.get((w,n,'xstream-fused'),[])

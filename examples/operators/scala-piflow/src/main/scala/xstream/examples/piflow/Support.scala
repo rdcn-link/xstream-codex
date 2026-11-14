@@ -7,7 +7,7 @@ import org.apache.arrow.memory.RootAllocator
 import org.apache.arrow.vector._
 import org.apache.arrow.vector.types.pojo.{ArrowType,Field,FieldType,Schema}
 import org.apache.arrow.vector.types.FloatingPointPrecision
-import xstream.operator.{Operator,OperatorContext}
+import xstream.operator.{TransformOperator,OperatorContext}
 import xstream.execution.{StreamDescriptor,InferenceResult,OutputSample,PreviewLimits}
 import scala.jdk.CollectionConverters._
 import scala.collection.mutable
@@ -99,7 +99,7 @@ private[piflow] object Support {
 }
 
 /** Each entrypoint shares processing with bounded previews; no input/output data is written to disk. */
-abstract class StreamOperator extends Operator {
+abstract class StreamOperator extends TransformOperator {
   import Support._
   protected def ports:Set[String]=Set("source")
   protected def bytesInput:Boolean=false

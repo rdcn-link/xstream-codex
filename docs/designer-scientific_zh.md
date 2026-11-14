@@ -1,8 +1,8 @@
 # XStream Designer 中的科学数据视图
 
-设计器可浏览本地及配置的远程 DataCatalog。逐层展开 Dataset、文件容器及其子对象，即可选择逻辑 Item：NetCDF 变量、FITS HDU 或 FASTA 的 `/sequences`。能力图标区分 records、bytes、数组和序列。文件夹在原位置展开；其原始字节仍可通过显式填写 `read_item` 参数读取。
+设计器可浏览本地及配置的远程 DataCatalog。逐层展开 Dataset、文件容器及其子对象，即可选择逻辑 Item：NetCDF 变量、FITS HDU 或 FASTA 的 `/sequences`。能力图标区分 records、bytes、数组和序列。文件夹在原位置展开；其原始字节仍可通过显式填写 `item_source` 参数读取。
 
-选择 Item 后会创建或更新无输入的 `read_item@1.0` 步骤。自动选择顺序为 records、bytes、首个声明的科学视图。可在 **Parameters → view** 中选择其他可用表示，显式选择不支持的视图会报错。选择表单来自已安装的视图编码插件，与文件格式独立；新增编码器可自行提供表单，无需修改设计器注册表。
+选择 Item 后会创建或更新无输入的 `item_source@1.0` 步骤。自动选择顺序为 records、bytes、首个声明的科学视图。可在 **Parameters → view** 中选择其他可用表示，显式选择不支持的视图会报错。选择表单来自已安装的视图编码插件，与文件格式独立；新增编码器可自行提供表单，无需修改设计器注册表。
 
 ## 选择范围与变量
 
@@ -17,7 +17,7 @@
 name: Read a climate slice
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/science/climate/temperature
@@ -26,8 +26,10 @@ steps:
         origin: [0, 0]
         shape: [$TIME_COUNT, 180]
         stride: [1, 1]
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 变量 YAML 为 `TIME_COUNT: 4`。示例假定 `/science/climate/temperature` 是边界允许该选择的二维变量。FITS 图像可使用 `uri: context:/science/sky/hdu0`、`view: array` 和 `selection: {origin: [20, 10], shape: [32, 32], stride: [1, 1]}`；FASTA 可使用 `uri: context:/science/genome/sequences`、`view: sequence` 和 `selection: {ids: [chr1], offset: 100, length: 80}`。执行目录必须发布相应文件别名。显式远程来源使用 `dacp://host:port/dataset/item`。SQL 仅用于 records，不能与科学视图选择条件组合。
@@ -40,7 +42,7 @@ outputs:
 
 ## 执行与扩展
 
-`read_item` 会将 selection 传递到本地和远程读取，包括 Union 成员节点读取。科学数据 Job 帧保留表示名及 `start.structure` 描述信息。数据载荷是普通 Arrow IPC：坐标和序列身份以有类型的列表示。它们可以连至 Outlet。下游算子必须显式支持对应表示，bytes/records 模板不会自动处理科学视图；设计器的兼容性校验会报告不匹配。Scala 输出事件通过 `arrow(allocator)` 读取 Arrow 数据，Python 事件提供 `batch`。
+`item_source` 会将 selection 传递到本地和远程读取，包括 Union 成员节点读取。科学数据 Job 帧保留表示名及 `start.structure` 描述信息。数据载荷是普通 Arrow IPC：坐标和序列身份以有类型的列表示。它们可以连至 Client Sink。下游算子必须显式支持对应表示，bytes/records 模板不会自动处理科学视图；设计器的兼容性校验会报告不匹配。Scala 输出事件通过 `arrow(allocator)` 读取 Arrow 数据，Python 事件提供 `batch`。
 
 实现 `DataViewSupport`，在 `META-INF/services/xstream.data.DataViewSupport` 注册。`selectionSchema` 声明类型化表单，`validateSelection(selection, schema)` 按描述校验边界。`preview(batch, maxRows, maxValues)` 直接从 Arrow 列返回有界样例对象。必须遵守两个上限，避免读取完整对象；宿主执行最终字节预算。插件没有网络编码方法。格式专有依赖属于格式插件。格式支持范围及随机访问暂存限制见[数据流契约](data-streams_zh.md)与 [xstream-data](../xstream-data/README_zh.md)。
 

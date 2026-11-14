@@ -22,7 +22,7 @@ def main():
         with urlopen(Request(args.url.rstrip('/')+'/api/'+path, json.dumps(value).encode(), {'Content-Type': 'application/json'}), timeout=130) as response:
             return json.load(response)
     job = {'name': 'Designer cross-node preview', 'steps': [
-        {'id': 'read', 'title': 'Read observations', 'operator': 'read_item@1.0', 'inputs': {}, 'params': {'uri': '$INPUT_URI', 'view': 'records'}},
+        {'id': 'read', 'title': 'Read observations', 'operator': 'item_source@1.0', 'inputs': {}, 'params': {'uri': '$INPUT_URI', 'view': 'records'}},
         {'id': 'filter', 'title': 'Filter observations', 'operator': 'piflow_filter@1.0', 'inputs': {'source': 'read'}, 'params': {'condition': '$CONDITION'}},
         {'id': 'export', 'title': 'CSV result', 'operator': 'piflow_csv_save@1.0', 'inputs': {'source': 'filter'}}
     ], 'outputs': {'result': 'export'}}
@@ -79,11 +79,11 @@ def main():
         sources = page.locator('[data-category="Data sources"]')
         expect(sources.locator('summary')).to_contain_text('Data sources')
         sources.locator('summary').click()
-        expect(sources.locator('[data-operator="read_item@1.0"]')).to_be_hidden()
-        page.locator('#search').fill('read_item')
-        expect(sources.locator('[data-operator="read_item@1.0"]')).to_be_visible()
+        expect(sources.locator('[data-operator="item_source@1.0"]')).to_be_hidden()
+        page.locator('#search').fill('item_source')
+        expect(sources.locator('[data-operator="item_source@1.0"]')).to_be_visible()
         page.locator('#search').fill('')
-        expect(sources.locator('[data-operator="read_item@1.0"]')).to_be_hidden()
+        expect(sources.locator('[data-operator="item_source@1.0"]')).to_be_hidden()
         sources.locator('summary').click()
         page.locator('[data-operator="piflow_filter@1.0"]').hover()
         expect(page.get_by_role('tooltip')).to_contain_text('condition: string', timeout=3000)
@@ -95,7 +95,7 @@ def main():
         page.locator('#search').fill('no_such_operator_xyz')
         expect(page.locator('#operators')).to_have_text('No matching operators.')
         page.locator('#search').fill('')
-        page.locator('[data-operator="read_item@1.0"]').drag_to(page.locator('#canvas'), target_position={'x': 110, 'y': 110})
+        page.locator('[data-operator="item_source@1.0"]').drag_to(page.locator('#canvas'), target_position={'x': 110, 'y': 110})
         page.locator('[data-operator="piflow_filter@1.0"]').dblclick()
         expect(page.locator('.card')).to_have_count(2)
         expect(page.locator('#step-node')).to_have_count(0)
@@ -240,7 +240,7 @@ def main():
         expect(page.locator('#delete-step')).to_have_count(0)
         expect(page.locator('#job-output-list')).to_have_count(0)
         # Several result streams share one Outlet; duplicate links are not created.
-        page.locator('[data-operator="read_item@1.0"]').dblclick()
+        page.locator('[data-operator="item_source@1.0"]').dblclick()
         page.locator('[data-output="step_3:result"]').click()
         page.locator('#outlet-input').click()
         expect(page.locator('[data-job-output-edge]')).to_have_count(2)

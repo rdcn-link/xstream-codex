@@ -26,7 +26,7 @@ format 标识源数据表示方式，view 标识读取方式。客户端使用�
 
 ### ZIP 归档浏览
 
-将 ZIP 文件映射为普通文件别名，服务器自动将其发布为 `kind=folder`、`format=zip`，提供原始归档的 `bytes` 视图。`list("/archive")` 列出归档的直接子项，`list()` 包含全部归档条目；缺失的父集合自动补齐。条目按扩展名选择格式，打开时使用现有格式处理器检测和读取。ZIP 内的 ZIP 暂作为 `bin` data Item，不递归展开。所有 folder 的修改时间、大小及记录数仍为未知。
+将 ZIP 文件映射为普通文件别名，服务器自动将其发布为 `kind=folder`、`format=zip`，提供原始归档的 `bytes` 视图和内部成员的 `files` 视图。`list("/archive")` 列出归档的直接子项，`list()` 包含全部归档条目；缺失的父集合自动补齐。条目按扩展名选择格式，打开时使用现有格式处理器检测和读取。ZIP 内的 ZIP 暂作为 `bin` data Item，不递归展开。所有 folder 的修改时间、大小及记录数仍为未知。
 
 ```yaml
 datasets:
@@ -41,7 +41,7 @@ datasets:
 
 ### TAR、GZIP 与压缩 TAR
 
-`tar`、`gzip` 和 `tar-gzip` 与 `zip` 一样发布为 folder，仅提供原始文件的 bytes 视图。`.tar.gz` 和 `.tgz` 识别为单个压缩 TAR，直接列出 TAR 条目，没有中间 `.tar` 子项。扩展名不区分大小写；显式 `format` 可覆盖后缀检测。
+`tar`、`gzip` 和 `tar-gzip` 与 `zip` 一样发布为 folder，提供原始文件的 `bytes` 视图及成员的 `files` 视图。`.tar.gz` 和 `.tgz` 识别为单个压缩 TAR，直接列出 TAR 条目，没有中间 `.tar` 子项。扩展名不区分大小写；显式 `format` 可覆盖后缀检测。
 
 普通 `.gz` 提供一个解压后的 data 子项。公开别名 `/orders.csv.gz` 对应 `/orders.csv.gz/orders.csv`；别名不以 `.gz` 结尾时使用 `content`。GZIP 头中的私有文件名不参与命名，子项的修改时间和列举大小保持未知；按内容格式提供 records 和 bytes。连续 GZIP members 被合并为同一个解压流。
 

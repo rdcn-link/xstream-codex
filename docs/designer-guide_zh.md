@@ -12,7 +12,7 @@
 |---|---|
 | 顶栏 | 确认 Target、新建或加载 Job、导出 YAML |
 | 左侧栏 | 浏览算子、数据目录及内置示例 |
-| 画布 | 布置步骤，将端口连至唯一 Outlet |
+| 画布 | 布置步骤，将端口连至唯一 Client Sink |
 | 右侧栏 | 编辑所选步骤、参数及输出预览 |
 | 底部面板 | 查看 Job YAML、编辑变量、校验、查看日志及使用 Chat |
 
@@ -22,7 +22,7 @@
 
 Target 默认为 Local。通过 Target 控件选择已配置的远程目标，并确认切换。**Target catalog** 随后显示该目标的目录；其他已配置目录单独提供。展开 Catalog、Dataset 或文件夹时加载直接子项。
 
-选择 Item 及其提供的视图，可以创建或配置 `read_item`。Target catalog 中的选择使用 `context:/dataset/item`；其他目录的选择使用完整远程 URI。用文件夹左侧三角展开子项，可读容器也可能提供原始 bytes。将示例加载到其他环境时，检查 Item 路径。
+选择 Item 及其提供的视图，可以创建或配置 `item_source`。Target catalog 中的选择使用 `context:/dataset/item`；其他目录的选择使用完整远程 URI。用文件夹左侧三角展开子项，可读容器也可能提供原始 bytes。将示例加载到其他环境时，检查 Item 路径。
 
 导出的 `designer.target` 记录设计目标。执行时使用接收引擎的数据目录；设计器辅助信息不会提交或迁移 Job。
 
@@ -30,15 +30,15 @@ Target 默认为 Local。通过 Target 控件选择已配置的远程目标，�
 
 ```mermaid
 flowchart LR
-  Item["选择 Item 与视图"] --> Read["read_item"]
-  Read --> Process["处理步骤"] --> Outlet["Outlet"]
+  Item["选择 Item 与视图"] --> Read["item_source"]
+  Read --> Process["处理步骤"] --> ClientSink["Client Sink"]
   Process -. "修改参数或输入" .-> Preview["更新结构预览"]
-  Outlet --> Validate["校验"] --> YAML["导出 YAML"]
+  ClientSink --> Validate["校验"] --> YAML["导出 YAML"]
 ```
 
 1. 从 **Examples** 加载示例，或从算子库添加算子。
 2. 点击输出端口，移动到目标输入端口后再点击完成连线；右键取消本次连线。
-3. 将需要的最终输出连接到 Outlet。Job 输出来自一个步骤的一个输出端口。
+3. 将需要的最终输出连接到 Client Sink。Job 输出来自一个步骤的一个输出端口。
 4. 拖动步骤布置画布；框选多个元素后可一起移动。按需使用 Delete、复制步骤、Undo 和 Redo。
 5. 双击步骤打开属性；单击只选中，不展开侧栏。
 
@@ -62,11 +62,11 @@ flowchart LR
 
 使用 **Validate** 检查游离步骤、缺失输出连接和输入兼容性，建议导出前执行。用 **Load YAML** 加载已有 Job，并为目标环境提供相应变量。
 
-**Export job YAML** 打开预览，默认勾选 **Include designer information**。辅助信息保存布局、Outlet 位置、视口及生成器元数据。预览中支持复制、打印及下载。执行使用 Job 定义，辅助布局用于恢复编辑器。
+**Export job YAML** 打开预览，默认勾选 **Include designer information**。辅助信息保存布局、Client Sink 位置、视口及生成器元数据。预览中支持复制、打印及下载。执行使用 Job 定义，辅助布局用于恢复编辑器。
 
 ## 7. Chat 编排
 
-描述完整处理需求、数据路径、转换过程和期望输出。Chat 使用管理员配置的模型 API 提议 Job。它会取得整个界面的功能清单、控件可见与可用状态、选中元素、展开的面板与对话框、缩放、推导与连接状态，以及配置的 Target 和带编号的 Examples。可解释全部界面区域：Job 新建/命名/加载，资源搜索与分类、目录交互，画布拖动/连线/Outlet/多选/复制/快捷键，步骤属性/类型化参数/输出预览，YAML 与变量编辑，校验/日志/对话框/导出，以及 Chat 自身。Chat 提供操作指引与 Job 提议，界面操作仍由用户完成。它自动取得 Target 和已配置远程目录的有限元数据，以及仓库中的实时算子声明，无需先展开侧栏。不完整或不可用目录会明确标记，不会自动发送数据内容。在对话中检查提议，点击 **Apply proposed changes** 更新画布与变量，或点击 **Discard proposal** 保持草稿不变，再核对参数、校验与导出；Chat 使用非模态浮动窗口，默认宽度为 Designer 窗口的四分之一，可拖动标题栏移动、拖动右下角调整大小，关闭后再次打开会保留对话。助手的正常回复随模型生成逐段显示，支持 Markdown 粗体、列表、链接、表格、行内代码和代码块；Job YAML 和应用/丢弃按钮仅在完整提议通过校验后出现。输入框默认高度为一行，随多行内容自动增高，Enter 发送、Shift+Enter 换行，等待时显示动态图标、当前阶段、已等待时长和流式响应接收字数，对话自动滚动到最新消息；后续问答可修改提议。参见 [Chat 配置](../xstream-designer/README_zh.md)。
+描述完整处理需求、数据路径、转换过程和期望输出。Chat 使用管理员配置的模型 API 提议 Job。它会取得整个界面的功能清单、控件可见与可用状态、选中元素、展开的面板与对话框、缩放、推导与连接状态，以及配置的 Target 和带编号的 Examples。可解释全部界面区域：Job 新建/命名/加载，资源搜索与分类、目录交互，画布拖动/连线/Client Sink/多选/复制/快捷键，步骤属性/类型化参数/输出预览，YAML 与变量编辑，校验/日志/对话框/导出，以及 Chat 自身。Chat 提供操作指引与 Job 提议，界面操作仍由用户完成。它自动取得 Target 和已配置远程目录的有限元数据，以及仓库中的实时算子声明，无需先展开侧栏。不完整或不可用目录会明确标记，不会自动发送数据内容。在对话中检查提议，点击 **Apply proposed changes** 更新画布与变量，或点击 **Discard proposal** 保持草稿不变，再核对参数、校验与导出；Chat 使用非模态浮动窗口，默认宽度为 Designer 窗口的四分之一，可拖动标题栏移动、拖动右下角调整大小，关闭后再次打开会保留对话。助手的正常回复随模型生成逐段显示，支持 Markdown 粗体、列表、链接、表格、行内代码和代码块；Job YAML 和应用/丢弃按钮仅在完整提议通过校验后出现。输入框默认高度为一行，随多行内容自动增高，Enter 发送、Shift+Enter 换行，等待时显示动态图标、当前阶段、已等待时长和流式响应接收字数，对话自动滚动到最新消息；后续问答可修改提议。参见 [Chat 配置](../xstream-designer/README_zh.md)。
 
 执行命令和策略见[使用指南](usage_zh.md)。
 

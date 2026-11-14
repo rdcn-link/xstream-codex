@@ -15,11 +15,13 @@ A bundle can contain several main classes or Python modules. Publish each operat
 
 ## Definitions and publication
 
-Definitions live at `<operators>/<name>/<version>/operator.yaml`. Required fields are `name`, `version`, `image`, `icon`, `inputs`, and `parameters`; optional fields are `description`, `executor` (defaults to `container`), `entrypoint`, `artifact`, and plugin-owned `executor_config`. Artifact paths are relative to the definition. Unknown fields and duplicate YAML keys fail.
+Definitions live at `<operators>/<name>/<version>/operator.yaml`. Required fields are `name`, `version`, `role`, `type`, `image`, `icon`, `inputs`, and `parameters`; optional fields are `description`, `executor` (defaults to `container`), `entrypoint`, `artifact`, and plugin-owned `executor_config`. Artifact paths are relative to the definition. Unknown fields and duplicate YAML keys fail.
 
 ```yaml
 name: summary
 version: "1"
+role: transform
+type: sdk
 image: example/jvm-arrow:1
 executor: jvm
 entrypoint: example.Summary

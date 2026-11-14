@@ -1,13 +1,13 @@
 name: Interleave two corresponding four-line FASTQ streams.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/seqtk_mergepe.txt
     view: bytes
 - id: read_reference
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/seqtk_mergepe-reference.txt
@@ -18,5 +18,7 @@ steps:
     source: read
     reference: read_reference
   params: {}
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

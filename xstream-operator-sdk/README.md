@@ -104,3 +104,9 @@ Every operator must implement `inferOutputs` (Scala) or `infer_outputs` (Python)
 Required `previewOutputs` (JVM) / `preview_outputs` (Python) methods provide bounded output samples through inference workers. Default requests allow 10 rows / 16 KiB; both SDK and host enforce row counts and serialized UTF-8 JSON size. Custom operators must implement this interface; pure-transform templates may supply it. If current inputs cannot yield a sample, report the reason. Preview failures preserve Schema. See [sample interfaces and examples](../docs/structure-inference.md#bounded-output-sample-interface).
 
 Dependency declarations, locked environments, execution units and binary wrappers: [dependency environment guide](../docs/dependency-environments.md).
+
+## Item reference inputs
+
+Declare `representations: [items]` to receive resource references. Iterate with `ctx.input("source").foreachItem`; this does not open the referenced content. Use `ctx.openItem(item, "bytes") { stream => ... }` for callback-scoped lazy access through the host's authorized reader. The result is an ArrowDataStream, not a whole-file byte array. `ctx.itemsOutput("result")` emits a collection; `ctx.itemsOutput("result", single = true)` declares and enforces exactly one reference. Single Item content is read directly using the `view` parameter of `item_source`.
+
+Python operators use `ctx.input('source').items()` and `with ctx.open_item(item, 'bytes') as view:` followed by incremental `view.bytes()` or `view.batches()` iteration. Collection and single-reference cardinality are part of port/stream metadata, not Job-level map/reduce. See [the contract](../docs/items-stream.md) and [Scala examples](../examples/operators/item-sources/README.md).

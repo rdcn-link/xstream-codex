@@ -13,7 +13,7 @@ XStream uses `DataCatalog → PublishedDataset → DatasetAccess → DataView �
 | `DataView` | Opens a selected view as an Arrow stream |
 | `ArrowDataStream` | Produces schema and bounded Arrow batches during consumption |
 
-Dataset descriptions are JSON strings with `title` and `description`. Item paths are logical paths, not storage credentials or physical filenames. Folder Items support child listing; ordinary folders do not expose content views. Structured files and archives can support both child listing and an original-file bytes view. Unknown sizes, counts and timestamps remain unknown.
+Dataset descriptions are JSON strings with `title` and `description`. Item paths are logical paths, not storage credentials or physical filenames. Folder Items support child listing; file namespace folders also expose the `files` view. Archive roots additionally expose original-file `bytes`; scientific groups expose only plugin-advertised views. Unknown sizes, counts and timestamps remain unknown.
 
 ## Reading a view
 

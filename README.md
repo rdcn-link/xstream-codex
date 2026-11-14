@@ -8,7 +8,7 @@ XStream provides Dataset management and Job execution through a Scala data SDK, 
 
 **Scala is the preferred language for new XStream operators.** Start with the JVM SDK templates and keep processing, structure inference and bounded samples in the same operator implementation. Java uses the same JVM contracts; Python, scripts and native commands remain supported for existing code and language-specific libraries.
 
-XStream executes every Job step locally. Remote `read_item` URIs provide data streams to local operators. DACP clients submit Jobs to remote servers; Union owns automatic placement across its members.
+XStream executes every Job step locally. Remote `item_source` URIs provide data streams to local operators. DACP clients submit Jobs to remote servers; Union owns automatic placement across its members.
 
 [User guide](docs/usage.md) · [Development guide](docs/development.md)
 
@@ -53,11 +53,12 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
   xstream-designer/example.yaml
 ```
 
-Edit configuration paths, service addresses and credentials first. The runner prints its selected output stream to stdout; the designer listens on `http://127.0.0.1:8840/` by default. Operators use approved public repositories, verified package caches, or explicit [local source libraries](docs/local-operators.md) for standalone development. The built-in `read_item` needs no package download.
+Edit configuration paths, service addresses and credentials first. The runner prints its selected output stream to stdout; the designer listens on `http://127.0.0.1:8840/` by default. Operators use approved public repositories, verified package caches, or explicit [local source libraries](docs/local-operators.md) for standalone development. `item_source@1.0` and `client_sink@1.0` must be available in the configured repository or verified package cache.
 
 ## Documentation
 
 - [Write an operator](docs/operator-authoring.md)
+- [Define an operator inside a local Job](docs/inline-operators.md)
 - [Submit source and review](docs/operator-submission.md)
 - [Engine and embedding](docs/xstream.md)
 - [Typed streams and scientific views](docs/data-streams.md)

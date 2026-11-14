@@ -49,7 +49,7 @@ with sync_playwright() as playwright:
     page.locator('.operator[data-operator="script_jsonl_project@1.0"]').first.hover()
     expect(page.locator('#operator-tooltip .operator-rating')).to_have_text('?')
     expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: Unavailable')
-    page.locator('.operator[data-operator="read_item@1.0"]').hover()
+    page.locator('.operator[data-operator="item_source@1.0"]').hover()
     expect(page.locator('#operator-tooltip .operator-rating')).to_have_text('Built-in')
     expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: Not applicable')
     expect(page.locator('.operator .operator-rating')).to_have_count(0)

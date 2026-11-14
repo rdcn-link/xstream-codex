@@ -5,11 +5,11 @@ import java.nio.charset.{StandardCharsets,CodingErrorAction}
 import java.util.concurrent.CancellationException
 import com.fasterxml.jackson.databind.JsonNode
 import scala.jdk.CollectionConverters._
-import xstream.operator.{Operator,ByteStreamOperator,OperatorContext}
+import xstream.operator.{TransformOperator,ByteStreamOperator,OperatorContext}
 import xstream.execution.{StreamDescriptor,InferenceResult,OutputSample,PreviewLimits}
 
 /** Bounded FASTA and line selection tools, adapted from the pinned Galaxy scripts. */
-abstract class SequenceOperator(val operation:String) extends Operator {
+abstract class SequenceOperator(val operation:String) extends TransformOperator {
   private def number(p:JsonNode,k:String,d:Int,max:Int):Int={
     val n=p.get(k);require(n==null || n.isIntegralNumber && n.canConvertToInt,k+" must be an integer")
     val v=if(n==null)d else n.asInt;require(v>=0 && v<=max,k+" is outside the allowed range");v

@@ -1,7 +1,7 @@
 name: Reverse-complement FASTA nucleotide sequences using the IUPAC alphabet.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/reverse_complement.txt
@@ -12,5 +12,7 @@ steps:
     source: read
   params:
     alphabet: dna
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

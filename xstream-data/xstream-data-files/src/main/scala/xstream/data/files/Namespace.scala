@@ -4,6 +4,8 @@ import _root_.xstream.data._
 
 import java.nio.file.{Files, Path}
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
+import org.apache.arrow.vector.{BigIntVector,BitVector,VarBinaryVector,VarCharVector,VectorSchemaRoot}
 
 object FileRecordCounts {
   def capture(path: Path, options: FileOptions, plugins:PluginEnvironment): Option[FileRecordCount] = {
@@ -115,12 +117,12 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
     val roots = archives.filter { case (alias,_) => parent.forall(p => p == alias || p.startsWith(alias + "/")) }
     archived(roots).foreach { case (path,a) =>
       require(!entries.contains(path), "archive entry conflicts with published alias")
-      result(path) = if (a.entry.directory) ItemProperties.folder(path).copy(lastModifiedTimeMs=a.entry.modified,creationTimeMs=a.entry.created) else
+      result(path) = if (a.entry.directory) ItemProperties.folder(path).copy(lastModifiedTimeMs=a.entry.modified,creationTimeMs=a.entry.created,views=Some(Seq("items"))) else
         Item(path,{ val id = Formats.extensionFormat(a.entry.name).id; if (Containers.supports(id)) "bin" else id },None,lastModifiedTimeMs=a.entry.modified,totalSizeBytes=a.entry.size,creationTimeMs=a.entry.created)
       var parent = LogicalPath.parent(path)
       while (parent != "/" && !archives.contains(parent)) {
         require(!entries.contains(parent), "archive folder conflicts with published alias")
-        result.getOrElseUpdate(parent,ItemProperties.folder(parent))
+        result.getOrElseUpdate(parent,ItemProperties.folder(parent).copy(views=Some(Seq("items"))))
         parent = LogicalPath.parent(parent)
       }
     }
@@ -162,7 +164,7 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
     }
   }
   private def metadata(b: PublishedItem, infer: Boolean): Item = {
-    if (b.kind == "folder") Item(b.path, "", None, "folder")
+    if (b.kind == "folder") Item(b.path, "", None, "folder",views=Some(Seq("items")))
     else {
       val (adapter, internal) = resolve(b.path)
       val description = adapter match {
@@ -177,7 +179,8 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
         case _ => description
       }
       if (Containers.supports(description.format) || (description.format != "sql" && Formats.byId(description.format).isInstanceOf[StructuredFileHandler]))
-        enriched.copy(schema=Some(PluginSchemas.bytes),kind="folder",totalSizeBytes=None,recordCount=None,views=Some(Seq("bytes")))
+        enriched.copy(schema=Some(PluginSchemas.bytes),kind="folder",totalSizeBytes=None,recordCount=None,
+          views=Some(if(Containers.supports(description.format))Seq("bytes","items")else Seq("bytes")))
       else enriched.copy(path = b.path, views=Some(config.plugins.views(enriched)))
     }
   }
@@ -194,9 +197,9 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
       }
     }
   }
-  def describe(path: String): Item = {
+  private def describeRaw(path: String): Item = {
     LogicalPath.validate(path)
-    if (path == "/") ItemProperties.folder("/")
+    if (path == "/") ItemProperties.folder("/").copy(views=Some(Seq("items")))
     else if (entries.contains(path)) metadata(entry(path), infer = true)
     else withStructure(path) { (access,child) =>
       val item = access.describe(child)
@@ -208,16 +211,63 @@ class NamespaceAdapter(bindings: Seq[PublishedItem], config: DatasetContext, met
         lastModifiedTimeMs=item.lastModifiedTimeMs,totalSizeBytes=item.totalSizeBytes,creationTimeMs=item.creationTimeMs) }
     }
   }
-  def list(): Seq[Item] = (snapshot(entries.values.toVector,infer=false) ++ virtual().values).sortBy(_.path)
+  def describe(path:String):Item=itemCapabilities(describeRaw(path))
+  private def itemCapabilities(item:Item):Item = if(item.kind=="data" && item.format=="csv")item.copy(views=Some((config.plugins.views(item):+"items").distinct))else item
+  def list(): Seq[Item] = (snapshot(entries.values.toVector,infer=false) ++ virtual().values).map(itemCapabilities).sortBy(_.path)
   def list(path: String): Seq[Item] = {
     LogicalPath.validate(path)
     require(isFolder(path), "listing requires a folder")
     (snapshot(entries.values.toVector.filter(b => LogicalPath.parent(b.path) == path),infer=false) ++
-      virtual(Some(path)).values.filter(b => LogicalPath.parent(b.path) == path)).sortBy(_.path)
+      virtual(Some(path)).values.filter(b => LogicalPath.parent(b.path) == path)).map(itemCapabilities).sortBy(_.path)
   }
 
   def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={
     LogicalPath.validate(path)
+    if(kind eq ItemReferences.View) {
+      val item=describe(path)
+      if(item.kind!="folder" && item.format!="csv")return None
+      return Some(DataViews[ItemsSelection]((selection,context,out)=>{
+        require(selection.mode=="auto" || (selection.mode=="folder" && item.kind=="folder") || (selection.mode=="csv" && item.kind=="data" && item.format=="csv"),"items source kind does not match selected resource")
+        val root=VectorSchemaRoot.create(ItemReferences.schema,context.allocator)
+        try {
+          out.start(ItemReferences.schema,null)
+          def emit(ref:ItemReference):Unit={
+            context.check();root.clear();root.allocateNew();ItemReferences.write(root,0,ref);root.setRowCount(1);out.accept(ArrowBatch(root))
+          }
+          if(item.kind=="folder") {
+            FolderItems.consume(this,path,selection,context,new ArrowConsumer {
+              def start(schema:org.apache.arrow.vector.types.pojo.Schema,d:org.apache.arrow.vector.dictionary.DictionaryProvider):Unit=()
+              def accept(batch:ArrowBatch):Unit=out.accept(batch)
+            },config.plugins)
+          }else {
+            require(!selection.recursive,"recursive only applies to folders")
+            val stream=requireView(path,DataViews.Records).open(Scan(),context)
+            try stream.consume(new ArrowConsumer {
+              def start(schema:org.apache.arrow.vector.types.pojo.Schema,d:org.apache.arrow.vector.dictionary.DictionaryProvider):Unit=
+                require(schema.findField(selection.uriColumn)!=null,"CSV URI column not found: "+selection.uriColumn)
+              def accept(batch:ArrowBatch):Unit={
+                val input=batch.root;val vector=input.getVector(selection.uriColumn)
+                require(vector.isInstanceOf[VarCharVector],"CSV URI column must contain strings")
+                (0 until input.getRowCount).foreach { i=>
+                  context.check();require(!vector.isNull(i),"CSV Item URI cannot be null")
+                  val value=vector.getObject(i).toString;ItemReferences.validate(value)
+                  val parsed=java.net.URI.create(value)
+                  val resolved=if(parsed.isAbsolute || value.startsWith("/"))value else {
+                    val parent=LogicalPath.parent(path).stripSuffix("/")+"/"
+                    val p=java.net.URI.create(parent).resolve(parsed).getPath;LogicalPath.validate(p);p
+                  }
+                  val meta=Data.mapper.createObjectNode()
+                  input.getFieldVectors.asScala.filter(_.getName!=selection.uriColumn).foreach(v=>{
+                    if(v.isNull(i))meta.putNull(v.getName)else meta.set[com.fasterxml.jackson.databind.JsonNode](v.getName,Data.mapper.valueToTree(if(v.isInstanceOf[VarCharVector])v.getObject(i).toString else v.getObject(i)))
+                  })
+                  emit(ItemReference(resolved,java.net.URI.create(resolved).getPath.split('/').last,metadata=meta))
+                }
+              }
+            })finally stream.close()
+          }
+        } finally root.close()
+      })).asInstanceOf[Option[DataView[S]]]
+    }
     Some(DataViews[S]((selection,context,out)=>{
       def consume(access:DatasetAccess,child:String):Unit={
         val stream=access.requireView(child,kind).open(selection,context)

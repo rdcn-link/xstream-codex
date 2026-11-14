@@ -22,6 +22,7 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 
 - [Job YAML reference](jobs.md)
 - [Local operator libraries](local-operators.md)
+- [Job-local operators](inline-operators.md)
 - [Retry, timeout and replay](materialization.md)
 - [Execution units and fusion](operator-fusion.md)
 - [Embed the engine](xstream.md)
@@ -31,6 +32,7 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 
 - [Development guide](development.md)
 - [Write your first operator](operator-authoring.md)
+- [Scala Source and Sink examples](../examples/operators/scala-endpoints/README.md)
 - [Parameters and types](operator-parameters.md)
 - [Infer structures and samples](structure-inference.md)
 - [Dependencies and packaging](dependency-environments.md)
@@ -47,3 +49,5 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 - [DataView and stream API](data-streams.md)
 - [Arrow encoding reference](arrow-streams.md)
 - [Build extensions](operator-build-extensions.md)
+
+- [Item reference streams](items-stream.md)

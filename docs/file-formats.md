@@ -26,7 +26,7 @@ The registry uses an explicit `format` override first, then compound container s
 
 ### Browsing ZIP archives
 
-Map a ZIP file using an ordinary file alias. The server publishes it as `kind=folder`, `format=zip`, with a `bytes` view returning the original archive. `list("/archive")` returns immediate children, while `list()` includes all archive entries; missing parent folders are inferred. Entry formats are selected by extension in listings and detected by existing readers when opened. ZIPs inside ZIPs remain `bin` data Items without recursive expansion. Creation and modification times are reported when the storage source provides them; folder sizes and record counts remain unknown.
+Map a ZIP file using an ordinary file alias. The server publishes it as `kind=folder`, `format=zip`, with `bytes` for the original archive and `files` for its members. `list("/archive")` returns immediate children, while `list()` includes all archive entries; missing parent folders are inferred. Entry formats are selected by extension in listings and detected by existing readers when opened. ZIPs inside ZIPs remain `bin` data Items without recursive expansion. Creation and modification times are reported when the storage source provides them; folder sizes and record counts remain unknown.
 
 ```yaml
 datasets:
@@ -37,11 +37,11 @@ datasets:
 ```
 
 
-Listings read the ZIP directory without decompressing entries. Opening, inferring schema, or counting stages only the requested entry into a temporary server file, cleaned after completion, failure, or cancellation; the first response for a large entry therefore waits for decompression. Archives allow at most 10,000 entries, 512 MiB decompressed per entry, and 2 GiB total declared size. Absolute paths, traversal, duplicate entries, and file/parent conflicts are rejected. Entries never extract into the source directory or follow archived symlinks. Readable container roots advertise bytes; ordinary folders advertise no readable views.
+Listings read the ZIP directory without decompressing entries. Opening, inferring schema, or counting stages only the requested entry into a temporary server file, cleaned after completion, failure, or cancellation; the first response for a large entry therefore waits for decompression. Archives allow at most 10,000 entries, 512 MiB decompressed per entry, and 2 GiB total declared size. Absolute paths, traversal, duplicate entries, and file/parent conflicts are rejected. Entries never extract into the source directory or follow archived symlinks. Archive folders advertise `files`; root archive Items also advertise original `bytes`.
 
 ### TAR, GZIP, and compressed TAR
 
-Like `zip`, formats `tar`, `gzip`, and `tar-gzip` publish folders with an original-file bytes view. `.tar.gz` and `.tgz` are recognized as single compressed TAR containers exposing TAR entries directly, without an intermediate `.tar` child. Extensions are case-insensitive; explicit `format` overrides suffix detection.
+Like `zip`, formats `tar`, `gzip`, and `tar-gzip` publish folders with original-file `bytes` and member `files` views. `.tar.gz` and `.tgz` are recognized as single compressed TAR containers exposing TAR entries directly, without an intermediate `.tar` child. Extensions are case-insensitive; explicit `format` overrides suffix detection.
 
 Plain `.gz` exposes one decompressed data child. Public alias `/orders.csv.gz` produces `/orders.csv.gz/orders.csv`; aliases without `.gz` use `content`. Private filenames from GZIP headers are ignored, and child modification time and listing size remain unknown. Children offer records and bytes according to their content format. Concatenated GZIP members form a single decompressed stream.
 

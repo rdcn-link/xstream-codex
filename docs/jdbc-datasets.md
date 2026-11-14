@@ -79,13 +79,15 @@ After setting the database credential environment variables, run this Job with t
 name: Read database orders
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/sales/reports/orders
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 The example path `/reports/orders` comes from the explicit mapping above. For parameters, variables and execution commands, see [Jobs](jobs.md) and the [quick start](quickstart.md).

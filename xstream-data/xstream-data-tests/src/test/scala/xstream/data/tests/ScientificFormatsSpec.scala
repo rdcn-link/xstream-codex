@@ -73,7 +73,7 @@ class ScientificFormatsSpec extends AnyFunSuite {
   }}
   test("scientific selection and presentation supports are discovered without output codecs") {using { (c,a)=>
     val support=new _root_.xstream.data.scientific.ArrayViewSupport()
-    assert(DataViewSupports.all(c.plugins).map(_.kind.name).toSet==Set("array","sequence"))
+    assert(DataViewSupports.all(c.plugins).map(_.kind.name).toSet==Set("array","sequence","items"))
     val request=Data.mapper.readTree("""{"origin":[1],"shape":[2],"stride":[1]}""")
     val selection=support.selection(request)
     assert(support.selection(support.selectionJson(selection))==selection)

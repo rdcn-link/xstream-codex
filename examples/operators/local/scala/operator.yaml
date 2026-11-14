@@ -1,4 +1,5 @@
 name: local_scala_identity
+role: transform
 version: '1.0'
 description: Stream bytes without buffering the entire Item using the Scala SDK.
 language: scala

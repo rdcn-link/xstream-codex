@@ -5,11 +5,11 @@ import java.nio.charset.{StandardCharsets,CodingErrorAction}
 import java.util.concurrent.CancellationException
 import com.fasterxml.jackson.databind.JsonNode
 import scala.jdk.CollectionConverters._
-import xstream.operator.{Operator,ByteStreamOperator,OperatorContext}
+import xstream.operator.{TransformOperator,ByteStreamOperator,OperatorContext}
 import xstream.execution.{StreamDescriptor,InferenceResult,OutputSample,PreviewLimits}
 
 /** Streaming adaptations of Galaxy tabular-to-FASTA and SAM utilities. */
-abstract class AlignmentOperator(val operation:String) extends Operator {
+abstract class AlignmentOperator(val operation:String) extends TransformOperator {
  private def active():Unit=if(Thread.currentThread.isInterrupted)throw new CancellationException("operator cancelled")
  private def integer(p:JsonNode,key:String,default:Int,max:Int):Int={
   val n=p.get(key);require(n==null||n.isIntegralNumber&&n.canConvertToInt,key+" must be an integer")

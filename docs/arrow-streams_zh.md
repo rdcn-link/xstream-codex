@@ -30,6 +30,7 @@
 | records | 普通的有类型 Arrow 列 | 一批记录；保留嵌套类型和字典类型 |
 | array | `origin: list<int64>`、`shape: list<int64>`、`stride: list<int64>`、`values: list<T>` | 每行是一个稠密多维块，不是将每个标量变为记录 |
 | sequence | `id: utf8`、`offset: int64`、`symbols: utf8`、`last: bool`、`description: utf8?` | 一个命名序列的有序分块；offset 按符号计数 |
+| items | `uri`, `name`, `kind`, `format`, `views`, `metadata`（UTF-8 列） | 有序的资源引用；不携带成员内容或凭据 |
 
 数组的 `T` 是与源数值编码一致的 Arrow 整数或浮点类型，包括无符号整数。`values` 采用行优先顺序。描述信息保留维度、坐标 Item 引用、单位、缩放和缺失值属性。消费者应显式解释这些属性。此表示不会自动缩放数值、替换缺失值或将数组展平成记录。格式插件限制数据块大小；标准数据块辅助工具将载荷限制为 16 MiB。Arrow IPC 处理实际字节序；描述中的 byte order 用于解析器数据块投影。
 

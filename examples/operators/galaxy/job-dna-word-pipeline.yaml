@@ -1,7 +1,7 @@
 name: Edit DNA and count observed dinucleotide composition
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   params:
     uri: context:/galaxy/extended/emboss_biosed.txt
     view: bytes
@@ -16,5 +16,7 @@ steps:
   params: {}
   inputs:
     source: edit
-outputs:
-  result: words
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: words

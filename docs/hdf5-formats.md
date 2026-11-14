@@ -34,7 +34,7 @@ datasets:
 
 Extensions `.h5`, `.hdf5`, `.hdf` and an HDF5 signature at offset zero select this handler. `.hdf` does not imply HDF4 support; files with an HDF5 user block can use explicit `format: hdf5`. Dedicated `netcdf` remains responsible for `.nc`/`.nc4`; plain HDF5 is not interpreted as a NetCDF conventions model.
 
-Read a real dataset path using ordinary `read_item@1.0` parameters:
+Read a real dataset path using ordinary `item_source@1.0` parameters:
 
 ```yaml
 uri: context:/science/experiment.h5/observations/temperature

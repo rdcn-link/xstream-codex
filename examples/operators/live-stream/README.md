@@ -6,14 +6,12 @@
 
 ## Port declaration
 
-Both the operator manifest and job have empty inputs; `result` is the only output port:
+The operator manifest declares no inputs. Its inference method reports a `result` byte stream in NDJSON format; the Job connects that port to `client_sink@1.0` when the caller needs the stream:
 
 ```yaml
+role: source
+type: sdk
 inputs: {}
-outputs:
-  result:
-    representations: [bytes]
-    formats: [ndjson]
 ```
 
 ## Observe in the shell

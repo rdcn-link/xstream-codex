@@ -221,7 +221,7 @@ class SourceSpec extends AnyFunSuite {
               "/bundle_gzip" -> "reports.tar.gz", "/orders.csv.gz" -> "orders.csv.gz")
             sources.foreach { case (alias,filename) =>
               val metadata = ds.list("/").find(_.path == alias).get
-              assert(metadata.kind == "folder" && metadata.views == Seq("bytes"))
+              assert(metadata.kind == "folder" && metadata.views == Seq("bytes","items"))
               assert(metadata.totalSizeBytes.isEmpty && metadata.recordCount.isEmpty && metadata.lastModifiedTimeMs.isDefined && metadata.creationTimeMs.isDefined)
               Using.resource(ds.open(alias)) { item =>
                 Using.resource(item.asBytes()) { reader =>

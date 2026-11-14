@@ -25,12 +25,12 @@ object ExecutionUnits {
     };runs.filter(_.size>1)
   }
   def prepare(config:EngineEnvironment,plan:JobPlan,check:()=>Unit=()=>()):ExecutionUnits={
-    if(!config.operatorFusionEnabled || plan.steps.size<2 || plan.steps.exists(_.source.nonEmpty))return ExecutionUnits(plan,Map.empty,Json.obj())
+    if(!config.operatorFusionEnabled || plan.steps.size<2)return ExecutionUnits(plan,Map.empty,Json.obj())
     OperatorInference.withDocker { docker=>
-      val operators=plan.steps.filterNot(_.operator==Jobs.ReadItem).map { t=>
-        check();val op=t.localOperator.map(r=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,r,docker,check)).getOrElse(OperatorLibrary.resolve(config,t.operator,docker))
+      val operators=plan.steps.filterNot(_.operator==Jobs.ItemSource).map { t=>
+        check();val op=t.preparedInline.getOrElse(t.localOperator.map(r=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,r,docker,check)).getOrElse(OperatorLibrary.resolve(config,t.operator,docker)))
         val ports=plan.steps.flatMap(_.inputs.values.collect{case b if b.task.contains(t.id)=>b.port}).toSet++plan.outputs.values.collect{case(id,p)if id==t.id=>p}
-        val outs=ports.map(_->PortContract(Set("bytes","records"),Set.empty,None)).toMap
+        val outs=ports.map(_->PortContract(_root_.xstream.execution.OperatorPorts.representations(config.plugins),Set.empty,None)).toMap
         t.id->op.copy(outputs=outs,program=op.program.map(_.copy(outputs=outs.view.mapValues(_.representations).toMap)))
       }.toMap
       val keys=operators.filter(_._2.outputs.nonEmpty).map{case(id,op)=>id->(op.executor+":"+OperatorLibrary.runtimeDescriptor(op).path("dependency_environment").asText+":"+op.command.environment.toVector.sorted.mkString)}
@@ -61,7 +61,7 @@ object ExecutionUnits {
         def bind(b:InputBinding):InputBinding=b.task.flatMap(t=>routing.get(t->b.port)).map{case(t,p)=>b.copy(task=Some(t),port=p)}.getOrElse(b)
         val steps=plan.steps.flatMap(t=>replacements.get(t.id).orElse(if(removed(t.id))None else Some(t))).map(t=>t.copy(inputs=t.inputs.view.mapValues(bind).toMap))
         plan.steps.filterNot(t=>removed(t.id)).foreach { t=>
-          val u=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ReadItem)"host_stream_source"else "isolated_step").put("reason",if(t.operator==Jobs.ReadItem)"host_catalog_access"else "dependency_or_executor_boundary")
+          val u=units.addObject().put("id",t.id).put("mode",if(t.operator==Jobs.ItemSource)"host_stream_source"else "isolated_step").put("reason",if(t.operator==Jobs.ItemSource)"host_catalog_access"else "dependency_or_executor_boundary")
           u.putArray("steps").add(t.id);operators.get(t.id).foreach(op=>OperatorLibrary.runtimeDescriptor(op).fields.asScala.foreach(e=>u.set[JsonNode](e.getKey,e.getValue)))
         }
         ExecutionUnits(plan.copy(steps=steps,outputs=plan.outputs.view.mapValues(p=>routing.getOrElse(p,p)).toMap),groups,description)

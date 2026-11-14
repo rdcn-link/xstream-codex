@@ -7,6 +7,7 @@ XStream 的内置实现和外部插件使用同一套扩展契约。核心负责
 | 扩展 | 实现与说明 |
 |---|---|
 | DataCatalog / Dataset / Item / DataView | [xstream-data](../xstream-data/README_zh.md) |
+| InlineOperatorProvider | [Job 内联算子](inline-operators_zh.md) |
 | OperatorExecutor | [xstream-plugin-operator-executors](../plugins/xstream-plugin-operator-executors/README_zh.md) |
 | SourceAnalyzer / SourceArchive / SourceBuildRecipe | [xstream-plugin-source-analysis](../plugins/xstream-plugin-source-analysis/README_zh.md) |
 | ChatPlanner | [xstream-designer](../xstream-designer/README_zh.md) |
@@ -14,6 +15,8 @@ XStream 的内置实现和外部插件使用同一套扩展契约。核心负责
 实现公开的无参类，并在 `META-INF/services/<接口全名>` 中列出实现类。将插件 JAR 及依赖加入宿主类路径后重启，不修改中央注册表。执行器契约由 `xstream-execution-api` 的 `xstream.execution.OperatorExecutor` 提供，内置实现位于 `xstream.operator.executors`；源码审核契约位于 `xstream.operator`。注册文件名称必须与实际接口全名一致。
 
 科学视图保持数组和序列结构，不能静默展平成 records。第三方格式依赖留在各自数据插件中。算子代码在隔离运行环境中执行；宿主安装的插件本身属于受信任代码。新增实现应包含配置示例、注册说明和契约测试；各模块手册提供现有测试命令。
+
+`items` 视图通过 `META-INF/services/xstream.data.DataViewSupport` 注册为 `xstream.data.ItemsViewSupport`。第三方数据集提供者可声明 `views: [items]`，并按共享 Arrow schema 实现 `DatasetAccess.view(path, ItemReferences.View)`。`ItemReferences.foreach` 增量消费引用；成员保留 View 能力，其内容单独打开。见 [Item 引用流](items-stream_zh.md)与契约测试 `ItemsSpec`。
 
 ## 本地开发
 

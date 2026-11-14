@@ -29,7 +29,7 @@ The processing code creates no files and does not materialize intermediate resul
 
 ```mermaid
 flowchart LR
-  A[read_item: records] --> B[Records to JSONL]
+  A[item_source: records] --> B[Records to JSONL]
   B --> C[Select fields]
   C --> D[Replace text]
   D --> E[Number lines]

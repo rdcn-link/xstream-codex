@@ -10,7 +10,7 @@ The host initializes its catalog from `datasets` or `data_catalog` and embeds a 
 
 ## Item references
 
-`read_item@1.0` has no input ports and one `result` output. Its only addressing parameter is `uri`:
+`item_source@1.0` has no input ports and one `result` output. Its only addressing parameter is `uri`:
 
 ```yaml
 params:
@@ -21,7 +21,7 @@ params:
 
 `context:/dataset/item` addresses the receiving JVM's catalog. It is not an operating-system file path. `dacp://host:port/dataset/item` explicitly addresses a service, including a service on the local machine. Both support the same `view` and restricted read-only `sql` options. Context references are fixed against the submission catalog before dispatch to another node, never reinterpreted in the downstream member's catalog.
 
-Folder Items are browsed with `DatasetAccess.list(path)` (or the SDK equivalent), one level at a time. A Folder is not implicitly concatenated or recursively read by `read_item`.
+Folder Items are browsed with `DatasetAccess.list(path)` (or the SDK equivalent), one level at a time. A Folder is not implicitly concatenated or recursively read by `item_source`.
 
 ## Run without a server
 
@@ -88,7 +88,7 @@ data_catalog:
 
 The provider returns a thread-safe `DataCatalog`. Its `open(name)` returns a caller-owned `PublishedDataset` lease; open it for a `DatasetAccess` and close both handles after use. `DatasetProvider`, `FormatHandler` and operator executor plugins use public contracts; see [plugins](plugins.md). The runner bundles standard datasets, basic formats, the static catalog, execution storage and operator executors. Additional plugins can be loaded through `plugin_directory`.
 
-Versioned references use approved public repository operators and verified artifacts. Standalone development can explicitly reference [local operator source directories](local-operators.md), with reusable builds and the same SDK. `read_item` is a built-in data source and needs no operator container.
+Versioned references use approved public repository operators and verified artifacts. Standalone development can explicitly reference [local operator source directories](local-operators.md), with reusable builds and the same SDK. `item_source` is a repository Source using the host stream transport executor; it needs no operator container.
 
 ## Designer
 
@@ -107,7 +107,7 @@ flowchart LR
   Job["Job YAML + variables"] --> Resolve["Resolve operators and context Items"]
   Resolve --> Plan["Construct local execution units"]
   Plan --> Units["Execution units"]
-  Units --> Source["read_item"] --> Process["Operators"] --> Result["Result stream"]
+  Units --> Source["item_source"] --> Process["Operators"] --> Result["Result stream"]
   Policy["Execution policy"] -.-> Units
   Process -. "Selected boundaries" .-> Store["Materialization store"]
 ```

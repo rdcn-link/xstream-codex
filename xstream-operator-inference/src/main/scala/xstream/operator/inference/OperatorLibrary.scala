@@ -12,10 +12,24 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.yaml.snakeyaml.Yaml
 import scala.jdk.CollectionConverters._
 
-case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None,dependencyEnvironment:Option[JsonNode]=None)
+case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None,dependencyEnvironment:Option[JsonNode]=None,role:Option[xstream.operator.OperatorRole]=None)
 
 /** Immutable operator metadata plus globally shared, content-addressed runtime/code artifacts. */
 object OperatorLibrary {
+  def streamEndpoint(op:ResolvedOperator):Option[String]={
+    if(op.executor!="stream")None else {
+      val operation=op.command.environment.getOrElse("XSTREAM_STREAM_ENDPOINT",throw new IllegalArgumentException("stream endpoint adapter unavailable"))
+      val role=if(operation==xstream.operator.StreamEndpoint.CatalogRead)xstream.operator.OperatorRole.Source else xstream.operator.OperatorRole.Sink
+      require(op.role.contains(role),"stream endpoint role mismatch")
+      Some(operation)
+    }
+  }
+  def requireStreamEndpoint(config:OperatorEnvironment,reference:String,operation:String):ResolvedOperator=
+    OperatorInference.withDocker { docker=>
+      val op=resolve(config,reference,docker)
+      require(streamEndpoint(op).contains(operation),"operator must publish the expected stream endpoint: "+reference)
+      op
+    }
   private def sha(bytes: Array[Byte]): String = MessageDigest.getInstance("SHA-256").digest(bytes).map(b => f"${b & 255}%02x").mkString
   private def digest(path: Path): String = {
     val md = MessageDigest.getInstance("SHA-256"); val in = Files.newInputStream(path)
@@ -80,20 +94,21 @@ object OperatorLibrary {
     xstream.operator.ParameterSchema.validate(ports.get("parameters"))
     require(!ports.has("outputs"),"output declarations belong in inferOutputs, not the manifest")
     val inputs = OperatorPorts.read(ports.path("inputs")); val outputs = Map.empty[String,PortContract]
+    xstream.operator.OperatorRole.validateInputs(xstream.operator.OperatorRole.read(ports),ports.path("inputs"))
     val program=OperatorProgram(reference,entrypoint,artifact,settings,
       inputs.map { case(k,v)=>k->v.representations },outputs.map { case(k,v)=>k->v.representations })
     val command=config.plugins.byId(classOf[OperatorExecutor],executor).command(program,target)
-    ResolvedOperator(image,artifact,target,command,inputs,outputs,executor,Some(program))
+    ResolvedOperator(image,artifact,target,command,inputs,outputs,executor,Some(program),role=Some(xstream.operator.OperatorRole.read(ports)))
   }
   def resolve(config: OperatorEnvironment, reference: String, docker: DockerClient): ResolvedOperator = synchronized {
     val p = reference.split("@",-1)
     require(p.length == 2 && p.forall(_.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*")),"operator must be name@version")
     val local = config.localOperatorLibrary.resolve(p(0)).resolve(p(1)).resolve("operator.yaml")
-    if (Files.exists(local)) {
+    if (config.allowLocalOperatorManifests && Files.exists(local)) {
       val options = new org.yaml.snakeyaml.LoaderOptions(); options.setAllowDuplicateKeys(false)
       val in = Files.newInputStream(local)
       val m = try new Yaml(options).load[java.util.Map[String,Object]](in).asScala.toMap finally in.close()
-      require(m.keySet.subsetOf(Set("name", "version", "image", "description", "icon", "executor", "entrypoint", "artifact", "inputs", "parameters", "executor_config", "provenance", "documentation")), "unknown operator setting")
+      require(m.keySet.subsetOf(Set("name", "version", "role", "image", "description", "icon", "executor", "entrypoint", "artifact", "inputs", "parameters", "executor_config", "provenance", "documentation")), "unknown operator setting")
       xstream.operator.OperatorPresentation.validate(Data.mapper.valueToTree[JsonNode](m.asJava))
       xstream.operator.ParameterSchema.validate(Data.mapper.valueToTree[JsonNode](m.getOrElse("parameters",null)))
       require(m("name").toString == p(0) && m("version").toString == p(1), "operator identity mismatch")
@@ -136,7 +151,8 @@ object OperatorLibrary {
         }
         def prepare(m: JsonNode): ResolvedOperator = {
           val runtime = m.path("runtime")
-          val archive = blob(runtime.path("archive"))
+          val endpoint=m.path("execution").path("executor").asText=="stream"
+          val archive = if(endpoint)None else Some(blob(runtime.path("archive")))
           val artifact = Option(m.get("artifact")).map(blob)
           val execution = m.path("execution")
           val environment=Option(m.get("environment"))
@@ -145,15 +161,17 @@ object OperatorLibrary {
             require(e.path("image").asText.matches("sha256:[a-f0-9]{64}"),"dependency image must be pinned")
           }
           val image = environment.map(_.path("image").asText).getOrElse(runtime.path("image").asText)
-          val executableArchive=environment.map(e=>blob(e.path("archive"))).getOrElse(archive)
+          require(!endpoint || environment.isEmpty,"stream endpoint cannot have a dependency image")
+          val executableArchive=environment.map(e=>blob(e.path("archive"))).orElse(archive)
           val resolved = plan(config,reference, image, execution.path("executor").asText, execution.path("entrypoint").asText,
             artifact, Option(m.get("artifact")).map(_.path("filename").asText), m, Option(execution.get("config")).getOrElse(Data.mapper.createObjectNode()))
-          try docker.inspectImageCmd(image).exec() catch {
+          if(!endpoint)try docker.inspectImageCmd(image).exec() catch {
             case _: com.github.dockerjava.api.exception.NotFoundException =>
-              val in = Files.newInputStream(executableArchive)
+              val in = Files.newInputStream(executableArchive.get)
               try docker.loadImageCmd(in).exec() finally in.close()
               docker.inspectImageCmd(image).exec()
           }
+          if(endpoint)streamEndpoint(resolved)
           resolved.copy(runtime=runtimeInfo(base,runtime.path("image").asText,execution.path("executor").asText),dependencyEnvironment=environment)
         }
         if (Files.exists(entry)) prepare(metadata(entry))

@@ -6,11 +6,11 @@ import java.util.Locale
 import java.util.concurrent.CancellationException
 import com.fasterxml.jackson.databind.JsonNode
 import scala.jdk.CollectionConverters._
-import xstream.operator.{Operator,ByteStreamOperator,OperatorContext}
+import xstream.operator.{TransformOperator,ByteStreamOperator,OperatorContext}
 import xstream.execution.{StreamDescriptor,InferenceResult,OutputSample,PreviewLimits}
 
 /** Galaxy text tools adapted to bounded, cancellable UTF-8 streams. See NOTICE. */
-abstract class GalaxyOperator(val operation:String) extends Operator {
+abstract class GalaxyOperator(val operation:String) extends TransformOperator {
   private val delimiters=Map("tab"->"\t","comma"->",","dash"->"-","underscore"->"_","pipe"->"\\|","dot"->"\\.","whitespace"->"(?U)\\s+","space"->" ","colon"->":")
   private def text(p:JsonNode,key:String,default:String):String={
     val n=p.get(key);require(n==null || n.isTextual,key+" must be a string")

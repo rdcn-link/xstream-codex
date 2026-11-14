@@ -30,6 +30,7 @@ Unrelated schema and field metadata are retained. Dictionary-encoded fields requ
 | records | Ordinary typed Arrow columns | A batch of records; preserve nested and dictionary types |
 | array | `origin: list<int64>`, `shape: list<int64>`, `stride: list<int64>`, `values: list<T>` | One row per dense multidimensional block, not one record per scalar |
 | sequence | `id: utf8`, `offset: int64`, `symbols: utf8`, `last: bool`, `description: utf8?` | Ordered chunks of a named sequence; offsets count symbols |
+| items | `uri`, `name`, `kind`, `format`, `views`, `metadata` (UTF-8 columns) | Ordered references; no member contents or credentials |
 
 Array `T` is the Arrow integer or floating type matching the source numeric encoding, including unsigned integers. `values` is in row-major order. The descriptor retains dimensions, coordinate Item references, units, scaling and missing-value attributes. Consumers must interpret attributes explicitly. This representation does not automatically rescale values, replace missing values or flatten arrays into records. Format plugins bound the block sizes; the standard block helpers cap payloads at 16 MiB. Arrow IPC handles physical byte order; the descriptor's byte order describes the parser block projection.
 

@@ -4,7 +4,7 @@
 
 Each port consumes or produces one ordered Arrow stream, with an explicit schema, dictionaries and record batches. Bytes use binary chunks; records retain tabular schemas; array and sequence views preserve scientific structures. See [Arrow contracts](arrow-streams.md) for representations and buffer ownership.
 
-A source declares `inputs: {}`. A sink may declare no outputs. Jobs connect ports with `step[:port]`, defaulting to `result`. An output has at most one consumer. External Items enter through `read_item`; a Dataset is a namespace, not an implicit port input. Read multiple inputs in lexical port-name order through end-of-stream. Inspect their schemas before consuming them when needed.
+A source declares `inputs: {}`. A sink may declare no outputs. Jobs connect ports with `step[:port]`, defaulting to `result`. An output has at most one consumer. External Items enter through `item_source`; a Dataset is a namespace, not an implicit port input. Read multiple inputs in lexical port-name order through end-of-stream. Inspect their schemas before consuming them when needed.
 
 Steps run concurrently with bounded buffers and backpressure. Same-process execution units pass borrowed Arrow batches directly; process and network boundaries serialize Arrow IPC. Operators must consume or copy borrowed buffers before advancing. Byte chunks do not require a complete Item in memory. Bounded document operators explicitly declare their collection limits.
 

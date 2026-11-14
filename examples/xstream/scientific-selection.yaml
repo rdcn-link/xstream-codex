@@ -1,7 +1,7 @@
 name: Climate array preview
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/local_files/scientific/climate.nc/temperature
@@ -10,5 +10,7 @@ steps:
         origin: [0, 0]
         shape: [2, 3]
         stride: [1, 1]
-outputs:
-  result: read
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: read

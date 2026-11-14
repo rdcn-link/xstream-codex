@@ -3,6 +3,7 @@
 (function(root){
  function structureRows(s){
   if(!s||typeof s!=='object')return [];
+  if(s.view==='items')return [['representation','Item references'],['cardinality',s.cardinality==='one'?'Single Item':'Item collection'],['content','Loaded on demand']];
   if(s.view==='array')return [['type',s.data_type],...(s.dimensions||[]).map(d=>[d.name,String(d.length)+(d.unit?' '+d.unit:'')])];
   if(s.view==='sequence')return [['alphabet',s.alphabet],['chunks','sequence ID + offset']];
   return Object.entries(s).filter(([k])=>k!=='attributes').slice(0,8).map(([k,v])=>[k,typeof v==='object'?JSON.stringify(v):String(v)]);

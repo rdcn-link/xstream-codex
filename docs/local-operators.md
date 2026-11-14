@@ -20,17 +20,20 @@ A step references a source directory explicitly:
 name: Local analysis
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params: {uri: 'context:/weather/observations.csv', view: bytes}
   - id: filter
     operator: {local: ./temperature-filter}
     inputs: {source: read}
     params: {min_temperature: 20}
-outputs: {result: filter}
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: filter
 ```
 
-`operator.local` and an inline source definition cannot be combined. Normal `operator: name@version` keeps its existing repository/package lookup. With `operator: {local: name@version}`, sources come from `local_operator_library/name/version/`; that directory's name and version must match `operator.yaml`.
+`operator.local` is separate from Job-local `operators`; see [Job-local operators](inline-operators.md). Normal `operator: name@version` keeps its existing repository/package lookup. With `operator: {local: name@version}`, sources come from `local_operator_library/name/version/`; that directory's name and version must match `operator.yaml`.
 
 The runner resolves directory references relative to the Job file, not the launcher's working directory. Embedded `LocalEngine` uses `job_working_directory` (default: process working directory). An explicit runner `job_working_directory` overrides the Job-file base. `local_operator_library`, `operator_cache`, data roots and other configuration paths retain their process-working-directory semantics.
 
@@ -41,6 +44,8 @@ The runner resolves directory references relative to the Job file, not the launc
 ```yaml
 name: temperature_filter
 version: '1.0'
+role: transform
+type: sdk
 description: Filter observation bytes.
 language: python
 runtime: python-arrow@1.0
@@ -93,7 +98,7 @@ Use a normal SDK-based project and a thin JAR. For Maven, set `command: [mvn, pa
 
 Successful builds are cached under `operator_cache/local-builds/` using the source tree, declarations and local settings. Source changes create new artifacts; a failed or cancelled build cannot publish a cache entry. Standard generated directories (`target`, `build`, `dist`, `.git`, `.venv`, `__pycache__`, `.xstream-operators`, `.xstream-executions`) and the configured build artifact are excluded from the source fingerprint. Keep caches outside source trees. Source trees are limited to 16,384 files and 64 MiB and cannot contain symbolic links. External toolchain changes require deleting the relevant local-build cache.
 
-Cancellation and Job timeout cover the build and execution. Build diagnostics go to stderr, leaving the selected result stream on stdout. Local operators remain on the current engine and are a fusion boundary; their paths and build commands are never submitted to remote nodes. Repository-only upstream regions can still be pushed down where eligible. DACP and Union remote Job submission reject local directory steps, including in DEBUG mode. This is a trusted local development capability, not a new remote arbitrary-command interface.
+Cancellation and Job timeout cover the build and execution. Build diagnostics go to stderr, leaving the selected result stream on stdout. Local operators remain on the current engine and are a fusion boundary; their paths and build commands are never submitted to remote nodes. Repository-only upstream regions can still be pushed down where eligible. DACP and Union remote Job submission reject local directory steps, for all remote requests. This is a trusted local development capability, not a new remote arbitrary-command interface.
 
 Trusted embeddings can request inference and samples using `LocalEngine.inferLocal(reference, request, cancel)`. It uses the same prepared artifact and reusable inference workers. Execution does not automatically invoke inference. The current designer does not expose a local-operator palette.
 

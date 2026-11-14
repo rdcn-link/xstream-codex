@@ -1,10 +1,10 @@
 # Local execution and remote data
 
-XStream executes every step of a Job in its local engine. `context:/dataset/item` addresses the host JVM’s DataCatalog. A `read_item` with a remote `dacp:` URI reads that Item as a stream; downstream operators execute locally. Remote reads do not grant or imply permission to submit Jobs.
+XStream executes every step of a Job in its local engine. `context:/dataset/item` addresses the host JVM’s DataCatalog. A `item_source` with a remote `dacp:` URI reads that Item as a stream; downstream operators execute locally. Remote reads do not grant or imply permission to submit Jobs.
 
 ```mermaid
 flowchart LR
-  R[Remote Item service] -->|Item stream| Read[Local read_item]
+  R[Remote Item service] -->|Item stream| Read[Local item_source]
   Read --> Process[Local operators] --> Result[Result stream]
 ```
 

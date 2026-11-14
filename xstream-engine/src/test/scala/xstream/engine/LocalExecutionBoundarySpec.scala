@@ -28,13 +28,15 @@ class LocalExecutionBoundarySpec extends AnyFunSuite {
     val yaml="""name: Remote data, local execution
       |steps:
       |- id: read
-      |  operator: read_item@1.0
+      |  operator: item_source@1.0
       |  inputs: {}
       |  params: {uri: 'dacp://remote:18861/weather/input', view: bytes}
       |- id: process
       |  operator: passthrough@1.0
       |  inputs: {source: read}
-      |outputs: {result: process}
+      |- id: client_sink
+      |  operator: client_sink@1.0
+      |  inputs: {result: process}
       |""".stripMargin
     try {
       val bytes=new java.io.ByteArrayOutputStream()

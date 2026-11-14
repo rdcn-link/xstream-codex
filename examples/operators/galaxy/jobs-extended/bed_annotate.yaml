@@ -1,13 +1,13 @@
 name: Annotate queries with reference overlap count and coverage fraction.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/bed_annotate.txt
     view: bytes
 - id: read_reference
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/bed_annotate-reference.txt
@@ -18,5 +18,7 @@ steps:
     source: read
     reference: read_reference
   params: {}
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

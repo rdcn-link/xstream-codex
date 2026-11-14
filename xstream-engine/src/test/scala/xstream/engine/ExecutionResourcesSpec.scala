@@ -5,10 +5,12 @@ class ExecutionResourcesSpec extends AnyFunSuite {
   private val plan=Jobs.parse("""name: reader
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params: {uri: 'context:/data/input', view: bytes}
-outputs: {result: read}
+- id: client_sink
+  operator: client_sink@1.0
+  inputs: {result: read}
 """)
   test("resource requests survive effective policy serialization with explicit defaults") {
     val raw=Json.mapper.readTree("""{"resources":{"tmp_size_mb":2048,"memory_mb":4096}}""")

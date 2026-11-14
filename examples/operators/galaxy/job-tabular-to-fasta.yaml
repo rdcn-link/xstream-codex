@@ -2,7 +2,7 @@ name: Convert tab-separated title and sequence columns to FASTA entries; skip ro
   missing selected fields.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/sequence-table.tsv
@@ -14,5 +14,7 @@ steps:
   params:
     title_columns: '1'
     sequence_column: 2
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

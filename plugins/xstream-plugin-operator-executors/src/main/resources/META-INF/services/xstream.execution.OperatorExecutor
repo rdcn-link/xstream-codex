@@ -3,3 +3,4 @@ xstream.operator.executors.JvmExecutor
 xstream.operator.executors.PythonExecutor
 
 xstream.operator.executors.CommandExecutor
+xstream.operator.executors.StreamExecutor

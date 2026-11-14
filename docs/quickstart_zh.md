@@ -33,13 +33,15 @@ datasets:
 name: Local catalog read
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/weather/weather-observations.jsonl
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 `context:` 选择当前数据目录，`weather` 选择 Dataset，其余路径选择 Item。`outputs.result` 选择运行器打印的步骤输出。

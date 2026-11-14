@@ -6,7 +6,7 @@ import _root_.xstream.execution.{InferenceDiagnostic,InferenceResult,OutputSampl
 import cn.piflow.{JobContext,JobInputStream,JobOutputStream}
 import cn.piflow.conf.ConfigurableStop
 import com.fasterxml.jackson.databind.JsonNode
-import xstream.operator.{Operator,OperatorContext}
+import xstream.operator.{TransformOperator,OperatorContext}
 import org.apache.arrow.memory.RootAllocator
 import org.apache.arrow.vector.ipc.ArrowStreamReader
 import org.apache.spark.sql.{DataFrame,SparkSession}
@@ -20,7 +20,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
 /** Shared Spark environment, thin wrappers, explicit bounded input materialization. */
-abstract class EcoFlowOperator(className:String,ports:Map[String,String],required:Set[String]) extends Operator {
+abstract class EcoFlowOperator(className:String,ports:Map[String,String],required:Set[String]) extends TransformOperator {
   final def inferOutputs(inputs:Map[String,xstream.execution.StreamDescriptor],params:JsonNode):xstream.execution.InferenceResult={
     require(required.subsetOf(params.fieldNames.asScala.toSet),"missing required parameters")
     xstream.execution.InferenceResult(Map("result"->xstream.execution.StreamDescriptor(Set("records"),Set("arrow"),certainty="unknown")),

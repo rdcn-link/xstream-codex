@@ -1,13 +1,13 @@
 name: Join measurement IDs then fit numeric linear regression
 steps:
 - id: left
-  operator: read_item@1.0
+  operator: item_source@1.0
   params:
     uri: context:/galaxy/joined-regression-source.tsv
     view: bytes
   inputs: {}
 - id: right
-  operator: read_item@1.0
+  operator: item_source@1.0
   params:
     uri: context:/galaxy/joined-regression-reference.tsv
     view: bytes
@@ -30,5 +30,7 @@ steps:
   params: {}
   inputs:
     source: columns
-outputs:
-  result: model
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: model

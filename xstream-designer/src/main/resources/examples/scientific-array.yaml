@@ -2,13 +2,15 @@ name: Read a climate temperature array
 steps:
 - id: read
   title: Read climate array
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/weather/scientific/climate.nc/temperature
     view: array
-outputs:
-  result: read
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: read
 designer:
   version: 1
   target: local

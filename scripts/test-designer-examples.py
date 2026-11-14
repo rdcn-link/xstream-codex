@@ -22,7 +22,7 @@ with sync_playwright() as playwright:
     assert page.evaluate("Object.keys(job.steps.find(s=>s.id==='merge').inputs).sort().join(',')")=='left,right'
     for example_id, count in [('two-nodes',4),('three-nodes',6)]:
         page.once('dialog',lambda d:d.accept());page.locator('[data-example="'+example_id+'"] button').click();expect(page.locator('#job-name')).to_have_value('Merge observations from '+('two' if example_id=='two-nodes' else 'three')+' remote nodes');expect(page.locator('#cards .card')).to_have_count(count)
-        assert page.evaluate("job.steps.filter(s=>s.operator==='read_item@1.0').every(s=>s.params.uri.startsWith('$NODE_'))")
+        assert page.evaluate("job.steps.filter(s=>s.operator==='item_source@1.0').every(s=>s.params.uri.startsWith('$NODE_'))")
     example_docs={e['id']:e for e in page.request.post(a.url+'/api/examples',data={}).json()}
     for example_id in ['remote-target','union-collaboration']:
         target=re.search(r'^  target: (\S+)',example_docs[example_id]['job_yaml'],re.M).group(1);address=urlparse(target).hostname

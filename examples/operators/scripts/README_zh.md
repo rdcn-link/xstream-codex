@@ -29,7 +29,7 @@ Records 编码保留 JSON 可表达的嵌套结构和 null。日期与时间转�
 
 ```mermaid
 flowchart LR
-  A[read_item: records] --> B[Records 转 JSONL]
+  A[item_source: records] --> B[Records 转 JSONL]
   B --> C[选择字段]
   C --> D[文本替换]
   D --> E[添加行号]

@@ -25,7 +25,7 @@ sbt compile
 
 NetCDF 子对象使用分组/变量路径；FITS 使用 `/hdu0`、`/hdu1` 等；FASTA 暴露 `/sequences`。文件根保留原始字节。数值保留原始编码、缩放和缺失值元信息，不隐式展平成 records。NetCDF/FITS 库需要本地随机访问：远程 ByteSource 会显式暂存为临时文件，在访问对象关闭时删除；本地文件不复制。NetCDF-4/HDF5 支持取决于安装的 NetCDF 后端，内置纯 Java 读取器不保证支持。压缩 FITS 图像及不支持的列类型不代表具有科学视图支持。
 
-科学数据网络适配器可通过节点、Union 代理和客户端传输类型化描述及有界数据块。read_item 支持科学视图选择，设计器提供结构与样例预览；下游算子需显式支持对应表示。详见[设计器科学视图](../docs/designer-scientific_zh.md)。
+科学数据网络适配器可通过节点、Union 代理和客户端传输类型化描述及有界数据块。item_source 支持科学视图选择，设计器提供结构与样例预览；下游算子需显式支持对应表示。详见[设计器科学视图](../docs/designer-scientific_zh.md)。
 
 在本模块根目录执行 `sbt test`，运行解析器与 Arrow 契约测试。另见 [Arrow 表示契约](../docs/arrow-streams_zh.md)。
 

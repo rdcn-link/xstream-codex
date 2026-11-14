@@ -13,7 +13,7 @@ XStream 使用 `DataCatalog → PublishedDataset → DatasetAccess → DataView 
 | `DataView` | 将选定视图打开为 Arrow 流 |
 | `ArrowDataStream` | 消费时产生结构和有界 Arrow 批次 |
 
-数据集描述是包含 `title` 与 `description` 的 JSON 字符串。Item 路径是逻辑路径，不是存储凭据或物理文件名。Folder Item 支持列出子项；普通目录不提供内容视图。结构化文件和归档可以同时支持列出子项及原文件 bytes 视图。未知的大小、数量和时间戳保持未知。
+数据集描述是包含 `title` 与 `description` 的 JSON 字符串。Item 路径是逻辑路径，不是存储凭据或物理文件名。Folder Item 支持列出子项；文件命名空间中的目录还提供 `files` 视图。归档根项另提供原文件 `bytes`；科学文件 group 仅提供插件声明的视图。未知的大小、数量和时间戳保持未知。
 
 ## 读取视图
 

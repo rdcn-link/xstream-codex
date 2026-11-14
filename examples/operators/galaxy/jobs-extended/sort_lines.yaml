@@ -1,7 +1,7 @@
 name: Stable sort of text rows using a selected tab-separated key.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/sort_lines.txt
@@ -16,5 +16,7 @@ steps:
     reverse: false
     ignore_case: false
     header: 1
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

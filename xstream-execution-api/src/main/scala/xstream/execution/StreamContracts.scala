@@ -7,9 +7,10 @@ import scala.jdk.CollectionConverters._
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.arrow.vector.types.pojo.Schema
 
-case class PortContract(representations: Set[String], formats: Set[String], schema: Option[Schema]) {
+case class PortContract(representations: Set[String], formats: Set[String], schema: Option[Schema],cardinality:Option[String]=None) {
   def accept(h: JsonNode): Unit = {
     val repr=h.path("representation").asText
+    cardinality.foreach(c=>require(repr=="items" && h.path("structure").path("cardinality").asText==c,"Item cardinality mismatch"))
     require(representations(repr),"unsupported port representation")
     require(formats.isEmpty || formats(h.path("format").asText),"unsupported port format")
     if(repr=="records") {
@@ -19,30 +20,42 @@ case class PortContract(representations: Set[String], formats: Set[String], sche
   }
 }
 object OperatorPorts {
+  def representations(plugins:_root_.xstream.data.PluginEnvironment):Set[String]=Set("bytes","records") ++ _root_.xstream.data.DataViewSupports.all(plugins).map(_.kind.name)
   def read(n: JsonNode): Map[String,PortContract] = {
     require(n.isObject,"operator must declare a port mapping")
     n.fields.asScala.map { e =>
       require(e.getKey.matches("[A-Za-z_][A-Za-z0-9_-]{0,127}"),"invalid operator port")
       val v=e.getValue
-      require(v.isObject && v.fieldNames.asScala.toSet.subsetOf(Set("representations","formats","schema")),"invalid port settings")
+      require(v.isObject && v.fieldNames.asScala.toSet.subsetOf(Set("representations","formats","schema","cardinality")),"invalid port settings")
       require(v.path("representations").isArray && v.path("formats").isArray,"port representations/formats must be lists")
       val repr=v.path("representations").elements.asScala.map(_.asText).toSet
       require(repr.nonEmpty && repr.forall(_.matches("[a-z][a-z0-9_-]*")),"unsupported representation")
+      val cardinality=Option(v.get("cardinality")).map { n=>
+        require(n.isTextual && Set("one","many")(n.asText) && repr==Set("items"),"cardinality requires an items-only port and one or many")
+        n.asText
+      }
       e.getKey -> PortContract(repr,v.path("formats").elements.asScala.map(_.asText).toSet,
-        Option(v.get("schema")).map(s=>Schema.fromJSON(s.toString)))
+        Option(v.get("schema")).map(s=>Schema.fromJSON(s.toString)),cardinality)
     }.toMap
   }
 }
 final class StreamCancel(check: () => Boolean = () => false, timeoutSeconds: Long = 1800) extends AutoCloseable {
   private val failure=new AtomicReference[Throwable]()
   private val resources=new java.util.concurrent.ConcurrentLinkedDeque[AutoCloseable]()
-  private val deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(timeoutSeconds)
-  def remainingSeconds:Long=math.max(1L,(deadline-System.nanoTime()+TimeUnit.SECONDS.toNanos(1)-1)/TimeUnit.SECONDS.toNanos(1))
+  @volatile private var deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(timeoutSeconds)
+  private var suspendedNanos=0L
+  @volatile private var suspended=false
+  /** Suspend only the time budget; cancellation and parent checks remain active. */
+  def pauseTimeout():Unit=synchronized {checkState();if(!suspended){suspendedNanos=math.max(0L,deadline-System.nanoTime());suspended=true}}
+  def resumeTimeout():Unit=synchronized {if(suspended){deadline=System.nanoTime()+suspendedNanos;suspended=false};checkState()}
+  /** Begin a new bounded phase using the same cancellation/resource scope. */
+  def restartTimeout(seconds:Long):Unit=synchronized {checkState();require(seconds>0);deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(seconds);suspended=false}
+  def remainingSeconds:Long=synchronized {math.max(1L,((if(suspended)suspendedNanos else deadline-System.nanoTime())+TimeUnit.SECONDS.toNanos(1)-1)/TimeUnit.SECONDS.toNanos(1))}
   /** Inspect a parent scope without treating interruption of a child worker as parent cancellation. */
   def checkState():Unit={
     Option(failure.get()).foreach(throw _)
     if(check())fail(new CancellationException("stream cancelled"))
-    if(System.nanoTime()>deadline)fail(new java.util.concurrent.TimeoutException("job timed out"))
+    if(!suspended && System.nanoTime()>deadline)fail(new java.util.concurrent.TimeoutException("job timed out"))
     Option(failure.get()).foreach(throw _)
   }
   def active(): Unit = {

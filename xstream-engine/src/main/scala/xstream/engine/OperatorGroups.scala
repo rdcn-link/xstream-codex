@@ -12,13 +12,14 @@ case class PreparedOperatorGroup(task:Task,operator:ResolvedOperator,inputs:Map[
 /** Placement and exact environment identity are core policy; fusion belongs to launch plugins. */
 object OperatorGroups {
   def prepare(config:EngineEnvironment,plan:JobPlan,check:()=>Unit=()=>()):Either[String,PreparedOperatorGroup]={
-    val readers=plan.steps.filter(_.operator==Jobs.ReadItem).map(t=>t.id->t).toMap
+    val readers=plan.steps.filter(_.operator==Jobs.ItemSource).map(t=>t.id->t).toMap
     if(readers.nonEmpty){
+      check();RepositoryEndpoints.source(config)
       val consumed=plan.steps.flatMap(_.inputs.values.flatMap(_.task)).toSet
       if(!readers.keySet.subsetOf(consumed))return Left("unconsumed_transport_source")
       if(plan.outputs.values.exists(p=>readers.contains(p._1)))return Left("selected_transport_source")
       val lowered=plan.copy(steps=plan.steps.filterNot(t=>readers.contains(t.id)).map { t=>t.copy(inputs=t.inputs.map{case(port,b)=>
-        port->b.task.filter(readers.contains).map { id=>require(b.port=="result","read_item has only result output");Jobs.readBinding(readers(id)).get }.getOrElse(b)
+        port->b.task.filter(readers.contains).map { id=>require(b.port=="result","item_source has only result output");Jobs.readBinding(readers(id)).get }.getOrElse(b)
       })})
       val external=lowered.steps.flatMap(t=>t.inputs.toVector.sortBy(_._1).collect{case(p,b)if b.uri.nonEmpty=>(t.id,p)})
       val sources=external.zipWithIndex.flatMap {case((id,port),i)=>plan.steps.find(_.id==id).get.inputs(port).task.filter(readers.contains).map(read=>s"i$i"->read)}.toMap
@@ -27,7 +28,6 @@ object OperatorGroups {
     if(!config.operatorFusionEnabled)return Left("disabled_by_configuration")
     if(plan.outputs.isEmpty)return Left("no_selected_outputs")
     if(plan.steps.size<2)return Left("single_step")
-    if(plan.steps.exists(_.source.nonEmpty))return Left("inline_source")
     val dc=DefaultDockerClientConfig.createDefaultConfigBuilder().build()
     val transport=new ApacheDockerHttpClient.Builder().dockerHost(dc.getDockerHost).sslConfig(dc.getSSLConfig).build()
     val docker=DockerClientImpl.getInstance(dc,transport)
@@ -35,9 +35,9 @@ object OperatorGroups {
       // Connected ports determine routing; actual stream headers supply output metadata.
       // Planning must never invoke operator code or open input streams.
       val contracts=plan.steps.map { t=>
-        check();val op=t.localOperator.map(ref=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,ref,docker,check)).getOrElse(OperatorLibrary.resolve(config,t.operator,docker))
+        check();val op=t.preparedInline.getOrElse(t.localOperator.map(ref=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,ref,docker,check)).getOrElse(OperatorLibrary.resolve(config,t.operator,docker)))
         val ports=plan.steps.flatMap(_.inputs.values.collect{case b if b.task.contains(t.id)=>b.port}).toSet ++ plan.outputs.values.collect{case(id,p) if id==t.id=>p}
-        val outputs=ports.map(_->PortContract(Set("bytes","records"),Set.empty,None)).toMap
+        val outputs=ports.map(_->PortContract(_root_.xstream.execution.OperatorPorts.representations(config.plugins),Set.empty,None)).toMap
         t.id->op.copy(outputs=outputs,program=op.program.map(_.copy(outputs=outputs.view.mapValues(_.representations).toMap)))
       }.toMap
       prepareResolved(config,plan,contracts)
@@ -65,7 +65,7 @@ object OperatorGroups {
         val name=entries.head._2
         file->("/operator/"+(if(filenameCounts(name)==1)name else s"g$i-$name"))
       }.toMap
-      def contract(c:PortContract)=OperatorGroupContract(c.representations,c.formats,c.schema.map(s=>java.util.Base64.getEncoder.encodeToString(s.serializeAsMessage())))
+      def contract(c:PortContract)=OperatorGroupContract(c.representations,c.formats,c.schema.map(s=>java.util.Base64.getEncoder.encodeToString(s.serializeAsMessage())),c.cardinality)
       val steps=plan.steps.map { t=>
         val op=operators(t.id);require(t.inputs.keySet==op.inputs.keySet,"group input ports do not match declaration")
         val inputs=t.inputs.map{case(port,b)=>

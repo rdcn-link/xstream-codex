@@ -40,7 +40,7 @@ class ArchiveRemoteInferenceSpec extends AnyFunSuite {
     def post(path:String,body:com.fasterxml.jackson.databind.JsonNode)=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}"+path)).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(body.toString)).build(),HttpResponse.BodyHandlers.ofString())
     try {
       for(prefix<-Seq(origin+"/files/","context:/files/");(path,view,ok)<-Seq(("plain.txt","bytes",true),("geotrans-input.zip","bytes",true),("geotrans-input.zip/labels/points.txt","bytes",true),("geotrans-input.zip/labels","bytes",false),("geotrans-input.zip","records",false))) {
-        val yaml=s"name: Archive\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: '$prefix$path', view: $view}\noutputs: {result: read}\n"
+        val yaml=s"name: Archive\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: '$prefix$path', view: $view}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
         val request=Json.obj().put("target",origin).put("job_yaml",yaml).put("variables_yaml","{}")
         if(ok)request.set[com.fasterxml.jackson.databind.JsonNode]("preview",Json.obj().put("max_rows",1).put("max_bytes",1024))
         val response=post("/api/infer",request)

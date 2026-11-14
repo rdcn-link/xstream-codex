@@ -17,18 +17,32 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
   private def openSource(b:InputBinding,c:StreamCancel):FrameSource=itemSource.map(_(b,c)).getOrElse(environment.openItem(allocator,b,c))
   def dataCatalog:DataCatalog=DataCatalogRuntime.catalog
   val executor=suppliedExecutor.getOrElse(new TaskExecutor(environment,allocator))
-  def execute(plan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,replay:Option[String],emit:OperatorFrame=>Unit,cancel:StreamCancel):Unit={
+  def execute(submittedPlan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,replay:Option[String],emit:OperatorFrame=>Unit,cancel:StreamCancel):Unit={
+    require(!submittedPlan.hasInlineDefinitions || environment.localOperatorBase.nonEmpty,"FORBIDDEN: inline definitions require a local engine")
+    submittedPlan.steps.foreach(Jobs.authorizeSource(environment,_))
     environment.executionResourceLimits.validate(policy.resources)
     require(!closed.get(),"JobEngine is closed");active.add(cancel)
+    val inlineStage=if(submittedPlan.hasInlineDefinitions || submittedPlan.steps.exists(_.inlineOperator.nonEmpty))Some(java.nio.file.Files.createTempDirectory("xstream-inline-"))else None
     try {
       if(closed.get())cancel.close()
       cancel.active()
+      RepositoryEndpoints.validate(environment,submittedPlan,()=>cancel.active())
+      val plan=inlineStage.map { stage=>
+        submittedPlan.inlineOperators.values.foreach(op=>_root_.xstream.operator.inference.InlineOperatorLibrary.validate(environment,op))
+        _root_.xstream.operator.inference.OperatorInference.withDocker { docker=>
+          submittedPlan.copy(steps=submittedPlan.steps.map { task=>task.inlineOperator.map { op=>
+            val resolved=_root_.xstream.operator.inference.InlineOperatorLibrary.resolve(environment,environment.inlineRuntimes,environment.localOperatorBase.get,op,docker,stage.resolve(task.id),()=>cancel.active())
+            require(task.inputs.keySet==resolved.inputs.keySet,"inline input ports differ from definition")
+            task.copy(preparedInline=Some(resolved))
+          }.getOrElse(task) })
+        }
+      }.getOrElse(submittedPlan)
       if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty && fused(plan,policy.resources,record,emit,cancel))() else {
         val units=if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty)ExecutionUnits.prepare(environment,plan,()=>cancel.active())else ExecutionUnits(plan,Map.empty,Json.obj())
         val effective=if(units.groups.nonEmpty)ExecutionPolicy.parse(Json.obj().set[JsonNode]("resources",policy.resources.json),units.plan)else policy
         new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,preparedUnits=units).run(units.plan,effective,owner,record,replay,emit,cancel)
       }
-    }finally active.remove(cancel)
+    }finally {active.remove(cancel);inlineStage.foreach(_root_.xstream.data.Data.deleteTree)}
   }
   private def fused(plan:JobPlan,resources:ExecutionResources,record:ExecutionHistory#Record,emit:OperatorFrame=>Unit,c:StreamCancel):Boolean={
     val config=environment;val permits=environment.taskSlots

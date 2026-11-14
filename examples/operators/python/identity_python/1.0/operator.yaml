@@ -1,4 +1,5 @@
 name: identity_python
+role: transform
 version: "1.0"
 description: Copy Arrow byte streams with a small Python source artifact and shared PyArrow runtime.
 image: xstream/operator-python:1.0

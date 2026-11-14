@@ -2,7 +2,7 @@ name: Select VCF variants by reference, inclusive region, quality, INFO tags and
   status while preserving headers.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/variants.vcf
@@ -19,5 +19,7 @@ steps:
     keep_info: ''
     discard_info: ''
     pass_only: true
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

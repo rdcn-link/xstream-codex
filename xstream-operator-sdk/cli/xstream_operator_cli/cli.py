@@ -61,7 +61,7 @@ def submit(definition, source, origin, token):
         return values
     UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, mapping)
     n = yaml.load(definition.read_text(), Loader=UniqueLoader)
-    allowed = {'name', 'version', 'description', 'icon', 'inputs', 'parameters', 'language', 'entrypoint', 'runtime', 'source_public', 'provenance', 'dependencies', 'submission', 'binary', 'execution_config', 'documentation'}
+    allowed = {'name', 'version', 'role', 'type', 'description', 'icon', 'inputs', 'parameters', 'language', 'entrypoint', 'runtime', 'source_public', 'provenance', 'dependencies', 'submission', 'binary', 'execution_config', 'documentation'}
     if not isinstance(n, dict) or not set(n).issubset(allowed):
         raise ValueError('unsupported definition fields; do not provide artifacts or classifications')
     require_documentation(n)
@@ -102,7 +102,7 @@ def submit(definition, source, origin, token):
     if n.get('submission', 'source') == 'binary':
         binary = dict(n['binary'])
         binary['artifact'] = upload(definition.parent / binary['artifact'])
-    manifest = {key: n[key] for key in ('name', 'version', 'description', 'icon', 'inputs', 'parameters', 'source_public')}
+    manifest = {key: n[key] for key in ('name', 'version', 'role', 'type', 'description', 'icon', 'inputs', 'parameters', 'source_public')}
     manifest.update(api_version=2, execution={'executor': languages[language], 'entrypoint': n['entrypoint'], 'config': n.get('execution_config', {})},
                     runtime={'image': runtime['image'], 'archive': runtime['archive']}, build={'language': language}, provenance=provenance)
     for key in ('dependencies', 'submission', 'documentation'):
@@ -154,8 +154,8 @@ def require_documentation(n):
     for key in ('inputs', 'outputs', 'parameters'):
         if not isinstance(d[key], dict):
             raise ValueError('documentation.' + key + ' must be a mapping')
-    if set(d['inputs']) != set(n.get('inputs', {})) or not d['outputs']:
-        raise ValueError('describe every input and at least one output')
+    if set(d['inputs']) != set(n.get('inputs', {})) or (n.get('role') == 'sink' and d['outputs']) or (n.get('role') != 'sink' and not d['outputs']):
+        raise ValueError('documentation ports do not match the operator role')
     if any(not isinstance(v, str) or not v.strip() for key in ('inputs', 'outputs') for v in d[key].values()):
         raise ValueError('port descriptions must be nonempty text')
     properties = n.get('parameters', {}).get('properties', {})
@@ -167,8 +167,10 @@ def require_documentation(n):
     if not isinstance(d['example_job'], str):
         raise ValueError('example_job must be YAML text')
     job = yaml.safe_load(d['example_job'])
-    if not isinstance(job, dict) or not isinstance(job.get('steps'), list) or not job.get('outputs'):
-        raise ValueError('example_job must contain steps and outputs')
+    if not isinstance(job, dict) or not isinstance(job.get('steps'), list) or 'outputs' in job:
+        raise ValueError('example_job must contain steps and no top-level outputs')
+    if n.get('role') != 'sink' and not any(isinstance(step, dict) and step.get('operator') == 'client_sink@1.0' and step.get('inputs') for step in job['steps']):
+        raise ValueError('example_job must return a stream through client_sink')
     if not any(isinstance(step, dict) and step.get('operator') == n['name']+'@'+n['version'] for step in job['steps']):
         raise ValueError('example_job must use this exact operator version')
 
@@ -208,13 +210,13 @@ def create_template(directory, language):
     (directory / 'src').mkdir()
     name = directory.name.replace('_', '-')
     python = language in ('python', 'shell')
-    n = dict(name=name, version='1.0.0', description='Streaming identity operator',
+    n = dict(name=name, version='1.0.0', role='transform', type='sdk', description='Streaming identity operator',
              icon={'path': 'M3 12h18m-6-6 6 6-6 6', 'color': '#087d8c'},
              inputs={'source': {'representations': ['bytes'], 'formats': []}},
              parameters={'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False},
              language='python' if python else 'java', entrypoint='main' if python else 'Identity',
              runtime='python-arrow@1.0' if python else 'jvm-arrow@1.0', source_public=True,
-             documentation={'inputs': {'source': 'Input byte stream.'}, 'outputs': {'result': 'Processed byte stream.'}, 'parameters': {}, 'example_job': 'name: Example\nsteps:\n  - id: read\n    operator: read_item@1.0\n    inputs: {}\n    params:\n      uri: context:/example/input.bin\n      view: bytes\n  - id: process\n    operator: '+name+'@1.0.0\n    inputs: {source: read}\n    params: {}\noutputs: {result: process}\n'},
+             documentation={'inputs': {'source': 'Input byte stream.'}, 'outputs': {'result': 'Processed byte stream.'}, 'parameters': {}, 'example_job': 'name: Example\nsteps:\n  - id: read\n    operator: item_source@1.0\n    inputs: {}\n    params:\n      uri: context:/example/input.bin\n      view: bytes\n  - id: process\n    operator: '+name+'@1.0.0\n    inputs: {source: read}\n    params: {}\n  - id: client_sink\n    operator: client_sink@1.0\n    inputs: {result: process}\n'},
              dependencies={'provider': 'python' if python else 'jvm'})
     if python:
         (directory / 'pyproject.toml').write_text('[project]\nname = "'+name+'"\nversion = "1.0.0"\nrequires-python = ">=3.11,<3.14"\ndependencies = []\n')

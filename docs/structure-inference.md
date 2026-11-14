@@ -6,7 +6,7 @@ Every operator must provide an inference method. Manifests declare input and sta
 
 ```mermaid
 flowchart TD
-  Change["Parameters or input ports change"] --> Vars["Resolve Job variables"] --> Read{"read_item?"}
+  Change["Parameters or input ports change"] --> Vars["Resolve Job variables"] --> Read{"item_source?"}
   Read -->|Yes| Metadata["Read Item metadata for current Target"]
   Read -->|No| Worker["Reuse or start inference worker"]
   Metadata --> Result["Return this step's schema and bounded sample"]
@@ -16,7 +16,7 @@ flowchart TD
 
 ## Usage
 
-The Designer runs inference locally through `xstream-operator-inference`. Embedding applications use `OperatorInferenceService` with their plugin environment, repository/cache settings and bounded worker settings; no data server is needed. See the [module guide](../xstream-operator-inference/README.md). The host provides `read_item` metadata from its bound catalog or configured remote connector.
+The Designer runs inference locally through `xstream-operator-inference`. Embedding applications use `OperatorInferenceService` with their plugin environment, repository/cache settings and bounded worker settings; no data server is needed. See the [module guide](../xstream-operator-inference/README.md). The host provides `item_source` metadata from its bound catalog or configured remote connector.
 
 For a configured remote execution service, the bundled connector exposes:
 
@@ -107,7 +107,7 @@ The native `command` executor's adapter method infers bytes ports from stdin/std
 
 ## Isolation and limits
 
-Inference methods perform metadata computation only, without reading actual data, contacting external services, or causing side effects. The server invokes them in isolated worker containers with no network and a read-only root filesystem. Each worker is limited to 512 MiB memory, 64 processes, and one CPU. Requests and responses are each limited to 1 MiB. Only metadata pipes, worker adapter code, and read-only operator artifacts are mounted, never datasets or credentials. The core `read_item` transport operator queries Flight metadata without opening content streams; dataset plugins should also avoid scanning content when describing Items.
+Inference methods perform metadata computation only, without reading actual data, contacting external services, or causing side effects. The server invokes them in isolated worker containers with no network and a read-only root filesystem. Each worker is limited to 512 MiB memory, 64 processes, and one CPU. Requests and responses are each limited to 1 MiB. Only metadata pipes, worker adapter code, and read-only operator artifacts are mounted, never datasets or credentials. The core `item_source` transport operator queries Flight metadata without opening content streams; dataset plugins should also avoid scanning content when describing Items.
 
 Rebuild affected runtime environments and operator packages after SDK/runtime updates. Publication does not execute user code in the repository process; execution nodes verify inference capability by invoking it.
 
@@ -146,7 +146,7 @@ Verification: `InferenceWorkerPoolSpec` covers reuse, capacity, idle reclamation
 
 Parameter types are declared statically in [parameter contracts](operator-parameters.md); reading them does not start an inference worker.
 
-The online designer uses the shared `xstream-operator-inference` module to start local workers and resolve operators from its configured repository. Ordinary operators are inferred without Union or member-node inference calls; `read_item` only queries Item metadata from the configured target. Nodes and the designer share operator resolution, worker pools, and graph structure propagation.
+The online designer uses the shared `xstream-operator-inference` module to start local workers and resolve operators from its configured repository. Ordinary operators are inferred without Union or member-node inference calls; `item_source` only queries Item metadata from the configured target. Nodes and the designer share operator resolution, worker pools, and graph structure propagation.
 
 ## Bounded output sample interface
 
@@ -174,7 +174,7 @@ sample:
   truncated: false
 ```
 
-Byte samples contain `representation: bytes`, `format`, `data_base64`, and `truncated`, without `rows`. Samples must use representations supported by the output port. Samples come from operator interfaces, never browser-generated Schema examples. Ordinary inference does not open data streams. The designer displays structures incrementally, then requests samples; built-in `read_item` uses row-limited records reads or bounded bytes reads and closes source streams promptly.
+Byte samples contain `representation: bytes`, `format`, `data_base64`, and `truncated`, without `rows`. Samples must use representations supported by the output port. Samples come from operator interfaces, never browser-generated Schema examples. Ordinary inference does not open data streams. The designer displays structures incrementally, then requests samples; repository `item_source` uses row-limited records reads or bounded bytes reads and closes source streams promptly.
 
 Python example (identity conversion, registering the required module function):
 

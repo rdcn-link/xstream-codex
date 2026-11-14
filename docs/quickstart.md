@@ -33,13 +33,15 @@ datasets:
 name: Local catalog read
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/weather/weather-observations.jsonl
       view: records
-outputs:
-  result: read
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: read
 ```
 
 `context:` selects the current catalog, `weather` selects its Dataset, and the remaining path selects an Item. `outputs.result` selects the step output printed by the runner.

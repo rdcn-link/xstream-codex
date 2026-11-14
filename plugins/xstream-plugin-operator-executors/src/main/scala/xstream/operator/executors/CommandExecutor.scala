@@ -10,6 +10,7 @@ final class CommandExecutor extends OperatorExecutor {
   override def inferenceWorkerCommand(p:OperatorProgram,path:Option[String]):OperatorCommand=InferenceLaunch.python(command(p,path))
   val id = "command"
   def command(p:OperatorProgram, artifactPath:Option[String]):OperatorCommand = {
+    if(p.configuration.get("mode").contains("tool"))return ToolCommand.command(p,artifactPath)
     val c=p.configuration
     require(c.keySet == Set("args","stdin","stdout"),"command requires args, stdin, stdout settings")
     val args=c("args") match {

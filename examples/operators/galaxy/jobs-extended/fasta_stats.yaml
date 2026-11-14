@@ -1,7 +1,7 @@
 name: Compute scaffold, contig and base-composition summary statistics from FASTA.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/fasta_stats.txt
@@ -12,5 +12,7 @@ steps:
     source: read
   params:
     genome_size: 0
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

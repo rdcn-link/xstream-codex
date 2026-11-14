@@ -12,7 +12,7 @@ import _root_.xstream.data._
 import com.fasterxml.jackson.databind.JsonNode
 import com.sun.net.httpserver.{HttpExchange,HttpServer}
 import _root_.xstream.connector.dacp.client.{Source,Dataset,TlsConfig}
-import _root_.xstream.execution.{StreamCancel,StreamDescriptor,ReadItemParameters,PreviewLimits,OutputSample,OutputSamples,InferenceDiagnostic}
+import _root_.xstream.execution.{StreamCancel,StreamDescriptor,ItemSourceParameters,PreviewLimits,OutputSample,OutputSamples,InferenceDiagnostic}
 import _root_.xstream.data.{PluginEnvironment,ItemViews,Scan,Predicate,Literal}
 import _root_.xstream.util.{Json,YamlDocument}
 import java.net.{InetSocketAddress,URI}
@@ -92,7 +92,14 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       (v,w,l,c)=>previewItem(contextual(v,selected),w,l,c),
       Some((v,w,q,c)=>describeQueriedItem(contextual(v,selected),w,q,c)),
       Some((v,w,q,l,c)=>previewQueriedItem(contextual(v,selected),w,q,l,c)),None,
-      Some((v,w,q,l,c)=>inferSource(contextual(v,selected),w,q,l,c))))
+      Some((v,w,q,l,c)=>inferSource(contextual(v,selected),w,q,l,c)),
+      if(selected.nonEmpty)None else Some((op,request,c)=>{
+        val stage=java.nio.file.Files.createTempDirectory("xstream-inline-infer-")
+        try OperatorInference.withDocker { docker=>
+          val resolved=InlineOperatorLibrary.resolve(inferenceRuntime,InlineRuntime.read(config.path("inline_runtimes")),Path.of(config.path("job_working_directory").asText(".")).toAbsolutePath,op,docker,stage,()=>c.active())
+          OperatorInference.run(inferenceRuntime,resolved,request,c)
+        }finally xstream.data.Data.deleteTree(stage)
+      })))
   }
   private def withItem[A](value:String,cancel:StreamCancel)(f:(Dataset,String)=>A):A={
     val uri=URI.create(value)
@@ -252,7 +259,12 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     }
     n
   }
-  private def document(n:JsonNode,empty:Boolean=false):JsonNode={val j=Documents.job(n.path("job_yaml").asText,empty);Documents.variables(n.path("variables_yaml").asText);j}
+  private def document(n:JsonNode,empty:Boolean=false):JsonNode={val j=Documents.job(n.path("job_yaml").asText,empty);if(selectedTarget(n).nonEmpty)_root_.xstream.execution.RemoteJobPolicy.validate(j);Documents.variables(n.path("variables_yaml").asText);j}
+  private def verifyEndpoints(job:JsonNode,cancel:StreamCancel):Unit={
+    val references=job.path("steps").elements.asScala.map(_.path("operator").asText).toSet
+    if(references("item_source@1.0")){cancel.active();OperatorLibrary.requireStreamEndpoint(inferenceRuntime,"item_source@1.0",xstream.operator.StreamEndpoint.CatalogRead)}
+    if(references("client_sink@1.0")){cancel.active();OperatorLibrary.requireStreamEndpoint(inferenceRuntime,"client_sink@1.0",xstream.operator.StreamEndpoint.ClientReceive)}
+  }
   private def api(path:String,n:JsonNode):JsonNode=path match {
     case "/api/operators"=>fetchOperators()
     case "/api/examples"=>exampleJobs
@@ -320,7 +332,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       } else {
         require(result.path("job_yaml").isTextual && result.path("variables_yaml").isTextual,"Job proposals must include job_yaml and variables_yaml")
         Documents.job(result.path("job_yaml").asText);Documents.variables(result.path("variables_yaml").asText)
-        val available=request.path("operators").elements.asScala.map(o=>o.path("name").asText+"@"+o.path("version").asText).toSet+"read_item@1.0"
+        val available=request.path("operators").elements.asScala.map(o=>o.path("name").asText+"@"+o.path("version").asText).toSet
         Documents.job(result.path("job_yaml").asText,true).path("steps").elements.asScala.foreach(t=>require(available(t.path("operator").asText),"Chat proposed an operator outside the connected repository"))
       }
       result

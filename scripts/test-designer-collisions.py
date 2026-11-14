@@ -15,7 +15,7 @@ with sync_playwright() as p:
     page.goto(args.url)
     expect(page.locator('#connection')).to_contain_text('Connected', timeout=25000)
     expect(page.locator('#repository-state')).to_contain_text('published', timeout=25000)
-    job = {'name': 'Placement checks', 'steps': [dict(id=id, operator='read_item@1.0', inputs={}, params={'uri': '$INPUT_URI'}) for id in ['a', 'b', 'c']], 'outputs': {}}
+    job = {'name': 'Placement checks', 'steps': [dict(id=id, operator='item_source@1.0', inputs={}, params={'uri': '$INPUT_URI'}) for id in ['a', 'b', 'c']], 'outputs': {}}
     page.evaluate('job=>loadDocument(JSON.stringify(job))', job)
 
     def layout(points, scale=1):
@@ -34,7 +34,7 @@ with sync_playwright() as p:
     icon_box=page.locator('[data-task="a"] .step-icon').bounding_box()
     assert icon_box['x']>card_box['x']+card_box['width']-42
     assert icon_box['y']<card_box['y']+22
-    source_path=page.locator('[data-operator="read_item@1.0"] svg path').get_attribute('d')
+    source_path=page.locator('[data-operator="item_source@1.0"] svg path').get_attribute('d')
     assert page.locator('[data-task="a"] .step-icon path').get_attribute('d')==source_path
 
     def no_overlaps():
@@ -98,7 +98,7 @@ with sync_playwright() as p:
     page.mouse.move(h['x']+30,h['y']+20);page.mouse.down();page.mouse.move(h['x']+30,h['y']-240,steps=10);page.mouse.up()
     assert page.evaluate('positions.b.y')>140
     no_overlaps()
-    page.locator('[data-operator="read_item@1.0"]').drag_to(page.locator('[data-task="b"]'))
+    page.locator('[data-operator="item_source@1.0"]').drag_to(page.locator('[data-task="b"]'))
     expect(page.locator('.card')).to_have_count(4)
     no_overlaps()
 

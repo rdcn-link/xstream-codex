@@ -11,18 +11,50 @@ import java.nio.charset.StandardCharsets.UTF_8
 import scala.jdk.CollectionConverters._
 
 class DesignerSpec extends AnyFunSuite {
+  test("inline definitions survive authoring export and are excluded from remote Targets") {
+    val local="""name: Local script
+      |operators:
+      |  upper:
+      |    type: script
+      |    role: transform
+      |    runtime: python_tools
+      |    interpreter: /usr/local/bin/python
+      |    script: {source: 'print(1)'}
+      |    inputs: {source: {view: bytes, binding: stdin}}
+      |    outputs: {result: {view: bytes, binding: stdout, format: text}}
+      |steps:
+      |  - id: read
+      |    operator: item_source@1.0
+      |    inputs: {}
+      |    params: {uri: 'context:/data/input.txt', view: bytes}
+      |  - id: upper
+      |    operator: {inline: upper}
+      |    inputs: {source: read}
+      |  - id: client_sink
+      |    operator: client_sink@1.0
+      |    inputs: {result: upper:result}
+      |""".stripMargin
+    val document=Documents.job(local)
+    assert(document.path("operators").path("upper").path("type").asText=="script")
+    val exported=YamlDocument.dump(document)
+    assert(Documents.job(exported)==document)
+    intercept[IllegalArgumentException](_root_.xstream.execution.RemoteJobPolicy.validateYaml(exported))
+    intercept[IllegalArgumentException](Documents.job(local.replace("inline: upper","inline: missing")))
+  }
   val workflow="""name: Weather
                   |steps:
                   |  - id: read
-                  |    operator: read_item@1.0
+                  |    operator: item_source@1.0
                   |    inputs: {}
                   |    params: {uri: $INPUT_URI, view: bytes}
                   |  - id: parse
                   |    operator: piflow_csv_parser@1.0
                   |    inputs: {source: read}
-                  |outputs: {result: parse}
+                  |  - id: client_sink
+                  |    operator: client_sink@1.0
+                  |    inputs: {result: parse}
                   |""".stripMargin
-  test("packaged examples are complete, variable-resolved Jobs with one Outlet") {
+  test("packaged examples are complete, variable-resolved Jobs with one Client Sink") {
     val examples=ExampleJobs.all
     assert(examples.size>=5)
     val ids=examples.elements.asScala.map(_.path("id").asText).toVector
@@ -30,7 +62,7 @@ class DesignerSpec extends AnyFunSuite {
     examples.elements.asScala.foreach { e=>
       val source=e.path("job_yaml").asText;val variables=Documents.variables(e.path("variables_yaml").asText)
       val doc=Documents.job(xstream.util.WorkflowVariables.resolve(source,variables))
-      assert(doc.path("outputs").size==1 && doc.path("steps").size==e.path("step_count").asInt)
+      assert(doc.path("steps").elements.asScala.count(_.path("operator").asText=="client_sink@1.0")==1 && doc.path("steps").size==e.path("step_count").asInt)
       assert(!doc.has("designer") || doc.path("designer").has("target"))
     }
     assert(examples.elements.asScala.find(_.path("id").asText=="variables").get.path("variables_yaml").asText.contains("INCLUDE_HEADER: true"))
@@ -60,7 +92,7 @@ class DesignerSpec extends AnyFunSuite {
     def resolved(id:String)={val e=examples(id);Documents.job(xstream.util.WorkflowVariables.resolve(e.path("job_yaml").asText,Documents.variables(e.path("variables_yaml").asText)))}
     for((id,count)<-Seq("two-nodes"->2,"three-nodes"->3)){
       val j=resolved(id)
-      val sources=j.path("steps").elements.asScala.filter(_.path("operator").asText=="read_item@1.0").toVector
+      val sources=j.path("steps").elements.asScala.filter(_.path("operator").asText=="item_source@1.0").toVector
       assert(sources.size==count)
       assert(sources.map(s=>URI.create(s.path("params").path("uri").asText).getHost).distinct.size==count)
       assert(j.path("designer").path("target").asText=="local")
@@ -70,11 +102,11 @@ class DesignerSpec extends AnyFunSuite {
     assert(examples("remote-target").path("tags").elements.asScala.map(_.asText).toSet.contains("Remote target"))
     val union=resolved("union-collaboration")
     assert(union.path("designer").path("target").asText=="dacp://union.example.org:19860")
-    assert(union.path("steps").elements.asScala.filter(_.path("operator").asText=="read_item@1.0").forall(_.path("params").path("uri").asText.startsWith("context:/")))
+    assert(union.path("steps").elements.asScala.filter(_.path("operator").asText=="item_source@1.0").forall(_.path("params").path("uri").asText.startsWith("context:/")))
     assert(resolved("remote-target").path("designer").path("target").asText=="dacp://node-a.example.org:18861")
   }
   test("step descriptions are multiline job metadata and round-trip through YAML") {
-    val annotated=workflow.replace("    operator: read_item@1.0", "    description: |\n      Read local observations.\n      Keep original units.\n    operator: read_item@1.0")
+    val annotated=workflow.replace("    operator: item_source@1.0", "    description: |\n      Read local observations.\n      Keep original units.\n    operator: item_source@1.0")
     val document=Documents.job(annotated)
     val text=document.path("steps").get(0).path("description").asText
     assert(text=="Read local observations.\nKeep original units.\n")
@@ -104,17 +136,17 @@ class DesignerSpec extends AnyFunSuite {
     intercept[IllegalArgumentException](CatalogConnections.origin("dacp://user@localhost:18861/weather"))
     intercept[IllegalArgumentException](CatalogConnections.origin("dacp://localhost:18861/weather?token=secret"))
   }
-  test("Outlet rejects multiple step output bindings"){
-    val error=intercept[IllegalArgumentException](Documents.job(workflow.replace("outputs: {result: parse}","outputs: {result: parse, second: read}")))
-    assert(error.getMessage.contains("only one step output"))
+  test("Client Sink rejects multiple result bindings"){
+    val error=intercept[IllegalArgumentException](Documents.job(workflow.replace("inputs: {result: parse}","inputs: {result: parse, second: read}")))
+    assert(error.getMessage.contains("exactly one input"))
   }
   test("round-trip YAML, typed variables, logical stream graphs and sinks"){
     val j=Documents.job(workflow);assert(Documents.job(YamlDocument.dump(j))==j)
     val vars=Documents.variables("N: 123\nENABLED: true\nNAME: '001'\n")
     assert(vars.path("N").isInt && vars.path("ENABLED").isBoolean && vars.path("NAME").asText=="001")
-    assert(Documents.job(workflow.replace("outputs: {result: parse}","outputs: {}" )).path("outputs").size()==0)
-    assert(Documents.job("name: Empty\nsteps: []\noutputs: {}\n",true).path("steps").size()==0)
-    intercept[IllegalArgumentException](Documents.job("name: Empty\nsteps: []\noutputs: {}\n"))
+    intercept[IllegalArgumentException](Documents.job(workflow.replace("inputs: {result: parse}","inputs: {result: read}" )))
+    assert(Documents.job("name: Empty\nsteps: []\n",true).path("steps").size()==0)
+    intercept[IllegalArgumentException](Documents.job("name: Empty\nsteps: []\n"))
   }
   test("designer layout and provenance round-trip and reject invalid metadata"){
     val text=workflow+"""designer:
@@ -122,7 +154,7 @@ class DesignerSpec extends AnyFunSuite {
       |  generator: {name: XStream Designer, version: 0.1.0-SNAPSHOT}
       |  exported_at: '2026-10-28T12:34:56Z'
       |  positions: {read: {x: 120, y: 250}, parse: {x: 600, y: 90}}
-      |  outlet: {x: 1200, y: 400}
+      |  client_sink: {x: 1200, y: 400}
       |  viewport: {zoom: 0.8, scroll_left: 100, scroll_top: 200}
       |""".stripMargin
     val parsed=Documents.job(text)
@@ -239,14 +271,14 @@ class DesignerSpec extends AnyFunSuite {
       val items=post("/api/items",Json.obj().put("uri","context:/weather").put("path","/"));assert(items.statusCode()==200)
       assert(Json.mapper.readTree(items.body()).path("items").get(0).path("kind").asText=="folder")
       val nested=post("/api/items",Json.obj().put("uri","context:/weather").put("path","/nested"));assert(nested.statusCode()==200 && nested.body().contains("/nested/data.csv"))
-      val yaml="name: Preview\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/nested/data.csv', sql: 'SELECT station FROM source LIMIT 1'}\noutputs: {result: read}\n"
+      val yaml="name: Preview\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/nested/data.csv', sql: 'SELECT station FROM source LIMIT 1'}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
       val inferred=post("/api/infer",Json.obj().put("job_yaml",yaml).put("variables_yaml","{}").set[com.fasterxml.jackson.databind.JsonNode]("preview",Json.obj().put("max_rows",1).put("max_bytes",1024)))
       assert(inferred.statusCode()==200,inferred.body());val output=Json.mapper.readTree(inferred.body()).path("steps").path("read").path("outputs").path("result")
       assert(output.path("certainty").asText=="known",inferred.body())
       assert(output.path("schema_json").path("fields").size()==1)
       assert(output.path("sample").path("rows").size()==1,inferred.body())
-      for(path<-Seq("geotrans-input.zip","geotrans-input.zip/labels/points.txt")) {
-        val zipYaml=s"name: Archive\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: bytes}\noutputs: {result: read}\n"
+      for((path,view)<-Seq("geotrans-input.zip"->"bytes","geotrans-input.zip"->"items","geotrans-input.zip/labels"->"items","geotrans-input.zip/labels/points.txt"->"bytes")) {
+        val zipYaml=s"name: Archive\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: $view}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
         val result=post("/api/infer",Json.obj().put("job_yaml",zipYaml).put("variables_yaml","{}").set[com.fasterxml.jackson.databind.JsonNode]("preview",Json.obj().put("max_rows",1).put("max_bytes",1024)))
         assert(result.statusCode()==200,result.body())
         assert(Json.mapper.readTree(result.body()).path("steps").path("read").path("outputs").path("result").path("certainty").asText=="known",result.body())
@@ -254,7 +286,7 @@ class DesignerSpec extends AnyFunSuite {
         assert(exported.statusCode()==200 && exported.body().contains(path),exported.body())
       }
       for((path,view)<-Seq("geotrans-input.zip/labels"->"bytes","geotrans-input.zip"->"records")) {
-        val bad=s"name: Invalid\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: $view}\noutputs: {result: read}\n"
+        val bad=s"name: Invalid\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: $view}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
         val result=post("/api/infer",Json.obj().put("job_yaml",bad).put("variables_yaml","{}"))
         assert(!Json.mapper.readTree(result.body()).path("steps").path("read").path("outputs").has("result"),result.body())
       }
@@ -268,7 +300,7 @@ class DesignerSpec extends AnyFunSuite {
     val observed=new java.util.concurrent.atomic.AtomicReference[com.fasterxml.jackson.databind.JsonNode]()
     val model=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
     model.createContext("/v1/operators",x=>{
-      val bytes="[]".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
+      val bytes="""[{"name":"item_source","version":"1.0","role":"source","type":"sdk","icon":{"path":"M3 5h18v14H3z","color":"#287da2"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}},{"name":"client_sink","version":"1.0","role":"sink","type":"sdk","icon":{"path":"M3 5h18v14H3z","color":"#287da2"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
     })
     model.createContext("/completions",x=>{
       observed.set(Json.mapper.readTree(x.getRequestBody.readAllBytes()))
@@ -286,7 +318,7 @@ class DesignerSpec extends AnyFunSuite {
     config.putObject("chat").put("url",origin+"/completions").put("model","test-model")
     val site=new Designer(config);site.start()
     val client=HttpClient.newHttpClient()
-    val request=Json.obj().put("job_yaml","name: Draft\nsteps: []\noutputs: {}\n").put("variables_yaml","{}").put("message","Analyze my weather observations and return the resulting stream")
+    val request=Json.obj().put("job_yaml","name: Draft\nsteps: []\n").put("variables_yaml","{}").put("message","Analyze my weather observations and return the resulting stream")
     request.putArray("catalog_items").addObject().put("uri","context:/weather/observations").putArray("views").add("records")
     def send()=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}/api/chat")).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(request.toString)).build(),HttpResponse.BodyHandlers.ofString())
     try {
@@ -299,12 +331,12 @@ class DesignerSpec extends AnyFunSuite {
       assert(context.contains("designer_interface") && context.contains("Choose design target") && context.contains("Load example"),context)
       assert(context.contains("read-records") && context.contains("available_to_load"),context)
 
-      val proposal="name: Weather analysis\nsteps:\n- id: read\n  operator: read_item@1.0\n  inputs: {}\n  params: {uri: $INPUT_URI}\noutputs: {result: read}\n"
+      val proposal="name: Weather analysis\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: $INPUT_URI}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
       answer.set(Json.obj().put("reply","Here is a complete Job proposal").put("job_yaml",proposal).put("variables_yaml","INPUT_URI: context:/weather/observations\nN: 123\n"))
       request.put("message","Use context:/weather/observations")
       val result=send()
       assert(result.statusCode()==200,result.body())
-      assert(Documents.job(Json.mapper.readTree(result.body()).path("job_yaml").asText).path("steps").size()==1)
+      assert(Documents.job(Json.mapper.readTree(result.body()).path("job_yaml").asText).path("steps").size()==2)
       assert(observed.get.path("messages").get(1).path("content").asText.contains("context:/weather/observations"))
       def stream()=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}/api/chat_stream")).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(request.toString)).build(),HttpResponse.BodyHandlers.ofString())
       val streamed=stream();assert(streamed.statusCode()==200)
@@ -312,7 +344,7 @@ class DesignerSpec extends AnyFunSuite {
       val events=streamed.body().linesIterator.filter(_.nonEmpty).map(Json.mapper.readTree).toVector
       assert(events.map(_.path("type").asText)==Vector("progress","progress","progress","progress","result"))
       assert(events.last.path("result").path("job_yaml").asText==proposal)
-      answer.set(Json.obj().put("reply","Invalid operator").put("job_yaml",proposal.replace("read_item@1.0","unknown@1.0")).put("variables_yaml","{}"))
+      answer.set(Json.obj().put("reply","Invalid operator").put("job_yaml",proposal.replace("item_source@1.0","unknown@1.0")).put("variables_yaml","{}"))
       assert(send().statusCode()==400)
       val rejected=stream().body().linesIterator.filter(_.nonEmpty).map(Json.mapper.readTree).toVector
       assert(rejected.last.path("type").asText=="error")

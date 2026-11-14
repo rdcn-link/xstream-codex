@@ -51,6 +51,7 @@ def main(directory):
         emit(n)
     def validate(contract,h):
         if h['representation'] not in contract['representations'] or (contract['formats'] and h['format'] not in contract['formats']):raise ValueError('group port contract mismatch')
+        if 'cardinality' in contract and (h['representation'] != 'items' or h.get('structure', {}).get('cardinality') != contract['cardinality']):raise ValueError('Item cardinality mismatch')
         if 'schema' in contract and pa.ipc.read_schema(pa.BufferReader(base64.b64decode(contract['schema'])))!=pa.ipc.read_schema(pa.BufferReader(base64.b64decode(h['schema']))):raise ValueError('schema mismatch')
     def observe_batch(task,direction,port,batch):
         key=(task,direction,port)
@@ -72,7 +73,7 @@ def main(directory):
                 validate(self.contract,h)
                 if self.ready.is_set():raise ValueError('duplicate internal metadata')
                 self.meta=h
-                self.schema=pa.ipc.read_schema(pa.BufferReader(base64.b64decode(h['schema']))) if h['representation']=='records' else pa.schema([('data',pa.binary())])
+                self.schema=pa.ipc.read_schema(pa.BufferReader(base64.b64decode(h['schema']))) if h['representation']!='bytes' else pa.schema([('data',pa.binary())])
                 self.ready.set()
             elif h['type']=='end':self.put(None)
             else:raise ValueError('internal data must be Arrow batches')

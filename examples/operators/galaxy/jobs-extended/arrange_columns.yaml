@@ -2,7 +2,7 @@ name: Reorder table columns by their header names, optionally discarding unselec
   columns.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/arrange_columns.txt
@@ -16,5 +16,7 @@ steps:
     - C
     - A
     discard: false
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

@@ -4,13 +4,15 @@ class JobDescriptionSpec extends AnyFunSuite {
   private val script="""name: Documented Job
     |steps:
     |  - id: read
-    |    operator: read_item@1.0
+    |    operator: item_source@1.0
     |    description: |
     |      Read station observations.
     |      Preserve the source units.
     |    inputs: {}
     |    params: {uri: 'context:/weather/observations', view: records}
-    |outputs: {result: read}
+    |  - id: client_sink
+    |    operator: client_sink@1.0
+    |    inputs: {result: read}
     |""".stripMargin
   test("job definitions require steps and reject the superseded collection key") {
     assert(Jobs.parse(script).steps.head.id=="read")

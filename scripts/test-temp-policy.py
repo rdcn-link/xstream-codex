@@ -28,7 +28,9 @@ steps:
   operator: tmp_probe@1.0
   inputs: {}
   params: {}
-outputs: {result: probe}
+- id: client_sink
+  operator: client_sink@1.0
+  inputs: {result: probe}
 ''');(r/'vars.yaml').write_text('{}')
  for tmp,expected in [(8,False),(16,True)]:
   (r/'policy.yaml').write_text(json.dumps({'resources':{'tmp_size_mb':tmp,'memory_mb':512}}))

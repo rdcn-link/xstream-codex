@@ -12,7 +12,7 @@ Administrators can set `operator_fusion_enabled: false` in the node configuratio
 - Every step must use the same executor supporting `OperatorExecutor.groupCommand`. Mixed JVM, Python and native commands do not fuse.
 - JVM operators must implement `xstream.operator.Operator`, including Scala `BytesOperator`, `ByteStreamOperator` and `RecordsOperator` templates. Eligibility inspects JAR class metadata without loading user classes in the server JVM.
 - Python operators must explicitly define a thread-safe `process(ctx)`. Steps may use different `.py`, wheel or repository ZIP code bundles. Each bundle uses a private module namespace, including imports inside `process(ctx)`, so identical entrypoint and helper module names do not overwrite one another. Repeated references to one bundle reuse its modules; runtime dependencies and the group SDK remain shared in the common image.
-- DEBUG inline source, ordinary container entrypoints and native executables do not fuse and retain their existing execution path.
+- Job-local command and script adapters, ordinary container entrypoints and native executables run as isolated steps.
 
 When all steps of an ordinary Job share one node, that node attempts fusion. Union evaluates each member's subjob independently without moving raw data or changing placement. The coordinator first checks the graph obtained by contracting node regions: A → B → A introduces a region cycle and disables fusion, preventing downstream-input waits from blocking upstream startup.
 
@@ -26,7 +26,7 @@ Existing SDK templates work directly. After building and publishing the Scala co
 name: clean-text
 steps:
 - id: read_uppercase_source
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: dacp://localhost:18861/data/message
@@ -46,8 +46,10 @@ steps:
   inputs:
     source: uppercase
   params: {}
-outputs:
-  result: trim
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: trim
 ```
 
 The target node must configure the operators' repository and the input Item must exist and be authorized. The fusion launcher carries the current SDK and scheduling code; Arrow, Jackson and Scala dependencies remain supplied by the image. Existing images need not preinstall the new fusion launcher.

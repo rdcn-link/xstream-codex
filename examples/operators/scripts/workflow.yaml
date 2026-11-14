@@ -2,7 +2,7 @@ name: Script-based weather stream transformation
 steps:
   - id: read
     title: Read weather observations
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params:
       uri: context:/weather/observations
@@ -35,5 +35,7 @@ steps:
     params:
       start: 1
       separator: ': '
-outputs:
-  result: number
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: number

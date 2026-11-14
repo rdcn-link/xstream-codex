@@ -22,6 +22,7 @@
 
 - [流式作业](jobs_zh.md)
 - [本地算子库](local-operators_zh.md)
+- [Job 内联算子](inline-operators_zh.md)
 - [执行策略、物化与重放](materialization_zh.md)
 - [算子同进程合并执行](operator-fusion_zh.md)
 - [XStream 执行引擎](xstream_zh.md)
@@ -31,6 +32,7 @@
 
 - [开发指南](development_zh.md)
 - [编写、提交和使用算子](operator-authoring_zh.md)
+- [Scala Source 和 Sink 示例](../examples/operators/scala-endpoints/README_zh.md)
 - [算子参数契约](operator-parameters_zh.md)
 - [算子与工作流结构推导](structure-inference_zh.md)
 - [依赖环境与执行单元](dependency-environments_zh.md)
@@ -47,3 +49,5 @@
 - [数据视图与 Arrow 流](data-streams_zh.md)
 - [Arrow 视图流](arrow-streams_zh.md)
 - [源码分析与构建插件](operator-build-extensions_zh.md)
+
+- [Item 引用流](items-stream_zh.md)

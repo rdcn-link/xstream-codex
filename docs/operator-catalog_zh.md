@@ -8,7 +8,7 @@
 curl http://localhost:8820/v1/operators
 ```
 
-该接口和仓库首页显示实际已发布版本。`read_item@1.0` 是引擎内置的数据读取步骤，无需发布到仓库。源码树中的 Scala、Java、原生命令、常用算子集合及其他 PiFlow 移植代码属于可构建示例，不等于当前仓库已发布的能力。
+该接口和仓库首页显示实际已发布版本。`item_source@1.0` 和 `client_sink@1.0` 是已发布到仓库的流端点算子。源码树中的 Scala、Java、原生命令、常用算子集合及其他 PiFlow 移植代码属于可构建示例，不等于当前仓库已发布的能力。
 
 ## Galaxy 流式工具
 
@@ -77,7 +77,7 @@ run piflow_filter@2.0 --input source=/observations --view records --params '{"co
 name: High-temperature observations
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: $INPUT_URI
@@ -96,8 +96,10 @@ steps:
   operator: piflow_csv_save@2.0
   inputs:
     source: filter
-outputs:
-  result: export
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: export
 ```
 
 保存为 `weather.yaml`，另建 `variables.yaml`：

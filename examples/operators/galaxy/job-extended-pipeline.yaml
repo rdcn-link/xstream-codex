@@ -1,7 +1,7 @@
 name: Decode and measure a color-space sequence
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/colorspace_to_fasta.txt
@@ -28,5 +28,7 @@ steps:
     source: measure
   params:
     label: run1
-outputs:
-  result: label
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: label

@@ -1,7 +1,7 @@
 name: FASTQ sequence lengths
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params: {uri: 'context:/galaxy/reads.fastq', view: bytes}
   - id: fasta
@@ -12,5 +12,7 @@ steps:
     operator: galaxy_fasta_length@1.0
     inputs: {source: fasta}
     params: {id_only: true}
-outputs:
-  result: lengths
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: lengths

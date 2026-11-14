@@ -1,0 +1,30 @@
+{
+  "name": "csv_items_source",
+  "version": "1.0",
+  "description": "Read a CSV manifest as Item references",
+  "role": "source",
+  "type": "sdk",
+  "inputs": {},
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "uri": {
+        "type": "string"
+      },
+      "uri_column": {
+        "type": "string",
+        "default": "uri"
+      }
+    },
+    "required": [
+      "uri"
+    ],
+    "additionalProperties": false
+  },
+  "execution": {
+    "executor": "jvm",
+    "entrypoint": "xstream.examples.items.CsvItemsSource",
+    "config": {}
+  },
+  "api_version": 2
+}

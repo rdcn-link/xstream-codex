@@ -37,7 +37,7 @@ with sync_playwright() as playwright:
                 item_uri=dataset['uri'].rstrip('/')+'/'+item['path'].lstrip('/');break
         if item_uri:break
     assert item_uri,'Target fixture needs a records Item'
-    job={'name':'Design target regression','steps':[{'id':'read','operator':'read_item@1.0','inputs':{},'params':{'uri':item_uri,'view':'records'}}],'outputs':{'result':'read'},'designer':{'version':1,'target':remote['value']}}
+    job={'name':'Design target regression','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':item_uri,'view':'records'}}],'outputs':{'result':'read'},'designer':{'version':1,'target':remote['value']}}
     choose('local');expect(roots).to_have_count(len(config['targets']))
     def load():page.locator('#file').set_input_files({'name':'preferred.yaml','mimeType':'application/yaml','buffer':json.dumps(job).encode()})
     load();expect(page.locator('#target-dialog')).to_be_visible();expect(page.locator('#target-label')).to_have_text('Local')
@@ -70,4 +70,4 @@ with sync_playwright() as playwright:
     fresh_context.close()
     assert not errors,errors
     browser.close()
-print('PASS: confirmation/cancel/Escape, browser isolation, Target import/export, silent refresh restoration and unavailable-target fallback and real read_item inference')
+print('PASS: confirmation/cancel/Escape, browser isolation, Target import/export, silent refresh restoration and unavailable-target fallback and real item_source inference')

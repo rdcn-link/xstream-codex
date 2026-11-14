@@ -8,6 +8,8 @@ class ItemViewsSpec extends AnyFunSuite {
     assert(ItemViews.selectForRead("bytes","data",Seq("bytes"))=="bytes")
     assert(ItemViews.selectForRead("bytes","folder",Seq("bytes"))=="bytes")
     assert(ItemViews.selectForRead("auto","folder",Seq("bytes"))=="bytes")
+    assert(ItemViews.selectForRead("items","folder",Seq("bytes","items"))=="items")
+    assert(ItemViews.selectForRead("auto","folder",Seq("items"))=="items")
     intercept[IllegalArgumentException](ItemViews.selectForRead("bytes","folder",Seq.empty))
     intercept[IllegalArgumentException](ItemViews.selectForRead("records","folder",Seq("bytes")))
     intercept[IllegalArgumentException](ItemViews.selectForRead("records","folder",Seq("records","bytes")))

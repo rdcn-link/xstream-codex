@@ -11,10 +11,12 @@ args = parser.parse_args()
 workflow = '''name: Editor test
 steps:
   - id: read
-    operator: read_item@1.0
+    operator: item_source@1.0
     inputs: {}
     params: {uri: $INPUT_URI, view: bytes}
-outputs: {result: read}
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs: {result: read}
 '''
 variables = '''# Input values
 INPUT_URI: dacp://localhost:19860/weather/observations

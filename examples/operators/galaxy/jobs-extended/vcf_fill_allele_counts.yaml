@@ -1,7 +1,7 @@
 name: Recalculate INFO AN and per-ALT AC from GT calls.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/vcf_fill_allele_counts.txt
@@ -11,5 +11,7 @@ steps:
   inputs:
     source: read
   params: {}
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

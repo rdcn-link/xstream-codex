@@ -1,0 +1,30 @@
+{
+  "name": "folder_items_source",
+  "version": "1.0",
+  "description": "Enumerate a logical folder as Item references",
+  "role": "source",
+  "type": "sdk",
+  "inputs": {},
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "uri": {
+        "type": "string"
+      },
+      "recursive": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "required": [
+      "uri"
+    ],
+    "additionalProperties": false
+  },
+  "execution": {
+    "executor": "jvm",
+    "entrypoint": "xstream.examples.items.FolderItemsSource",
+    "config": {}
+  },
+  "api_version": 2
+}

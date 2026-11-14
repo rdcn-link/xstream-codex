@@ -8,7 +8,7 @@ XStream 提供 Dataset 管理与 Job 执行，包含 Scala 数据 SDK、可嵌�
 
 **Scala 是新建 XStream 算子的首选开发语言。** 建议从 JVM SDK 模板开始，将数据处理、结构推导和有界样例放在同一个算子实现中。Java 使用相同的 JVM 契约；Python、脚本和原生命令继续用于已有程序及特定语言生态的库。
 
-XStream 在本地执行 Job 的每个步骤。远程 `read_item` URI 为本地算子提供数据流。DACP 客户端负责向远程服务提交 Job，Union 负责成员之间的自动放置。
+XStream 在本地执行 Job 的每个步骤。远程 `item_source` URI 为本地算子提供数据流。DACP 客户端负责向远程服务提交 Job，Union 负责成员之间的自动放置。
 
 ## 组成
 
@@ -51,11 +51,12 @@ xstream-designer/target/universal/stage/bin/xstream-designer \
   xstream-designer/example.yaml
 ```
 
-请先修改配置路径、服务地址和凭据。启动程序将所选输出流写入 stdout；设计器默认监听 `http://127.0.0.1:8840/`。算子使用审核公开的仓库、经校验的包缓存，或用于独立开发的[本地源码库](docs/local-operators_zh.md)，内置 `read_item` 无需下载算子包。
+请先修改配置路径、服务地址和凭据。启动程序将所选输出流写入 stdout；设计器默认监听 `http://127.0.0.1:8840/`。算子使用审核公开的仓库、经校验的包缓存，或用于独立开发的[本地源码库](docs/local-operators_zh.md)，`item_source@1.0` 和 `client_sink@1.0` 需存在于配置的仓库或已验证程序包缓存中。
 
 ## 文档
 
 - [编写算子](docs/operator-authoring_zh.md)
+- [在本地 Job 中定义内联算子](docs/inline-operators_zh.md)
 - [源码提交与审核](docs/operator-submission_zh.md)
 - [引擎和嵌入](docs/xstream_zh.md)
 - [类型化流和科学视图](docs/data-streams_zh.md)

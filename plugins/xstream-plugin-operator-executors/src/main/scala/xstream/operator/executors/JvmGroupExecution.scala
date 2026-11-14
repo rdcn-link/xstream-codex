@@ -50,6 +50,7 @@ private[executors] final class JvmGroupExecution(input:Path,output:OutputStream=
   private def schema(h:JsonNode)=MessageSerializer.deserializeSchema(new ReadChannel(java.nio.channels.Channels.newChannel(new ByteArrayInputStream(java.util.Base64.getDecoder.decode(h.path("schema").asText)))))
   private def validate(c:JsonNode,h:JsonNode):Unit={
     val repr=h.path("representation").asText;require(c.path("representations").elements.asScala.exists(_.asText==repr),"group port representation mismatch")
+    if(c.has("cardinality"))require(repr=="items" && h.path("structure").path("cardinality")==c.path("cardinality"),"Item cardinality mismatch")
     val formats=c.path("formats");require(formats.isEmpty || formats.elements.asScala.exists(_.asText==h.path("format").asText),"group port format mismatch")
     if(c.has("schema"))require(_root_.xstream.data.ArrowStreamMetadata.logical(schema(h))==_root_.xstream.data.ArrowStreamMetadata.logical(schema(mapper.createObjectNode().put("schema",c.path("schema").asText))),"group port schema mismatch")
   }

@@ -1,0 +1,3 @@
+xstream.operator.executors.InlineSdkProvider
+xstream.operator.executors.InlineCommandProvider
+xstream.operator.executors.InlineScriptProvider

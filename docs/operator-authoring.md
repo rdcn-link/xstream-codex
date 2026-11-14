@@ -11,8 +11,19 @@ flowchart LR
 
 Every repository submission also includes human-readable port descriptions, parameter descriptions/help/examples and a complete copyable Job in `documentation`. See [required usage documentation](operator-submission.md#required-usage-documentation). The repository validates these fields before accepting a new submission.
 
+## Four independent choices
 
-## Choose among four development approaches
+| Choice | Values | What it answers |
+|---|---|---|
+| Graph `role` | `source`, `transform`, `sink` | Where the step gets input and sends output |
+| Integration `type` | `sdk`, `command`, `script` | Whether the implementation uses the SDK, wraps a command, or runs a script |
+| `executor` | `jvm`, `python`, `command`, `container` | Which installed launcher runs the operator in its Runtime |
+| Definition location | Repository, local library, or Job `operators` | How the definition is distributed and selected |
+
+`source` has no input ports and produces a stream; `transform` consumes and produces streams; `sink` consumes a stream and has no output port. The repository operator `item_source@1.0` is a Source and `client_sink@1.0` is the caller-facing Sink. Source, Transform and Sink are graph roles, so each may use a suitable implementation type. In a Job, a step uses a published `name@version`, a [local library](local-operators.md), or an [inline definition](inline-operators.md). Inline definitions are for local Jobs; remote nodes accept only publicly approved operators. The [Scala Source and Sink examples](../examples/operators/scala-endpoints/README.md) show complete code and publication.
+
+
+## Choose among four executors
 
 `executor` controls how an operator starts; the Runtime supplies its environment. All four executors run inside Docker containers.
 
@@ -34,6 +45,8 @@ Scala expresses typed stream transformations and shares JVM interfaces and libra
 Using the same language does not automatically provide zero-copy transfer or in-process execution. Fusion still depends on dependency compatibility, operator capabilities and execution policy. See [operator fusion](operator-fusion.md) and [dependency environments](dependency-environments.md).
 
 ## Choose an interface and runtime
+
+Every operator declares two independent attributes. `role` is `source` (no inputs), `transform` (inputs and outputs), or `sink` (inputs and no outputs). `type` is `sdk`, `command`, or `script`, describing how the program is integrated. These attributes also appear as overlays on the operator ICON in the repository; they do not change the original artwork. The repository operator `item_source@1.0` starts an Item stream, and `client_sink@1.0` explicitly returns a stream to the caller.
 
 Select an actually registered runtime and version at `/runtimes`. Execution and build dependencies must match; JVM environments provide the XStream SDK and Scala build environments also provide the Scala compiler. Keep business code in the small operator package and dependencies in the shared runtime.
 
@@ -142,6 +155,8 @@ The manifest below publishes the Scala `Identity` implementation above. Use a di
 ```yaml
 name: scala_identity
 version: '1.0'
+role: transform
+type: sdk
 description: Stream bytes unchanged
 language: scala
 entrypoint: example.Identity
@@ -179,7 +194,7 @@ The repository administrator issues the Token. Submission returns a submission I
 name: Stream observations
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/science/observations.csv
@@ -188,8 +203,10 @@ steps:
   operator: scala_identity@1.0
   inputs:
     source: read
-outputs:
-  result: identity
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: identity
 ```
 
 Replace the URI with an actual Item in the execution catalog. `context:` uses the bound catalog; a remote URI specifies its DACP address explicitly. Standalone execution uses `xstream-runner CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`.
@@ -216,3 +233,15 @@ The standalone engine supports source-directory references, reusable builds and 
 | Supply parameters, structures and samples | [Parameter types](operator-parameters.md), [structure inference](structure-inference.md) |
 | Use scripts or third-party programs | [Script examples](../examples/operators/scripts/README.md), [native commands](native-commands.md) |
 | Prepare public publication | [Submission](operator-submission.md), [provenance](operator-provenance.md), [icons](operator-presentation.md) |
+
+## Job-local (inline) operators
+
+For local development, put a definition in the Job's top-level `operators` mapping and reference it from a step with `operator: {inline: name}`. Choose `sdk` for an SDK program, `command` for a third-party executable, or `script` for embedded source or a local script file. Configure its container runtime in the engine's `inline_runtimes`.
+
+[Write an inline operator: runtime configuration, SDK entrypoints, command arguments, script source and a complete runnable Job](inline-operators.md).
+
+Inline definitions are only accepted for local execution. To submit the Job to a remote node or Union, publish the custom operators and use approved repository references.
+
+## Item collection inputs
+
+`items` is a peer representation to bytes, records and array. See [Item reference streams](items-stream.md), [complete Source and Transform examples](../examples/operators/item-sources/README.md), and [FAQ 6](faq.md#6-how-does-a-custom-operator-process-an-items-reference-stream).

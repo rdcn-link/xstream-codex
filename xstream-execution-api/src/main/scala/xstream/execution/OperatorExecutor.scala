@@ -35,7 +35,7 @@ trait OperatorExecutor extends Plugin {
 
 /** A single-node DAG; plugins own language-specific in-process execution. */
 case class OperatorGroupBinding(task: Option[String], port: String)
-case class OperatorGroupContract(representations:Set[String],formats:Set[String],schema:Option[String]=None)
+case class OperatorGroupContract(representations:Set[String],formats:Set[String],schema:Option[String]=None,cardinality:Option[String]=None)
 case class OperatorGroupStep(id:String,program:OperatorProgram,artifactPath:Option[String],
                              params:java.util.Map[String,Object],bindings:Map[String,OperatorGroupBinding],
                              inputs:Map[String,OperatorGroupContract],outputs:Map[String,OperatorGroupContract])

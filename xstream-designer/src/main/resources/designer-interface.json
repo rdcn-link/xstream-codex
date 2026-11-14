@@ -42,7 +42,7 @@
     "id": "catalogs",
     "location": "Left Catalogs tab",
     "control_ids": [],
-    "description": "Target catalog represents the current Target; other configured remote catalogs are separate roots. Expand roots/datasets/folders to load metadata lazily; unavailable branches can be collapsed and expanded to retry. Dataset hover shows title and description. Folder expansion uses its triangle, not its name. Click an Item name for floating view icons and Copy path. Choosing a view updates the selected read_item, or creates one if none is selected; it replaces its source parameters with uri and view. Paths from Target catalog use context:, other sources use explicit dacp: URIs. Copy path copies the Item path and does not read data. View availability comes from Item metadata."
+    "description": "Target catalog represents the current Target; other configured remote catalogs are separate roots. Expand roots/datasets/folders to load metadata lazily; unavailable branches can be collapsed and expanded to retry. Dataset hover shows title and description. Folder expansion uses its triangle, not its name. Click an Item name for floating view icons and Copy path. Choosing a view updates the selected item_source, or creates one if none is selected; it replaces its source parameters with uri and view. Paths from Target catalog use context:, other sources use explicit dacp: URIs. Copy path copies the Item path and does not read data. View availability comes from Item metadata."
   },
   {
     "id": "examples",
@@ -111,7 +111,7 @@
     "id": "outputs-inference",
     "location": "Step cards and right Outputs tab",
     "control_ids": [],
-    "description": "Step cards show compact schema tables, short unknown/error status and output-port names. Outputs shows each expected port schema, diagnostics and operator-supplied output samples as tables when applicable, bounded to 10 rows/16 KiB per port. Inference flows upstream to downstream and results arrive step by step. Variables and the current Target are used when resolving read_item. Unknown/error is not an empty schema. These are metadata/sample previews, not Job execution. Check Parameters, Variables, Target, repository availability and Logs when inference fails; do not invent schemas or samples."
+    "description": "Step cards show compact schema tables, short unknown/error status and output-port names. Outputs shows each expected port schema, diagnostics and operator-supplied output samples as tables when applicable, bounded to 10 rows/16 KiB per port. Inference flows upstream to downstream and results arrive step by step. Variables and the current Target are used when resolving item_source. Unknown/error is not an empty schema. These are metadata/sample previews, not Job execution. Check Parameters, Variables, Target, repository availability and Logs when inference fails; do not invent schemas or samples."
   },
   {
     "id": "bottom-yaml",

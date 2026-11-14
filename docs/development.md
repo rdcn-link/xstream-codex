@@ -32,6 +32,7 @@ flowchart TD
 | Handle ports, batches, backpressure, cancellation and termination | [Stream contract](operator-streams.md), [Arrow ownership](arrow-streams.md) |
 | Declare dependencies and package code | [Dependency environments](dependency-environments.md), [packaging reference](operator-packaging.md), [runtime selection](operator-runtimes.md) |
 | Test locally | [Local operator library](local-operators.md), [CLI](../xstream-operator-sdk/cli/README.md) |
+| Define an operator inside one local Job | [Job-local operators: SDK, command and script](inline-operators.md) |
 | Submit source for publication | [Submission workflow](operator-submission.md), [provenance](operator-provenance.md), [icons](operator-presentation.md) |
 
 Processing, structure inference and bounded output samples are part of an operator's implementation. Use the SDK to manage stream framing and resource lifetime.

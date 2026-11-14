@@ -10,7 +10,7 @@ XStream 使用有界、支持背压的数据流执行 YAML Job。`xstream-engine
 
 ## Item 引用
 
-`read_item@1.0` 没有输入端口，输出端口为 `result`。寻址参数统一为 `uri`：
+`item_source@1.0` 没有输入端口，输出端口为 `result`。寻址参数统一为 `uri`：
 
 ```yaml
 params:
@@ -21,7 +21,7 @@ params:
 
 `context:/dataset/item` 引用接收方 JVM 的目录，不是操作系统文件路径。`dacp://host:port/dataset/item` 显式指定服务，服务也可位于本机。两种引用都支持相同的 `view` 和受限只读 SQL。远程下发前，context 引用必须固定到提交目录的数据源，不能在下游成员的目录中重新解释。
 
-Folder Item 通过 `DatasetAccess.list(path)` 或相应 SDK 逐层浏览。`read_item` 不隐式拼接或递归读取文件夹。
+Folder Item 通过 `DatasetAccess.list(path)` 或相应 SDK 逐层浏览。`item_source` 不隐式拼接或递归读取文件夹。
 
 ## 不启动服务器直接执行
 
@@ -88,7 +88,7 @@ data_catalog:
 
 提供者返回线程安全的 `DataCatalog`。其 `open(name)` 返回调用者持有的 `PublishedDataset` 租约，再打开 `DatasetAccess`，使用后关闭两个句柄。`DatasetProvider`、`FormatHandler` 和算子执行器继续使用现有契约，详见[插件](plugins_zh.md)。启动程序打包标准数据源、基础格式、静态目录、执行存储和算子执行器；更多插件通过 `plugin_directory` 加载。
 
-名称/版本引用使用已审核公开的仓库算子及校验过的产物。独立本地开发可显式引用[本地算子源码目录](local-operators_zh.md)，复用构建缓存与同一 SDK。`read_item` 是内置数据源，无需算子容器。
+名称/版本引用使用已审核公开的仓库算子及校验过的产物。独立本地开发可显式引用[本地算子源码目录](local-operators_zh.md)，复用构建缓存与同一 SDK。`item_source` 是通过宿主流传输执行器运行的仓库 Source，无需算子容器。
 
 ## 设计器
 
@@ -107,7 +107,7 @@ flowchart LR
   Job["Job YAML 与变量"] --> Resolve["解析算子和 context Item"]
   Resolve --> Plan["构建本地执行单元"]
   Plan --> Units["执行单元"]
-  Units --> Source["read_item"] --> Process["处理算子"] --> Result["结果流"]
+  Units --> Source["item_source"] --> Process["处理算子"] --> Result["结果流"]
   Policy["执行策略"] -.-> Units
   Process -. "选定边界" .-> Store["物化存储"]
 ```

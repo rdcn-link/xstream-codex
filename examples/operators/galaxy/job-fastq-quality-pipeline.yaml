@@ -1,7 +1,7 @@
 name: Normalize, mask and extract FASTQ sequence
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   params:
     uri: context:/galaxy/extended/fastq_groom.txt
     view: bytes
@@ -27,5 +27,7 @@ steps:
     source: tabulate
   params:
     columns: c2
-outputs:
-  result: select
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: select

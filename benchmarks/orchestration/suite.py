@@ -196,8 +196,8 @@ def artifact_catalog(url,directory,prefix):
     return result
 
 def write_job(name,data_dir,path):
-    tasks=[dict(id='observations',operator='read_item@1.0',inputs={},params={'uri':'context:/bench/'+data_dir.name+'/observations.csv','view':'bytes'})]
-    if name=='join':tasks.append(dict(id='dimension',operator='read_item@1.0',inputs={},params={'uri':'context:/bench/'+data_dir.name+'/stations.csv','view':'bytes'}))
+    tasks=[dict(id='observations',operator='item_source@1.0',inputs={},params={'uri':'context:/bench/'+data_dir.name+'/observations.csv','view':'bytes'})]
+    if name=='join':tasks.append(dict(id='dimension',operator='item_source@1.0',inputs={},params={'uri':'context:/bench/'+data_dir.name+'/stations.csv','view':'bytes'}))
     for s in workflow(name):tasks.append(dict(id=s['id'],operator=OPS[s['kind']]+'@'+OP_VERSIONS[s['kind']],inputs=s['inputs'],params=s['params']))
     path.write_text(yaml.safe_dump(dict(name='Benchmark '+name,steps=tasks,outputs={'result':'export'}),sort_keys=False))
 

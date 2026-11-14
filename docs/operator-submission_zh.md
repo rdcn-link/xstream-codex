@@ -34,6 +34,8 @@ weather-filter/
 ```yaml
 name: weather_filter
 version: '1.0'
+role: transform
+type: sdk
 description: Filter observation records by quality
 language: python
 entrypoint: weather_filter
@@ -61,7 +63,7 @@ documentation:
     name: Filter observations
     steps:
       - id: read
-        operator: read_item@1.0
+        operator: item_source@1.0
         inputs: {}
         params:
           uri: context:/weather/observations
@@ -71,8 +73,9 @@ documentation:
         inputs:
           source: read
         params: {}
-    outputs:
-      result: filter
+      - id: client_sink
+        operator: client_sink@1.0
+        inputs: {result: filter}
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
@@ -94,7 +97,7 @@ xstream-operator submit /path/weather-filter/submission.yaml \
 
 ## 必填的使用说明
 
-新提交必须包含 `documentation.inputs`、`documentation.outputs`、`documentation.parameters` 和 `documentation.example_job`。按名称说明每个声明的输入端口及至少一个输出端口。每个声明的参数都需提供 `help` 和符合参数 schema 的 `example`；`description` 可以放在这里或参数 schema 中。未知端口/参数、缺失说明以及不合法的示例值都会被拒绝。`example_job` 必须是包含非空 `steps` 和 `outputs` 的完整 YAML Job，使用所提交的精确算子版本，绑定其全部输入并填写合法的必填参数。可以使用示意 `context:` Item 路径，但要说明运行前需要替换；示例不会创建源数据集。校验采用安全 YAML 解析，不执行 Job。
+新提交必须包含 `documentation.inputs`、`documentation.outputs`、`documentation.parameters` 和 `documentation.example_job`。按名称说明每个声明的输入端口及输出端口；Sink 算子使用 `documentation.outputs: {}`。每个声明的参数都需提供 `help` 和符合参数 schema 的 `example`；`description` 可以放在这里或参数 schema 中。未知端口/参数、缺失说明以及不合法的示例值都会被拒绝。`example_job` 必须是包含非空 `steps` 的完整 YAML Job，使用所提交的精确算子版本，绑定其全部输入并填写合法的必填参数。非 Sink 示例连接 `client_sink@1.0`；Sink 示例以 Sink 步骤结束。Job YAML 没有顶层 `outputs`。可以使用示意 `context:` Item 路径，但要说明运行前需要替换；示例不会创建源数据集。校验采用安全 YAML 解析，不执行 Job。
 
 ```yaml
 documentation:

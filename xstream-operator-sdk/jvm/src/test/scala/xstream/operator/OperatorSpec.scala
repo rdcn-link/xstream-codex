@@ -98,4 +98,41 @@ class OperatorSpec extends AnyFunSuite {
     }finally {root.close();allocator.close();Files.delete(dir.resolve("manifest.json"));Files.delete(dir.resolve("params.json"));Files.delete(dir)}
   }
 
+  test("items input preserves references and never opens member content") {
+    val dir=Files.createTempDirectory("operator-sdk-items-")
+    val allocator=new org.apache.arrow.memory.RootAllocator()
+    val root=org.apache.arrow.vector.VectorSchemaRoot.create(ItemReferences.schema,allocator)
+    try {
+      root.allocateNew()
+      val item=ItemReference("context:/science/labels/a.txt","a.txt","data","text",Some(Vector("bytes")))
+      ItemReferences.write(root,0,item);ItemReferences.write(root,1,item);root.setRowCount(2)
+      var closed=false
+      val input=new OperatorBatchInput {
+        private var read=false
+        def getVectorSchemaRoot=root
+        def loadNextBatch():Boolean=if(read)false else {read=true;true}
+        def dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null
+        def close():Unit={closed=true}
+      }
+      Files.writeString(dir.resolve("manifest.json"),"""[{"port":"source","representation":"items","format":"items","file":"input.arrow"}]""")
+      Files.writeString(dir.resolve("params.json"),"{}")
+      val found=scala.collection.mutable.ArrayBuffer.empty[ItemReference]
+      OperatorRunner.runBatches(dir,dir.resolve("params.json"),Map("source"->input),Map.empty,_=>(),(_,_)=>()){ctx=>
+        ctx.input("source").foreachItem(found+=_)
+      }
+      assert(found.toVector==Vector(item,item));assert(closed)
+    } finally {root.close();allocator.close();Files.delete(dir.resolve("manifest.json"));Files.delete(dir.resolve("params.json"));Files.delete(dir)}
+  }
+
+  test("single Item outputs enforce their declared cardinality") {
+    val dir=Files.createTempDirectory("operator-single-item-")
+    try {
+      Files.writeString(dir.resolve("manifest.json"),"[]");Files.writeString(dir.resolve("params.json"),"{}")
+      val item=ItemReference("context:/science/a.txt","a.txt")
+      intercept[IllegalArgumentException](OperatorRunner.run(Array("operator",dir.toString,dir.resolve("params.json").toString),new ByteArrayOutputStream()) { ctx=>ctx.itemsOutput("result",single=true) })
+      intercept[IllegalArgumentException](OperatorRunner.run(Array("operator",dir.toString,dir.resolve("params.json").toString),new ByteArrayOutputStream()) { ctx=>val out=ctx.itemsOutput("result",single=true);out.write(item);out.write(item) })
+      OperatorRunner.run(Array("operator",dir.toString,dir.resolve("params.json").toString),new ByteArrayOutputStream()) { ctx=>ctx.itemsOutput("result",single=true).write(item) }
+    }finally {Files.delete(dir.resolve("manifest.json"));Files.delete(dir.resolve("params.json"));Files.delete(dir)}
+  }
+
 }

@@ -2,7 +2,7 @@ name: Number nonempty text lines with configurable starting number, increment an
   alignment.
 steps:
 - id: read
-  operator: read_item@1.0
+  operator: item_source@1.0
   inputs: {}
   params:
     uri: context:/galaxy/extended/number_lines.txt
@@ -16,5 +16,7 @@ steps:
     increment: 1
     width: 3
     style: rz
-outputs:
-  result: process
+- id: client_sink
+  operator: client_sink@1.0
+  inputs:
+    result: process

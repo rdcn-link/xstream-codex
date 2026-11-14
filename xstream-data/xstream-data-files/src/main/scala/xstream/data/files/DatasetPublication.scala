@@ -152,8 +152,12 @@ class DirectoryDatasetProvider extends DatasetProvider {
         }
         def describe(path: String): Item = times(use(selected(path))(_.describe(path)))
         def count(path: String): Option[Long] = use(selected(path))(_.count(path))
-        def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]=Some(DataViews[S]((selection,context,out)=>
-          use(selected(path)){a=>val stream=a.requireView(path,kind).open(selection,context);try stream.consume(out)finally stream.close()}))
+        def view[S](path:String,kind:DataViewType[S]):Option[DataView[S]]={
+          if(kind==ItemReferences.View && Files.isDirectory(physical(path),LinkOption.NOFOLLOW_LINKS))
+            Some(DataViews[ItemsSelection]((selection,context,out)=>FolderItems.consume(this,path,selection,context,out,config.plugins))).asInstanceOf[Option[DataView[S]]]
+          else Some(DataViews[S]((selection,context,out)=>
+            use(selected(path)){a=>val stream=a.requireView(path,kind).open(selection,context);try stream.consume(out)finally stream.close()}))
+        }
 
       }
     }
