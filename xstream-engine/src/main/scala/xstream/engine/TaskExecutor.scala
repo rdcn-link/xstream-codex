@@ -1,6 +1,6 @@
 package xstream.engine
 
-import _root_.xstream.execution.{FrameSource,OperatorExecutor,OperatorFrame,OperatorFrames,OperatorProgram,PortContract,StreamCancel,StreamProtocol}
+import _root_.xstream.execution.{FrameSource,OperatorExecutor,OperatorFrame,OperatorFrames,OperatorProgram,PortContract,StreamCancel,StreamProtocol,SinkTransactions}
 
 import _root_.xstream.operator.inference._
 
@@ -30,7 +30,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
     try {val result=OperatorLibrary.resolve(config,task.operator,docker);cancel.active();result}
     finally {docker.close();transport.close()}
   }
-  def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,onRuntime:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,resources:ExecutionResources=ExecutionResources()): Unit = {
+  def execute(task: Task,inputs: Map[String,FrameSource],emit: OperatorFrame=>Unit,cancel: StreamCancel, resolved:Option[ResolvedOperator]=None,onEvent:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,onRuntime:Option[com.fasterxml.jackson.databind.JsonNode=>Unit]=None,resources:ExecutionResources=ExecutionResources(),sinks:Option[SinkTransactions]=None,attemptId:String="",jobId:String=""): Unit = {
     config.executionResourceLimits.validate(resources)
     Jobs.authorizeSource(config,task)
     Jobs.readBinding(task).foreach { binding=>
@@ -47,10 +47,29 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
     val temporary=Files.createTempDirectory("dacp-stream-input-")
     var itemReads:ItemReadService=null
     var container: String=null
+    var sink:SinkSession=null
+    var retained=false
     val handles=scala.collection.mutable.ArrayBuffer.empty[FileChannel]
     val pipe=new java.io.PipedInputStream(65536);val stdout=new java.io.PipedOutputStream(pipe)
     var callback: ResultCallback.Adapter[Frame]=null
     val stderr=new StringBuilder
+    def cleanup():Unit={
+      var failure:Throwable=null
+      def release(action: => Unit):Unit=try action catch {
+        case scala.util.control.NonFatal(t)=>if(failure==null)failure=t else failure.addSuppressed(t)
+      }
+      if(container!=null)release {
+        try docker.removeContainerCmd(container).withForce(true).exec()
+        catch {case _:com.github.dockerjava.api.exception.NotFoundException=>()}
+      }
+      if(callback!=null)release(callback.close())
+      release(pipe.close());release(stdout.close())
+      handles.foreach(c=>release(c.close()))
+      if(itemReads!=null)release(itemReads.close())
+      release(docker.close());release(transport.close());release(Data.deleteTree(temporary))
+      // A Sink may be retried only after the previous process and staging are gone.
+      if(sink!=null && failure!=null)throw failure
+    }
     try {
       val definition=resolved.orElse(task.preparedInline).getOrElse(task.inlineOperator match {
         case Some(op)=>InlineOperatorLibrary.resolve(config,config.inlineRuntimes,config.localOperatorBase.get,op,docker,temporary.resolve("inline"),()=>cancel.active())
@@ -67,8 +86,21 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
         require(h.path("type").asText=="start","input must start with metadata");definition.inputs(port).accept(h)
         (port,source,h,f.data)
       }
-      // Output ports announce their own metadata at runtime; inference is an explicit authoring action.
-      val op=definition
+      // Resolve declared Views using parameters and actual input headers, without running inference.
+      val op=OperatorOutputContracts.bind(definition,Data.mapper.valueToTree[com.fasterxml.jackson.databind.JsonNode](task.params),starts.map{case(port,_,h,_)=>port->Set(h.path("representation").asText)}.toMap,availableViews=_root_.xstream.execution.OperatorPorts.representations(config.plugins))
+      val isSink=op.role.contains(xstream.operator.OperatorRole.Sink)
+      if(isSink){
+        require(sinks.nonEmpty && attemptId.nonEmpty && jobId.nonEmpty,"Sink requires an attempt lifecycle coordinator")
+        sink=new SinkSession(task.id,temporary,(commit,deadline)=>{
+          while(docker.inspectContainerCmd(container).exec().getState.getRunning){
+            if(System.nanoTime()>=deadline)throw new java.util.concurrent.TimeoutException("Sink process did not stop")
+            Thread.sleep(10)
+          }
+          if(commit)require(docker.inspectContainerCmd(container).exec().getState.getExitCodeLong==0L,"Sink process failed after commit acknowledgment")
+        },()=>cleanup())
+        val abort=sinks.get.register(sink);retained=true
+        cancel.add(abort)
+      }
       val manifest=Data.mapper.createArrayNode()
       starts.zipWithIndex.foreach {case((port,_,h,_),i)=>
         val filename=s"$i.arrow";val path=temporary.resolve(filename)
@@ -96,13 +128,15 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
         .withLogConfig(new LogConfig(LogConfig.LoggingType.NONE))
       val create=docker.createContainerCmd(op.image).withHostConfig(host)
         .withLabels(Map("xstream.execution_mode"->(if(onEvent.nonEmpty)"shared_process"else "isolated_step"),"xstream.step"->task.id).asJava)
-        .withEnv((op.command.environment+("XSTREAM_OPERATOR"->task.operator)+("XSTREAM_ITEM_SOCKET"->"/input/item-access.sock")).map{case(k,v)=>s"$k=$v"}.toSeq.asJava)
+        .withEnv((op.command.environment+("XSTREAM_OPERATOR"->task.operator)+("XSTREAM_ITEM_SOCKET"->"/input/item-access.sock")++(if(isSink)Map("XSTREAM_SINK_SOCKET"->("/input/"+_root_.xstream.execution.SinkProtocol.SocketName),"XSTREAM_ATTEMPT_ID"->attemptId,"XSTREAM_JOB_ID"->jobId)else Map.empty[String,String])).map{case(k,v)=>s"$k=$v"}.toSeq.asJava)
         .withCmd(op.command.arguments.asJava)
       op.command.entrypoint.foreach(e=>create.withEntrypoint(e.asJava))
       container=create.exec().getId
       val id=container
-      cancel.add(new AutoCloseable{def close():Unit=try docker.removeContainerCmd(id).withForce(true).exec() catch{case _:Throwable=>()}})
-      cancel.add(pipe);cancel.add(stdout)
+      if(!isSink){
+        cancel.add(new AutoCloseable{def close():Unit=try docker.removeContainerCmd(id).withForce(true).exec() catch{case _:Throwable=>()}})
+        cancel.add(pipe);cancel.add(stdout)
+      }
       callback=new ResultCallback.Adapter[Frame] {
         override def onNext(f: Frame): Unit = if(f.getStreamType==StreamType.STDOUT) stdout.write(f.getPayload) else stderr.synchronized {
           if(stderr.length<65536) stderr.append(new String(f.getPayload,java.nio.charset.StandardCharsets.UTF_8))
@@ -111,6 +145,7 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
         override def onError(t:Throwable): Unit={cancel.fail(t);try stdout.close() finally super.onError(t)}
       }
       docker.attachContainerCmd(container).withStdOut(true).withStdErr(true).withFollowStream(true).exec(callback).awaitStarted()
+      if(isSink)sink.markStarted()
       docker.startContainerCmd(container).exec()
       val writers=starts.zipWithIndex.map{case((port,source,h,initial),i)=>StreamProtocol.thread(cancel){
         val repr=h.path("representation").asText
@@ -152,11 +187,18 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       var next=OperatorFrames.read(pipe)
       while(next.nonEmpty) {
         cancel.active();val f=next.get;val h=StreamProtocol.header(f);val port=h.path("port").asText
+        if(isSink && h.path("type").asText=="sink_prepared"){
+          require(f.data.isEmpty && h.path("port").asText.isEmpty,"invalid Sink preparation event")
+          writers.foreach(t=>{while(t.isAlive){cancel.active();t.join(100)}});cancel.active()
+          sink.prepare()
+          onRuntime.foreach(_(_root_.xstream.util.Json.obj().put("sink_state","prepared")))
+          return
+        }
         if(Set("task_state","task_metric")(h.path("type").asText) && onEvent.nonEmpty)onEvent.get(h)
         else {
         require(port.matches("[A-Za-z_][A-Za-z0-9_-]{0,127}"),"invalid output port")
         h.path("type").asText match {
-          case "start"=>require(op.role.forall(_!=xstream.operator.OperatorRole.Sink),"Sink cannot emit output streams");require(!begun(port),"duplicate output start");op.outputs.getOrElse(port,PortContract(_root_.xstream.execution.OperatorPorts.representations(config.plugins),Set.empty,None)).accept(h);begun+=port
+          case "start"=>require(op.role.forall(_!=xstream.operator.OperatorRole.Sink),"Sink cannot emit output streams");require(!begun(port),"duplicate output start");op.outputs.getOrElse(port,throw new IllegalArgumentException("undeclared output port: "+port)).accept(h);begun+=port
           case "data"=>require(begun(port) && !ended(port),"output data before metadata or after end")
           case "end"=>require(begun(port) && !ended(port),"invalid output end");ended+=port
           case _=>throw new IllegalArgumentException("invalid operator output event")
@@ -167,17 +209,13 @@ class TaskExecutor(config: EngineEnvironment,allocator: BufferAllocator) {
       }
       while(docker.inspectContainerCmd(container).exec().getState.getRunning){cancel.active();Thread.sleep(25)}
       if(docker.inspectContainerCmd(container).exec().getState.getExitCodeLong!=0L)throw new RuntimeException("operator failed: "+stderr.synchronized(stderr.toString))
+      require(!isSink,"Sink exited without staging and waiting for the Job decision")
       require(ended==begun && op.outputs.keySet.subsetOf(ended) && task.outputPorts.toSet.subsetOf(ended),"operator output stream incomplete")
       writers.foreach(t=>{while(t.isAlive){cancel.active();t.join(100)}});cancel.active()
     } catch {
       case t:Throwable => cancel.fail(t); throw t
     } finally {
-      if(container!=null)try docker.removeContainerCmd(container).withForce(true).exec() catch{case _:Throwable=>()}
-      if(callback!=null)try callback.close() catch{case _:Throwable=>()}
-      try pipe.close() finally stdout.close()
-      handles.foreach(c=>try c.close() catch{case _:Throwable=>()})
-      if(itemReads!=null)itemReads.close()
-      docker.close();transport.close();Data.deleteTree(temporary)
+      if(!retained){if(sink!=null)sink.close()else cleanup()}
     }
   }
 }

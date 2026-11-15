@@ -33,7 +33,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
   examples/xstream/engine.yaml examples/xstream/read.yaml
 ```
 
-The launcher accepts `CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`. To supply a policy without variables, pass an empty variables YAML mapping. Records print as JSONL; byte streams write directly to stdout. The launcher requires one selected output for stdout; the embedded engine supports multiple named outputs. Execution metadata is recorded in `execution_directory`; stream data is not persisted unless the execution policy requests materialization.
+The launcher accepts `CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`. To supply a policy without variables, pass an empty variables YAML mapping. Records print as JSONL; byte streams write directly to stdout. The launcher requires one selected output for stdout; the embedded engine supports multiple named outputs. Execution metadata is recorded in `execution_directory`; intermediate streams remain streaming unless explicitly selected in policy `checkpoints`. Final stdout output streams immediately; failed-attempt output is provisional and must be discarded by the receiver.
 
 For remote reads, add an entry to `nodes`:
 
@@ -73,7 +73,7 @@ try {
 }
 ```
 
-`LocalEngine` accepts an optional remote Item callback. `EngineEnvironment` supplies runtime configuration, execution history, materialization and Item opening; `JobEngine` does not depend on server configuration, server credentials or server ingress classes. Cancellation, timeout, retries, materialization/replay and compatible-operator fusion remain shared engine functionality. Output schema inference is an explicit design-time action, not a prerequisite for execution.
+`LocalEngine` accepts an optional remote Item callback. `EngineEnvironment` supplies runtime configuration, execution history, Sink lifecycle and Item opening; `JobEngine` does not depend on server configuration, server credentials or server ingress classes. Cancellation, timeout, retries, whole-Job recovery and compatible-operator fusion remain shared engine functionality. Output schema inference is an explicit design-time action, not a prerequisite for execution.
 
 ## Catalog and runtime plugins
 
@@ -109,7 +109,7 @@ flowchart LR
   Plan --> Units["Execution units"]
   Units --> Source["item_source"] --> Process["Operators"] --> Result["Result stream"]
   Policy["Execution policy"] -.-> Units
-  Process -. "Selected boundaries" .-> Store["Materialization store"]
+  Process --> Store["Sink staging and final commit"]
 ```
 
 For execution record configuration and storage interfaces, see the [execution history API](execution-history.md).

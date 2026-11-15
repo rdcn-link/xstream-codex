@@ -19,7 +19,7 @@ JVM 环境提供 `/opt/java/bin/java` 和 `/opt/lib/*` 中的依赖；Python 环
 
 ```yaml
 name: summary
-version: "1"
+version: '1'
 role: transform
 type: sdk
 image: example/jvm-arrow:1
@@ -27,15 +27,21 @@ executor: jvm
 entrypoint: example.Summary
 artifact: summary.jar
 inputs:
-  source: {representations: [records], formats: []}
+  source:
+    representations:
+    - records
+    formats: []
 icon:
-  path: "M3 5h18v14H3zM3 10h18M9 5v14"
-  color: "#14866b"
+  path: M3 5h18v14H3zM3 10h18M9 5v14
+  color: '#14866b'
 parameters:
   type: object
   properties: {}
   required: []
   additionalProperties: false
+outputs:
+  result:
+    view: variable
 ```
 
 `jvm` 需要 JAR 和 main 类。`python` 需要 `.py`、源码 `.zip` 或 `.whl`，wheel 用 `entrypoint` 选择模块，源码直接执行脚本。`command` 适配原生 stdin/stdout 程序，见[原生命令](native-commands_zh.md)。`container` 使用镜像自带入口，不接受入口覆盖或代码文件。每个执行器接收 `operator /input /input/params.json` 和 `XSTREAM_OPERATOR=name@version`，遵守 [Arrow IPC 契约](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams_zh.md)。

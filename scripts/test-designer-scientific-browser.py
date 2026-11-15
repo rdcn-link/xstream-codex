@@ -16,9 +16,9 @@ def route(req):
  path=req.request.url.split('designer.test',1)[1]
  if path.startswith('/api/'):
   name=path.rsplit('/',1)[1];n=req.request.post_data_json if req.request.method=='POST' else {}
-  if name=='config':data={'chat_provider':'disabled','generator':{'name':'XStream Designer','version':'test'}}
+  if name=='config':data={'chat_provider':'disabled','targets':[{'value':'local','label':'Local'}],'generator':{'name':'XStream Designer','version':'test'}}
   elif name=='views':data=views
-  elif name=='operators':data=[]
+  elif name=='operators':data=[{'name':'item_source','version':'1.0','role':'source','type':'sdk','inputs':{},'outputs':{'result':{'view':'variable','view_from':{'parameter':'view'}}},'parameters':{'type':'object','properties':{'uri':{'type':'string'},'view':{'type':'string','enum':['bytes','records','array','sequence']}},'required':['uri']}}]
   elif name=='catalogs':data=[{'name':'Target catalog','uri':'context:/'}]
   elif name=='datasets':data={'complete':True,'datasets':[{'name':'science','uri':'context:/science'}]}
   elif name=='items':data={'items':[{'path':'/genome','kind':'folder','views':['bytes'],'format':'fasta'}]} if n['path']=='/' else {'items':[{'path':'/genome/sequences','kind':'data','views':['sequence','bytes'],'format':'fasta'}]}
@@ -44,7 +44,7 @@ def route(req):
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path=args.chromium,args=['--no-sandbox','--disable-dev-shm-usage'])
  page=browser.new_page(viewport={'width':1500,'height':1000});errors=[]
- page.on('pageerror',lambda e:errors.append(str(e)));page.route('http://designer.test/**',route)
+ page.on('pageerror',lambda e:(errors.append(str(e)),print('Browser error:',str(e),flush=True)));page.route('http://designer.test/**',route)
  page.goto('http://designer.test/')
  expect(page.locator('#connection')).to_have_text('Connected')
  page.locator('#library-datasets-tab').click()
@@ -87,7 +87,7 @@ with sync_playwright() as p:
  assert page.evaluate('job.steps.length')==1
  expect(page.locator('[data-schema-port="step_1:result"]')).to_contain_text('dna')
  assert page.locator('#datasets .item-capability').count()==0
- page.evaluate("job.outputs={result:'step_1'};selected='step_1';setInspector(true);render();inspectorTab('parameters')")
+ page.evaluate("selected='step_1';setInspector(true);render();inspectorTab('parameters')")
  expect(page.get_by_role('group',name='selection',exact=True)).to_be_visible()
  length=page.locator('[data-parameter-path="params.selection.length"]')
  # Enable selection and edit its range through individual controls.

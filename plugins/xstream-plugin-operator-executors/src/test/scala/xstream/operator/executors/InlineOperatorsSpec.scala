@@ -36,7 +36,7 @@ class InlineOperatorsSpec extends AnyFunSuite {
     val root=Files.createTempDirectory("inline-sdk-");val base=Files.createDirectories(root.resolve("job"));val stage=Files.createDirectories(root.resolve("stage"))
     try {
       Files.writeString(base.resolve("operator.py"),"print('SDK')")
-      val d=YamlDocument.parse("type: sdk\nrole: source\nruntime: python\nprogram: {path: ./operator.py, entrypoint: operator}\ninputs: {}\n")
+      val d=YamlDocument.parse("type: sdk\nrole: source\nruntime: python\nprogram: {path: ./operator.py, entrypoint: operator}\ninputs: {}\noutputs: {result: {view: bytes}}\n")
       val prepared=new InlineSdkProvider().prepare(InlineOperator("sdk",d),base,stage,1024,()=>())
       assert(prepared.program.artifact.contains(stage.resolve("operator.py")))
       Files.delete(base.resolve("operator.py"));assert(Files.readString(prepared.program.artifact.get)=="print('SDK')")

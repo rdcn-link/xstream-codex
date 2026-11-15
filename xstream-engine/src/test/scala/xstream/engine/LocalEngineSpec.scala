@@ -86,6 +86,13 @@ class LocalEngineSpec extends AnyFunSuite with org.scalatest.BeforeAndAfterAll {
       val yaml="name: Local read\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/files/input.txt', view: bytes}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
       val out=new java.io.ByteArrayOutputStream();val cancel=new StreamCancel()
       try {host.engine.run(yaml,f=>if(StreamProtocol.header(f).path("type").asText=="data")out.write(f.data),cancel);assert(out.toString("UTF-8")=="local stream\n")}finally cancel.close()
+      val destination=dir.resolve("result.txt")
+      val fileSink=new _root_.xstream.execution.BytesFileSink(destination)
+      val fileCancel=new StreamCancel()
+      try {
+        host.engine.runToSink(yaml,fileSink,fileCancel)
+        assert(Files.readString(destination)=="local stream\n")
+      }finally {fileCancel.close();fileSink.close()}
       val other=new DataCatalog {def list():Seq[DatasetInfo]=Seq.empty;def open(n:String):PublishedDataset=throw new UnsupportedOperationException}
       intercept[IllegalArgumentException](DataCatalogRuntime.bind(other))
     }finally {host.close();plugins.close()}

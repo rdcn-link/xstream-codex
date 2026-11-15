@@ -25,24 +25,26 @@ object ExecutionUnits {
     };runs.filter(_.size>1)
   }
   def prepare(config:EngineEnvironment,plan:JobPlan,check:()=>Unit=()=>()):ExecutionUnits={
-    if(!config.operatorFusionEnabled || plan.steps.size<2)return ExecutionUnits(plan,Map.empty,Json.obj())
+    if(config.operatorFusion=="isolated" || plan.steps.size<2)return ExecutionUnits(plan,Map.empty,Json.obj())
     OperatorInference.withDocker { docker=>
       val operators=plan.steps.filterNot(_.operator==Jobs.ItemSource).map { t=>
         check();val op=t.preparedInline.getOrElse(t.localOperator.map(r=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,r,docker,check)).getOrElse(OperatorLibrary.resolve(config,t.operator,docker)))
-        val ports=plan.steps.flatMap(_.inputs.values.collect{case b if b.task.contains(t.id)=>b.port}).toSet++plan.outputs.values.collect{case(id,p)if id==t.id=>p}
-        val outs=ports.map(_->PortContract(_root_.xstream.execution.OperatorPorts.representations(config.plugins),Set.empty,None)).toMap
-        t.id->op.copy(outputs=outs,program=op.program.map(_.copy(outputs=outs.view.mapValues(_.representations).toMap)))
+        t.id->op
       }.toMap
-      val keys=operators.filter(_._2.outputs.nonEmpty).map{case(id,op)=>id->(op.executor+":"+OperatorLibrary.runtimeDescriptor(op).path("dependency_environment").asText+":"+op.command.environment.toVector.sorted.mkString)}
+      val declared=OperatorGroups.resolveDeclared(plan,operators)
+      val keys=declared.filter(_._2.outputs.nonEmpty).map{case(id,op)=>id->(op.executor+":"+OperatorLibrary.runtimeDescriptor(op).path("dependency_environment").asText+":"+op.command.environment.toVector.sorted.mkString)}
       var routing=Map.empty[(String,String),(String,String)]
       var removed=Set.empty[String];var groups=Map.empty[String,PreparedOperatorGroup];var replacements=Map.empty[String,Task]
-      val description=Json.obj();val units=description.putArray("execution_units")
+      val description=Json.obj().put("operator_fusion",config.operatorFusion);val units=description.putArray("execution_units")
+      val decisions=description.putArray("fusion_decisions")
       regions(plan,keys).foreach { ids=>
         val selected=ids.toSet;val members=plan.steps.filter(t=>selected(t.id))
         val external=members.flatMap(t=>t.inputs.toVector.sortBy(_._1).collect{case(p,b)if b.task.forall(id=> !selected(id))=>(t.id,p,b)})
         val ports=(plan.steps.filterNot(t=>selected(t.id)).flatMap(_.inputs.values.flatMap(b=>b.task.filter(selected).map(_->b.port)))++plan.outputs.values.filter(p=>selected(p._1))).distinct.sortBy(p=>p._1+":"+p._2)
         val sub=plan.copy(steps=members.map(t=>t.copy(inputs=t.inputs.map{case(p,b)=>p->(if(b.task.exists(id=> !selected(id)))InputBinding(uri=Some("unit:"+b.task.get+":"+b.port),view=b.view)else b)})),outputs=ports.zipWithIndex.map{case(p,i)=>s"export$i"->p}.toMap)
-        if(ports.nonEmpty)OperatorGroups.prepareResolved(config,sub,operators.filter(p=>selected(p._1))) match {
+        val selection=FusionPolicy.decide(config.operatorFusion,sub)
+        val detail=decisions.addObject();detail.set[JsonNode]("estimate",selection.json);val candidates=detail.putArray("steps");ids.foreach(candidates.add)
+        if(ports.nonEmpty)OperatorGroups.prepareResolved(config,sub,declared.filter(p=>selected(p._1))) match {
           case Right(group)=>
             val id="unit-"+ids.head
             val bindings=external.zipWithIndex.map{case((_,_,b),i)=>s"i$i"->b}.toMap
@@ -51,13 +53,14 @@ object ExecutionUnits {
             groups+=id->g;replacements+=ids.head->t;removed++=selected
             val labelToPort=group.outputs.map{case(port,(_,label))=>label->port}
             sub.outputs.foreach{case(label,source)=>routing+=source->(id,labelToPort(label))}
-            val u=units.addObject().put("id",id).put("mode","shared_process").put("reason","same_locked_dependency_environment")
+            detail.put("result","shared_process")
+            val u=units.addObject().put("id",id).put("mode","shared_process").put("reason",selection.reason)
             OperatorLibrary.runtimeDescriptor(group.operator).fields.asScala.foreach(e=>u.set[JsonNode](e.getKey,e.getValue))
             val a=u.putArray("steps");ids.foreach(a.add)
-          case Left(_)=>()
+          case Left(reason)=>detail.put("result","isolated_steps").put("reason",reason)
         }
       }
-      if(groups.isEmpty)ExecutionUnits(plan,Map.empty,Json.obj())else {
+      if(groups.isEmpty)ExecutionUnits(plan,Map.empty,description)else {
         def bind(b:InputBinding):InputBinding=b.task.flatMap(t=>routing.get(t->b.port)).map{case(t,p)=>b.copy(task=Some(t),port=p)}.getOrElse(b)
         val steps=plan.steps.flatMap(t=>replacements.get(t.id).orElse(if(removed(t.id))None else Some(t))).map(t=>t.copy(inputs=t.inputs.view.mapValues(bind).toMap))
         plan.steps.filterNot(t=>removed(t.id)).foreach { t=>

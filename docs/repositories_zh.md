@@ -7,11 +7,11 @@
 | 模块 | 职责 |
 |---|---|
 | `xstream-data` | 数据目录、数据访问、Arrow 流及格式插件 |
-| `xstream-execution-api` | 流、推导、执行器、历史和物化契约；JSON/YAML 工具 |
+| `xstream-execution-api` | 流、推导、执行器、历史和 Sink 生命周期契约；JSON/YAML 工具 |
 | `xstream-operator-sdk` | JVM/Python 开发 SDK 和元数据验证 |
 | `xstream-operator-inference` | 按需启动、可复用的推导 worker |
 | `plugins/xstream-plugin-operator-executors` | 容器、JVM、Python 和原生命令启动实现 |
-| `plugins/xstream-plugin-execution-file` | 文件执行历史和 Arrow 流物化存储 |
+| `plugins/xstream-plugin-execution-file` | 文件执行历史 |
 | `connectors/xstream-dacp-protocol` | 远程数据编码及 TLS 客户端传输 |
 | `connectors/xstream-dacp-client` | Runner 与设计器使用的远程目录、Item 和 Job 客户端 |
 | `xstream-engine` | 嵌入式执行及 `xstream-runner` |

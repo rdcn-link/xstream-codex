@@ -33,7 +33,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
   examples/xstream/engine.yaml examples/xstream/read.yaml
 ```
 
-启动程序接受 `CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。没有变量但需策略时，传入空变量 YAML 映射。记录以 JSONL 输出，字节流直接写到 stdout。为避免混淆，启动程序要求选中一个输出；嵌入式引擎支持多个具名输出。执行元信息记录到 `execution_directory`；只有策略明确要求物化时才持久化流数据。
+启动程序接受 `CONFIG.yaml JOB.yaml [VARIABLES.yaml] [POLICY.yaml]`。没有变量但需策略时，传入空变量 YAML 映射。记录以 JSONL 输出，字节流直接写到 stdout。为避免混淆，启动程序要求选中一个输出；嵌入式引擎支持多个具名输出。执行元信息记录到 `execution_directory`；中间流默认保持流式，仅策略 `checkpoints` 指定的输出保留为恢复点；最终结果立即流式写入 stdout；失败尝试的输出属于暂定数据，由接收方丢弃。
 
 远程读取在 `nodes` 中配置连接：
 
@@ -73,7 +73,7 @@ try {
 }
 ```
 
-`LocalEngine` 可接收远程 Item 回调。`EngineEnvironment` 提供运行配置、历史记录、物化和 Item 打开能力；`JobEngine` 不依赖服务器配置、服务端凭据或请求接入类。取消、超时、重试、物化/重放和兼容算子同进程合并属于共享引擎。结构推导仍是显式的设计时能力，不作为执行前置条件。
+`LocalEngine` 可接收远程 Item 回调。`EngineEnvironment` 提供运行配置、历史记录、Sink 生命周期和 Item 打开能力；`JobEngine` 不依赖服务器配置、服务端凭据或请求接入类。取消、超时、整 Job 重试、Sink 生命周期和兼容算子同进程合并属于共享引擎。结构推导仍是显式的设计时能力，不作为执行前置条件。
 
 ## 目录与运行插件
 
@@ -109,7 +109,7 @@ flowchart LR
   Plan --> Units["执行单元"]
   Units --> Source["item_source"] --> Process["处理算子"] --> Result["结果流"]
   Policy["执行策略"] -.-> Units
-  Process -. "选定边界" .-> Store["物化存储"]
+  Process --> Store["Sink 暂存与最终提交"]
 ```
 
 执行记录配置及存储接口见[执行历史 API](execution-history_zh.md)。

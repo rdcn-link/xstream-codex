@@ -29,7 +29,7 @@ async def main():
   await page.route('**/api/infer_stream',infer)
   await page.goto(args.url)
   await expect(page.locator('#connection')).to_contain_text('Connected',timeout=25000)
-  await expect(page.locator('#repository-state')).to_contain_text('published',timeout=25000)
+  await expect(page.locator('#repository-state')).to_contain_text('operators',timeout=25000)
   draft={'name':'Dynamic schemas','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':'dacp://localhost:19860/example/initial','view':'records'}},{'id':'filter','operator':'piflow_filter@1.0','inputs':{'source':'read'},'params':{'condition':'true'}}]}
   await page.evaluate('(draft)=>loadDocument(JSON.stringify(draft))',draft)
   await expect(page.locator('[data-schema-port="read:result"]')).to_contain_text('initial',timeout=15000)
@@ -37,6 +37,13 @@ async def main():
   table=page.locator('[data-schema-port="read:result"] .port-schema-table')
   await expect(table.locator('th')).to_have_text('initial')
   await expect(table.locator('td')).to_have_text('string?')
+  await expect(page.locator('[data-output="read:result"] .port-view')).to_have_attribute('data-view','variable')
+  await expect(page.locator('[data-input="filter:source"] .port-view')).to_have_attribute('data-view','records')
+  # Changing inferred structures must not change either declared interface type.
+  await page.evaluate("report.steps.read.outputs.result.representations=['bytes'];refreshPortSchemas()")
+  await expect(page.locator('[data-output="read:result"] .port-view')).to_have_attribute('data-view','variable')
+  await expect(page.locator('[data-input="filter:source"] .port-view')).to_have_attribute('data-view','records')
+  await page.evaluate("report.steps.read.outputs.result.representations=['records'];refreshPortSchemas()")
   compact=await table.evaluate('(e)=>({font:getComputedStyle(e).fontSize,padding:getComputedStyle(e.querySelector("td")).padding})')
   assert compact=={'font':'8px','padding':'1px 3px'},compact
 

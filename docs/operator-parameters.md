@@ -8,7 +8,7 @@ Input streams are declared in `inputs`, parameters in `parameters`, and output s
 
 ```yaml
 name: weather_filter
-version: "1.0"
+version: '1.0'
 role: transform
 type: sdk
 image: example/python:1
@@ -16,10 +16,13 @@ executor: python
 entrypoint: weather_filter
 artifact: weather_filter.py
 inputs:
-  source: {representations: [records], formats: []}
+  source:
+    representations:
+    - records
+    formats: []
 icon:
-  path: "M3 5h18v14H3zM3 10h18M9 5v14"
-  color: "#14866b"
+  path: M3 5h18v14H3zM3 10h18M9 5v14
+  color: '#14866b'
 parameters:
   type: object
   properties:
@@ -40,10 +43,16 @@ parameters:
     columns:
       type: array
       description: Output column names in the requested order.
-      items: {type: string, minLength: 1}
+      items:
+        type: string
+        minLength: 1
       minItems: 1
-  required: [station]
+  required:
+  - station
   additionalProperties: false
+outputs:
+  result:
+    view: variable
 ```
 
 A Job step supplies values, rather than the contract:

@@ -7,11 +7,11 @@ Build the runner, Designer and libraries with the commands below.
 | Module | Responsibility |
 |---|---|
 | `xstream-data` | Catalogs, data access, Arrow streams and format plugins |
-| `xstream-execution-api` | Stream, inference, executor, history and materialization contracts; JSON/YAML utilities |
+| `xstream-execution-api` | Stream, inference, executor, history and Sink lifecycle contracts; JSON/YAML utilities |
 | `xstream-operator-sdk` | JVM/Python authoring SDKs and metadata validation |
 | `xstream-operator-inference` | On-demand, reusable inference workers |
 | `plugins/xstream-plugin-operator-executors` | Container, JVM, Python and native launch implementations |
-| `plugins/xstream-plugin-execution-file` | File-backed execution history and materialized Arrow streams |
+| `plugins/xstream-plugin-execution-file` | File-backed execution history |
 | `connectors/xstream-dacp-protocol` | Remote data wire encoding and TLS client transport |
 | `connectors/xstream-dacp-client` | Remote catalog, Item and Job client used by the runner and designer |
 | `xstream-engine` | Embedded execution and `xstream-runner` |

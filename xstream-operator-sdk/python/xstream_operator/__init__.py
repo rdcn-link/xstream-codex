@@ -69,6 +69,8 @@ class OperatorContext:
                     self._redirect.__exit__(kind, value, traceback)
 
     def _active(self):
+        if getattr(self, '_sink_cancelled', False):
+            raise RuntimeError('Sink attempt discarded')
         if self._closed or self._finished:
             raise ValueError('operator context ended')
 

@@ -2,7 +2,7 @@
 
 [中文](README_zh.md)
 
-A repository-free Python → Scala pipeline. From the XStream repository root:
+A Python → Scala pipeline with locally built transformation operators. Configure `remote_operator_library_urls` in `engine.yaml` with a repository publishing `item_source@1.0` and `client_sink@1.0`; the example uses a local repository at `http://127.0.0.1:8820`. From the XStream repository root:
 
 ```bash
 cd xstream-engine && sbt stage

@@ -142,7 +142,7 @@ These commands apply to directories following the source-project convention, not
 
 ## Inputs, parameters and outputs
 
-`inputs` declares named input ports and representations; `parameters` declares JSON parameter types, defaults and constraints. Implement `inferOutputs`/`infer_outputs` to return output ports and structures. Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
+`inputs` declares named inputs, each with one concrete representation or `variable`; `outputs` declares named outputs with a single `view`. `parameters` declares JSON parameter types, defaults and constraints. Implement `inferOutputs`/`infer_outputs` to describe structures for the declared outputs. See [port Views](operator-ports.md). Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
 
 Record templates process Arrow RecordBatch/VectorSchemaRoot tables with field types intact; implement `output_schema`/`outputSchema` when changing fields. General contexts provide `ctx.input(name)`, `ctx.records_output`/`ctx.recordsOutput` and byte equivalents. Fully consume multiple inputs one at a time in lexical port-name order; declare all outputs before writing data.
 
@@ -167,7 +167,8 @@ icon:
   color: '#14866b'
 inputs:
   source:
-    representations: [bytes]
+    representations:
+    - bytes
     formats: []
 parameters:
   type: object
@@ -177,6 +178,9 @@ parameters:
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
+outputs:
+  result:
+    view: variable
 ```
 Source archives cannot contain prebuilt JARs, wheels, executables, nested archives or symlinks. Package from the operator project, then run the helper from the XStream checkout:
 
@@ -245,3 +249,7 @@ Inline definitions are only accepted for local execution. To submit the Job to a
 ## Item collection inputs
 
 `items` is a peer representation to bytes, records and array. See [Item reference streams](items-stream.md), [complete Source and Transform examples](../examples/operators/item-sources/README.md), and [FAQ 10](faq.md#10-how-does-a-custom-operator-process-an-items-reference-stream).
+
+## Sink publication
+
+Sink operators implement `process`, `onComplete` and `onDiscard`. See the [complete staged Sink contract and examples](sink-lifecycle.md).

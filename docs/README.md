@@ -23,7 +23,7 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 - [Job YAML reference](jobs.md)
 - [Local operator libraries](local-operators.md)
 - [Job-local operators](inline-operators.md)
-- [Retry, timeout and replay](materialization.md)
+- [Whole-Job retry, timeout and Sink lifecycle](execution-policy.md)
 - [Execution units and fusion](operator-fusion.md)
 - [Embed the engine](xstream.md)
 - [Execution history](execution-history.md)
@@ -34,6 +34,7 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 - [Write your first operator](operator-authoring.md)
 - [Scala Source and Sink examples](../examples/operators/scala-endpoints/README.md)
 - [Parameters and types](operator-parameters.md)
+- [Port names and View declarations](operator-ports.md)
 - [Infer structures and samples](structure-inference.md)
 - [Dependencies and packaging](dependency-environments.md)
 - [Operator packaging reference](operator-packaging.md)
@@ -51,3 +52,6 @@ Choose the User guide to manage data, design and run Jobs. Choose the Developmen
 - [Build extensions](operator-build-extensions.md)
 
 - [Item reference streams](items-stream.md)
+
+- [Embedding and collecting results](embedding.md)
+- [Staged Sink development](sink-lifecycle.md)

@@ -43,6 +43,7 @@ class InlineJobSpec extends AnyFunSuite {
       val d=Json.obj().put("name","SDK")
       d.putObject("operators").putObject("filter").put("role","source").put("type","sdk").put("runtime","tools").putObject("program").put("path",path).put("entrypoint",entry)
       d.path("operators").path("filter").asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].putObject("inputs")
+      d.path("operators").path("filter").asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].putObject("outputs").putObject("result").put("view","bytes")
       assert(InlineOperators.definitions(d)("filter").definition.path("program").path("entrypoint").asText==entry)
     }
   }

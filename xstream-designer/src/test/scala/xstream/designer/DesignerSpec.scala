@@ -302,6 +302,24 @@ class DesignerSpec extends AnyFunSuite {
       assert(output.path("certainty").asText=="known",inferred.body())
       assert(output.path("schema_json").path("fields").size()==1)
       assert(output.path("sample").path("rows").size()==1,inferred.body())
+      // Removing the Sink edge leaves a valid authoring draft: schemas must
+      // survive fresh requests with no retained browser state or edit-session cache.
+      val disconnected=yaml.replace("inputs: {result: read}","inputs: {}")
+      val request=Json.obj().put("job_yaml",disconnected).put("variables_yaml","{}")
+      for(_<-1 to 2){
+        val response=post("/api/infer",request)
+        assert(response.statusCode()==200,response.body())
+        val draft=Json.mapper.readTree(response.body())
+        assert(draft.path("steps").path("read").path("outputs").path("result").path("schema_json")==output.path("schema_json"))
+        assert(draft.path("outputs").size()==0)
+        val stream=post("/api/infer_stream",request)
+        assert(stream.statusCode()==200,stream.body())
+        val events=stream.body().linesIterator.filter(_.nonEmpty).map(Json.mapper.readTree(_)).toVector
+        assert(!events.exists(_.path("event").asText=="error"),stream.body())
+        val complete=events.find(_.path("event").asText=="complete").get.path("report")
+        assert(complete.path("steps").path("read").path("outputs").path("result").path("schema_json")==output.path("schema_json"))
+      }
+      assert(post("/api/export",request).statusCode()==400,"Disconnected Sink must still fail executable export")
       for((path,view)<-Seq("geotrans-input.zip"->"bytes","geotrans-input.zip"->"items","geotrans-input.zip/labels"->"items","geotrans-input.zip/labels/points.txt"->"bytes")) {
         val zipYaml=s"name: Archive\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: 'context:/weather/$path', view: $view}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: read}\n"
         val result=post("/api/infer",Json.obj().put("job_yaml",zipYaml).put("variables_yaml","{}").set[com.fasterxml.jackson.databind.JsonNode]("preview",Json.obj().put("max_rows",1).put("max_bytes",1024)))

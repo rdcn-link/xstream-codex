@@ -22,10 +22,11 @@ private[executors] object InlineFiles {
 final class InlineSdkProvider extends InlineOperatorProvider {
   val id="sdk"
   def validate(d:JsonNode):Unit={
-    InlineFiles.fields(d,Set("type","role","runtime","program","inputs","parameters","description"))
+    InlineFiles.fields(d,Set("type","role","runtime","program","inputs","outputs","parameters","description"))
     val p=d.path("program");InlineFiles.fields(p,Set("path","entrypoint"))
     require(p.path("path").isTextual,"SDK program requires path")
     require(!p.has("entrypoint") || p.path("entrypoint").isTextual,"entrypoint must be a string")
+    xstream.operator.OutputViews.validate(d)
     OperatorPorts.read(d.path("inputs"))
     xstream.operator.OperatorRole.validateInputs(xstream.operator.OperatorRole.read(d),d.path("inputs"))
   }

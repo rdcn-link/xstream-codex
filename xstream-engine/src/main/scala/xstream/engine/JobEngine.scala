@@ -1,6 +1,6 @@
 package xstream.engine
 
-import _root_.xstream.execution.{FrameSource,OperatorFrame,StreamCancel,StreamProtocol}
+import _root_.xstream.execution.{FrameSource,OperatorFrame,StreamCancel,StreamProtocol,ResultSink}
 
 import _root_.xstream.data._
 
@@ -17,7 +17,7 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
   private def openSource(b:InputBinding,c:StreamCancel):FrameSource=itemSource.map(_(b,c)).getOrElse(environment.openItem(allocator,b,c))
   def dataCatalog:DataCatalog=DataCatalogRuntime.catalog
   val executor=suppliedExecutor.getOrElse(new TaskExecutor(environment,allocator))
-  def execute(submittedPlan:JobPlan,policy:ExecutionPolicy,owner:String,record:ExecutionHistory#Record,replay:Option[String],emit:OperatorFrame=>Unit,cancel:StreamCancel):Unit={
+  def execute(submittedPlan:JobPlan,policy:ExecutionPolicy,record:ExecutionHistory#Record,emit:OperatorFrame=>Unit,cancel:StreamCancel,resultSink:Option[ResultSink]=None):Unit={
     require(!submittedPlan.hasInlineDefinitions || environment.localOperatorBase.nonEmpty,"FORBIDDEN: inline definitions require a local engine")
     submittedPlan.steps.foreach(Jobs.authorizeSource(environment,_))
     environment.executionResourceLimits.validate(policy.resources)
@@ -37,10 +37,10 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
           }.getOrElse(task) })
         }
       }.getOrElse(submittedPlan)
-      if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty && fused(plan,policy.resources,record,emit,cancel))() else {
-        val units=if(policy.maxRetries==0 && policy.materialized.isEmpty && replay.isEmpty)ExecutionUnits.prepare(environment,plan,()=>cancel.active())else ExecutionUnits(plan,Map.empty,Json.obj())
-        val effective=if(units.groups.nonEmpty)ExecutionPolicy.parse(Json.obj().set[JsonNode]("resources",policy.resources.json),units.plan)else policy
-        new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,preparedUnits=units).run(units.plan,effective,owner,record,replay,emit,cancel)
+      if(resultSink.isEmpty && policy.checkpoints.isEmpty && policy.maxRetries==0 && fused(plan,policy.resources,record,emit,cancel))() else {
+        val units=if(policy.checkpoints.isEmpty && policy.maxRetries==0)ExecutionUnits.prepare(environment,plan,()=>cancel.active())else ExecutionUnits(plan,Map.empty,Json.obj())
+        val effective=policy
+        new LocalJobExecution(environment,executor,(b,c)=>openSource(b,c),allocator,preparedUnits=units).run(units.plan,effective,record,emit,cancel,resultSink)
       }
     }finally {active.remove(cancel);inlineStage.foreach(_root_.xstream.data.Data.deleteTree)}
   }
@@ -51,7 +51,8 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
         case Right(group)=>
           require(permits.tryAcquire(),"node task capacity reached")
           try {
-            val execution=Json.obj().put("execution_mode","shared_process").put("runtime_image",group.operator.image).put("step_count",plan.steps.size)
+            val execution=Json.obj().put("execution_mode","shared_process").put("runtime_image",group.operator.image).put("step_count",plan.steps.size).put("operator_fusion",config.operatorFusion)
+            execution.set[com.fasterxml.jackson.databind.JsonNode]("fusion_selection",FusionPolicy.decide(config.operatorFusion,plan).json)
             val units=execution.putArray("execution_units")
             val unit=units.addObject().put("id","shared").put("mode","shared_process").put("runtime_image",group.operator.image)
             _root_.xstream.operator.inference.OperatorLibrary.runtimeDescriptor(group.operator).fields.asScala.foreach(e=>unit.set[JsonNode](e.getKey,e.getValue))
@@ -99,11 +100,21 @@ final class JobEngine(val environment:EngineEnvironment,val allocator:BufferAllo
       }
     false
   }
+  /** Commits the client result only after every step and external Sink is ready. */
+  def runToSink(yaml:String,sink:ResultSink,cancel:StreamCancel,policy:JsonNode=Json.obj()):String={
+    val plan=Jobs.parse(yaml);require(plan.steps.forall(_.node.isEmpty),"Local jobs cannot assign execution nodes")
+    plan.steps.foreach(Jobs.authorizeSource(environment,_))
+    val record=environment.executionHistory.begin("local_job",metadata=Json.obj().put("name",plan.name).put("job_yaml",yaml))
+    try {
+      execute(plan,ExecutionPolicy.parse(policy,plan),record,f=>if(StreamProtocol.header(f).path("type").asText!="attempt_failed")sink.accept(f),cancel,Some(sink))
+      record.update("succeeded");record.id
+    }catch{case scala.util.control.NonFatal(e)=>record.update(cancel.cause(e) match {case _:java.util.concurrent.TimeoutException=>"expired";case _:java.util.concurrent.CancellationException=>"cancelled";case _=>"failed"},message=Option(e.getMessage));throw e}
+  }
   def run(yaml:String,emit:OperatorFrame=>Unit,cancel:StreamCancel,policy:JsonNode=Json.obj()):String={
     val plan=Jobs.parse(yaml);require(plan.steps.forall(_.node.isEmpty),"Local jobs cannot assign execution nodes")
     plan.steps.foreach(Jobs.authorizeSource(environment,_))
     val record=environment.executionHistory.begin("local_job",metadata=Json.obj().put("name",plan.name).put("job_yaml",yaml))
-    try {execute(plan,ExecutionPolicy.parse(policy,plan),"local",record,None,emit,cancel);record.update("succeeded");record.id}
+    try {execute(plan,ExecutionPolicy.parse(policy,plan),record,emit,cancel);record.update("succeeded");record.id}
     catch{case scala.util.control.NonFatal(e)=>record.update(cancel.cause(e) match {case _:java.util.concurrent.TimeoutException=>"expired";case _:java.util.concurrent.CancellationException=>"cancelled";case _=>"failed"},message=Option(e.getMessage));throw e}
   }
 }

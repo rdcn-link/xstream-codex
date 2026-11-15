@@ -88,10 +88,19 @@ function parameterSchema(t){
  return schema;
 }
 function operatorLabel(task){return typeof task.operator==='object'?'inline:'+task.operator.inline:task.operator;}
-function manifest(task){if(typeof task.operator==='object'){const d=job.operators?.[task.operator.inline];return d?{name:task.operator.inline,version:'local',description:d.description||'Local inline operator',role:d.role,inputs:d.inputs||{},parameters:d.parameters||{type:'object',properties:{},additionalProperties:true}}:null;}const [name,version]=task.operator.split('@');return operators.find(o=>o.name===name&&o.version===version);}
+function manifest(task){if(typeof task.operator==='object'){const d=job.operators?.[task.operator.inline];return d?{name:task.operator.inline,version:'local',description:d.description||'Local inline operator',role:d.role,inputs:d.inputs||{},outputs:d.outputs||{},parameters:d.parameters||{type:'object',properties:{},additionalProperties:true}}:null;}const [name,version]=task.operator.split('@');return operators.find(o=>o.name===name&&o.version===version);}
 const binding=v=>{const [task,port='result']=String(v).split(':');return{task,port};};
-function outputPorts(t){if(t.operator==='client_sink@1.0'||manifest(t)?.role==='sink')return [];if(report?.steps?.[t.id]&&!report.steps[t.id].diagnostics?.some(d=>d.severity==='error'))return Object.keys(report.steps[t.id].outputs||{});const names=new Set(['result']);for(const x of job.steps)for(const v of Object.values(x.inputs||{})){const b=binding(v);if(b.task===t.id)names.add(b.port);}return [...names];}
+function outputPorts(t){return PortViews.outputs(manifest(t));}
 function inputPorts(t){if(t.operator==='client_sink@1.0')return Object.keys(t.inputs||{}).length?Object.keys(t.inputs):['result'];return [...new Set([...Object.keys(manifest(t)?.inputs||{}),...Object.keys(t.inputs||{})])];}
+function labelPort(button,t,port,input=false){
+ const definition=manifest(t),view=input?PortViews.input(definition,port):PortViews.output(definition,port);
+ const spec=PortViews.badge(view),badge=el('span',undefined,'port-view');badge.dataset.view=spec.view;
+ badge.title=spec.label+(view==='variable'?' · Schema inference does not change this declared type.':'');
+ badge.setAttribute('role','img');badge.setAttribute('aria-label',spec.label);
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');
+ const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',spec.path);svg.append(path);badge.append(svg);
+ button.replaceChildren(el('span',port,'port-name'),badge);
+}
 function color(t){return manifest(t)?.icon?.color||'#77879c';}
 function point(t){return positions[t.id]||(positions[t.id]={x:70+job.steps.indexOf(t)*310,y:85});}
 function addOperator(op,x,y){const before=snapshot();if(op.name==='client_sink'&&job.steps.some(t=>t.operator==='client_sink@1.0')){notice('A Job accepts one Client Sink. Select its existing step to edit it.');return;}let i=1;while(job.steps.some(t=>t.id==='step_'+i))i++;const id='step_'+i;const t={id,title:op.name==='client_sink'?'Client Sink':op.name,operator:op.name+'@'+op.version,inputs:{},params:{}};if(op.name==='item_source'){t.params={uri:'$INPUT_URI',view:'records'};automaticReadViews.add(id);}job.steps.push(t);positions[id]={x:Math.max(30,x),y:Math.max(55,y)};selected=id;selectedSteps=new Set([id]);render();avoidSteps(dragLayout(),new Set([id]),false);recordSnapshot(before);changed();}
@@ -143,7 +152,7 @@ function schemaStatus(box,kind,text){
 function renderOutputPorts(t,outs){
  outs.replaceChildren();
  for(const port of outputPorts(t)){
-  const b=el('button',port);b.dataset.output=t.id+':'+port;b.classList.toggle('active',pendingPort===b.dataset.output);b.title='Connect this output to an input.';
+  const b=el('button');labelPort(b,t,port);b.dataset.output=t.id+':'+port;b.classList.toggle('active',pendingPort===b.dataset.output);b.title='Connect this output to an input.';
   b.addEventListener('click',e=>{e.stopPropagation();selectedEdge=null;pendingPort=pendingPort===b.dataset.output?null:b.dataset.output;pointerPosition={x:e.clientX,y:e.clientY};notice(pendingPort?'Click an input port to connect '+pendingPort+'. Right-click or press Esc to cancel.':'Connection cancelled');render();});outs.append(b);
   const d=report?.steps?.[t.id]?.outputs?.[port],box=el('div',undefined,'port-schema');box.dataset.schemaPort=t.id+':'+port;
   if(!d){const errors=report?.steps?.[t.id]?.diagnostics?.filter(x=>x.severity==='error')||[];if(errors.length||inferenceState.startsWith('Inference failed'))schemaStatus(box,'error','Inference error');else if(inferenceRunning||inferencePending)schemaStatus(box,'pending','Inferring…');else schemaStatus(box,'unknown','Schema unknown');}else{
@@ -157,7 +166,7 @@ function renderOutputPorts(t,outs){
   outs.append(box);
  }
 }
-function refreshPortSchemas(){if(graphInteraction||job.steps.some(t=>![...$('cards').children].some(c=>c.dataset.task===t.id)))return;for(const t of job.steps){const card=[...$('cards').children].find(c=>c.dataset.task===t.id);if(card)renderOutputPorts(t,card.querySelector('.ports .out'));}worldExtent(dragLayout());drawEdges();refreshStepOutputs();}
+function refreshPortSchemas(){if(graphInteraction||job.steps.some(t=>![...$('cards').children].some(c=>c.dataset.task===t.id)))return;for(const t of job.steps){const card=[...$('cards').children].find(c=>c.dataset.task===t.id);if(card){renderOutputPorts(t,card.querySelector('.ports .out'));for(const button of card.querySelectorAll('[data-input]'))labelPort(button,t,button.dataset.input.split(':')[1],true);}}worldExtent(dragLayout());drawEdges();refreshStepOutputs();}
 function inferencePayload(){const n=payload(false),draft=JSON.parse(n.job_yaml);if(selected&&parameterEditor&&!$('inspector').hidden){const t=draft.steps.find(t=>t.id===selected);if(t)t.params=parameterEditor.read();}for(const t of draft.steps)if(automaticReadViews.has(t.id)&&t.operator==='item_source@1.0')delete t.params.view;n.job_yaml=JSON.stringify(draft);n.inference_session=inferenceSession;return n;}
 function applyReadViewDefaults(data){for(const t of job.steps){if(!automaticReadViews.has(t.id)||t.operator!=='item_source@1.0')continue;const repr=data.steps?.[t.id]?.outputs?.result?.representations?.[0];if(!repr)continue;const changedView=t.params.view!==repr;t.params.view=repr;if(changedView&&selected===t.id&&viewDefinitions[repr])queueMicrotask(inspect);if(selected===t.id&&parameterEditor&&!$('inspector').hidden)parameterEditor.setValue('view',repr);}}
 
@@ -209,7 +218,7 @@ function render(){
  $('job-name').value=job.name;$('empty').hidden=job.steps.length>0;$('undo').disabled=!undo.length;$('redo').disabled=!redo.length;
  const cards=$('cards');cards.replaceChildren();
  for(const t of job.steps){const p=point(t),card=el('article',undefined,'card'+(t.id===selected||selectedSteps.has(t.id)?' selected':''));card.dataset.task=t.id;card.style.left=p.x+'px';card.style.top=p.y+'px';card.style.setProperty('--accent',color(t));const head=el('div',undefined,'card-head');const icon=operatorMark(manifest(t),false);icon.classList.add('step-mark');const text=el('div',undefined,'step-heading');text.append(el('strong',t.title||t.id),el('small',t.id+' · '+operatorLabel(t)));head.append(icon,text);head.addEventListener('pointerdown',e=>startDrag(e,t,card));card.append(head);const ports=el('div',undefined,'ports'),ins=el('div'),outs=el('div',undefined,'out');
- for(const port of inputPorts(t)){const b=el('button',port);b.dataset.input=t.id+':'+port;b.title=(t.inputs||{})[port]||'Unconnected input';b.addEventListener('click',e=>{e.stopPropagation();if(pendingPort)connectPort(t,port);else{selectedSteps=new Set([t.id]);selected=t.id;render();}});ins.append(b);}
+ for(const port of inputPorts(t)){const b=el('button');labelPort(b,t,port,true);b.dataset.input=t.id+':'+port;b.title=(t.inputs||{})[port]||'Unconnected input';b.addEventListener('click',e=>{e.stopPropagation();if(pendingPort)connectPort(t,port);else{selectedSteps=new Set([t.id]);selected=t.id;render();}});ins.append(b);}
  renderOutputPorts(t,outs);
 
  ports.append(ins,outs);card.append(ports);card.addEventListener('click',e=>{if(card.dataset.dragged==='true'||card.dataset.handled==='true'){e.stopPropagation();return;}selectStep(t,e.shiftKey);});card.addEventListener('dblclick',e=>{if(e.target.closest('.ports'))return;e.stopPropagation();selectedSteps=new Set([t.id]);selected=t.id;selectedEdge=null;setInspector(true);render();$('canvas').focus({preventScroll:true});});cards.append(card);}
@@ -256,19 +265,19 @@ function startDrag(e,t,card){if(e.button!==0||pendingPort)return;graphInteractio
  card.addEventListener('pointermove',move);card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
 }
 let pointerPosition=null,previewFrame=null;
-function cancelConnection(){if(!pendingPort)return;pendingPort=null;pointerPosition=null;document.querySelectorAll('[data-output].active,.connection-target').forEach(e=>e.classList.remove('active','connection-target'));drawPreview();notice('Connection cancelled.');}
+function cancelConnection(){if(!pendingPort)return;pendingPort=null;pointerPosition=null;document.querySelectorAll('[data-output].active,.connection-target,.connection-incompatible').forEach(e=>e.classList.remove('active','connection-target','connection-incompatible'));drawPreview();notice('Connection cancelled.');}
 document.addEventListener('pointermove',e=>{pointerPosition={x:e.clientX,y:e.clientY};if(pendingPort&&previewFrame===null)previewFrame=requestAnimationFrame(()=>{previewFrame=null;drawPreview();});});
 document.addEventListener('contextmenu',e=>{if(pendingPort){e.preventDefault();cancelConnection();}});
 $('canvas').addEventListener('scroll',()=>{if(pendingPort)drawPreview();});
 function drawPreview(){
- document.querySelectorAll('.connection-target').forEach(e=>e.classList.remove('connection-target'));
+ document.querySelectorAll('.connection-target,.connection-incompatible').forEach(e=>e.classList.remove('connection-target','connection-incompatible'));
  if(!pendingPort){$('connection-preview')?.remove();return;}
  const source=binding(pendingPort),a=portPoint(source.task,source.port,true);if(!a||!pointerPosition){$('connection-preview')?.remove();return;}
  const world=$('world').getBoundingClientRect();let z={x:(pointerPosition.x-world.left)/scale,y:(pointerPosition.y-world.top)/scale};
  const target=document.elementFromPoint(pointerPosition.x,pointerPosition.y)?.closest('[data-input]');
- if(target){const b=binding(target.dataset.input);if(b.task!==source.task){target.classList.add('connection-target');z=portPoint(b.task,b.port,false)||z;}}
+ if(target){const b=binding(target.dataset.input),t=job.steps.find(x=>x.id===b.task);const compatible=connectionCompatibility(pendingPort,t,b.port);target.classList.add(compatible.allowed?'connection-target':'connection-incompatible');if(compatible.allowed)z=portPoint(b.task,b.port,false)||z;}
  let path=$('connection-preview');if(!path){path=document.createElementNS('http://www.w3.org/2000/svg','path');path.id='connection-preview';path.setAttribute('aria-hidden','true');$('edges').append(path);}
- const d=Math.max(60,Math.abs(z.x-a.x)*.45);path.setAttribute('d',`M${a.x},${a.y} C${a.x+d},${a.y} ${z.x-d},${z.y} ${z.x},${z.y}`);path.classList.toggle('snapped',!!target&&target.classList.contains('connection-target'));
+ const d=Math.max(60,Math.abs(z.x-a.x)*.45);path.setAttribute('d',`M${a.x},${a.y} C${a.x+d},${a.y} ${z.x-d},${z.y} ${z.x},${z.y}`);path.classList.toggle('snapped',!!target&&target.classList.contains('connection-target'));path.classList.toggle('incompatible',!!target&&target.classList.contains('connection-incompatible'));
 }
 function portPoint(task,port,output){const card=[...$('cards').children].find(c=>c.dataset.task===task);if(!card)return null;const button=[...card.querySelectorAll(output?'[data-output]':'[data-input]')].find(b=>(output?b.dataset.output:b.dataset.input)===task+':'+port);if(!button)return null;const rect=button.getBoundingClientRect(),world=$('world').getBoundingClientRect(),bounds=card.getBoundingClientRect();return{x:((output?bounds.right:bounds.left)-world.left)/scale,y:(rect.top+rect.height/2-world.top)/scale};}
 
@@ -279,7 +288,13 @@ function drawEdges(){const svg=$('edges');svg.replaceChildren();const ns='http:/
 }
 function inspect(){$('duplicate-step').disabled=selectedSteps.size!==1||job.steps.find(t=>t.id===[...selectedSteps][0])?.operator==='client_sink@1.0';$('step-save-status').textContent='';const multiple=selectedSteps.size>1;const selection=multiple?null:selected;if(selection!==inspectedSelection){inspectedSelection=selection;}$('inspector-empty').textContent=multiple?(selectedSteps.size)+' elements selected. Drag to move together; Delete removes selected steps.':'Select a step to edit its properties and parameters.';const t=multiple?null:job.steps.find(t=>t.id===selected);$('properties').hidden=!t;$('inspector-empty').hidden=!!t;refreshStepOutputs();if(!t)return;$('step-id').value=t.id;$('step-title').value=t.title||'';$('step-description').value=t.description||'';$('step-operator').value=operatorLabel(t);refreshStepOutputs();const schema=parameterSchema(t);parameterEditor=ParameterEditor.mount($('step-params'),t.params||{},schema);if(!schema){$('step-params').prepend(el('p','Parameter definitions unavailable. Reload the operator repository.','parameter-error'));}$('inputs').replaceChildren();for(const port of inputPorts(t)){const row=el('div',undefined,'input-row');row.append(el('span',port+' ← '+(t.inputs[port]||'not connected')));if(t.inputs[port]){const remove=el('button','×');remove.addEventListener('click',()=>{remember();delete t.inputs[port];changed();});row.append(remove);}$('inputs').append(row);}}
 
-async function connectPort(t,port){if(!pendingPort)return;const rev=revision;const candidate=clone(job);candidate.steps.find(x=>x.id===t.id).inputs[port]=pendingPort;const from=pendingPort;pendingPort=null;drawPreview();try{await api('document',{...payload(),job_yaml:JSON.stringify(candidate)});if(rev!==revision)throw Error('Draft changed while creating the connection. Please try again.');remember();job=candidate;changed();notice('Connected '+from+' → '+t.id+':'+port);}catch(e){notice(e.message,true);render();}}
+function connectionCompatibility(from,t,port){
+ const source=binding(from),upstream=job.steps.find(x=>x.id===source.task);
+ if(!upstream||!t)return {allowed:false,reason:'Connection step is unavailable.'};
+ if(upstream.id===t.id)return {allowed:false,reason:'A step cannot connect to itself.'};
+ return PortViews.compatibility(manifest(upstream),source.port,manifest(t),port);
+}
+async function connectPort(t,port){if(!pendingPort)return;const compatibility=connectionCompatibility(pendingPort,t,port);if(!compatibility.allowed){notice(compatibility.reason,true);drawPreview();return;}const rev=revision;const candidate=clone(job);candidate.steps.find(x=>x.id===t.id).inputs[port]=pendingPort;const from=pendingPort;pendingPort=null;drawPreview();try{await api('document',{...payload(),job_yaml:JSON.stringify(candidate)});if(rev!==revision)throw Error('Draft changed while creating the connection. Please try again.');remember();job=candidate;changed();notice('Connected '+from+' → '+t.id+':'+port);}catch(e){notice(e.message,true);render();}}
 function arrange(){const ranks={},visiting=new Set();function rank(t){if(ranks[t.id]!==undefined)return ranks[t.id];if(visiting.has(t.id))return 0;visiting.add(t.id);const inputs=Object.values(t.inputs||{}).map(v=>job.steps.find(x=>x.id===binding(v).task)).filter(Boolean);const r=inputs.length?Math.max(...inputs.map(rank))+1:0;visiting.delete(t.id);return ranks[t.id]=r;}const slots={};for(const t of job.steps){const r=rank(t),slot=slots[r]||0;slots[r]=slot+1;positions[t.id]={x:65+r*340,y:85+slot*190};}render();layoutChanged();}
 function zoom(value){scale=Math.max(.35,Math.min(1.6,value));$('world').style.transform=`scale(${scale})`;$('zoom').value=Math.round(scale*100)+'%';drawPreview();layoutChanged();}
 function showTab(name){if(name==='chat'){openChat();return;}setDetails(true);if(name==='logs')renderLogs();document.querySelectorAll('.tab').forEach(e=>e.hidden=e.id!=='tab-'+name);document.querySelectorAll('[data-tab]').forEach(e=>e.classList.toggle('active',e.dataset.tab===name));if(name==='yaml')jobYamlEditor.refresh();if(name==='variables')variablesEditor.refresh();}

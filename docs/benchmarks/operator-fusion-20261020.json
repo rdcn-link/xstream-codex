@@ -15,7 +15,7 @@
   },
   "steps": 3,
   "repetitions": 3,
-  "methodology": "Same code, image, params, data and client; server operator_fusion_enabled only differs. Alternating order; one warmup per language/mode; wall time includes Flight submission through complete result drain and client SHA-256/row validation. Each row is 64 bytes; CSV text is transported as a byte stream, not Arrow records.",
+  "methodology": "Same code, image, params, data and client; only the server fusion mode differs. Alternating order; one warmup per language/mode; wall time includes Flight submission through complete result drain and client SHA-256/row validation. Each row is 64 bytes; CSV text is transported as a byte stream, not Arrow records.",
   "images": [
     {
       "id": "sha256:a51c8aaa05a5f1d325050b813cf0f84d91853434c1c6ab4f3b87afabc11e1d7f",

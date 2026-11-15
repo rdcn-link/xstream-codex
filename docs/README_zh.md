@@ -23,7 +23,7 @@
 - [流式作业](jobs_zh.md)
 - [本地算子库](local-operators_zh.md)
 - [Job 内联算子](inline-operators_zh.md)
-- [执行策略、物化与重放](materialization_zh.md)
+- [执行策略、整 Job 重跑与结果提交](execution-policy_zh.md)
 - [算子同进程合并执行](operator-fusion_zh.md)
 - [XStream 执行引擎](xstream_zh.md)
 - [执行历史 API](execution-history_zh.md)
@@ -51,3 +51,8 @@
 - [源码分析与构建插件](operator-build-extensions_zh.md)
 
 - [Item 引用流](items-stream_zh.md)
+
+- [嵌入引擎与收集结果](embedding_zh.md)
+- [暂存型 Sink 开发](sink-lifecycle_zh.md)
+
+- [端口名称与 View 声明](operator-ports_zh.md)

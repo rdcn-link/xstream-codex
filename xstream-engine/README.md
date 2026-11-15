@@ -16,7 +16,7 @@ xstream-engine/target/universal/stage/bin/xstream-runner \
 
 Use `item_source.params.uri: context:/dataset/item` for the bound DataCatalog, or an explicit `dacp://host:port/dataset/item` URI. Configure remote connections and credentials in `nodes`. Operators come from approved public repositories or explicit [local source directories](../docs/local-operators.md); isolated runtimes and compatible-operator fusion are supported.
 
-See [the full guide](../docs/xstream.md) for Scala embedding, plugin registration, cancellation, materialization/replay, catalog lifecycle and designer configuration. [中文](README_zh.md).
+See [the full guide](../docs/xstream.md) for Scala embedding, plugin registration, cancellation, whole-Job recovery, catalog lifecycle and designer configuration. [中文](README_zh.md).
 
 ## Components and scope
 
@@ -33,3 +33,5 @@ See [example configuration](../examples/xstream/engine.yaml), [example Job](../e
 Execution history records the actual execution units selected by the engine. Execution units include the runtime model/version and dependency versions supplied by the repository catalog for the pinned image. Shared-process units list their member steps and runtime image; separate steps and host stream sources are recorded separately. Viewers must not infer fusion from matching runtime images.
 
 [Local execution and remote data](../docs/execution-targets.md).
+
+Runner sends final bytes/JSONL to stdout as they arrive, without a temporary output file. Output is provisional until Job success. On discard, Runner resets its port state, writes `**** XSTREAM: ATTEMPT DISCARDED ****` on a separate line to stdout, and reports the reason on stderr; raw stdout cannot retract bytes already written. For retry-aware programmatic consumption, use `JobEngine.runToSink` with a `ResultSink` whose `onDiscard` resets the receiving destination. See [embedding](../docs/embedding.md).

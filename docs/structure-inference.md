@@ -2,7 +2,7 @@
 
 [中文](structure-inference_zh.md)
 
-Every operator must provide an inference method. Manifests declare input and static parameter contracts; `outputs` is rejected. The method supplies output ports, representations, formats, schemas, and explicit unknowns. Sinks return an empty mapping; sources accept empty inputs. Missing methods, malformed responses, and timeouts fail validation without a manifest fallback.
+Every operator must declare [port names and View types](operator-ports.md) and provide an inference method. Manifests declare inputs, outputs and static parameters. Inference supplies invocation-specific structures for those declared ports; it cannot change their names or declared Views. A `variable` interface remains variable after inference. Sinks return an empty mapping; sources accept empty inputs. Missing methods, malformed responses, and timeouts fail validation without a manifest fallback.
 
 ```mermaid
 flowchart TD
@@ -24,7 +24,7 @@ For a configured remote execution service, the bundled connector exposes:
 val report = xstream.connector.dacp.client.Job.infer("dacp://data.example.org:18861", workflowText)
 ```
 
-Inference is an explicit authoring action. Submission, scheduling, retry, replay and execution do not invoke inference automatically. Execution validates actual stream headers, connected ports and resource limits. Sinks need no artificial output port.
+Inference is an explicit authoring action. Submission, scheduling, retry and execution do not invoke inference automatically. Execution validates actual stream headers, connected ports and resource limits. Sinks need no artificial output port.
 
 ## Shared request and response
 
@@ -128,7 +128,7 @@ inference_workers:
 
 These are the defaults. Integer ranges are 1–64 for `max_workers`, 1–86400 for `idle_seconds`, and 1–120 for `timeout_seconds`. The deadline includes queueing, cold startup, and computation; an enclosing Flight call may have a shorter deadline. Each worker handles requests serially. At capacity, the least recently used idle worker is evicted, or the request waits for capacity. A one-second reaper destroys workers past their idle deadline. Exceptions, malformed responses, timeouts, or cancellation during an active request destroy its worker; the next explicit request starts a new one. The failed inference is not automatically retried. Cancelling a queued request does not destroy a worker serving another request. Node shutdown cleans up all workers.
 
-This reuses runtime resources, never step execution containers. Submission, scheduling, execution, retries, and replay still do not invoke inference automatically. Union forwards explicit inference to members; members manage the workers, and Union never loads their operator code.
+This reuses runtime resources, never step execution containers. Submission, scheduling, execution, retries still do not invoke inference automatically. Union forwards explicit inference to members; members manage the workers, and Union never loads their operator code.
 
 ## Worker protocol for executor plugins
 

@@ -58,7 +58,7 @@ flowchart TD
 |---|---|
 | 增加执行器或本地构建器 | [执行器插件](../plugins/xstream-plugin-operator-executors/README_zh.md)、[本地构建扩展](local-operators_zh.md) |
 | 实现执行记录存储 | [执行历史 API](execution-history_zh.md) |
-| 实现物化输出存储 | [存储契约](materialization_zh.md) |
+| 开发暂存型 Sink | [Sink 生命周期](sink-lifecycle_zh.md) |
 | 接入 Designer Chat 模型 API | [Chat 配置与适配器](../xstream-designer/README_zh.md) |
 | 增加源码分析或构建配方 | [构建扩展](operator-build-extensions_zh.md) |
 

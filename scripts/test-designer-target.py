@@ -37,11 +37,12 @@ with sync_playwright() as playwright:
                 item_uri=dataset['uri'].rstrip('/')+'/'+item['path'].lstrip('/');break
         if item_uri:break
     assert item_uri,'Target fixture needs a records Item'
-    job={'name':'Design target regression','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':item_uri,'view':'records'}}],'outputs':{'result':'read'},'designer':{'version':1,'target':remote['value']}}
+    job={'name':'Design target regression','steps':[{'id':'read','operator':'item_source@1.0','inputs':{},'params':{'uri':item_uri,'view':'records'}}],'designer':{'version':1,'target':remote['value']}}
+    job['steps'].append({'id':'client_sink','operator':'client_sink@1.0','inputs':{'result':'read'}})
     choose('local');expect(roots).to_have_count(len(config['targets']))
     def load():page.locator('#file').set_input_files({'name':'preferred.yaml','mimeType':'application/yaml','buffer':json.dumps(job).encode()})
     load();expect(page.locator('#target-dialog')).to_be_visible();expect(page.locator('#target-label')).to_have_text('Local')
-    page.locator('#target-cancel').click();expect(page.locator('#cards .card')).to_have_count(1);expect(page.locator('#target-label')).to_have_text('Local')
+    page.locator('#target-cancel').click();expect(page.locator('#cards .card')).to_have_count(2);expect(page.locator('#target-label')).to_have_text('Local')
     load();expect(page.locator('#target-dialog')).to_be_visible();page.locator('#target-confirm').click();expect(page.locator('#target-label')).to_have_text(remote['label'])
     expect(page.locator("#cards .port-schema-table")).to_be_visible(timeout=30000)
     assert page.evaluate("report.steps.read.outputs.result.certainty==='known'")
@@ -60,13 +61,13 @@ with sync_playwright() as playwright:
     refresh.reload();expect(refresh.locator('#connection')).to_have_text('Connected',timeout=30000)
     expect(refresh.locator('#target-label')).to_have_text(remote['label'])
     expect(refresh.locator('#target-dialog')).not_to_be_visible()
-    expect(refresh.locator('#cards .card')).to_have_count(1)
+    expect(refresh.locator('#cards .card')).to_have_count(2)
     draft['designTarget']='dacp://removed.example:18861'
     refresh.evaluate('(x)=>localStorage.setItem(x.key,JSON.stringify(x.draft))',{'key':draft_key,'draft':draft})
     refresh.reload();expect(refresh.locator('#connection')).to_have_text('Connected',timeout=30000)
     expect(refresh.locator('#target-label')).to_have_text('Local')
     expect(refresh.locator('#target-dialog')).not_to_be_visible()
-    expect(refresh.locator('#cards .card')).to_have_count(1)
+    expect(refresh.locator('#cards .card')).to_have_count(2)
     fresh_context.close()
     assert not errors,errors
     browser.close()

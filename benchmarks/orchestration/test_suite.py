@@ -37,9 +37,11 @@ class Contracts(unittest.TestCase):
                 job = yaml.safe_load(path.read_text())
                 defined = set()
                 for step in job['steps']:
-                    self.assertTrue(set(step['inputs'].values()) <= defined)
+                    self.assertTrue({v.split(':')[0] for v in step['inputs'].values()} <= defined)
                     defined.add(step['id'])
-                self.assertIn(job['outputs']['result'], defined)
+                self.assertNotIn('outputs', job)
+                self.assertEqual(job['steps'][-1]['operator'], 'client_sink@1.0')
+                self.assertEqual(job['steps'][-1]['inputs'], {'result':'export:result'})
 
     def test_workloads_have_mixed_language_operator_versions(self):
         for name in ('pipeline','join','aggregate'):

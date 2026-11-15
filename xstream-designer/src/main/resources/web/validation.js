@@ -4,20 +4,21 @@
   const issues=[],steps=job.steps||[],byId=new Map(steps.map(t=>[t.id,t])),consumers=new Map(),parents=new Map(),reachable=new Set();
   const issue=(severity,step,code,message)=>issues.push({severity,step,code,message});
   const error=(step,code,message)=>issue('error',step,code,message);
+  const definition=t=>typeof t.operator==='object'?job.operators?.[t.operator.inline]:operators.find(o=>o.name+'@'+o.version===t.operator);
   const parse=(value,owner)=>{if(typeof value!=='string'||!/^([A-Za-z_][\w-]*)(?::([A-Za-z_][\w-]*))?$/.test(value)){error(owner,'invalid_binding','Invalid connection: '+String(value));return null;}const [step,port='result']=value.split(':');if(!byId.has(step)){error(owner,'missing_step','Unknown source step: '+step);return null;}return{step,port};};
-  function bind(value,owner,contract){const b=parse(value,owner);if(!b)return null;const key=b.step+':'+b.port;if(consumers.has(key))error(owner,'duplicate_consumer',key+' already has a consumer');else consumers.set(key,owner);
-   const upstream=report?.steps?.[b.step];if(upstream&&!upstream.diagnostics?.some(d=>d.severity==='error')){const d=upstream.outputs?.[b.port];if(!d)error(owner,'missing_output','Unknown output port: '+key);else if(contract){if(contract.cardinality&&d.structure?.cardinality!==contract.cardinality)error(owner,'incompatible_cardinality',key+' requires '+contract.cardinality+' Item cardinality');for(const kind of ['representations','formats'])if(contract[kind]?.length&&d[kind]?.length&&!contract[kind].some(x=>d[kind].includes(x)))error(owner,'incompatible_input',key+' has incompatible '+kind);}}
+  function bind(value,owner,contract){const b=parse(value,owner);if(!b)return null;const key=b.step+':'+b.port;const declaration=definition(byId.get(b.step));if(declaration&&!Object.hasOwn(declaration.outputs||{},b.port))error(owner,'missing_output','Unknown declared output port: '+key);else if(declaration&&contract){const match=root.PortViews.compatibility(declaration,b.port,{inputs:{target:contract}},'target');if(!match.allowed)error(owner,'incompatible_input',key+': '+match.reason);}if(consumers.has(key))error(owner,'duplicate_consumer',key+' already has a consumer');else consumers.set(key,owner);
+   const upstream=report?.steps?.[b.step];if(upstream&&!upstream.diagnostics?.some(d=>d.severity==='error')){const d=upstream.outputs?.[b.port];if(!d)error(owner,'missing_output','Unknown output port: '+key);else if(contract){if(contract.cardinality&&d.structure?.cardinality!==contract.cardinality)error(owner,'incompatible_cardinality',key+' requires '+contract.cardinality+' Item cardinality');for(const kind of ['representations','formats'])if(!(kind==='representations'&&contract.representations?.includes('variable'))&&contract[kind]?.length&&d[kind]?.length&&!contract[kind].some(x=>d[kind].includes(x)))error(owner,'incompatible_input',key+' has incompatible '+kind);}}
    return b.step;
   }
   function resolve(value,step){if(typeof value==='string'&&/^\$[A-Za-z_][A-Za-z0-9_]*$/.test(value)){const name=value.slice(1);if(!Object.hasOwn(variables,name)){error(step,'missing_variable','Undefined variable: '+name);return value;}return variables[name];}if(Array.isArray(value))return value.map(x=>resolve(x,step));if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,resolve(v,step)]));return value;}
   if(!steps.length)error(null,'empty_job','Add at least one step');
   if(byId.size!==steps.length)error(null,'duplicate_step','Step IDs must be unique');
-  const sinkSteps=steps.filter(t=>t.operator==='client_sink@1.0'||operators.find(o=>o.name+'@'+o.version===t.operator)?.role==='sink');
+  const sinkSteps=steps.filter(t=>t.operator==='client_sink@1.0'||definition(t)?.role==='sink');
   if(!sinkSteps.length)error(null,'client_sink_unconnected','Connect Client Sink or add a Sink operator');
   for(const t of steps){
-   const manifest=operators.find(o=>o.name+'@'+o.version===t.operator),source=t.operator==='item_source@1.0';
-   if(!source&&!manifest)error(t.id,'unknown_operator','Operator not found: '+t.operator);
-   const inputs=t.inputs||{},declared=source?{}:t.operator==='client_sink@1.0'?{[Object.keys(inputs)[0]||'result']: {}}:manifest?.inputs;
+   const manifest=definition(t),source=t.operator==='item_source@1.0';
+   if(!manifest)error(t.id,'unknown_operator','Operator not found: '+t.operator);
+   const inputs=t.inputs||{},declared=source?{}:t.operator==='client_sink@1.0'?{[Object.keys(inputs)[0]||'result']:manifest?.inputs?.result}:manifest?.inputs;
    if((source||manifest?.role==='source')&&Object.keys(inputs).length)error(t.id,'source_inputs','Source cannot have inputs');
    if(sinkSteps.includes(t)&&steps.some(x=>Object.values(x.inputs||{}).some(v=>String(v).split(':')[0]===t.id)))error(t.id,'sink_output','Sink cannot have downstream consumers');
    if(t.operator==='client_sink@1.0'&&Object.keys(inputs).length!==1)error(t.id,'client_sink_unconnected','Client Sink requires exactly one connected input');

@@ -43,7 +43,7 @@ flowchart LR
 | Supply variables and keep their types | [Job variables](jobs.md) |
 | Select repository operators or develop locally | [Operator examples](operator-catalog.md), [local libraries](local-operators.md) |
 | Run, consume results and cancel | [Runner and embedding](xstream.md) |
-| Set timeout, retries, materialization and replay | [Execution policies](materialization.md) |
+| Set timeout, retries, whole-Job recovery | [Execution policies](execution-policy.md) |
 | Understand execution units and dependency compatibility | [Fusion](operator-fusion.md), [dependency environments](dependency-environments.md) |
 | Compare performance | [Measured fusion example](operator-fusion-benchmark.md) |
 

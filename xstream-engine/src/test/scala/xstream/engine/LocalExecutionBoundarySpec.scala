@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode
 class LocalExecutionBoundarySpec extends AnyFunSuite {
   test("remote Item reads feed downstream steps on the local executor") {
     val dir=Files.createTempDirectory("local-execution-boundary-")
-    val settings=Json.obj().put("execution_directory",dir.resolve("history").toString).put("operator_fusion_enabled",false)
+    val repository=new TestEndpointRepository()
+    val settings=Json.obj().put("execution_directory",dir.resolve("history").toString).put("operator_fusion","isolated")
+    settings.putArray("remote_operator_library_urls").add(repository.url)
     val plugins=new PluginEnvironment();var reads=0;var runs=0
     val host=new LocalEngine(settings,plugins,(binding,_,_)=>{
       reads+=1;assert(binding.uri.contains("dacp://remote:18861/weather/input"))
@@ -19,7 +21,7 @@ class LocalExecutionBoundarySpec extends AnyFunSuite {
       new FrameSource {def next():Option[OperatorFrame]=if(frames.hasNext)Some(frames.next())else None;def close():Unit=()}
     })
     val executor=new TaskExecutor(host,host.allocator) {
-      override def execute(t:Task,inputs:Map[String,FrameSource],emit:OperatorFrame=>Unit,c:StreamCancel,resolved:Option[ResolvedOperator],onEvent:Option[JsonNode=>Unit],onRuntime:Option[JsonNode=>Unit],resources:_root_.xstream.engine.ExecutionResources):Unit={
+      override def execute(t:Task,inputs:Map[String,FrameSource],emit:OperatorFrame=>Unit,c:StreamCancel,resolved:Option[ResolvedOperator],onEvent:Option[JsonNode=>Unit],onRuntime:Option[JsonNode=>Unit],resources:_root_.xstream.engine.ExecutionResources,sinks:Option[_root_.xstream.execution.SinkTransactions],attemptId:String,jobId:String):Unit={
         runs+=1;assert(resources==ExecutionResources(768,2048));assert(t.id=="process");val source=inputs("source");var f=source.next()
         while(f.nonEmpty){emit(StreamProtocol.rename(f.get,"result"));f=if(StreamProtocol.header(f.get).path("type").asText=="end")None else source.next()}
       }
@@ -45,6 +47,6 @@ class LocalExecutionBoundarySpec extends AnyFunSuite {
       assert(!host.executionHistory.list().exists(_.path("kind").asText=="remote_job"))
       assert(host.executionHistory.get(id).get.path("state").asText=="succeeded")
       intercept[IllegalArgumentException](ExecutionPolicy.parse(Json.obj().set[JsonNode]("placement",Json.obj().put("mode","auto")),Jobs.parse(yaml)))
-    }finally {cancel.close();engine.close();host.close();plugins.close();Data.deleteTree(dir)}
+    }finally {cancel.close();engine.close();host.close();plugins.close();repository.close();Data.deleteTree(dir)}
   }
 }

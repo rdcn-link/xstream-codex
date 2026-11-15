@@ -26,7 +26,7 @@ parameters:
 
 运行时须包含 `/usr/local/bin/python`、PyArrow、可执行程序及匹配系统和架构的依赖。桥接器复用 Python 运行时，但原生程序自身无需依赖 Python、Arrow 或 DACP。`xstream/operator-python:1.0` 可运行[独立 C 制品示例](../examples/operators/native/README_zh.md)，不保证包含 `tr` 等系统工具；请在派生镜像中预装所需程序。
 
-`entrypoint` 必须为绝对路径。`args` 为字面字符串列表，直接传递参数，不经过 shell、不展开变量或替换作业参数。`args`、`stdin`、`stdout` 均为必填，未知设置会被拒绝。在 `inputs` 中声明 stdin 对应的端口，且仅支持 bytes。源算子设置 `stdin: null`，汇算子设置 `stdout: null`。清单不声明 `outputs`：执行器必选的结构推导方法根据 `executor_config.stdout` 给出输出结构。非空 stdout 必须指定 `port`、`representation: bytes` 和非空 `format`。格式标签不会触发转换。
+`entrypoint` 必须为绝对路径。`args` 为字面字符串列表，直接传递参数，不经过 shell、不展开变量或替换作业参数。`args`、`stdin`、`stdout` 均为必填，未知设置会被拒绝。在 `inputs` 中声明 stdin 对应的端口，且仅支持 bytes。源算子设置 `stdin: null`，汇算子设置 `stdout: null`。在 `outputs` 中声明 stdout 端口并设置 `view: bytes`，Sink 使用 `outputs: {}`；执行器的结构推导方法根据 `executor_config.stdout` 描述同一端口的结构。非空 stdout 必须指定 `port`、`representation: bytes` 和非空 `format`。格式标签不会触发转换。
 
 若独立上传可执行文件，设置 `artifact: path/to/program` 和 `entrypoint: /operator/program`，文件名须一致。本地制品路径相对 `operator.yaml`。下载文件经过校验并只读挂载；由于内容寻址存储不保存执行权限，桥接器将程序复制到容器私有 `/operator-work`、设置执行权限后启动。该目录是插件请求的 512 MiB 有界可执行 tmpfs，普通 `/tmp` 仍不可执行。共享库由运行时提供，执行时不下载依赖或编译。
 

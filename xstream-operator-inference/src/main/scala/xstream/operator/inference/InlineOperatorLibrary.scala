@@ -30,8 +30,11 @@ object InlineOperatorLibrary {
     val executor=prepared.executor.getOrElse(runtime.executor)
     val image=docker.inspectImageCmd(runtime.image).exec().getId
     val path=prepared.program.artifact.map(p=>"/operator/"+p.getFileName.toString)
-    val command=config.plugins.byId(classOf[OperatorExecutor],executor).command(prepared.program,path)
+    val outputs=OperatorOutputContracts.ports(operator.definition,xstream.data.Data.mapper.createObjectNode(),Map.empty,allowPending=true)
+    val inputs=prepared.inputs.map{case(port,c)=>port->(if(c.representations==Set("variable"))c.copy(representations=xstream.execution.OperatorPorts.representations(config.plugins))else c)}
+    val program=prepared.program.copy(inputs=inputs.view.mapValues(_.representations).toMap,outputs=outputs.view.mapValues(_.representations).toMap)
+    val command=config.plugins.byId(classOf[OperatorExecutor],executor).command(program,path)
     check()
-    ResolvedOperator(image,prepared.program.artifact,path,command,prepared.inputs,Map.empty,executor,Some(prepared.program),role=Some(xstream.operator.OperatorRole.read(operator.definition)))
+    ResolvedOperator(image,prepared.program.artifact,path,command,inputs,outputs,executor,Some(program),role=Some(xstream.operator.OperatorRole.read(operator.definition)),declaration=Some(operator.definition))
   }
 }

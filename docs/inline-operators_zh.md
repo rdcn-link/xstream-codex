@@ -35,6 +35,8 @@ operators:
     program: {path: ./target/filters.jar, entrypoint: example.FilterOperator}
     inputs:
       source: {representations: [records], formats: []}
+    outputs:
+      result: {view: records}
 ```
 
 依赖由配置的运行时镜像提供。Python SDK 可使用 `runtime: python_tools` 和 `program: {path: ./filter.py, entrypoint: filter}`。SDK 算子可直接处理所声明的结构化流；声明一种表示方式不会把数组或序列扁平化。

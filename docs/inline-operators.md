@@ -24,7 +24,7 @@ Runtime images and interpreters are administrator-selected local configuration, 
 
 ## SDK code
 
-An SDK definition declares a program file, its entrypoint and input port contracts. Scala/Java use a JAR plus a fully qualified JVM main class. Python uses `.py`, `.zip`, or `.whl`; the `entrypoint` is a module name for packages. The file must follow the existing XStream SDK process/inference protocol.
+An SDK definition declares a program file, its entrypoint and input/output port contracts. Scala/Java use a JAR plus a fully qualified JVM main class. Python uses `.py`, `.zip`, or `.whl`; the `entrypoint` is a module name for packages. The file must follow the existing XStream SDK process/inference protocol.
 
 ```yaml
 operators:
@@ -35,6 +35,8 @@ operators:
     program: {path: ./target/filters.jar, entrypoint: example.FilterOperator}
     inputs:
       source: {representations: [records], formats: []}
+    outputs:
+      result: {view: records}
 ```
 
 Dependencies belong in the configured runtime image. An SDK definition can also use `runtime: python_tools` and `program: {path: ./filter.py, entrypoint: filter}`. SDK operators can handle the declared structured streams directly. Declaring a representation does not flatten arrays or sequences.

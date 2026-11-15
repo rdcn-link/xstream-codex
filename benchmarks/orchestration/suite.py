@@ -199,7 +199,8 @@ def write_job(name,data_dir,path):
     tasks=[dict(id='observations',operator='item_source@1.0',inputs={},params={'uri':'context:/bench/'+data_dir.name+'/observations.csv','view':'bytes'})]
     if name=='join':tasks.append(dict(id='dimension',operator='item_source@1.0',inputs={},params={'uri':'context:/bench/'+data_dir.name+'/stations.csv','view':'bytes'}))
     for s in workflow(name):tasks.append(dict(id=s['id'],operator=OPS[s['kind']]+'@'+OP_VERSIONS[s['kind']],inputs=s['inputs'],params=s['params']))
-    path.write_text(yaml.safe_dump(dict(name='Benchmark '+name,steps=tasks,outputs={'result':'export'}),sort_keys=False))
+    tasks.append(dict(id='receive',operator='client_sink@1.0',inputs={'result':'export:result'}))
+    path.write_text(yaml.safe_dump(dict(name='Benchmark '+name,steps=tasks),sort_keys=False))
 
 def report(data,output):
     groups={}
@@ -249,7 +250,7 @@ def main():
             airflow_host=AirflowHost(out/'airflow');data['startup']['airflow_s']=airflow_host.startup_s
         for method in args.methods:
             if method.startswith('xstream'):
-                config=dict(datasets={'bench':{'provider':'directory','source':{'root':str(out/'data')}}},remote_operator_library_urls=[args.repository],operator_cache=str(out/'operator-cache'),execution_directory=str(out/(method+'-history')),operator_fusion_enabled=method.endswith('fused'),max_concurrent_tasks=8,execution_timeout_seconds=1800)
+                config=dict(datasets={'bench':{'provider':'directory','source':{'root':str(out/'data')}}},remote_operator_library_urls=[args.repository],operator_cache=str(out/'operator-cache'),execution_directory=str(out/(method+'-history')),operator_fusion='fused' if method.endswith('fused') else 'isolated',max_concurrent_tasks=8,execution_timeout_seconds=1800)
                 path=out/(method+'.yaml');path.write_text(yaml.safe_dump(config));hosts[method]=Host(path,out/(method+'.log'));data['startup'][method+'_s']=hosts[method].startup_s
         jobs=out/'jobs';jobs.mkdir()
         for w in args.workflows:

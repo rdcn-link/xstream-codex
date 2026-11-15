@@ -10,6 +10,9 @@ inputs:
   left: {representations: [records], formats: []}
   right: {representations: [records], formats: []}
 
+outputs:
+  accepted: {view: records}
+  rejected: {view: records}
 parameters:
   type: object
   properties:

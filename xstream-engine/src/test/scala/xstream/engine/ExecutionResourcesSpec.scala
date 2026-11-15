@@ -16,7 +16,11 @@ steps:
     val raw=Json.mapper.readTree("""{"resources":{"tmp_size_mb":2048,"memory_mb":4096}}""")
     val p=ExecutionPolicy.parse(raw,plan)
     assert(p.resources==ExecutionResources(2048,4096))
-    assert(ExecutionPolicy.parse(p.effective,plan).resources==p.resources)
+    // Effective policy includes diagnostic retry_scope; reruns use the submitted policy.
+    val stored=Json.mapper.readTree(p.effective.toString)
+    assert(ExecutionResources.parse(stored.path("resources"))==p.resources)
+    assert(stored.path("max_retries").asInt==0 && stored.path("retry_scope").asText=="job")
+    assert(ExecutionPolicy.parse(p.submitted,plan).resources==p.resources)
     assert(p.submitted==raw)
     assert(ExecutionPolicy.parse(Json.obj(),plan).resources==ExecutionResources())
   }

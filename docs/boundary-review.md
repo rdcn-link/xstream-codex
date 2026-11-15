@@ -1,6 +1,6 @@
 # DACP and XStream project boundaries
 
-XStream owns the data model, Arrow streams, Job language, execution policies, inference, local execution, execution units and materialization. DACP owns remote services, authorization, S3 and Union membership/namespace management.
+XStream owns the data model, Arrow streams, Job language, execution policies, inference, local execution, execution units and Sink lifecycle. DACP owns remote services, authorization, S3 and Union membership/namespace management.
 
 `RemoteItemProvider` supplies remote data streams to local steps. DACP clients submit Jobs to remote servers, each embedding a local XStream engine. Union owns automatic member placement and dispatch. Designer selects the authoring context and edits Jobs; it neither plans nor displays execution.
 

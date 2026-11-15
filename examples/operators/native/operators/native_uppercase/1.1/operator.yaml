@@ -17,6 +17,8 @@ provenance:
   source_repository: https://github.com/rdcn-link/xstream-codex
   build_instructions: See examples/operators/native/README.md for the C compiler command and runtime setup.
 
+outputs:
+  result: {view: bytes}
 parameters:
   type: object
   properties: {}

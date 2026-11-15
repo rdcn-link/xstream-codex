@@ -17,12 +17,12 @@ with sync_playwright() as p:
     page.route('**/api/datasets',lambda route:(dataset_requests.append(True),route.fulfill(json={'complete':True,'unavailable_sources':0,'datasets':[{'name':'Climate','uri':'dacp://localhost:19860/climate','description':'{}'}]})))
     page.route('**/api/items',lambda route:route.fulfill(json={'items':[{'path':'/observations','kind':'item','views':['records']}]}))
     page.goto(args.url)
-    expect(page.locator('#repository-state')).to_contain_text('published',timeout=25000)
+    expect(page.locator('#repository-state')).to_contain_text('operators',timeout=25000)
     expect(page.locator('#connection')).to_contain_text('Connected',timeout=25000)
-    expect(page.locator('.library-tabs [role=tab]')).to_have_count(2)
-    expect(page.locator('.library-tabs svg')).to_have_count(2)
+    expect(page.locator('.library-tabs [role=tab]')).to_have_count(3)
+    expect(page.locator('.library-tabs svg')).to_have_count(3)
     expect(page.locator('.library-tabs')).to_have_attribute('aria-orientation','vertical')
-    boxes=[page.locator('#library-'+name+'-tab').bounding_box() for name in ['operators','datasets']]
+    boxes=[page.locator('#library-'+name+'-tab').bounding_box() for name in ['operators','datasets','examples']]
     assert boxes[0]['y']+boxes[0]['height']<=boxes[1]['y']
     assert len({box['x'] for box in boxes})==1
     assert page.locator('#library-operators-panel').bounding_box()['x']>boxes[0]['x']+boxes[0]['width']
@@ -32,7 +32,7 @@ with sync_playwright() as p:
     assert page.locator('#library-operators-tab').evaluate('e=>getComputedStyle(e).borderTopWidth')=='0px'
     page.locator('#search').fill('piflow_filter')
     expect(page.locator('#operators .operator')).to_have_count(2)
-    page.locator('#library-operators-tab').press('End')
+    page.locator('#library-operators-tab').press('ArrowDown')
     expect(page.locator('#library-operators-panel')).to_be_hidden()
     expect(page.locator('#library-datasets-tab')).to_be_focused()
     expect(page.locator('#library-datasets-panel')).to_be_visible()
@@ -62,12 +62,12 @@ with sync_playwright() as p:
     assert page.locator('#library-operators-panel').evaluate('e=>e.scrollTop')==scroll
     expect(page.locator('.operator-category').first).not_to_have_attribute('open','')
     page.locator('#library-operators-tab').press('ArrowUp')
-    expect(page.locator('#library-datasets-tab')).to_be_focused()
-    page.locator('#library-datasets-tab').press('ArrowDown')
+    expect(page.locator('#library-examples-tab')).to_be_focused()
+    page.locator('#library-examples-tab').press('Home')
     expect(page.locator('#library-operators-tab')).to_be_focused()
     page.locator('#library-operators-panel').evaluate("e=>{e.style.maxHeight='';e.scrollTop=0}")
     page.locator('#search').fill('item_source')
-    page.locator('[data-operator="item_source@1.0"]').drag_to(page.locator('#canvas'),target_position={'x':110,'y':110})
+    page.locator('[data-operator="item_source@1.0"]').first.drag_to(page.locator('#canvas'),target_position={'x':110,'y':110})
     expect(page.locator('.card')).to_have_count(1)
     assert page.evaluate('!Object.hasOwn(job.steps[0],"node")')
     page.locator('#library-datasets-tab').click()
@@ -75,4 +75,4 @@ with sync_playwright() as p:
     assert len(dataset_requests)==1
     assert not errors,errors
     browser.close()
-print('PASS two resource tabs, distinct styling, keyboard navigation and retained search, expansion and scrolling')
+print('PASS three resource tabs, distinct styling, keyboard navigation and retained search, expansion and scrolling')

@@ -43,7 +43,7 @@ flowchart LR
 | 传入变量并保留类型 | [Job 变量](jobs_zh.md) |
 | 选择仓库算子或本地开发 | [算子示例](operator-catalog_zh.md)、[本地算子库](local-operators_zh.md) |
 | 执行、消费结果及取消 | [Runner 与嵌入执行](xstream_zh.md) |
-| 设置超时、重试、物化及重放 | [执行策略](materialization_zh.md) |
+| 设置超时、重试、整 Job 重试及结果提交 | [执行策略](execution-policy_zh.md) |
 | 理解执行单元与依赖兼容性 | [同进程合并](operator-fusion_zh.md)、[依赖环境](dependency-environments_zh.md) |
 | 对比性能 | [合并执行测量示例](operator-fusion-benchmark_zh.md) |
 

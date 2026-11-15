@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Real Docker pipeline: source builds, immutable cache reuse and source invalidation."""
+import argparse
 from pathlib import Path
 import shutil
 import subprocess
@@ -7,11 +8,19 @@ import tempfile
 import yaml
 
 root = Path(__file__).resolve().parents[1]
-runner = root / 'xstream-engine/target/universal/stage/bin/xstream-runner'
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--runner',type=Path,default=root/'xstream-engine/target/universal/stage/bin/xstream-runner')
+parser.add_argument('--jvm-image',default='xstream/operator-jvm:1.1')
+args=parser.parse_args()
+runner=args.runner.resolve()
 example = root / 'examples/operators/local'
 with tempfile.TemporaryDirectory(prefix='xstream-local-smoke-') as temporary:
     directory = Path(temporary)
     shutil.copytree(example, directory / 'operators', ignore=shutil.ignore_patterns('target', '__pycache__'))
+    manifest = directory / 'operators/scala/local.yaml'
+    local = yaml.safe_load(manifest.read_text())
+    local['image'] = args.jvm_image
+    manifest.write_text(yaml.safe_dump(local))
     config = yaml.safe_load((example / 'engine.yaml').read_text())
     config['datasets']['weather']['source']['root'] = str(directory / 'operators/data')
     config['operator_cache'] = str(directory / 'cache')

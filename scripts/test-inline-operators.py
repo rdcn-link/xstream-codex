@@ -11,6 +11,7 @@ parser.add_argument('--jvm-jar', type=Path, help='Optional Scala SDK operator JA
 parser.add_argument('--jvm-image', default='xstream/operator-jvm:1.1')
 parser.add_argument('--jvm-entrypoint', default='dacp.common.Op_text_uppercase')
 parser.add_argument('--runner', type=Path, default=Path(__file__).resolve().parents[1] / 'xstream-engine/target/universal/stage/bin/xstream-runner')
+parser.add_argument('--repository', default='http://127.0.0.1:8820')
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix='inline-job-smoke-') as directory:
     base = Path(directory)
@@ -22,16 +23,16 @@ if __name__ == '__main__': Upper().main()
     (base / 'file_script.py').write_text('''import pathlib,sys
 pathlib.Path(sys.argv[2]).write_bytes(pathlib.Path(sys.argv[1]).read_bytes()+sys.argv[3].encode())
 ''')
-    config = {'inline_runtimes': {'tools': {'image': args.image, 'executor': 'python'}},
+    config = {'remote_operator_library_urls': [args.repository], 'inline_runtimes': {'tools': {'image': args.image, 'executor': 'python'}},
               'operator_cache': str(base/'cache'), 'execution_directory': str(base/'history'),
-              'operator_fusion_enabled': False, 'max_concurrent_tasks': 4}
+              'operator_fusion': 'isolated', 'max_concurrent_tasks': 4}
     (base / 'engine.yaml').write_text(json.dumps(config))
     definitions = {
         'source': {'type': 'script', 'role': 'source', 'runtime': 'tools', 'interpreter': '/usr/local/bin/python',
                    'script': {'source': "import sys; sys.stdout.write('abc')"}, 'inputs': {},
                    'outputs': {'result': {'view': 'bytes', 'binding': 'stdout', 'format': 'text'}}},
         'sdk': {'type': 'sdk', 'role': 'transform', 'runtime': 'tools', 'program': {'path': './sdk.py'},
-                'inputs': {'source': {'representations': ['bytes'], 'formats': []}}},
+                'inputs': {'source': {'representations': ['bytes'], 'formats': []}}, 'outputs': {'result': {'view': 'bytes'}}},
         'tool': {'type': 'command', 'role': 'transform', 'runtime': 'tools', 'command': '/usr/local/bin/python',
                  'args': ['-c', 'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"A", b"Z"))'],
                  'inputs': {'source': {'view': 'bytes', 'binding': 'stdin'}},
@@ -69,7 +70,7 @@ pathlib.Path(sys.argv[2]).write_bytes(pathlib.Path(sys.argv[1]).read_bytes()+sys
                        'outputs': {'result': {'view': 'bytes', 'binding': 'stdout', 'format': 'text'}}},
             'upper': {'type': 'sdk', 'role': 'transform', 'runtime': 'jvm',
                       'program': {'path': str(jar), 'entrypoint': args.jvm_entrypoint},
-                      'inputs': {'source': {'representations': ['bytes'], 'formats': []}}}},
+                      'inputs': {'source': {'representations': ['bytes'], 'formats': []}}, 'outputs': {'result': {'view': 'bytes'}}}},
             'steps': [
                 {'id': 'source', 'operator': {'inline': 'source'}, 'inputs': {}, 'params': {}},
                 {'id': 'upper', 'operator': {'inline': 'upper'}, 'inputs': {'source': 'source'}, 'params': {}},

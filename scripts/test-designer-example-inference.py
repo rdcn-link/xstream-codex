@@ -12,7 +12,9 @@ for e in examples:
     result=api('infer',{'job_yaml':e['job_yaml'],'variables_yaml':e['variables_yaml'],'target':target,'inference_session':secrets.token_hex(16),'preview':{'max_rows':3,'max_bytes':4096}})
     problems=[]
     for name,step in result['steps'].items():
-        problems.extend((name,d) for d in step.get('diagnostics',[]) if d['severity'] in ('error','warning'))
+        problems.extend((name,d) for d in step.get('diagnostics',[]) if d['severity']=='error' or (d['severity']=='warning' and d.get('code')!='sample_unavailable'))
+        for diagnostic in step.get('diagnostics',[]):
+            if diagnostic.get('code')=='sample_unavailable':print('Sample unavailable',e['id'],name,diagnostic['message'],flush=True)
         for port,output in step['outputs'].items():
             if output['certainty']!='known':problems.append((name,port,'unknown schema'))
     assert not problems,(e['id'],problems)

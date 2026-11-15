@@ -2,7 +2,7 @@
 
 [中文](operator-fusion-benchmark_zh.md)
 
-Local measurements of three lightweight text transformations: upper case → lower case → upper case. Data, code, parameters, runtime images and the Flight client are identical; only the node's `operator_fusion_enabled` setting differs. Scala/JVM and Python were measured separately. Each strategy received one warmup, followed by three measurements per data size with alternating execution order. The table reports median end-to-end time in seconds.
+Local measurements of three lightweight text transformations: upper case → lower case → upper case. Data, code, parameters, runtime images and the Flight client are identical; only the node's fusion mode (`operator_fusion: fused` or `operator_fusion: isolated`) differs. Scala/JVM and Python were measured separately. Each strategy received one warmup, followed by three measurements per data size with alternating execution order. The table reports median end-to-end time in seconds.
 
 | Runtime | Rows | Input MiB | Isolated (s) | Shared process (s) | Time reduction | Speedup |
 |---|---:|---:|---:|---:|---:|---:|

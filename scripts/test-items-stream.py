@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix='items-stream-smoke-') as directory:
     (data/'manifest.csv').write_text('uri,tag\ninput.zip/labels/a.txt,first\ninput.zip/labels/a.txt,again\ninput.zip/labels/a.tfw,last\n')
     config = {'remote_operator_library_urls': [args.repository], 'inline_runtimes': {'jvm': {'image': args.image, 'executor': 'jvm'}},
               'operator_cache': str(base/'cache'), 'execution_directory': str(base/'history'),
-              'operator_fusion_enabled': False,
+              'operator_fusion': 'isolated',
               'datasets': {'science': {'provider': 'directory', 'source': {'root': str(data)}}}}
     (base/'engine.yaml').write_text(json.dumps(config))
     def run(cls, uri, params=None, consumer='ItemByteCount', success=True):
@@ -32,7 +32,8 @@ with tempfile.TemporaryDirectory(prefix='items-stream-smoke-') as directory:
         for name, entry, role in [('list',cls,'source'),('consume',consumer,'transform')]:
             definitions[name] = {'type':'sdk','role':role,'runtime':'jvm',
                 'program':{'path':str(args.jar.resolve()),'entrypoint':'xstream.examples.items.'+entry},
-                'inputs':{} if role=='source' else {'source':{'representations':['items'],'formats':[]}}}
+                'inputs':{} if role=='source' else {'source':{'representations':['items'],'formats':[]}},
+                'outputs':{'result':{'view':'items' if role=='source' else 'bytes'}}}
         job={'name':'Item streams regression','operators':definitions,'steps':[
             {'id':'list','operator':{'inline':'list'},'inputs':{},'params':{'uri':uri,**(params or {})}},
             {'id':'consume','operator':{'inline':'consume'},'inputs':{'source':'list:result'},'params':{}},

@@ -19,7 +19,7 @@ Definitions live at `<operators>/<name>/<version>/operator.yaml`. Required field
 
 ```yaml
 name: summary
-version: "1"
+version: '1'
 role: transform
 type: sdk
 image: example/jvm-arrow:1
@@ -27,15 +27,21 @@ executor: jvm
 entrypoint: example.Summary
 artifact: summary.jar
 inputs:
-  source: {representations: [records], formats: []}
+  source:
+    representations:
+    - records
+    formats: []
 icon:
-  path: "M3 5h18v14H3zM3 10h18M9 5v14"
-  color: "#14866b"
+  path: M3 5h18v14H3zM3 10h18M9 5v14
+  color: '#14866b'
 parameters:
   type: object
   properties: {}
   required: []
   additionalProperties: false
+outputs:
+  result:
+    view: variable
 ```
 
 `jvm` needs a JAR and main class. `python` needs a `.py`, source `.zip` or `.whl` artifact and a module name (`entrypoint` selects the module for wheels; source executes the script). `command` adapts native stdin/stdout programs; see [native commands](native-commands.md). `container` uses its image's existing entrypoint and accepts neither an entrypoint override nor a code artifact. Every executor receives `operator /input /input/params.json` and `XSTREAM_OPERATOR=name@version`, following the existing [Arrow IPC contract](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams.md).

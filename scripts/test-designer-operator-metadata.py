@@ -49,9 +49,9 @@ with sync_playwright() as playwright:
     page.locator('.operator[data-operator="script_jsonl_project@1.0"]').first.hover()
     expect(page.locator('#operator-tooltip .operator-rating')).to_have_text('?')
     expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: Unavailable')
-    page.locator('.operator[data-operator="item_source@1.0"]').hover()
-    expect(page.locator('#operator-tooltip .operator-rating')).to_have_text('Built-in')
-    expect(page.locator('#operator-tooltip .tooltip-downloads')).to_have_text('Downloads: Not applicable')
+    page.locator('.operator[data-operator="item_source@1.0"]').first.hover()
+    expect(page.locator('#operator-tooltip .operator-rating')).to_have_attribute('aria-label', 'Repository administrator trust: 5 / 5')
+    expect(page.locator('#operator-tooltip .tooltip-downloads')).to_contain_text('Downloads:')
     expect(page.locator('.operator .operator-rating')).to_have_count(0)
     expect(page.locator('.operator[data-operator="version_test@1.10"]')).to_have_count(1)
     expect(page.locator('.operator[data-operator="version_test@1.9"]')).to_have_count(0)
@@ -84,4 +84,4 @@ with sync_playwright() as playwright:
     assert page.evaluate('job.steps[0].description')==description
     assert not errors, errors
     browser.close()
-print('PASS trust 0/3/5/unknown/built-in, no canvas trust badges, latest-version library, preserved historical versions, multiline description, duplicate, undo/redo and YAML reload')
+print('PASS trust 0/3/5/unknown/repository-source, no canvas trust badges, latest-version library, preserved historical versions, multiline description, duplicate, undo/redo and YAML reload')

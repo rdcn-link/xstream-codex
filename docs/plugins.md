@@ -11,6 +11,7 @@ Built-in implementations and contributed plugins use the same extension contract
 | OperatorExecutor | [xstream-plugin-operator-executors](../plugins/xstream-plugin-operator-executors/README.md) |
 | SourceAnalyzer / SourceArchive / SourceBuildRecipe | [xstream-plugin-source-analysis](../plugins/xstream-plugin-source-analysis/README.md) |
 | ChatPlanner | [xstream-designer](../xstream-designer/README.md) |
+| CheckpointStoreProvider / CheckpointStore | [Execution policies and checkpoints](execution-policy.md) |
 
 Implement public no-argument classes and list them in `META-INF/services/<fully-qualified-interface>`. Add the plugin JAR and dependencies to the host classpath and restart; do not edit a central registry. Executor contracts are defined in `xstream-execution-api` as `xstream.execution.OperatorExecutor`; bundled implementations use `xstream.operator.executors`. Source-review contracts use `xstream.operator`. Registration filenames must match the actual interface names.
 

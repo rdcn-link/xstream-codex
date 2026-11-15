@@ -25,8 +25,7 @@ object InlineOperators {
       require(d.path("runtime").isTextual && d.path("runtime").asText.matches("[A-Za-z_][A-Za-z0-9_.-]{0,127}"),"inline operator requires a named runtime")
       val role=xstream.operator.OperatorRole.read(d)
       xstream.operator.OperatorRole.validateInputs(role,d.path("inputs"))
-      if(d.has("outputs"))xstream.operator.OperatorRole.validateOutputs(role,d.path("outputs"))
-      else require(d.path("type").asText=="sdk","command and script operators must declare outputs")
+      xstream.operator.OutputViews.validate(d)
       e.getKey->InlineOperator(e.getKey,d.deepCopy[JsonNode]())
     }.toMap
   }

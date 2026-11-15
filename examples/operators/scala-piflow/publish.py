@@ -56,7 +56,7 @@ def main():
         data = package(name); digest = hashlib.sha256(data).hexdigest()
         api('/v1/blobs/sha256/' + digest, 'PUT', raw=data)
         manifest = dict(api_version=2, name='piflow_' + name, version='2.0', role=('source' if not spec['inputs'] else 'transform'), type='sdk',
-            description=spec['description'], icon=spec['icon'], inputs=spec['inputs'], parameters=spec['parameters'],
+            description=spec['description'], icon=spec['icon'], inputs=spec['inputs'], outputs={'result': {'view': 'bytes' if name == 'csv_save' else 'records'}}, parameters=spec['parameters'],
             documentation=json.loads((HERE/'usage.json').read_text())[name], execution=dict(executor='jvm', entrypoint='xstream.examples.piflow.' + cls, config={}),
             runtime=runtime_ref, dependencies={'provider':'jvm'}, build={'language':'scala'}, source_public=True,
             provenance={'source_archive':{'sha256':digest,'size':len(data),'filename':name + '-sources.zip'}, 'license':'Apache-2.0'})

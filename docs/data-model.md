@@ -116,7 +116,7 @@ When reading an archive member, current ZIP, TAR and GZIP plugins stage the requ
 
 The current limits are 10,000 entries, 512 MiB per extracted member and 2 GiB of declared total member sizes for ZIP/TAR, with an additional bound on decompressed TAR headers and padding. GZIP's single extracted child is bounded to 512 MiB. These are plugin limits, not promises that arbitrary large archives are supported.
 
-Archive staging is distinct from Job output materialization. A policy forbidding intermediate output materialization does not disable the temporary files required by an input plugin. Once the reader emits data, steps consume bounded Arrow batches; the complete result need not be collected in memory. For [materialization and replay](materialization.md), choose output persistence separately.
+Input plugins may stage archives in temporary files. This is separate from final result publication and does not create a recovery checkpoint. Steps consume bounded Arrow batches without collecting the complete result in memory. Failure recovery uses [whole-Job retries](execution-policy.md).
 
 ## Configure and use the catalog
 

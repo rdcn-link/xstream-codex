@@ -23,7 +23,7 @@ object OperatorRole {
     if(role==Source)require(inputs.size()==0,"Source operators cannot have input ports")
     else require(inputs.size()>0,s"${role.id} operators require an input port")
   }
-  /** Applies when output ports are declared; published SDK operators infer their outputs. */
+  /** Every operator declares its output ports, including an empty mapping for Sinks. */
   def validateOutputs(role:OperatorRole,outputs:JsonNode):Unit={
     require(outputs!=null && outputs.isObject,"operator outputs must be a mapping")
     if(role==Sink)require(outputs.size()==0,"Sink operators cannot have output ports")

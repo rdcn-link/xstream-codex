@@ -41,7 +41,7 @@ For a Union target, use its public dataset paths. Union resolves the owning memb
 
 Every operator must implement [structure inference](structure-inference.md). This method returns output port names and their stream structures. A sink may infer an empty output map and finish successfully without emitting frames. Add an explicit `client_sink@1.0` step to return a stream to the caller. A Job with only other terminal sinks completes without returning result data; there is no top-level `outputs` field. Submission and execution do not invoke inference automatically; explicitly call `infer` during authoring when needed.
 
-Upstream and downstream steps run concurrently with bounded buffering. Failure, cancellation and timeout cancel the attempt and release resources. Retries and materialization are configured in a separate [execution policy YAML](materialization.md). Retries can repeat external side effects; operators must provide appropriate idempotency.
+Upstream and downstream steps run concurrently with bounded buffering. Failure, cancellation and timeout cancel the attempt and release resources. Whole-Job retries and timeouts are configured in a separate [execution policy YAML](execution-policy.md). Retries can repeat external side effects; operators must provide appropriate idempotency.
 
 
 See the [operator catalog](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-catalog.md) for currently published collaboration operators, parameters and complete input/output examples.

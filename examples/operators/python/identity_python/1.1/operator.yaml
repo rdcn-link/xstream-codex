@@ -9,7 +9,7 @@ artifact: identity.py
 
 inputs:
   source:
-    representations: [bytes, records]
+    representations: [variable]
     formats: []
 provenance:
   source_archive: ../../../../../.operator-sources/dacp-sources.zip
@@ -17,6 +17,8 @@ provenance:
   build_instructions: |
     Python source is the execution artifact; runtime dependencies: examples/operators/python/Dockerfile.
 
+outputs:
+  result: {view: variable, view_from: {input: source}}
 parameters:
   type: object
   properties: {}

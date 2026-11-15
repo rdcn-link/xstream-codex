@@ -157,7 +157,7 @@ val received = ArrowIpc.readStream(input, context)
 try received.consume(consumer)
 finally received.close()
 ```
-Writers leave the caller's output open; readers own and close their input. For explicit seekable storage, use `ArrowIpc.writeFile` and `readFile`; engine-managed retention uses [execution policies](materialization.md). Same-process consumers can pass Arrow batches directly without IPC serialization.
+Writers leave the caller's output open; readers own and close their input. For explicit seekable storage, use `ArrowIpc.writeFile` and `readFile`; final result publication follows the [Sink lifecycle](sink-lifecycle.md). Same-process consumers can pass Arrow batches directly without IPC serialization.
 
 ## Lifetime, backpressure and cancellation
 

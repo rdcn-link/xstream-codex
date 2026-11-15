@@ -10,6 +10,8 @@ inputs:
   source:
     representations: [bytes]
     formats: []
+outputs:
+  result: {view: bytes}
 parameters:
   type: object
   properties: {}

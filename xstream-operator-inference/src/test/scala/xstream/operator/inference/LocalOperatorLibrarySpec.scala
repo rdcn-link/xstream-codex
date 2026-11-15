@@ -32,6 +32,7 @@ language: scala
 runtime: jvm@1.1
 entrypoint: Main
 inputs: {}
+outputs: {result: {view: bytes}}
 parameters: {type: object, properties: {}, required: [], additionalProperties: false}
 icon: {path: 'M0 0L1 1', color: '#14866b'}
 """)

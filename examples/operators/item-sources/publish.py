@@ -180,7 +180,7 @@ def main():
         manifest = {
             'api_version': 2, 'name': name, 'version': '1.0', 'role': spec['role'], 'type': 'sdk',
             'description': spec['description'], 'icon': {'path': spec['icon'], 'color': spec['color']},
-            'inputs': spec['inputs'], 'parameters': {'type': 'object', 'properties': spec['properties'], 'required': spec['required'], 'additionalProperties': False},
+            'inputs': spec['inputs'], 'outputs': {port: {'view': 'items' if spec['role'] == 'source' else 'bytes'} for port in spec['outputs']}, 'parameters': {'type': 'object', 'properties': spec['properties'], 'required': spec['required'], 'additionalProperties': False},
             'documentation': documentation, 'execution': {'executor': 'jvm', 'entrypoint': 'xstream.examples.items.' + spec['class'], 'config': {}},
             'runtime': {'image': runtime['image'], 'archive': runtime['archive']}, 'dependencies': {'provider': 'jvm'},
             'build': {'language': 'scala'}, 'source_public': True,

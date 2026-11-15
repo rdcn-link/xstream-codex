@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-无需仓库的 Python → Scala 流水线。从 XStream 项目根目录执行：
+在本地构建转换算子的 Python → Scala 流水线。在 `engine.yaml` 中通过 `remote_operator_library_urls` 配置提供 `item_source@1.0` 和 `client_sink@1.0` 的仓库；示例采用本地仓库 `http://127.0.0.1:8820`。从 XStream 项目根目录执行：
 
 ```bash
 cd xstream-engine && sbt stage

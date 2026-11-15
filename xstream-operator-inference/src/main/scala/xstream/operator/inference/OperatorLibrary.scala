@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.yaml.snakeyaml.Yaml
 import scala.jdk.CollectionConverters._
 
-case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None,dependencyEnvironment:Option[JsonNode]=None,role:Option[xstream.operator.OperatorRole]=None)
+case class ResolvedOperator(image: String, artifact: Option[Path], artifactPath: Option[String], command: OperatorCommand, inputs: Map[String,PortContract], outputs: Map[String,PortContract], executor:String="", program:Option[OperatorProgram]=None,runtime:Option[JsonNode]=None,dependencyEnvironment:Option[JsonNode]=None,role:Option[xstream.operator.OperatorRole]=None,declaration:Option[JsonNode]=None)
 
 /** Immutable operator metadata plus globally shared, content-addressed runtime/code artifacts. */
 object OperatorLibrary {
@@ -92,13 +92,13 @@ object OperatorLibrary {
     val settings = Data.mapper.convertValue(configuration,classOf[java.util.LinkedHashMap[String,Object]]).asScala.toMap
     xstream.operator.OperatorPresentation.validate(ports)
     xstream.operator.ParameterSchema.validate(ports.get("parameters"))
-    require(!ports.has("outputs"),"output declarations belong in inferOutputs, not the manifest")
-    val inputs = OperatorPorts.read(ports.path("inputs")); val outputs = Map.empty[String,PortContract]
+    xstream.operator.OutputViews.validate(ports)
+    val inputs = OperatorPorts.read(ports.path("inputs"),OperatorPorts.representations(config.plugins)); val outputs = OperatorOutputContracts.ports(ports,Data.mapper.createObjectNode(),Map.empty,allowPending=true)
     xstream.operator.OperatorRole.validateInputs(xstream.operator.OperatorRole.read(ports),ports.path("inputs"))
     val program=OperatorProgram(reference,entrypoint,artifact,settings,
       inputs.map { case(k,v)=>k->v.representations },outputs.map { case(k,v)=>k->v.representations })
     val command=config.plugins.byId(classOf[OperatorExecutor],executor).command(program,target)
-    ResolvedOperator(image,artifact,target,command,inputs,outputs,executor,Some(program),role=Some(xstream.operator.OperatorRole.read(ports)))
+    ResolvedOperator(image,artifact,target,command,inputs,outputs,executor,Some(program),role=Some(xstream.operator.OperatorRole.read(ports)),declaration=Some(ports.deepCopy[JsonNode]()))
   }
   def resolve(config: OperatorEnvironment, reference: String, docker: DockerClient): ResolvedOperator = synchronized {
     val p = reference.split("@",-1)
@@ -108,7 +108,7 @@ object OperatorLibrary {
       val options = new org.yaml.snakeyaml.LoaderOptions(); options.setAllowDuplicateKeys(false)
       val in = Files.newInputStream(local)
       val m = try new Yaml(options).load[java.util.Map[String,Object]](in).asScala.toMap finally in.close()
-      require(m.keySet.subsetOf(Set("name", "version", "role", "image", "description", "icon", "executor", "entrypoint", "artifact", "inputs", "parameters", "executor_config", "provenance", "documentation")), "unknown operator setting")
+      require(m.keySet.subsetOf(Set("name", "version", "role", "image", "description", "icon", "executor", "entrypoint", "artifact", "inputs", "outputs", "parameters", "executor_config", "provenance", "documentation")), "unknown operator setting")
       xstream.operator.OperatorPresentation.validate(Data.mapper.valueToTree[JsonNode](m.asJava))
       xstream.operator.ParameterSchema.validate(Data.mapper.valueToTree[JsonNode](m.getOrElse("parameters",null)))
       require(m("name").toString == p(0) && m("version").toString == p(1), "operator identity mismatch")

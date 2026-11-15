@@ -38,11 +38,11 @@ Array `T` is the Arrow integer or floating type matching the source numeric enco
 
 ## Encoding and persistence boundaries
 
-`ArrowIpc` uses the same Arrow stream/file readers and writers for all views. In-process callbacks exchange batches without IPC serialization. Across process and node boundaries, Arrow IPC or Flight transports the batches. A materialized output uses ordered Arrow IPC File segments, a manifest, checksums and atomic publication. Only a complete published output is a replay boundary; individual segments do not imply recovery from arbitrary positions inside an operator.
+`ArrowIpc` uses the same Arrow stream/file readers and writers for all views. In-process callbacks exchange batches without IPC serialization. Across process and node boundaries, Arrow IPC or Flight transports the batches. Applications may explicitly save final results using Arrow IPC File. The engine does not retain intermediate streams as recovery checkpoints; failed attempts rerun the complete Job.
 
 Compatible same-process JVM and Python operator groups hand batches through bounded links with backpressure. A producer may reuse its buffers only after the consumer advances. Group boundaries and external operator inputs still require encoding. The multiplexed Job protocol retains its `OperatorFrame` envelopes: bytes payloads are raw bounded chunks; records and scientific payloads contain Arrow IPC batches. This is distinct from the public View interface, which always emits Arrow batches.
 
-Materialization stores one initial zero-row Arrow File segment, preserving dictionaries, followed by ordered data segments. Its manifest records segment order, size and SHA-256. Replay checks integrity before exposing each segment; failed writes cannot be committed. Empty dictionary streams carry explicit dictionary messages. IPC stream writing supports changing dictionary providers; IPC File segments are independent snapshots.
+Empty dictionary streams carry explicit dictionary messages. IPC stream writing supports changing dictionary providers. Applications saving final Arrow IPC Files must preserve their schemas and dictionaries.
 
 ## Stream consumption sequence
 

@@ -4,12 +4,14 @@ Uses an isolated temporary operator library, never a production catalog.
 """
 import argparse,json,subprocess,tempfile
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--image',default='xstream/operator-python:1.0');p.add_argument('--runner',type=Path,default=Path(__file__).resolve().parents[1]/'xstream-engine/target/universal/stage/bin/xstream-runner');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--image',default='xstream/operator-python:1.0');p.add_argument('--runner',type=Path,default=Path(__file__).resolve().parents[1]/'xstream-engine/target/universal/stage/bin/xstream-runner');p.add_argument('--repository',default='http://127.0.0.1:8820');a=p.parse_args()
 with tempfile.TemporaryDirectory(prefix='xstream-tmp-policy-') as root:
  r=Path(root);op=r/'library/tmp_probe/1.0';op.mkdir(parents=True)
  # Python is explicit test code, not interpolation of Job parameters.
  (op/'operator.yaml').write_text('''name: tmp_probe
 version: '1.0'
+role: source
+outputs: {result: {view: bytes}}
 image: '''+json.dumps(a.image)+'''
 executor: command
 entrypoint: /usr/local/bin/python
@@ -21,7 +23,7 @@ inputs: {}
 icon: {path: 'M3 3h18v18H3z', color: '#14866b'}
 parameters: {type: object, properties: {}, required: [], additionalProperties: false}
 ''')
- (r/'config.yaml').write_text(json.dumps({'local_operator_library':str(r/'library'),'operator_cache':str(r/'cache'),'execution_directory':str(r/'history'),'operator_fusion_enabled':False,'execution_resources':{'max_tmp_size_mb':512,'max_memory_mb':1024}}))
+ (r/'config.yaml').write_text(json.dumps({'remote_operator_library_urls':[a.repository],'local_operator_library':str(r/'library'),'operator_cache':str(r/'cache'),'execution_directory':str(r/'history'),'operator_fusion':'isolated','execution_resources':{'max_tmp_size_mb':512,'max_memory_mb':1024}}))
  (r/'job.yaml').write_text('''name: Temporary quota smoke
 steps:
 - id: probe

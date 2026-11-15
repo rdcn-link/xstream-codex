@@ -24,7 +24,7 @@ object Host {
       val started=System.nanoTime()
       val cancel=new StreamCancel(timeoutSeconds=1800)
       try {
-        val policy=YamlDocument.parse("materialization:\n  allowed: false\n  default: stream\n")
+        val policy=Json.obj()
         val id=host.engine.run(Files.readString(Path.of(request.path("job").asText)),frame=>{
           val h=StreamProtocol.header(frame)
           if(h.path("type").asText=="start")require(h.path("representation").asText=="bytes","benchmark requires CSV bytes output")

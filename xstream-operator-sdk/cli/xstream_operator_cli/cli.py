@@ -61,7 +61,7 @@ def submit(definition, source, origin, token):
         return values
     UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, mapping)
     n = yaml.load(definition.read_text(), Loader=UniqueLoader)
-    allowed = {'name', 'version', 'role', 'type', 'description', 'icon', 'inputs', 'parameters', 'language', 'entrypoint', 'runtime', 'source_public', 'provenance', 'dependencies', 'submission', 'binary', 'execution_config', 'documentation'}
+    allowed = {'name', 'version', 'role', 'type', 'description', 'icon', 'inputs', 'outputs', 'parameters', 'language', 'entrypoint', 'runtime', 'source_public', 'provenance', 'dependencies', 'submission', 'binary', 'execution_config', 'documentation'}
     if not isinstance(n, dict) or not set(n).issubset(allowed):
         raise ValueError('unsupported definition fields; do not provide artifacts or classifications')
     require_documentation(n)
@@ -102,7 +102,7 @@ def submit(definition, source, origin, token):
     if n.get('submission', 'source') == 'binary':
         binary = dict(n['binary'])
         binary['artifact'] = upload(definition.parent / binary['artifact'])
-    manifest = {key: n[key] for key in ('name', 'version', 'role', 'type', 'description', 'icon', 'inputs', 'parameters', 'source_public')}
+    manifest = {key: n[key] for key in ('name', 'version', 'role', 'type', 'description', 'icon', 'inputs', 'outputs', 'parameters', 'source_public')}
     manifest.update(api_version=2, execution={'executor': languages[language], 'entrypoint': n['entrypoint'], 'config': n.get('execution_config', {})},
                     runtime={'image': runtime['image'], 'archive': runtime['archive']}, build={'language': language}, provenance=provenance)
     for key in ('dependencies', 'submission', 'documentation'):
@@ -154,7 +154,7 @@ def require_documentation(n):
     for key in ('inputs', 'outputs', 'parameters'):
         if not isinstance(d[key], dict):
             raise ValueError('documentation.' + key + ' must be a mapping')
-    if set(d['inputs']) != set(n.get('inputs', {})) or (n.get('role') == 'sink' and d['outputs']) or (n.get('role') != 'sink' and not d['outputs']):
+    if not isinstance(n.get('outputs'), dict) or set(d['outputs']) != set(n['outputs']) or set(d['inputs']) != set(n.get('inputs', {})) or (n.get('role') == 'sink' and d['outputs']) or (n.get('role') != 'sink' and not d['outputs']):
         raise ValueError('documentation ports do not match the operator role')
     if any(not isinstance(v, str) or not v.strip() for key in ('inputs', 'outputs') for v in d[key].values()):
         raise ValueError('port descriptions must be nonempty text')
@@ -212,7 +212,7 @@ def create_template(directory, language):
     python = language in ('python', 'shell')
     n = dict(name=name, version='1.0.0', role='transform', type='sdk', description='Streaming identity operator',
              icon={'path': 'M3 12h18m-6-6 6 6-6 6', 'color': '#087d8c'},
-             inputs={'source': {'representations': ['bytes'], 'formats': []}},
+             inputs={'source': {'representations': ['bytes'], 'formats': []}}, outputs={'result': {'view': 'bytes'}},
              parameters={'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False},
              language='python' if python else 'java', entrypoint='main' if python else 'Identity',
              runtime='python-arrow@1.0' if python else 'jvm-arrow@1.0', source_public=True,

@@ -1,10 +1,11 @@
 const assert=require('node:assert/strict');
+require('../xstream-designer/src/main/resources/web/port-views.js');
 require('../xstream-designer/src/main/resources/web/validation.js');
 const check=globalThis.WorkflowValidation.check;
 const source=id=>({id,operator:'item_source@1.0',inputs:{},params:{uri:'dacp://example/ds/data'}});
 const filter={id:'filter',operator:'filter@1',inputs:{source:'read'},params:{}};
 const sink={id:'receive',operator:'client_sink@1.0',inputs:{result:'filter'}};
-const catalog=[{name:'filter',version:'1',role:'transform',inputs:{source:{representations:['records']}}},{name:'client_sink',version:'1.0',role:'sink',inputs:{result:{}}}];
+const catalog=[{name:'item_source',version:'1.0',role:'source',inputs:{},outputs:{result:{view:'variable'}}},{name:'filter',version:'1',role:'transform',outputs:{result:{view:'records'}},inputs:{source:{representations:['records']}}},{name:'client_sink',version:'1.0',role:'sink',outputs:{},inputs:{result:{representations:['variable']}}}];
 const report={steps:{read:{outputs:{result:{representations:['records']}},diagnostics:[]},filter:{outputs:{result:{representations:['records']}},diagnostics:[]},receive:{outputs:{},diagnostics:[]}}};
 const job={steps:[source('read'),filter,sink]};
 assert.deepEqual(check(job,catalog,report),[]);
@@ -22,4 +23,7 @@ assert(codes({...job,steps:[source('read'),{...filter,inputs:{source:'receive'}}
 const bytes=structuredClone(report);bytes.steps.read.outputs.result.representations=['bytes'];
 assert(check(job,catalog,bytes).some(x=>x.code==='incompatible_input'));
 assert(codes({...job,steps:[{...source('read'),params:{uri:'$URI'}},filter,sink]}).includes('missing_variable'));
+const fixed=structuredClone(catalog);fixed[0].outputs.result.view='bytes';
+assert(check(job,fixed,null).some(x=>x.code==='incompatible_input'));
+assert(!check(job,catalog,null).some(x=>x.code==='incompatible_input'));
 console.log('Validation passed: Client Sink, reachability, input/output ports, cycles, duplicate consumers, types and variables');

@@ -46,7 +46,8 @@ icon:
   color: '#14866b'
 inputs:
   source:
-    representations: [records]
+    representations:
+    - records
     formats: []
 parameters:
   type: object
@@ -59,26 +60,17 @@ documentation:
   outputs:
     result: Observation records retained after quality filtering.
   parameters: {}
-  example_job: |
-    name: Filter observations
-    steps:
-      - id: read
-        operator: item_source@1.0
-        inputs: {}
-        params:
-          uri: context:/weather/observations
-          view: records
-      - id: filter
-        operator: weather_filter@1.0
-        inputs:
-          source: read
-        params: {}
-      - id: client_sink
-        operator: client_sink@1.0
-        inputs: {result: filter}
+  example_job: "name: Filter observations\nsteps:\n  - id: read\n    operator: item_source@1.0\n\
+    \    inputs: {}\n    params:\n      uri: context:/weather/observations\n     \
+    \ view: records\n  - id: filter\n    operator: weather_filter@1.0\n    inputs:\n\
+    \      source: read\n    params: {}\n  - id: client_sink\n    operator: client_sink@1.0\n\
+    \    inputs: {result: filter}\n"
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
+outputs:
+  result:
+    view: variable
 ```
 
 Use an actually registered runtime name/version. For Java or Scala, set `language` accordingly and `entrypoint` to the fully qualified main class, such as `example.WeatherFilter`. Source files belong under `src/example/`. The helper derives the executor and immutable runtime descriptors from the runtime catalog.

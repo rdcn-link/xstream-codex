@@ -41,7 +41,7 @@ steps:
 
 所有算子必须实现[结构推导](structure-inference_zh.md)，该方法返回输出端口名称及其流结构。Sink 可以推导出空输出映射，并成功结束而不发送数据帧。需要向调用方返回数据流时，添加显式的 `client_sink@1.0` 步骤。只有其他终端 Sink 的 Job 完成后不返回结果数据；Job 不再有顶层 `outputs` 字段。提交和执行不自动调用推导方法；仅在编制时按需显式调用 `infer`。
 
-上下游以有界缓冲并发运行。故障、取消、超时会终止本次尝试并释放资源。重试与物化通过独立的[执行策略 YAML](materialization_zh.md) 配置。重试可能重复外部副作用，业务算子需要提供适当的幂等机制。
+上下游以有界缓冲并发运行。故障、取消、超时会终止本次尝试并释放资源。整 Job 重试与超时通过独立的[执行策略 YAML](execution-policy_zh.md) 配置。重试可能重复外部副作用，业务算子需要提供适当的幂等机制。
 
 
 当前协作示例已发布的算子、参数和完整输入输出示例见[算子库清单](https://github.com/rdcn-link/xstream-codex/blob/main/docs/operator-catalog_zh.md)。

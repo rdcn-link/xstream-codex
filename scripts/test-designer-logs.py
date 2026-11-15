@@ -13,7 +13,7 @@ with sync_playwright() as p:
  page.route('**/api/log-probe',lambda r:r.fulfill(status=502,json={'error':'Worker startup timed out'}))
  page.goto(args.url)
  expect(page.locator('#connection')).to_contain_text('Connected',timeout=25000)
- expect(page.locator('#repository-state')).to_contain_text('published',timeout=25000)
+ expect(page.locator('#repository-state')).to_contain_text('operators',timeout=25000)
  page.locator('[data-tab="logs"]').dispatch_event('click')
  expect(page.locator('#log-output')).to_be_visible()
  page.locator('#log-clear').dispatch_event('click')

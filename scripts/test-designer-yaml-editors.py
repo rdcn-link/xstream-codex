@@ -35,7 +35,7 @@ with sync_playwright() as playwright:
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.on('request', lambda request: external.append(request.url)
         if not request.url.startswith((args.url, 'blob:')) else None)
-    page.route('**/api/operators', lambda route: route.fulfill(json=[]))
+    page.route('**/api/operators', lambda route: route.fulfill(json=route.fetch().json()))
     page.route('**/api/infer', lambda route: route.fulfill(json={
         'steps': {'read': {'outputs': {'result': {
             'certainty': 'unknown', 'representations': ['bytes'], 'formats': []}}, 'diagnostics': []}},
@@ -66,7 +66,7 @@ with sync_playwright() as playwright:
     assert page.evaluate('jobYamlEditor.getText()') == draft
     page.locator('#apply-yaml').dispatch_event('click')
     page.wait_for_function('()=>!yamlEdited && job.name==="Draft kept"', polling=100)
-    assert len(page.evaluate('job.steps')) == 1
+    assert len(page.evaluate('job.steps')) == 2
 
     content.press('Control+f')
     expect(page.locator('#yaml .cm-search')).to_be_visible()
@@ -93,7 +93,7 @@ with sync_playwright() as playwright:
     uri_help = page.get_by_role('button', name='Show help for params.uri', exact=True)
     assert uri_help.get_attribute('title') is None
     uri_help.dispatch_event('mouseenter')
-    expect(page.locator('#parameter-description')).to_contain_text('Public dataset Item URI')
+    expect(page.locator('#parameter-description')).to_contain_text('Catalog Item URI')
     page.get_by_role('button', name='Show help for params.view', exact=True).focus()
     expect(page.locator('#parameter-description')).to_contain_text('Options:')
     assert page.locator('#parameter-description').count() == 1

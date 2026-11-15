@@ -11,7 +11,7 @@ case class PortContract(representations: Set[String], formats: Set[String], sche
   def accept(h: JsonNode): Unit = {
     val repr=h.path("representation").asText
     cardinality.foreach(c=>require(repr=="items" && h.path("structure").path("cardinality").asText==c,"Item cardinality mismatch"))
-    require(representations(repr),"unsupported port representation")
+    require(repr!="variable" && (representations(repr) || representations("variable")),"unsupported port representation")
     require(formats.isEmpty || formats(h.path("format").asText),"unsupported port format")
     if(repr=="records") {
       val actual=org.apache.arrow.vector.types.pojo.Schema.deserializeMessage(java.nio.ByteBuffer.wrap(java.util.Base64.getDecoder.decode(h.path("schema").asText)))
@@ -21,7 +21,7 @@ case class PortContract(representations: Set[String], formats: Set[String], sche
 }
 object OperatorPorts {
   def representations(plugins:_root_.xstream.data.PluginEnvironment):Set[String]=Set("bytes","records") ++ _root_.xstream.data.DataViewSupports.all(plugins).map(_.kind.name)
-  def read(n: JsonNode): Map[String,PortContract] = {
+  def read(n: JsonNode, availableViews:Set[String]=Set.empty): Map[String,PortContract] = {
     require(n.isObject,"operator must declare a port mapping")
     n.fields.asScala.map { e =>
       require(e.getKey.matches("[A-Za-z_][A-Za-z0-9_-]{0,127}"),"invalid operator port")
@@ -29,12 +29,12 @@ object OperatorPorts {
       require(v.isObject && v.fieldNames.asScala.toSet.subsetOf(Set("representations","formats","schema","cardinality")),"invalid port settings")
       require(v.path("representations").isArray && v.path("formats").isArray,"port representations/formats must be lists")
       val repr=v.path("representations").elements.asScala.map(_.asText).toSet
-      require(repr.nonEmpty && repr.forall(_.matches("[a-z][a-z0-9_-]*")),"unsupported representation")
+      require(v.path("representations").size()==1 && v.path("representations").get(0).isTextual && repr.size==1 && repr.forall(x=>x.matches("[a-z][a-z0-9_-]*") && x!="auto"),"input port must declare one View or variable")
       val cardinality=Option(v.get("cardinality")).map { n=>
         require(n.isTextual && Set("one","many")(n.asText) && repr==Set("items"),"cardinality requires an items-only port and one or many")
         n.asText
       }
-      e.getKey -> PortContract(repr,v.path("formats").elements.asScala.map(_.asText).toSet,
+      e.getKey -> PortContract(if(repr==Set("variable") && availableViews.nonEmpty)availableViews else repr,v.path("formats").elements.asScala.map(_.asText).toSet,
         Option(v.get("schema")).map(s=>Schema.fromJSON(s.toString)),cardinality)
     }.toMap
   }

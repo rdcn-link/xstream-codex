@@ -1,6 +1,6 @@
 package xstream.engine
 
-import _root_.xstream.execution.{FrameSource,MaterializationStore,MaterializationStoreDefinition,StreamCancel}
+import _root_.xstream.execution.{FrameSource,StreamCancel}
 
 import _root_.xstream.operator.inference._
 
@@ -11,12 +11,11 @@ trait EngineEnvironment extends OperatorEnvironment {
   def localOperatorBase:Option[java.nio.file.Path]=None
   def inlineRuntimes:Map[String,InlineRuntime]=Map.empty
   def executionResourceLimits:ExecutionResourceLimits=ExecutionResourceLimits()
-  def operatorFusionEnabled:Boolean
+  def operatorFusion:String
   def maxConcurrentTasks:Int
   def taskSlots:java.util.concurrent.Semaphore
   def executionTimeoutSeconds:Long
+  def checkpointStore:Option[_root_.xstream.execution.CheckpointStore]=None
   def executionHistory:ExecutionHistory
-  def materializationStore:Option[MaterializationStoreDefinition]
-  def openMaterialization(d:MaterializationStoreDefinition):MaterializationStore
   def openItem(allocator:BufferAllocator,binding:InputBinding,cancel:StreamCancel):FrameSource
 }

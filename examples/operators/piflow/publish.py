@@ -102,7 +102,7 @@ def build(name, runtime_catalog, destination):
         except OSError:
             shutil.copyfile(original, target)
     manifest = dict(api_version=2, name=item['operator'], version='1.0', role=('source' if not spec['inputs'] else 'transform'), type='sdk',
-                    description=spec['description'],  icon=spec['icon'], inputs=spec['inputs'], parameters=spec['parameters'],
+                    description=spec['description'],  icon=spec['icon'], inputs=spec['inputs'], outputs={'result': {'view': 'bytes' if name == 'csv_save' else 'records'}}, parameters=spec['parameters'],
                     execution=dict(executor='python', entrypoint=module, config={}),
                     runtime=runtime, artifact=artifact,
                     provenance=dict(source_archive=source, license='Apache-2.0', license_file=license_blob,

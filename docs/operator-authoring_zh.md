@@ -142,7 +142,7 @@ xstream-operator submit ./my-operator \
 
 ## 输入、参数与输出
 
-`inputs` 声明命名输入端口及表示；`parameters` 声明 JSON 参数类型、默认值和约束。实现 `inferOutputs`/`infer_outputs`，返回输出端口和结构。参数值来自 Job 的 `params`，例如 `uppercase: true`，而非输入数据流。
+`inputs` 声明命名输入端口，每个端口声明一个具体表示或 `variable`；`outputs` 声明输出端口及单个 `view`。`parameters` 声明 JSON 参数类型、默认值和约束。实现 `inferOutputs`/`infer_outputs`，描述已声明输出的结构。详见[端口 View](operator-ports_zh.md)。参数值来自 Job 的 `params`，例如 `uppercase: true`，而非输入数据流。
 
 记录模板按 Arrow RecordBatch/VectorSchemaRoot 处理表格，保留字段类型；需要更改字段时实现 `output_schema`/`outputSchema`。通用上下文使用 `ctx.input(name)`、`ctx.records_output`/`ctx.recordsOutput` 或 bytes 对应方法。多输入按端口名词典序逐个完整消费；先声明所有输出，再写数据。
 
@@ -167,7 +167,8 @@ icon:
   color: '#14866b'
 inputs:
   source:
-    representations: [bytes]
+    representations:
+    - bytes
     formats: []
 parameters:
   type: object
@@ -177,6 +178,9 @@ parameters:
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
+outputs:
+  result:
+    view: variable
 ```
 源码归档不能包含预构建 JAR、wheel、可执行文件、嵌套归档或符号链接。以下命令在算子项目打包，随后从 XStream 项目调用提交工具：
 
@@ -245,3 +249,7 @@ stdout 保留给流协议，日志写 stderr。输入须消费到 EOS；成功�
 ## Item 集合输入
 
 `items` 与 bytes、records、array 是并列的流表示。参见 [Item 引用流](items-stream_zh.md)、[完整 Source 与 Transform 示例](../examples/operators/item-sources/README_zh.md)和 [FAQ 第 10 条](faq_zh.md#10-自定义算子如何处理-items-引用流)。
+
+## Sink 结果发布
+
+Sink 算子实现 `process`、`onComplete` 和 `onDiscard`，参见[完整暂存型 Sink 契约与示例](sink-lifecycle_zh.md)。

@@ -25,13 +25,13 @@ A plugin implements `RemoteItemProvider`, validates its own settings and registe
 
 | Component | Responsibility |
 | --- | --- |
-| XStream | Local execution units, streaming, fusion, cancellation, timeout, retries and materialization/replay |
-| DACP client | Connect to a remote DACP server and submit, consume, cancel or replay a Job |
+| XStream | Local execution units, streaming, fusion, cancellation, timeout, retries and whole-Job recovery |
+| DACP client | Connect to a remote DACP server and submit, consume or cancel a Job |
 | DACP server | Authorize requests and execute accepted Jobs in an embedded local XStream engine sharing its DataCatalog |
 | Union | Resolve public datasets, choose member placements and dispatch member subjobs; automatic compute pushdown is confined to Union |
 | Designer | Edit logical Jobs, browse the selected context, infer structures/samples and export YAML |
 
-For explicit remote execution, use the DACP SDK or Shell to connect to node A and submit the complete Job to A. `context:` then refers to A’s catalog. Local XStream execution policies contain `materialization`, `max_retries` and `timeout_seconds`.
+For explicit remote execution, use the DACP SDK or Shell to connect to node A and submit the complete Job to A. `context:` then refers to A’s catalog. Local XStream execution policies contain `max_retries`, `timeout_seconds` and `resources`.
 
 ## Designer Target
 

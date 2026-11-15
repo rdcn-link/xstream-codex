@@ -58,7 +58,7 @@ Dataset discovery belongs to catalog providers; Items and their views belong to 
 |---|---|
 | Add an executor or local builder | [Executor plugin](../plugins/xstream-plugin-operator-executors/README.md), [local build extensions](local-operators.md) |
 | Implement execution-record storage | [Execution history API](execution-history.md) |
-| Implement materialized-output storage | [Storage contract](materialization.md#storage-plugin-contract) |
+| Develop a staged Sink | [Sink lifecycle](sink-lifecycle.md) |
 | Integrate a model API into Designer Chat | [Chat configuration and adapters](../xstream-designer/README.md#chat-composition) |
 | Add source analysis or build recipes | [Build extensions](operator-build-extensions.md) |
 

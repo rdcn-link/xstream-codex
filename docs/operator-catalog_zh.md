@@ -112,7 +112,7 @@ steps:
 submit weather.yaml --vars variables.yaml
 ```
 
-默认结果通过 stream 返回；选定边界的物化、重试和超时由独立的[执行策略](materialization_zh.md)控制。算子内部收集数据与引擎保存输出是不同机制。
+默认结果通过 stream 返回；整 Job 重试和超时由独立的[执行策略](execution-policy_zh.md)控制。算子内部收集数据与引擎保存输出是不同机制。
 
 ## 发布与核对
 

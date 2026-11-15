@@ -2,9 +2,19 @@
 
 [中文](operator-fusion_zh.md)
 
-XStream automatically checks Job placement, operator environments and executor capabilities. When eligible, an entire node subjob uses one isolated container and one JVM or Python interpreter, running steps concurrently in the same process. Internal edges use bounded memory streams and backpressure without passing through the server or Flight and without intermediate result files. Job inputs and final results retain the existing Flight streaming protocol; submissions need no new switch.
+XStream automatically checks Job placement, operator environments and executor capabilities. When eligible and selected by the configured policy, an entire node subjob uses one isolated container and one JVM or Python interpreter, running steps concurrently in the same process. Internal edges use bounded memory streams and backpressure without passing through the server or Flight and without intermediate result files. Job inputs and final results retain the existing Flight streaming protocol; submissions need no new switch.
 
-Administrators can set `operator_fusion_enabled: false` in the node configuration to force isolated execution for benchmarks or troubleshooting. It defaults to `true` and applies to both ordinary Jobs and Union sub-Jobs. Execution history reports `disabled_by_configuration`.
+Configure the engine or DACP node with `operator_fusion` (default `auto`):
+
+```yaml
+operator_fusion: auto  # isolated | fused | auto
+```
+
+- `isolated`: execute steps in separate execution units.
+- `fused`: prefer compatible groups without comparing estimated costs. Runtime/dependency compatibility, executor support, Sink boundaries, retries and checkpoints still constrain fusion; incompatible steps remain isolated.
+- `auto`: compare structural cost estimates for each compatible candidate. The initial model counts 100 cost units per avoided process startup and 1 per internal edge. Each additional fan-in/fan-out branch adds `100 × candidate step count + internal edge count` units of parallelism risk. Only connected linear candidates with positive estimated savings are selected. These are uncalibrated relative units, not milliseconds or a prediction of actual speed. No input is sampled and no operator is executed during selection. Input size, working-set memory and historical performance are not yet modeled.
+
+The setting applies to local Jobs and node-side Union sub-Jobs. Fusion decisions record reasons and, for local candidate groups, `structural_v1` estimates with low confidence. Eligibility failures retain their specific reasons. Automatic retries or explicit checkpoints currently keep isolated execution boundaries even in `fused` mode. The setting belongs to engine/node startup configuration, not the per-Job execution policy. The value must be one of the three mode strings.
 
 ## Eligibility
 

@@ -52,16 +52,25 @@ runtime: python-arrow@1.0
 entrypoint: temperature_filter
 source_public: true
 inputs:
-  source: {representations: [bytes], formats: []}
+  source:
+    representations:
+    - bytes
+    formats: []
 parameters:
   type: object
   properties:
-    min_temperature: {type: number, default: 20, description: Minimum temperature.}
+    min_temperature:
+      type: number
+      default: 20
+      description: Minimum temperature.
   required: []
   additionalProperties: false
 icon:
   path: M4 4H20L14 12V20L10 18V12Z
   color: '#14866b'
+outputs:
+  result:
+    view: variable
 ```
 
 Provide code under `src/` using `BytesOperator`, `ByteStreamOperator`, `RecordsOperator` or the low-level SDK. Sources with no inputs and sinks with no outputs are supported. Output ports are announced by execution and the inference method, never duplicated in the manifest. Templates implement inference and bounded samples. See [operator authoring](operator-authoring.md).

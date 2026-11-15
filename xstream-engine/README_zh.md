@@ -33,3 +33,5 @@ Scala 嵌入、插件注册、取消、物化/重放、目录生命周期及设�
 执行历史记录引擎实际选择的执行单元。执行单元包含与固定镜像匹配的仓库运行环境型号、版本及依赖版本。同进程执行单元列出所属步骤及运行环境镜像；独立步骤和宿主流读取分别记录。展示端不得根据运行环境镜像相同推测步骤已融合。
 
 [本地执行与远程数据](../docs/execution-targets_zh.md)。
+
+Runner 在最终 bytes/JSONL 到达时立即写入 stdout，不创建最终输出临时文件。Job 成功前输出均为暂定结果。丢弃时 Runner 重置端口状态，在 stdout 单独一行输出 `**** XSTREAM: ATTEMPT DISCARDED ****`，并在 stderr 报告失败原因；原始 stdout 无法撤回已经写出的字节。需要支持重试的程序化接收时，使用 `JobEngine.runToSink`，由 `ResultSink.onDiscard` 重置接收端。参见[嵌入引擎](../docs/embedding_zh.md)。

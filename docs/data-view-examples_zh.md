@@ -157,7 +157,7 @@ val received = ArrowIpc.readStream(input, context)
 try received.consume(consumer)
 finally received.close()
 ```
-写入器不关闭调用方的 output；读取器拥有 input 并负责关闭。需要显式保存可随机读取的结果时，可使用 `ArrowIpc.writeFile` 和 `readFile`；引擎管理的持久化请使用[执行策略](materialization_zh.md)。同进程消费者可直接传递 Arrow 批次，无需 IPC 序列化。
+写入器不关闭调用方的 output；读取器拥有 input 并负责关闭。需要显式保存可随机读取的结果时，可使用 `ArrowIpc.writeFile` 和 `readFile`；最终结果发布遵循[Sink 生命周期](sink-lifecycle_zh.md)。同进程消费者可直接传递 Arrow 批次，无需 IPC 序列化。
 
 ## 生命周期、背压与取消
 

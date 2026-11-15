@@ -30,15 +30,21 @@ trait Operator {
   def process(context:OperatorContext):Unit
   final def main(args:Array[String]):Unit={
     if(args.headOption.exists(Set("infer","infer-worker")))OperatorRunner.infer(args,preview=previewOutputs)(inferOutputs)
-    else OperatorRunner.run(args)(process)
+    else this match {
+      case sink:SinkOperator=>SinkRunner.run(sink,args)
+      case _=>OperatorRunner.run(args)(process)
+    }
   }
 }
 /** Produces streams without consuming a Job input port. */
 trait SourceOperator extends Operator
 /** Consumes streams and produces streams; supports multiple named ports. */
 trait TransformOperator extends Operator
-/** Consumes streams and commits an external result without producing a Job output port. */
-trait SinkOperator extends Operator
+/** Stages an external result. Only the Job coordinator may authorize its publication. */
+trait SinkOperator extends Operator {
+  def onComplete(context:OperatorContext):Unit
+  def onDiscard(context:OperatorContext,cause:Throwable):Unit
+}
 
 abstract class BytesOperator extends TransformOperator {
   def transform(chunk:Array[Byte],params:JsonNode):Array[Byte]
@@ -181,6 +187,10 @@ final class OperatorContext(directory:Path,paramsFile:Path,out:OutputStream,
   private val opened=mutable.Map.empty[String,Input]
   private val outputs=mutable.LinkedHashMap.empty[String,Output]
   def inputNames:Vector[String]=names
+  /** Unique attempt key for idempotent external commits and isolated staging. */
+  def attemptId:String=sys.env.getOrElse("XSTREAM_ATTEMPT_ID",throw new IllegalStateException("missing attempt identity"))
+  def jobId:String=sys.env.getOrElse("XSTREAM_JOB_ID",throw new IllegalStateException("missing Job identity"))
+  lazy val sinkWorkspace:Path=Files.createDirectories(Path.of("/tmp/xstream-sink"))
   private def active():Unit={require(!closed && !finished,"operator context ended");if(Thread.currentThread().isInterrupted)throw new java.util.concurrent.CancellationException()}
   private def frame(kind:String,port:String,data:Array[Byte]=Array.emptyByteArray,repr:String="",format:String="",schema:Option[Schema]=None,dictionaries:org.apache.arrow.vector.dictionary.DictionaryProvider=null):Unit={
     active();val h=mapper.createObjectNode().put("type",kind).put("port",port)

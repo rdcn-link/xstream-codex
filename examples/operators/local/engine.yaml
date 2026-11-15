@@ -4,7 +4,7 @@ datasets:
     provider: directory
     source:
       root: examples/operators/local/data
-remote_operator_library_urls: []
+remote_operator_library_urls: [http://127.0.0.1:8820]
 operator_cache: .xstream-operators
 execution_directory: .xstream-executions
 max_concurrent_tasks: 4

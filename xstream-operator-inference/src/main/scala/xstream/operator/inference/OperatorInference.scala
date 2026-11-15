@@ -17,8 +17,11 @@ object OperatorInference {
   }
   def contract(d:StreamDescriptor):PortContract=PortContract(
     if(d.representations.isEmpty)Set("bytes","records")else d.representations,d.formats,d.schema)
-  def descriptor(c:PortContract):StreamDescriptor=StreamDescriptor(c.representations,c.formats,c.schema,
-    if(c.representations==Set("bytes") || (c.representations==Set("records") && c.schema.nonEmpty))"known"else "unknown")
+  def descriptor(c:PortContract):StreamDescriptor={
+    val concrete=if(c.representations.size==1 && !c.representations("variable"))c.representations else Set.empty[String]
+    StreamDescriptor(concrete,c.formats,if(concrete==Set("records"))c.schema else None,
+      if(concrete==Set("bytes") || (concrete==Set("records") && c.schema.nonEmpty))"known"else "unknown")
+  }
   def validateInputs(op:ResolvedOperator,inputs:Map[String,StreamDescriptor]):Unit={
     val missing=(op.inputs.keySet--inputs.keySet).toVector.sorted
     val unexpected=(inputs.keySet--op.inputs.keySet).toVector.sorted
@@ -28,7 +31,7 @@ object OperatorInference {
     inputs.foreach{case(p,d)=>
       val expected=op.inputs(p)
       expected.cardinality.foreach(c=>require(d.representations==Set("items") && d.structure.exists(_.path("cardinality").asText==c),s"incompatible Item cardinality on input $p"))
-      require(d.representations.isEmpty || d.representations.intersect(expected.representations).nonEmpty,s"incompatible representation on input $p")
+      require(d.representations.size<=1 && !d.representations("variable") && (d.representations.isEmpty || expected.representations("variable") || d.representations.intersect(expected.representations).nonEmpty),s"incompatible representation on input $p")
       require(d.formats.isEmpty || expected.formats.isEmpty || d.formats.intersect(expected.formats).nonEmpty,s"incompatible format on input $p")
       for(a<-d.schema;b<-expected.schema)require(a==b,s"incompatible schema on input $p")
     }
@@ -41,13 +44,13 @@ object OperatorInference {
       cancel.active()
       if(operation==xstream.operator.StreamEndpoint.ClientReceive){
         require(request.params.isObject && request.params.size()==0,"client receiver has no parameters")
-        return InferenceResult(Map.empty)
+        return OperatorOutputContracts.validate(op,request.params,request.inputs,InferenceResult(Map.empty))
       }
       require(request.inputs.isEmpty,"catalog source has no input ports")
       val params=StructureInference.mapper.convertValue(request.params,classOf[java.util.LinkedHashMap[String,Object]])
       _root_.xstream.execution.ItemSourceParameters.address(params)
       val view=_root_.xstream.execution.ItemSourceParameters.view(params)
-      return InferenceResult(Map("result"->StreamDescriptor(if(view=="auto")Set.empty else Set(view),Set.empty,certainty="unknown")))
+      return OperatorOutputContracts.validate(op,request.params,request.inputs,InferenceResult(Map("result"->StreamDescriptor(if(view=="auto")Set.empty else Set(view),Set.empty,certainty="unknown"))))
     }
     validateInputs(op,request.inputs)
     val program=op.program.getOrElse(throw new IllegalArgumentException("operator has no inference program"))
@@ -57,7 +60,7 @@ object OperatorInference {
     require(body.length<=StructureInference.MaxBytes,"inference request exceeds 1 MiB")
     val key=workerKey(op,command,source,config.inferenceScope)
     val response=config.inferenceWorkerPool.request(key,body,cancel)(()=>new DockerInferenceWorker(op,command))
-    val result=StructureInference.result(StructureInference.mapper.readTree(response))
+    val result=OperatorOutputContracts.validate(op,request.params,request.inputs,StructureInference.result(StructureInference.mapper.readTree(response)))
     op.role.foreach { role=>
       if(role==xstream.operator.OperatorRole.Sink)require(result.outputs.isEmpty,"Sink inference must not declare outputs")
       else require(result.outputs.nonEmpty,s"${role.id} inference must declare an output")

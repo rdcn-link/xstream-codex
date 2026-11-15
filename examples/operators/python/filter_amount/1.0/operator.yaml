@@ -11,6 +11,8 @@ inputs:
     representations: [records]
     formats: []
 
+outputs:
+  result: {view: records}
 parameters:
   type: object
   properties:

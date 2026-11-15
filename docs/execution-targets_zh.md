@@ -25,13 +25,13 @@ nodes:
 
 | 组件 | 职责 |
 | --- | --- |
-| XStream | 本地执行单元、流处理、同进程合并、取消、超时、重试和物化/重放 |
-| DACP 客户端 | 连接远程 DACP 服务器，提交、消费、取消或重放 Job |
+| XStream | 本地执行单元、流处理、同进程合并、取消、超时、整 Job 重试和结果提交 |
+| DACP 客户端 | 连接远程 DACP 服务器，提交、消费或取消 Job |
 | DACP 服务器 | 授权请求，在内嵌的本地 XStream 引擎执行接受的 Job，并共享 DataCatalog |
 | Union | 解析公开数据集、选择成员放置位置并下发子 Job；自动计算下推仅由 Union 提供 |
 | Designer | 编辑逻辑 Job、浏览选定上下文、推导结构/样例并导出 YAML |
 
-显式远程执行使用 DACP SDK 或 Shell 连接节点 A，将完整 Job 提交给 A，此时 `context:` 指向 A 的目录。本地 XStream 执行策略包含 `materialization`、`max_retries` 和 `timeout_seconds`。
+显式远程执行使用 DACP SDK 或 Shell 连接节点 A，将完整 Job 提交给 A，此时 `context:` 指向 A 的目录。本地 XStream 执行策略包含 `max_retries`、`timeout_seconds` 和 `resources`。
 
 ## Designer Target
 

@@ -1,6 +1,6 @@
 # DACP 与 XStream 的项目边界
 
-XStream 负责数据模型、Arrow 流、Job 语言、执行策略、结构推导、本地执行、执行单元与物化。DACP 负责远程服务、授权、S3 和 Union 成员/命名空间管理。
+XStream 负责数据模型、Arrow 流、Job 语言、执行策略、结构推导、本地执行、执行单元与 Sink 生命周期。DACP 负责远程服务、授权、S3 和 Union 成员/命名空间管理。
 
 `RemoteItemProvider` 为本地步骤提供远程数据流。DACP 客户端将 Job 提交给远程服务，服务内嵌本地 XStream 引擎。Union 负责自动成员放置和下发。Designer 选择编排上下文并编辑 Job，不规划或展示执行。
 

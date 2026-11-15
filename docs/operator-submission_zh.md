@@ -46,7 +46,8 @@ icon:
   color: '#14866b'
 inputs:
   source:
-    representations: [records]
+    representations:
+    - records
     formats: []
 parameters:
   type: object
@@ -59,26 +60,17 @@ documentation:
   outputs:
     result: 质量筛选后保留的观测记录。
   parameters: {}
-  example_job: |
-    name: Filter observations
-    steps:
-      - id: read
-        operator: item_source@1.0
-        inputs: {}
-        params:
-          uri: context:/weather/observations
-          view: records
-      - id: filter
-        operator: weather_filter@1.0
-        inputs:
-          source: read
-        params: {}
-      - id: client_sink
-        operator: client_sink@1.0
-        inputs: {result: filter}
+  example_job: "name: Filter observations\nsteps:\n  - id: read\n    operator: item_source@1.0\n\
+    \    inputs: {}\n    params:\n      uri: context:/weather/observations\n     \
+    \ view: records\n  - id: filter\n    operator: weather_filter@1.0\n    inputs:\n\
+    \      source: read\n    params: {}\n  - id: client_sink\n    operator: client_sink@1.0\n\
+    \    inputs: {result: filter}\n"
 provenance:
   license: Apache-2.0
   license_file: LICENSE.txt
+outputs:
+  result:
+    view: variable
 ```
 
 运行环境名称/版本必须来自实际仓库。Java/Scala 相应设置 `language`，`entrypoint` 为完整主类名，如 `example.WeatherFilter`，源码放在 `src/example/`。辅助工具从环境目录推导执行器和不可变环境描述。

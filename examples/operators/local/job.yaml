@@ -18,7 +18,7 @@ steps:
       local: ./scala
     inputs:
       source: upper
-- id: client_sink
-  operator: client_sink@1.0
-  inputs:
-    result: identity
+  - id: client_sink
+    operator: client_sink@1.0
+    inputs:
+      result: identity

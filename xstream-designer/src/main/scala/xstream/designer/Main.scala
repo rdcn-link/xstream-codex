@@ -309,8 +309,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     case "/api/document"=>val j=document(n,empty=true);val out=Json.obj().put("job_yaml",YamlDocument.dump(j)).put("variables_yaml",YamlDocument.dump(Documents.variables(n.path("variables_yaml").asText)));out.set[JsonNode]("job",j);out
     case "/api/export"=>val j=document(n);if(n.path("include_designer").asBoolean(true))DesignerLayout.stamp(j) else j.asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].remove("designer");Json.obj().put("job_yaml",YamlDocument.dump(j)).put("variables_yaml",YamlDocument.dump(Documents.variables(n.path("variables_yaml").asText)))
     case "/api/infer"=>
-      document(n)
-      val job=Documents.job(WorkflowVariables.resolve(n.path("job_yaml").asText,Documents.variables(n.path("variables_yaml").asText)))
+      document(n,empty=true)
+      val job=Documents.job(WorkflowVariables.resolve(n.path("job_yaml").asText,Documents.variables(n.path("variables_yaml").asText)),allowEmpty=true)
       Using.resource(new StreamCancel(()=>pool.isShutdown,120)){cancel=>SchemaPreview.present(inference(n).infer(job,cancel,Option(n.get("preview")).map(OutputSamples.limits),editSession=Option(n.get("inference_session")).map(_.asText)))}
     case "/api/chat"=>
       planChat(n,_=>())
@@ -368,8 +368,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     }finally x.close()
   }
   private def inferStream(x:HttpExchange,n:JsonNode):Unit={
-    document(n)
-    val job=Documents.job(WorkflowVariables.resolve(n.path("job_yaml").asText,Documents.variables(n.path("variables_yaml").asText)))
+    document(n,empty=true)
+    val job=Documents.job(WorkflowVariables.resolve(n.path("job_yaml").asText,Documents.variables(n.path("variables_yaml").asText)),allowEmpty=true)
     val preview=Option(n.get("preview")).map(OutputSamples.limits)
     x.getResponseHeaders.set("Content-Type","application/x-ndjson; charset=utf-8")
     x.getResponseHeaders.set("Cache-Control","no-store")
@@ -388,7 +388,7 @@ final class Designer(config:JsonNode) extends AutoCloseable {
       case scala.util.control.NonFatal(e)=>try event(Json.obj().put("event","error").put("message",Option(e.getMessage).getOrElse("Inference failed")))catch{case _:java.io.IOException=>()}
     }finally x.close()
   }
-  private val assets=Map("/vendor/markdown-it-15.0.3.min.js"->("vendor/markdown-it-15.0.3.min.js","application/javascript"),"/vendor/markdown-it-LICENSE.txt"->("vendor/markdown-it-LICENSE.txt","text/plain; charset=utf-8"),"/chat-markdown.js"->("chat-markdown.js","application/javascript"),"/scientific-views.js"->("scientific-views.js","application/javascript"),"/inference-state.js"->("inference-state.js","application/javascript"),"/validation.js"->("validation.js","application/javascript"),"/schema-types.js"->("schema-types.js","application/javascript"),"/yaml-editor.js"->("yaml-editor.js","application/javascript"),"/editor-licenses.txt"->("editor-licenses.txt","text/plain; charset=utf-8"),"/parameters.js"->("parameters.js","application/javascript"),"/"->("index.html","text/html; charset=utf-8"),"/app.js"->("app.js","application/javascript"),"/style.css"->("style.css","text/css"),"/xstream-logo.svg"->("xstream-logo.svg","image/svg+xml"),"/favicon.svg"->("xstream-mark.svg","image/svg+xml"))
+  private val assets=Map("/port-views.js"->("port-views.js","application/javascript"),"/vendor/markdown-it-15.0.3.min.js"->("vendor/markdown-it-15.0.3.min.js","application/javascript"),"/vendor/markdown-it-LICENSE.txt"->("vendor/markdown-it-LICENSE.txt","text/plain; charset=utf-8"),"/chat-markdown.js"->("chat-markdown.js","application/javascript"),"/scientific-views.js"->("scientific-views.js","application/javascript"),"/inference-state.js"->("inference-state.js","application/javascript"),"/validation.js"->("validation.js","application/javascript"),"/schema-types.js"->("schema-types.js","application/javascript"),"/yaml-editor.js"->("yaml-editor.js","application/javascript"),"/editor-licenses.txt"->("editor-licenses.txt","text/plain; charset=utf-8"),"/parameters.js"->("parameters.js","application/javascript"),"/"->("index.html","text/html; charset=utf-8"),"/app.js"->("app.js","application/javascript"),"/style.css"->("style.css","text/css"),"/xstream-logo.svg"->("xstream-logo.svg","image/svg+xml"),"/favicon.svg"->("xstream-mark.svg","image/svg+xml"))
   private def send(x:HttpExchange,status:Int,mime:String,data:Array[Byte]):Unit={
     x.getResponseHeaders.set("Content-Type",mime);x.getResponseHeaders.set("Cache-Control","no-store");x.getResponseHeaders.set("X-Content-Type-Options","nosniff")
     x.getResponseHeaders.set("Content-Security-Policy","default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")

@@ -11,6 +11,19 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 case class PreparedOperatorGroup(task:Task,operator:ResolvedOperator,inputs:Map[String,InputBinding],outputs:Map[String,(String,String)],transportSources:Map[String,String]=Map.empty)
 /** Placement and exact environment identity are core policy; fusion belongs to launch plugins. */
 object OperatorGroups {
+  /** Resolve metadata selectors without reading source contents or invoking inference. */
+  def resolveDeclared(plan:JobPlan,operators:Map[String,ResolvedOperator]):Map[String,ResolvedOperator]={
+    val done=scala.collection.mutable.Map.empty[String,ResolvedOperator]
+    def visit(id:String):ResolvedOperator=done.getOrElseUpdate(id,{
+      val task=plan.steps.find(_.id==id).get
+      val inputs=task.inputs.map{case(port,b)=>
+        val views=b.task.flatMap { parent=>operators.get(parent).map(_=>visit(parent).outputs.get(b.port).map(_.representations).getOrElse(Set.empty[String])).orElse(plan.steps.find(_.id==parent).flatMap(Jobs.readBinding).map(x=>if(x.view=="auto")Set.empty[String]else Set(x.view))) }.getOrElse(if(b.view=="auto")Set.empty[String]else Set(b.view))
+        port->views
+      }
+      OperatorOutputContracts.bind(operators(id),xstream.data.Data.mapper.valueToTree[com.fasterxml.jackson.databind.JsonNode](task.params),inputs,allowPending=true)
+    })
+    operators.keys.foreach(visit);done.toMap
+  }
   def prepare(config:EngineEnvironment,plan:JobPlan,check:()=>Unit=()=>()):Either[String,PreparedOperatorGroup]={
     val readers=plan.steps.filter(_.operator==Jobs.ItemSource).map(t=>t.id->t).toMap
     if(readers.nonEmpty){
@@ -25,31 +38,34 @@ object OperatorGroups {
       val sources=external.zipWithIndex.flatMap {case((id,port),i)=>plan.steps.find(_.id==id).get.inputs(port).task.filter(readers.contains).map(read=>s"i$i"->read)}.toMap
       return prepare(config,lowered,check).map(_.copy(transportSources=sources))
     }
-    if(!config.operatorFusionEnabled)return Left("disabled_by_configuration")
+    if(config.operatorFusion=="isolated")return Left("isolated_by_policy")
     if(plan.outputs.isEmpty)return Left("no_selected_outputs")
     if(plan.steps.size<2)return Left("single_step")
     val dc=DefaultDockerClientConfig.createDefaultConfigBuilder().build()
     val transport=new ApacheDockerHttpClient.Builder().dockerHost(dc.getDockerHost).sslConfig(dc.getSSLConfig).build()
     val docker=DockerClientImpl.getInstance(dc,transport)
     try {
-      // Connected ports determine routing; actual stream headers supply output metadata.
+      // Public declarations determine output ports and Views; runtime headers must match.
       // Planning must never invoke operator code or open input streams.
       val contracts=plan.steps.map { t=>
         check();val op=t.preparedInline.getOrElse(t.localOperator.map(ref=>LocalOperatorLibrary.resolve(config,config.localOperatorBase.get,ref,docker,check)).getOrElse(OperatorLibrary.resolve(config,t.operator,docker)))
-        val ports=plan.steps.flatMap(_.inputs.values.collect{case b if b.task.contains(t.id)=>b.port}).toSet ++ plan.outputs.values.collect{case(id,p) if id==t.id=>p}
-        val outputs=ports.map(_->PortContract(_root_.xstream.execution.OperatorPorts.representations(config.plugins),Set.empty,None)).toMap
-        t.id->op.copy(outputs=outputs,program=op.program.map(_.copy(outputs=outputs.view.mapValues(_.representations).toMap)))
+        val bound=OperatorOutputContracts.bind(op,xstream.data.Data.mapper.valueToTree[com.fasterxml.jackson.databind.JsonNode](t.params),Map.empty,allowPending=true)
+        t.id->bound
       }.toMap
-      prepareResolved(config,plan,contracts)
+      prepareResolved(config,plan,resolveDeclared(plan,contracts))
     }finally{docker.close();transport.close()}
   }
   def prepareResolved(config:EngineEnvironment,plan:JobPlan,operators:Map[String,ResolvedOperator]):Either[String,PreparedOperatorGroup]={
+      if(config.operatorFusion=="isolated")return Left("isolated_by_policy")
       if(operators.values.exists(_.outputs.isEmpty))return Left("sink_boundary")
+      if(operators.values.exists(_.outputs.values.exists(_.representations.size!=1)))return Left("output_view_requires_input_metadata")
       val all=operators.values.toVector
       if(all.map(op=>OperatorLibrary.runtimeDescriptor(op).path("dependency_environment").asText).distinct.size!=1)return Left("different_dependency_environments")
       if(all.map(_.image).distinct.size!=1)return Left("different_runtime_images")
       if(all.map(_.executor).distinct.size!=1)return Left("different_executors")
       if(all.map(_.command.environment).distinct.size!=1)return Left("different_process_environments")
+      val decision=FusionPolicy.decide(config.operatorFusion,plan)
+      if(!decision.allowed)return Left(decision.reason)
       val external=plan.steps.flatMap(t=>t.inputs.toVector.sortBy(_._1).collect{case(port,b)if b.uri.nonEmpty=>(t.id,port,b)})
       val names=external.zipWithIndex.map{case((id,port,_),i)=>(id,port)->s"i$i"}.toMap
       val bindings=external.map{case(id,port,b)=>names((id,port))->b}.toMap

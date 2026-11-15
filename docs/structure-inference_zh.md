@@ -2,7 +2,7 @@
 
 [English](structure-inference.md)
 
-每个算子必须提供结构推导方法。清单声明输入及静态参数契约，不能包含 `outputs`；输出端口、表示、格式、schema 和未知信息均由方法返回。无输出算子返回空映射，数据源接受空输入。方法实现缺失、响应格式错误或超时会导致校验失败，不回退到清单。
+每个算子必须声明[端口名称及 View 类型](operator-ports_zh.md)，并提供结构推导方法。清单声明输入、输出及静态参数；推导方法为已声明端口描述本次调用的具体结构，不能改变端口名称或声明的 View。声明为 `variable` 的接口在推导后仍保持可变类型。无输出算子返回空映射，数据源接受空输入。方法实现缺失、响应格式错误或超时会导致校验失败，不回退到清单。
 
 ```mermaid
 flowchart TD
@@ -24,7 +24,7 @@ flowchart TD
 val report = xstream.connector.dacp.client.Job.infer("dacp://data.example.org:18861", workflowText)
 ```
 
-推导是显式的工作流编制操作。提交、调度、重试、重放和执行均不自动调用推导。执行时检查实际流头、端口连接及资源限制；无输出算子无需虚构输出端口。
+推导是显式的工作流编制操作。提交、调度、重试和执行均不自动调用推导。执行时检查实际流头、端口连接及资源限制；无输出算子无需虚构输出端口。
 
 ## 统一请求与响应
 
@@ -103,7 +103,7 @@ object Uppercase extends Operator {
 }
 ```
 
-原生 `command` 执行器的适配方法根据 stdin/stdout 配置推导 bytes 端口，不启动底层可执行程序。外部执行器插件通过 `inferenceWorkerCommand`（源码为 `sourceInferenceWorkerCommand`）接入相同 JSON 协议，无需修改核心注册表。清单和插件配置不得另建输出 schema 来源。
+原生 `command` 执行器的适配方法根据 stdin/stdout 配置推导 bytes 端口，不启动底层可执行程序。外部执行器插件通过 `inferenceWorkerCommand`（源码为 `sourceInferenceWorkerCommand`）接入相同 JSON 协议，无需修改核心注册表。可选的声明 schema 约束必须与推导的 schema 一致。
 
 ## 隔离与限制
 
@@ -128,7 +128,7 @@ inference_workers:
 
 以上为默认值。`max_workers` 范围为 1–64，`idle_seconds` 为 1–86400，`timeout_seconds` 为 1–120，均为整数。超时包含排队、冷启动及本次计算；外层 Flight 调用可能具有更短的截止时间。相同 worker 串行处理请求；达到上限时优先淘汰最久未使用的空闲 worker，否则等待可用位置。空闲检查周期为一秒，超过期限的空闲 worker 会销毁。异常、非法响应、超时或执行中的推导请求取消，会销毁对应 worker，下一次显式请求重建；不会自动重试本次推导。取消一个尚在排队的请求不影响正在服务其他请求的 worker。节点关闭时清理全部 worker。
 
-这是运行资源复用，不与任务执行容器混用，也不使提交、调度、执行、重试或重放自动触发推导。Union 将显式推导转发给成员，由成员管理 worker；Union 不加载成员的算子代码。
+这是运行资源复用，不与任务执行容器混用，也不使提交、调度、执行或重试自动触发推导。Union 将显式推导转发给成员，由成员管理 worker；Union 不加载成员的算子代码。
 
 ## 执行器插件的 worker 协议
 
