@@ -24,3 +24,5 @@ sbt test
 ```
 
 Tests cover clean source, network/deletion evidence, incomplete coverage, archive traversal and decompression limits. Repository tests cover source-only submission, private files, asynchronous analysis/build state, administrator review, trust and classification publication, submitter isolation and Token revocation. New plugins should add equivalent tests for malformed inputs, coverage gaps and resource limits.
+
+Python builds validate explicit SDK preview registration without importing or executing publisher code. An absent callback fails the build with its source location. Operators requiring complete files may explicitly return an empty sample mapping. Run `python3 scripts/test-python-build-contract.py` from the repository root to check missing registration, aliased imports, inherited pure templates and compilation isolation.

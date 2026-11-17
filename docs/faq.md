@@ -14,6 +14,14 @@
 - [10. How does a custom operator process an `items` reference stream?](#10-how-does-a-custom-operator-process-an-items-reference-stream)
 - [11. Can I configure multiple operator repositories, and how are duplicate operators resolved?](#11-can-i-configure-multiple-operator-repositories-and-how-are-duplicate-operators-resolved)
 - [12. Why use an operator repository when inline operators are simpler?](#12-why-use-an-operator-repository-when-inline-operators-are-simpler)
+- [13. How do port Views differ from schemas, and why does a port remain variable after inference?](#13-how-do-port-views-differ-from-schemas-and-why-does-a-port-remain-variable-after-inference)
+- [14. Why does Designer reject a connection, and can variable ports consume arbitrary content?](#14-why-does-designer-reject-a-connection-and-can-variable-ports-consume-arbitrary-content)
+- [15. Does streaming guarantee no disk writes and no out-of-memory failures?](#15-does-streaming-guarantee-no-disk-writes-and-no-out-of-memory-failures)
+- [16. How do I choose isolated, fused or automatic execution units? Is fusion always faster?](#16-how-do-i-choose-isolated-fused-or-automatic-execution-units-is-fusion-always-faster)
+- [17. How does a failed step retry, and where should I place checkpoints?](#17-how-does-a-failed-step-retry-and-where-should-i-place-checkpoints)
+- [18. How do client_sink and custom Sinks confirm success? May I publish data as it arrives?](#18-how-do-client_sink-and-custom-sinks-confirm-success-may-i-publish-data-as-it-arrives)
+- [19. How do I increase temporary space? Is tmp_size_mb a disk quota?](#19-how-do-i-increase-temporary-space-is-tmp_size_mb-a-disk-quota)
+- [20. Are saved Jobs and checkpoints sufficient to reproduce identical results later?](#20-are-saved-jobs-and-checkpoints-sufficient-to-reproduce-identical-results-later)
 
 ## 1. Which workloads suit XStream compared with workflow engines such as Airflow?
 
@@ -351,3 +359,73 @@ Inline operators are convenient for local experiments: keep a script, command ma
 A repository provides shared versioned identities, declared ports/parameters/examples, build and dependency environments, approval, source/provenance information, trust metadata and verified downloads. Other users and execution hosts can obtain the same approved package instead of copying private scripts and paths.
 
 Remote DACP nodes and Union accept publicly approved operators and reject inline/local definitions. This gives server administrators a defined code publication boundary; approval is not a guarantee that code is harmless, and container isolation, authorization and resource limits still apply. Develop locally, test the stream contract, then [submit for review](operator-submission.md) when sharing or remote execution is needed. See [local operators](local-operators.md) and [inline operators](inline-operators.md).
+
+## 13. How do port Views differ from schemas, and why does a port remain variable after inference?
+
+A View determines stream representation, such as `bytes`, `records`, `array` or `items`. A schema describes an invocation's concrete structure, such as record field names and data types.
+
+Each operator port declares one fixed View or `variable` when its interface cannot fix one. Inference can determine an invocation's fields or concrete representation without changing the public port declaration, so a variable port retains its variable icon. `variable` is not a wire format: an opened stream must use one concrete View. A fixed records port may still have an unknown field schema. See [operator port Views](operator-ports.md).
+
+## 14. Why does Designer reject a connection, and can variable ports consume arbitrary content?
+
+Two fixed ports must have matching Views. For example, `bytes` cannot directly connect to `records`; use a parsing or conversion operator. A `variable` declaration at either end permits wiring but does not guarantee data compatibility. Inference and execution still validate the concrete representation.
+
+A variable output producing records cannot feed a bytes-only input. Declaration metadata must also finish loading before a connection can be created. Inspect port hover descriptions, operator parameters and inference results to distinguish View incompatibility from record field incompatibility. See [operator port Views](operator-ports.md).
+
+## 15. Does streaming guarantee no disk writes and no out-of-memory failures?
+
+Streaming supports incremental consumption and backpressure, and complete intermediate results are not retained by default. It does not guarantee zero disk use or constant memory. Format plugins may extract temporary files, command adapters may bind files, and sort, Join or global aggregation operators may buffer data. Explicit checkpoints retain selected complete output streams.
+
+Individual Arrow batch sizes and operator buffers also affect memory. Developers should bound batches and buffers, close readers promptly, and design scratch storage or spilling for blocking algorithms. Configure runtime container resources and concurrency as well. See [Arrow streams](arrow-streams.md) and [execution policies](execution-policy.md).
+
+## 16. How do I choose isolated, fused or automatic execution units? Is fusion always faster?
+
+Set the engine or DACP node startup configuration:
+
+```yaml
+operator_fusion: auto  # isolated | fused | auto
+```
+
+`isolated` uses separate execution units; `fused` prefers compatible groups; default `auto` uses conservative structural cost estimates. Matching languages are insufficient: Runtime, dependencies, executor support and boundary constraints must also match. This setting is not a per-Job execution policy field.
+
+Fusion can reduce startup and interprocess transfer costs, but can increase resource contention or reduce parallelism. The current automatic model uses neither measured latency, input size nor a working-set memory model, so it cannot guarantee the fastest plan. Automatic retries or explicit checkpoints currently retain isolated execution boundaries. See [operator fusion](operator-fusion.md).
+
+## 17. How does a failed step retry, and where should I place checkpoints?
+
+Automatic retries are disabled by default. Set additional attempts in the separate execution policy and optionally select an expensive step's output ports:
+
+```yaml
+max_retries: 2
+checkpoints:
+  sort_step: [result]
+```
+
+`sort_step` must exist and `result` must be a connected output. The execution host must configure checkpoint storage. A selected output is completely saved and committed before downstream consumption starts. Without checkpoints, retries execute the whole Job again. Valid checkpoints can replace covered upstream work; other branches recompute. A producer can be skipped only when every connected output is covered.
+
+Old workers must stop and staging must be discarded before retrying. Cancellation, timeout, authorization/configuration errors, cleanup failure and failures after commit begins are not automatically retried. Checkpoints are not automatically selected and do not guarantee recovery of lost nodes. See [execution policies and recovery](execution-policy.md).
+
+## 18. How do client_sink and custom Sinks confirm success? May I publish data as it arrives?
+
+`client_sink` is the explicit endpoint returning streams to the caller. The application's `ResultSink` implements reception: `accept(frame)` receives provisional data, `onDiscard(cause)` discards a failed attempt, and `onComplete()` accepts the successful whole-Job result. Retry-aware receivers must not mix data from different attempts.
+
+A custom SDK Sink stages in `process`, publishes in `onComplete(context)` after coordinator approval, and cleans in `onDiscard(context,cause)`. A port end or one completed step does not prove whole-Job success. Multiple Sink commits are not a distributed atomic transaction; external publication needs idempotency keys and reconciliation after failure. See [embedding and result collection](embedding.md) and [Sink lifecycle](sink-lifecycle.md).
+
+## 19. How do I increase temporary space? Is tmp_size_mb a disk quota?
+
+Request per-execution-unit capacity in the separate execution policy, for example:
+
+```yaml
+resources:
+  tmp_size_mb: 2048
+  memory_mb: 4096
+```
+
+`tmp_size_mb` controls the container's `/tmp` tmpfs capacity, not a disk-backed workspace or host disk quota. Actual usage counts toward container memory; it must be strictly less than `memory_mb`, leaving room for the program and Arrow buffers. Isolated units each receive their limit; fused steps share one unit's limit.
+
+Requests remain subject to administrator `execution_resources` ceilings. Raising a container limit does not reserve host capacity. Exhausting temporary capacity causes write failures; exhausting total memory can cause OOM termination. Host format-reader staging and checkpoint storage are separate resources. See [container temporary space and memory](execution-policy.md#container-temporary-space-and-memory).
+
+## 20. Are saved Jobs and checkpoints sufficient to reproduce identical results later?
+
+Job YAML alone is insufficient. Retain resolved variables, stable or versioned inputs, pinned operators and dependency environments, and control randomness, clocks and external services. Content at the same URI can change.
+
+Current checkpoints support internal retries within one Job execution and are removed at terminal completion; they are not a long-term archive across executions. Checkpointing an `items` stream saves references without freezing member content. For long-term replay, separately archive input versions, execution information and results, then submit a new Job. A result hash can detect content changes but cannot by itself prove an analysis method or conclusion correct. See [execution policies and recovery](execution-policy.md) and [execution history](execution-history.md).

@@ -241,6 +241,8 @@ JVM 的 `Operator.main` 自动注册该方法，Java 可实现相同 JVM 接口�
 
 每个算子必须同时具备处理、结构推导和输出样例接口。JVM `Operator.previewOutputs` 为抽象方法；Python 函数式入口必须注册 `preview_outputs`，未注册会明确报错；自定义 `Operator` 子类也必须实现。SDK 的纯字节模板可复用变换方法实现样例，Python records 模板也可处理有界样例。请求未包含 `preview` 时不调用样例方法。没有输入样例等情况应报告具体原因，不能把上游样例冒充转换后的输出。
 
+Python 源码构建会在生成产物前检查 `run_operator(..., preview_outputs=...)` 和 `run_inference(..., preview=...)` 的显式注册。对于依赖完整源文件（例如 GeoTIFF 或配对 Item 集合）的算子，可以实现 `preview_outputs` 并返回 `{}`：结构推导仍可用，界面明确显示没有输出样例。该接口不能为了预览而物化完整输入或启动生产算法。
+
 无副作用的 Python 算子可显式使用 SDK 的 `preview_process` 简化实现：
 
 ```python
@@ -255,7 +257,7 @@ if __name__ == "__main__":
 
 这个辅助方法只提供内存中的受限输入样例、参数和输出收集器，不提供生产输入流、目录或远端访问；输出达到行数或字节数限制时终止样例收集。它不是任意代码的安全沙箱，只适用于作者明确确认无副作用的变换。若推导 Schema 未知，可根据已收到的样例构建仅用于本次预览的内存表；不会把该表的类型发布为已知 Schema。涉及外部访问的算子需要自行实现安全的样例逻辑。
 
-当前仓库的六个算子均实现 `preview_outputs`：
+六个 Python PiFlow 适配示例均实现 `preview_outputs`：
 
 | 算子 | 样例行为 |
 |---|---|

@@ -241,6 +241,8 @@ For example, Arrow `utf8` displays as `string`, and `floatingpoint` with `DOUBLE
 
 Every operator must provide processing, structure inference and output preview interfaces. JVM `Operator.previewOutputs` is abstract. Python function-style entrypoints must register `preview_outputs`; missing registration fails explicitly, and custom `Operator` subclasses must implement the method. Pure byte templates can reuse their transforms for samples; Python records templates can also process bounded samples. Without `preview` in a request, the sample method is not invoked. Report specific reasons such as missing input samples rather than presenting an unchanged input sample as transformed output.
 
+Python source builds check explicit `run_operator(..., preview_outputs=...)` and `run_inference(..., preview=...)` registration before producing an artifact. An operator that requires complete source files, such as GeoTIFFs or paired Item collections, may implement `preview_outputs` as `return {}`: its inferred structure remains available, while the UI reports no output sample. This hook must not materialize full inputs or launch the production algorithm merely to provide a preview.
+
 Side-effect-free Python operators may explicitly use the SDK's `preview_process` helper:
 
 ```python
@@ -255,7 +257,7 @@ if __name__ == "__main__":
 
 The helper provides only bounded in-memory input samples, parameters and output collectors, without production streams, directories or remote access. Collection stops when row or byte limits are reached. It is not a sandbox for arbitrary code: use it only for transforms the author has verified are side-effect-free. When the inferred Schema is unknown, received sample values may define an in-memory table solely for preview processing; this does not publish those types as a known inferred Schema. Operators accessing external systems need a dedicated safe preview implementation.
 
-All six operators in the current repository implement `preview_outputs`:
+The six Python PiFlow adapter examples implement `preview_outputs`:
 
 | Operator | Sample behavior |
 |---|---|
