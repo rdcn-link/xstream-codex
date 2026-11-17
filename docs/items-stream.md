@@ -26,7 +26,7 @@ The Arrow schema contains `uri`, `name`, `kind`, `format`, `views` (JSON array o
 
 The JVM SDK exposes `ctx.input("source").foreachItem` and callback-scoped `ctx.openItem(item, view, selection)`. The engine opens the requested view only when called. Access uses the host's existing authorized Item reader, keeping credentials in the host. Containers remain network-isolated. Open streams close after the callback, including failures and cancellation. A reference may become unavailable between enumeration and access; opening fails rather than silently skipping it.
 
-The execution host supplies a per-step Unix-domain socket in the private input directory. Each bounded JSON request selects a URI, view and selection; the response is a status followed by standard Arrow IPC. Socket and open readers are closed with the step. This service permits Item access only; it does not expose arbitrary host paths or submit Jobs.
+The execution host supplies a per-step Unix-domain socket in the private input directory. Each bounded JSON request selects a URI, view and selection; the response is a status, one standard Arrow IPC stream, and a final JSON completion message. The host ends, closes and flushes the Arrow writer, releases its Item reader, and only then acknowledges completion. Closing the writer does not close the shared socket. Consumers use the same buffered input for Arrow and the completion message so socket short reads cannot truncate IPC metadata. Arrow EOS without the final completion message is a failed read. Socket and open readers are closed with the step. This service permits Item access only; it does not expose arbitrary host paths or submit Jobs.
 
 ## Example
 

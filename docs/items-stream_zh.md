@@ -26,7 +26,7 @@ Arrow schema 包含 `uri`、`name`、`kind`、`format`、`views`（JSON 数组�
 
 JVM SDK 提供 `ctx.input("source").foreachItem` 和限定在回调内使用的 `ctx.openItem(item, view, selection)`。仅调用读取时才打开指定 View。访问沿用宿主已有的授权 Item 读取接口，凭据保留在宿主，容器保持网络隔离。回调结束、异常或取消时关闭读取资源。列举后资源可能变化或不可用；读取失败会报错，不静默跳过。
 
-执行宿主在私有输入目录提供每步骤独立的 Unix 域套接字。每个有大小限制的 JSON 请求指定 URI、视图与选择参数；响应为状态及标准 Arrow IPC 流。步骤结束时关闭套接字与读取器。该服务只支持 Item 访问，不开放任意宿主文件路径，也不提交 Job。
+执行宿主在私有输入目录提供每步骤独立的 Unix 域套接字。每个有大小限制的 JSON 请求指定 URI、视图与选择参数；响应依次为状态、一个标准 Arrow IPC 流和最终的 JSON 完成消息。宿主先结束、关闭并刷新 Arrow writer，再释放 Item 读取器，全部成功后才确认完成；关闭 writer 不会关闭共用套接字。消费者使用同一个带缓冲的输入读取 Arrow 和完成消息，避免 socket 短读导致 IPC 元数据截断。只有 Arrow EOS、没有最终完成消息时，视为读取失败。步骤结束时关闭套接字与读取器。该服务只支持 Item 访问，不开放任意宿主文件路径，也不提交 Job。
 
 ## 示例
 

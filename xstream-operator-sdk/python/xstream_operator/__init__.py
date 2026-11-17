@@ -133,7 +133,10 @@ class OperatorContext:
         with socket.socket(socket.AF_UNIX) as connection:
             connection.connect(os.environ.get('XSTREAM_ITEM_SOCKET', str(self.directory / 'item-access.sock')))
             connection.sendall(struct.pack('>I', len(raw)) + raw)
-            with connection.makefile('rb', buffering=0) as stream:
+            # PyArrow expects read(n) to fill the requested buffer unless at EOF.
+            # SocketIO may return a short read between IPC metadata and padding.
+            # Share one buffered reader for Arrow and the trailing control message.
+            with connection.makefile('rb') as stream:
                 status = _item_message(stream)
                 if not status.get('ok'):
                     raise ValueError('Item read failed: ' + status.get('error', 'unavailable'))

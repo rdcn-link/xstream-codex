@@ -5,7 +5,7 @@ import xstream.execution._
 import java.nio.channels.{Channels,ServerSocketChannel,SocketChannel}
 import java.net.{StandardProtocolFamily,UnixDomainSocketAddress}
 import java.nio.file.{Files,Path}
-import java.io.{DataInputStream,DataOutputStream}
+import java.io.{DataInputStream,DataOutputStream,FilterOutputStream}
 import org.apache.arrow.memory.BufferAllocator
 import org.apache.arrow.vector.{VectorSchemaRoot,VarBinaryVector,VectorLoader,VectorUnloader}
 import org.apache.arrow.vector.ipc.{ArrowStreamReader,ArrowStreamWriter}
@@ -59,7 +59,13 @@ final class ItemReadService(directory:Path,allocator:BufferAllocator,parent:Stre
           def lookup(id:Long)=if(dictionary==null)null else dictionary.lookup(id)
           def getDictionaryIds=if(dictionary==null)java.util.Collections.emptySet[java.lang.Long]()else dictionary.getDictionaryIds
         }
-        val writer=new ArrowStreamWriter(root,dictionaries,out)
+        // The Arrow writer owns its IPC output, but the socket also carries the
+        // completion message after the writer and all Item resources are closed.
+        val ipcOutput=new FilterOutputStream(out) {
+          override def write(bytes:Array[Byte],offset:Int,length:Int):Unit=out.write(bytes,offset,length)
+          override def close():Unit=flush()
+        }
+        val writer=new ArrowStreamWriter(root,dictionaries,ipcOutput)
         try {
           header.foreach(r=>require(!r.loadNextBatch(),"invalid Item dictionary header"))
           ItemReadProtocol.write(out,Data.mapper.createObjectNode().put("ok",true));started=true;writer.start()
@@ -80,9 +86,12 @@ final class ItemReadService(directory:Path,allocator:BufferAllocator,parent:Stre
               case _=>throw new IllegalArgumentException("unexpected Item stream event")
             }
           }
-          writer.end();ItemReadProtocol.write(out,Data.mapper.createObjectNode().put("complete",true));out.flush()
-        }finally {try writer.close()finally {root.close();header.foreach(_.close())}}
+          writer.end()
+        }finally {try writer.close()finally {try root.close()finally header.foreach(_.close())}}
       }finally source.close()
+      token.active()
+      out.flush()
+      ItemReadProtocol.write(out,Data.mapper.createObjectNode().put("complete",true))
     }catch {case scala.util.control.NonFatal(e)=>if(!started)try ItemReadProtocol.write(out,Data.mapper.createObjectNode().put("ok",false).put("error",Option(e.getMessage).getOrElse(e.getClass.getSimpleName).take(4096)))catch{case scala.util.control.NonFatal(_)=>()}}
     finally token.close()
   }
