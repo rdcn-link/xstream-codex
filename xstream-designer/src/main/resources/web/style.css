@@ -177,10 +177,10 @@ header{min-height:40px;padding:4px 12px;gap:7px}header img{width:26px;height:26p
 /* Repository trust in operator details and canvas cards. */
 .operator-mark{display:inline-flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;min-width:38px}
 .operator-mark{position:relative;overflow:visible}
-.operator-role-badge{position:absolute;top:-4px;left:-5px;display:grid;place-items:center;width:13px;height:13px;border:1px solid #fff;border-radius:50%;background:#e3f3ed;color:#178168;font:700 10px/1 system-ui;box-shadow:0 1px 3px #21395130;pointer-events:none}
-.operator-role-badge.role-transform{background:#eee9f9;color:#7353a1}.operator-role-badge.role-sink{background:#fff0d8;color:#a56d1d}
-.operator-type-badge{position:absolute;right:-7px;bottom:-5px;padding:1px 2px;border:1px solid #fff;border-radius:3px;background:#e5edfa;color:#385f91;font:700 6px/1.15 system-ui;letter-spacing:.01em;box-shadow:0 1px 3px #21395130;pointer-events:none}
-.operator-type-badge.type-command{background:#e9ecf0;color:#526174}.operator-type-badge.type-script{background:#f6eaf4;color:#925b8c}
+.operator-role-badge{position:absolute;top:-4px;left:-5px;display:grid;place-items:center;width:13px;height:13px;border:1px solid #fff;border-radius:50%;background:var(--role-soft);color:var(--role-ink);font:700 10px/1 system-ui;box-shadow:0 1px 3px #21395130;pointer-events:none}
+.operator-mark.role-source{--role-soft:#e3f3ed;--role-ink:#16835d}.operator-mark.role-transform{--role-soft:#e8effc;--role-ink:#376ac7}.operator-mark.role-sink{--role-soft:#fff0d8;--role-ink:#bf7416}
+.operator-type-badge{position:absolute;right:-7px;bottom:-5px;padding:1px 2px;border:1px solid #fff;border-radius:3px;background:var(--role-soft);color:var(--role-ink);font:700 6px/1.15 system-ui;letter-spacing:.01em;box-shadow:0 1px 3px #21395130;pointer-events:none}
+
 .library-panel .operator-mark{margin-right:7px}
 .library-panel[data-operator-view=icons] .operator-mark{margin-right:0}
 .operator-rating{display:flex;justify-content:center;gap:0;font-size:8px;line-height:10px;white-space:nowrap}

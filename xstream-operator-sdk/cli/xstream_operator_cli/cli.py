@@ -211,7 +211,7 @@ def create_template(directory, language):
     name = directory.name.replace('_', '-')
     python = language in ('python', 'shell')
     n = dict(name=name, version='1.0.0', role='transform', type='sdk', description='Streaming identity operator',
-             icon={'path': 'M3 12h18m-6-6 6 6-6 6', 'color': '#087d8c'},
+             icon={'path': 'M3 12h18m-6-6 6 6-6 6'},
              inputs={'source': {'representations': ['bytes'], 'formats': []}}, outputs={'result': {'view': 'bytes'}},
              parameters={'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False},
              language='python' if python else 'java', entrypoint='main' if python else 'Identity',

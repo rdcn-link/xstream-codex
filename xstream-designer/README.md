@@ -118,7 +118,7 @@ Deleting multiple steps requires confirmation; cancel preserves selection, the j
 
 Dragging steps or Client Sink, or adding an operator, automatically moves overlapping steps and Client Sink downward, cascading as needed and leaving a gap. Selected steps keep their relative offsets and stay at the dragged destination. Each preview starts from the original layout, so moving away restores neighbors; cancelling restores the complete layout without changing history. Dropping commits the entire move as one undo/redo operation. Connections are not placement obstacles.
 
-The top-right corner of each step card displays the operator’s declared icon and color, matching the operator library. The built-in `item_source` uses the same data-source icon. A gray placeholder appears while operator metadata is unavailable.
+The top-right corner of each step card displays the operator’s declared icon with its framework-assigned role color, matching the operator library. The built-in `item_source` uses the same data-source icon. A gray placeholder appears while operator metadata is unavailable.
 
 Parameters use a compact form with fixed name labels. Declared single-type values show a type label and a small `$` variable toggle. Descriptions, defaults and constraints are available from the info hint. Optional parameters are enabled by checkbox. Multiline strings, nested objects, arrays, enums and union types remain editable. Additional parameter names are entered only during creation; existing names are labels.
 

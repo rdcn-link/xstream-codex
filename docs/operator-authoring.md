@@ -164,7 +164,6 @@ runtime: jvm-arrow@2.1
 source_public: true
 icon:
   path: M4 19L12 5l8 14M7 14h10
-  color: '#14866b'
 inputs:
   source:
     representations:

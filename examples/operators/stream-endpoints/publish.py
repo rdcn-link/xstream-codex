@@ -81,7 +81,7 @@ steps:
         manifest = {
             'api_version': 2, 'name': operator, 'version': '1.0', 'role': role, 'type': 'sdk',
             'description': 'Read a selected catalog Item View as a stream.' if role == 'source' else 'Return named result streams to the Job caller without publishing a dataset.',
-            'icon': {'path': 'M5 6h14v5H5zM12 11v9m-4-4 4 4 4-4' if role == 'source' else 'M4 4h16v12H4zM8 20h8M12 16v4', 'color': '#2378cb' if role == 'source' else '#a56d1d'},
+            'icon': {'path': 'M5 6h14v5H5zM12 11v9m-4-4 4 4 4-4' if role == 'source' else 'M4 4h16v12H4zM8 20h8M12 16v4' if role == 'source' else '#a56d1d'},
             'inputs': inputs, 'outputs': {'result': {'view': 'variable', 'view_from': {'parameter': 'view'}}} if role == 'source' else {}, 'parameters': {'type': 'object', 'properties': params, 'required': ['uri'] if role == 'source' else [], 'additionalProperties': False},
             'execution': {'executor': 'stream', 'entrypoint': operation, 'config': {}},
             'runtime': {'image': runtime['image'], 'archive': runtime['archive']},

@@ -28,6 +28,8 @@ Target 默认为 Local。通过 Target 控件选择已配置的远程目标，�
 
 ## 3. 建立处理链
 
+画布中的步骤边框按角色统一配色：Source 为绿色、Transform 为蓝色、Sink 为橙色。角色角标采用相同配色并配有不同符号；算子图标也采用相同角色色。作者仅提供 SVG 路径，不填写 `icon.color`。
+
 ```mermaid
 flowchart LR
   Item["选择 Item 与视图"] --> Read["item_source"]

@@ -43,7 +43,6 @@ runtime: python-arrow@1.0
 source_public: false
 icon:
   path: M3 5h18v14H3zM3 10h18M9 5v14
-  color: '#14866b'
 inputs:
   source:
     representations:
@@ -172,7 +171,7 @@ Python/Arrow、JVM 和 Python 科学计算环境的准备方式见[常用运行�
 
 算子详情页提供 **Operator package**（算子程序包）及允许公开的源码、许可证和 SBOM 下载。共用的执行与构建环境统一在 **Runtimes** 目录下载，算子详情页提供对应环境的跳转链接。Docker 镜像 ID 标识执行镜像，归档 SHA-256 用于校验下载文件。
 
-管理员可通过 `POST /api/admin/submissions/{id}/icon` 修改已发布算子的图标，请求示例为 `{"icon":{"path":"M3 4h18v16H3z","color":"#2378cb"}}`。此接口同样要求管理员会话及 CSRF 校验。仅修改校验通过的 SVG 路径和颜色，保留已批准的构建产物、运行环境和可信度评估。
+管理员可通过 `POST /api/admin/submissions/{id}/icon` 修改已发布算子的图标，请求示例为 `{"icon":{"path":"M3 4h18v16H3z"}}`。此接口同样要求管理员会话及 CSRF 校验。仅修改校验通过的 SVG 路径，保留已批准的构建产物、运行环境和可信度评估。
 
 ## 源码发布流程
 

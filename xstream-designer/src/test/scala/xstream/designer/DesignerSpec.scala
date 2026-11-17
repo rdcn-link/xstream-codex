@@ -218,7 +218,7 @@ class DesignerSpec extends AnyFunSuite {
   }
   test("public HTTP editor, export and unconfigured model chat without leaking credentials"){
     val repo=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
-    repo.createContext("/v1/operators",x=>{val bytes="""[{"name":"piflow_csv_parser","version":"1.0","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["bytes"]}}},{"name":"piflow_filter","version":"1.0","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["records"]}}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()});repo.start()
+    repo.createContext("/v1/operators",x=>{val bytes="""[{"name":"piflow_csv_parser","version":"1.0","icon":{"path":"M3 5h18v14H3z"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["bytes"]}}},{"name":"piflow_filter","version":"1.0","icon":{"path":"M3 5h18v14H3z"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false},"inputs":{"source":{"representations":["records"]}}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()});repo.start()
     val config=Documents.mapping(s"""host: 127.0.0.1
                                   |port: 0
                                   |nodes:
@@ -343,7 +343,7 @@ class DesignerSpec extends AnyFunSuite {
     val observed=new java.util.concurrent.atomic.AtomicReference[com.fasterxml.jackson.databind.JsonNode]()
     val model=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
     model.createContext("/v1/operators",x=>{
-      val bytes="""[{"name":"item_source","version":"1.0","role":"source","type":"sdk","icon":{"path":"M3 5h18v14H3z","color":"#287da2"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}},{"name":"client_sink","version":"1.0","role":"sink","type":"sdk","icon":{"path":"M3 5h18v14H3z","color":"#287da2"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
+      val bytes="""[{"name":"item_source","version":"1.0","role":"source","type":"sdk","icon":{"path":"M3 5h18v14H3z"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}},{"name":"client_sink","version":"1.0","role":"sink","type":"sdk","icon":{"path":"M3 5h18v14H3z"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}}]""".getBytes(UTF_8);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()
     })
     model.createContext("/completions",x=>{
       observed.set(Json.mapper.readTree(x.getRequestBody.readAllBytes()))

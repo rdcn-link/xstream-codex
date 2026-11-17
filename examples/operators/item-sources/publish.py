@@ -41,7 +41,6 @@ SPECS = {'folder_items_source': {'class': 'FolderItemsSource',
                                 '  operator: client_sink@1.0\n'
                                 '  inputs: {result: inspect:result}\n',
                          'icon': 'M3 6h7l2 2h9v12H3z',
-                         'color': '#287da2',
                          'categories': ['Source', 'Items']},
  'csv_items_source': {'class': 'CsvItemsSource',
                       'role': 'source',
@@ -74,7 +73,6 @@ SPECS = {'folder_items_source': {'class': 'FolderItemsSource',
                              '  operator: client_sink@1.0\n'
                              '  inputs: {result: inspect:result}\n',
                       'icon': 'M3 6h7l2 2h9v12H3z',
-                      'color': '#287da2',
                       'categories': ['Source', 'Items']},
  'item_inventory': {'class': 'ItemInventory',
                     'role': 'transform',
@@ -98,7 +96,6 @@ SPECS = {'folder_items_source': {'class': 'FolderItemsSource',
                            '  operator: client_sink@1.0\n'
                            '  inputs: {result: inspect:result}\n',
                     'icon': 'M5 3h14v18H5zM8 8h8M8 12h8M8 16h5',
-                    'color': '#23836d',
                     'categories': ['Transform', 'Items']},
  'item_byte_count': {'class': 'ItemByteCount',
                      'role': 'transform',
@@ -122,7 +119,6 @@ SPECS = {'folder_items_source': {'class': 'FolderItemsSource',
                             '  operator: client_sink@1.0\n'
                             '  inputs: {result: inspect:result}\n',
                      'icon': 'M5 3h14v18H5zM8 8h8M8 12h8M8 16h5',
-                     'color': '#23836d',
                      'categories': ['Transform', 'Items']}}
 
 def archive():
@@ -179,7 +175,7 @@ def main():
         }
         manifest = {
             'api_version': 2, 'name': name, 'version': '1.0', 'role': spec['role'], 'type': 'sdk',
-            'description': spec['description'], 'icon': {'path': spec['icon'], 'color': spec['color']},
+            'description': spec['description'], 'icon': {'path': spec['icon']},
             'inputs': spec['inputs'], 'outputs': {port: {'view': 'items' if spec['role'] == 'source' else 'bytes'} for port in spec['outputs']}, 'parameters': {'type': 'object', 'properties': spec['properties'], 'required': spec['required'], 'additionalProperties': False},
             'documentation': documentation, 'execution': {'executor': 'jvm', 'entrypoint': 'xstream.examples.items.' + spec['class'], 'config': {}},
             'runtime': {'image': runtime['image'], 'archive': runtime['archive']}, 'dependencies': {'provider': 'jvm'},

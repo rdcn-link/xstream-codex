@@ -34,7 +34,7 @@ entrypoint: Main
 inputs: {}
 outputs: {result: {view: bytes}}
 parameters: {type: object, properties: {}, required: [], additionalProperties: false}
-icon: {path: 'M0 0L1 1', color: '#14866b'}
+icon: {path: 'M0 0L1 1'}
 """)
       Files.writeString(directory.resolve("local.yaml"),"image: test/runtime:1\nexecutor: jvm\nbuild: {provider: test}\n")
       val first=LocalOperatorLibrary.prepare(env,root,"filter@1.0",()=>())

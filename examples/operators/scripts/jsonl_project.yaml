@@ -4,7 +4,6 @@ description: Select top-level fields from JSONL objects without buffering the co
   stream.
 icon:
   path: M3 4h18v16H3zM3 9h18M9 4v16M15 4v16M18 12v5
-  color: '#d19029'
 inputs:
   source:
     representations:

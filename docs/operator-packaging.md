@@ -33,7 +33,6 @@ inputs:
     formats: []
 icon:
   path: M3 5h18v14H3zM3 10h18M9 5v14
-  color: '#14866b'
 parameters:
   type: object
   properties: {}

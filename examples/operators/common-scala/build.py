@@ -70,7 +70,7 @@ def build(runtime_catalog,destination,runtime_descriptor):
         except OSError:__import__('shutil').copyfile(original,target)
     assert hashlib.sha256(target.read_bytes()).hexdigest()==runtime['archive']['sha256']
     for name,s in CATALOG.items():
-        m=dict(api_version=2,role='transform',type='sdk',icon=dict(path='M3 5h18v14H3zM3 10h18M9 5v14',color='#14866b'),name='scala_'+name,version='1.0',parameters=parameter_schema(s['params']),description=s['description']+'; params='+json.dumps(s['params'],ensure_ascii=False,separators=(',',':')),
+        m=dict(api_version=2,role='transform',type='sdk',icon=dict(path='M3 5h18v14H3zM3 10h18M9 5v14'),name='scala_'+name,version='1.0',parameters=parameter_schema(s['params']),description=s['description']+'; params='+json.dumps(s['params'],ensure_ascii=False,separators=(',',':')),
                inputs={'source':{'representations':['bytes'],'formats':[]}},
                execution={'executor':'jvm','entrypoint':'dacp.common.Op_'+name,'config':{}},runtime=runtime,artifact=artifact,
                provenance={'source_archive':source,'source_repository':'https://github.com/rdcn-link/xstream-codex','build_instructions':'From the project root publish the plugin API and operator SDK locally, then run .venv/bin/python examples/operators/common-scala/build.py. See bundled bilingual instructions. Runtime dependencies are provided by xstream/operator-jvm:1.1.'})

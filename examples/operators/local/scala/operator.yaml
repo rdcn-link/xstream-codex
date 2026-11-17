@@ -19,6 +19,5 @@ parameters:
   additionalProperties: false
 icon:
   path: M4 18L10 6L16 18M6 14H14M18 8H22M20 6V18
-  color: '#14866b'
 provenance:
   license: Apache-2.0

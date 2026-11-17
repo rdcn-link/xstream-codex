@@ -71,7 +71,7 @@ FIELD_INFO={
 
 result={}
 for name,(cls,description,properties,params,path) in specs.items():
- result[name]={'name':'galaxy_'+name,'version':'1.0.1' if name=='tabular_to_fasta' else '1.0','description':description,'entrypoint':'xstream.galaxy.'+cls,'icon':{'path':path,'color':'#5265ad'},'parameters':{'type':'object','properties':properties,'required':[],'additionalProperties':False},'params':params}
+ result[name]={'name':'galaxy_'+name,'version':'1.0.1' if name=='tabular_to_fasta' else '1.0','description':description,'entrypoint':'xstream.galaxy.'+cls,'icon':{'path':path},'parameters':{'type':'object','properties':properties,'required':[],'additionalProperties':False},'params':params}
 for name,item in result.items():
  pdocs={}
  for key,schema in item['parameters']['properties'].items():

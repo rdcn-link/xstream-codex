@@ -10,7 +10,7 @@ import scala.jdk.CollectionConverters._
 
 class MultipleRepositoriesSpec extends AnyFunSuite {
   test("catalog merges repositories, preserves versions and gives the first repository precedence") {
-    def operator(name:String,version:String,description:String)=Json.mapper.readTree(s"""{"name":"$name","version":"$version","description":"$description","icon":{"path":"M3 5h18v14H3z","color":"#14866b"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}}""")
+    def operator(name:String,version:String,description:String)=Json.mapper.readTree(s"""{"name":"$name","version":"$version","description":"$description","icon":{"path":"M3 5h18v14H3z"},"parameters":{"type":"object","properties":{},"required":[],"additionalProperties":false}}""")
     def repo(items:Seq[com.fasterxml.jackson.databind.JsonNode])={
       val server=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0)
       server.createContext("/v1/operators",x=>{val bytes=Json.mapper.writeValueAsBytes(items.asJava);x.sendResponseHeaders(200,bytes.length);x.getResponseBody.write(bytes);x.close()})

@@ -20,7 +20,7 @@ executor_config:
   stdin: null
   stdout: {port: result, representation: bytes, format: text}
 inputs: {}
-icon: {path: 'M3 3h18v18H3z', color: '#14866b'}
+icon: {path: 'M3 3h18v18H3z'}
 parameters: {type: object, properties: {}, required: [], additionalProperties: false}
 ''')
  (r/'config.yaml').write_text(json.dumps({'remote_operator_library_urls':[a.repository],'local_operator_library':str(r/'library'),'operator_cache':str(r/'cache'),'execution_directory':str(r/'history'),'operator_fusion':'isolated','execution_resources':{'max_tmp_size_mb':512,'max_memory_mb':1024}}))

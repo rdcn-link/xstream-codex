@@ -17,7 +17,7 @@ SPECS = {
         'properties': {'text': {'type': 'string', 'maxLength': 4096, 'description': 'Text to emit.'}, 'repeat': {'type': 'integer', 'minimum': 0, 'maximum': 10000, 'default': 1, 'description': 'Number of repetitions.'}},
         'required': ['text'], 'examples': {'text': ('UTF-8 content to generate.', 'hello\n'), 'repeat': ('Repeat count; zero produces an empty stream.', 3)},
         'job': 'name: Generate text\nsteps:\n- id: generate\n  operator: text_source@1.0\n  inputs: {}\n  params: {text: "hello\\n", repeat: 3}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: generate}\n',
-        'icon': 'M4 5h16v14H4zM8 9h8M8 13h6M8 17h4', 'color': '#23836d', 'categories': ['Source', 'Text'],
+        'icon': 'M4 5h16v14H4zM8 9h8M8 13h6M8 17h4', 'categories': ['Source', 'Text'],
     },
     'range_source': {
         'class': 'RangeSource', 'role': 'source', 'description': 'Generate newline-delimited integers as a bounded byte stream.',
@@ -25,7 +25,7 @@ SPECS = {
         'properties': {'start': {'type': 'integer', 'description': 'First integer in the range.'}, 'count': {'type': 'integer', 'minimum': 0, 'maximum': 100000, 'description': 'Number of integers.'}},
         'required': ['start', 'count'], 'examples': {'start': ('Choose the first signed 64-bit integer.', 1), 'count': ('Generate at most 100000 lines.', 100)},
         'job': 'name: Generate integer range\nsteps:\n- id: generate\n  operator: range_source@1.0\n  inputs: {}\n  params: {start: 1, count: 100}\n- id: client_sink\n  operator: client_sink@1.0\n  inputs: {result: generate}\n',
-        'icon': 'M4 4h16v16H4zM8 9h2M8 13h5M8 17h8', 'color': '#287da2', 'categories': ['Source', 'Numbers'],
+        'icon': 'M4 4h16v16H4zM8 9h2M8 13h5M8 17h8', 'categories': ['Source', 'Numbers'],
     },
     'contains_text_sink': {
         'class': 'ContainsTextSink', 'role': 'sink', 'description': 'Fail the Job unless a byte stream contains the specified UTF-8 text.',
@@ -33,7 +33,7 @@ SPECS = {
         'properties': {'text': {'type': 'string', 'minLength': 1, 'maxLength': 256, 'description': 'Required UTF-8 text.'}},
         'required': ['text'], 'examples': {'text': ('Match across chunk boundaries; use a nonempty exact string.', 'success')},
         'job': 'name: Assert text occurs\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: context:/example/input.txt, view: bytes}\n- id: check\n  operator: contains_text_sink@1.0\n  inputs: {source: read}\n  params: {text: success}\n',
-        'icon': 'M4 4h16v16H4zM7 12l3 3 7-7', 'color': '#9c6941', 'categories': ['Sink', 'Validation'],
+        'icon': 'M4 4h16v16H4zM7 12l3 3 7-7', 'categories': ['Sink', 'Validation'],
     },
     'min_lines_sink': {
         'class': 'MinLinesSink', 'role': 'sink', 'description': 'Fail the Job unless a byte stream contains a minimum number of lines.',
@@ -41,7 +41,7 @@ SPECS = {
         'properties': {'minimum': {'type': 'integer', 'minimum': 0, 'maximum': 100000000, 'description': 'Minimum accepted line count.'}},
         'required': ['minimum'], 'examples': {'minimum': ('A final line without a newline is counted.', 10)},
         'job': 'name: Assert line count\nsteps:\n- id: read\n  operator: item_source@1.0\n  inputs: {}\n  params: {uri: context:/example/input.txt, view: bytes}\n- id: check\n  operator: min_lines_sink@1.0\n  inputs: {source: read}\n  params: {minimum: 10}\n',
-        'icon': 'M4 4h16v16H4zM7 9h10M7 13h10M7 17h6', 'color': '#a27135', 'categories': ['Sink', 'Validation'],
+        'icon': 'M4 4h16v16H4zM7 9h10M7 13h10M7 17h6', 'categories': ['Sink', 'Validation'],
     },
 }
 
@@ -96,7 +96,7 @@ def main():
         }
         manifest = {
             'api_version': 2, 'name': name, 'version': '1.0', 'role': spec['role'], 'type': 'sdk',
-            'description': spec['description'], 'icon': {'path': spec['icon'], 'color': spec['color']},
+            'description': spec['description'], 'icon': {'path': spec['icon']},
             'inputs': spec['inputs'], 'outputs': {port: {'view': 'bytes'} for port in spec['outputs']}, 'parameters': {'type': 'object', 'properties': spec['properties'], 'required': spec['required'], 'additionalProperties': False},
             'documentation': documentation, 'execution': {'executor': 'jvm', 'entrypoint': 'xstream.examples.endpoints.' + spec['class'], 'config': {}},
             'runtime': {'image': runtime['image'], 'archive': runtime['archive']}, 'dependencies': {'provider': 'jvm'},

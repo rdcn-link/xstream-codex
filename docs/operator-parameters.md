@@ -22,7 +22,6 @@ inputs:
     formats: []
 icon:
   path: M3 5h18v14H3zM3 10h18M9 5v14
-  color: '#14866b'
 parameters:
   type: object
   properties:
@@ -95,7 +94,6 @@ The root must have `type: object`. Nesting is limited to 16 levels. Operators wi
 ```yaml
 icon:
   path: "M3 5h18v14H3zM3 10h18M9 5v14"
-  color: "#14866b"
 parameters:
   type: object
   properties: {}
@@ -108,7 +106,6 @@ A dynamic mapping, such as column names mapped to aggregate functions:
 ```yaml
 icon:
   path: "M3 5h18v14H3zM3 10h18M9 5v14"
-  color: "#14866b"
 parameters:
   type: object
   properties:

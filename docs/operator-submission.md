@@ -43,7 +43,6 @@ runtime: python-arrow@1.0
 source_public: false
 icon:
   path: M3 5h18v14H3zM3 10h18M9 5v14
-  color: '#14866b'
 inputs:
   source:
     representations:
@@ -172,7 +171,7 @@ For common Python/Arrow, JVM and scientific Python environments, see [runtime ex
 
 Operator detail pages provide the **Operator package** and any public source, license and SBOM downloads. Shared execution and build environments are downloaded from the **Runtimes** catalog, linked from the operator details. The Docker image ID identifies the execution image; an archive SHA-256 verifies the downloaded file.
 
-An administrator can update a published operator’s icon using `POST /api/admin/submissions/{id}/icon`, with `{"icon":{"path":"M3 4h18v16H3z","color":"#2378cb"}}`. The same administrator session and CSRF checks apply. Only the validated SVG path and color change; the approved artifact, runtime and trust assessment are preserved.
+An administrator can update a published operator’s icon using `POST /api/admin/submissions/{id}/icon`, with `{"icon":{"path":"M3 4h18v16H3z"}}`. The same administrator session and CSRF checks apply. Only the validated SVG path changes; the approved artifact, runtime and trust assessment are preserved.
 
 ## Source publication flow
 

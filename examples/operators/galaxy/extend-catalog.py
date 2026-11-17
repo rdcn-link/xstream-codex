@@ -35,7 +35,7 @@ for name,s in specs.items():
   (ROOT/'data/extended'/f'{name}-{port}.txt').write_text(value)
  s['inputs']={port:{'representations':['bytes'],'formats':[]} for port in ['source',*extra_inputs]}
  s['documentation']={'inputs':{port:'UTF-8 bytes stream. '+s['scope'] for port in s['inputs']},'outputs':{'result':s['description']+' '+s['scope']},'parameters':docs,'example_job':yaml.safe_dump(job,sort_keys=False,allow_unicode=True)}
- s['icon']={'path':'M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5','color':'#5265ad'}
+ s['icon']={'path':'M4 3h12l4 4v14H4zM8 11h8M8 15h8m-8 4h5'}
  data=ROOT/'data/extended'/f'{name}.txt';data.parent.mkdir(parents=True,exist_ok=True);data.write_text(s['fixture']['data'])
  jobpath=ROOT/'jobs-extended'/f'{name}.yaml';jobpath.parent.mkdir(parents=True,exist_ok=True);jobpath.write_text(s['documentation']['example_job'])
 (ROOT/'extra-specs.json').write_text(json.dumps(specs,indent=2)+'\n')

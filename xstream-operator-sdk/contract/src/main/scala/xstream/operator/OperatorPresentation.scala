@@ -6,6 +6,12 @@ import scala.jdk.CollectionConverters._
 
 /** Portable presentation metadata. Icons are local 24×24 SVG paths, never executable SVG or URLs. */
 object OperatorPresentation {
+  def roleColor(role:String):String=role match {
+    case "source"=>"#16835d"
+    case "transform"=>"#376ac7"
+    case "sink"=>"#bf7416"
+    case _=>throw new IllegalArgumentException("invalid operator role")
+  }
   def validateCategories(n:JsonNode,required:Boolean):Unit={
     require(n!=null && n.isArray && n.size()<=16 && (!required || n.size()>0),"categories must contain 1–16 labels")
     val labels=n.elements.asScala.toVector
@@ -17,9 +23,8 @@ object OperatorPresentation {
     require(!n.has("category"), "category was removed; repository administrators assign categories")
     if(n.has("categories")) validateCategories(n.get("categories"),required=true)
     val icon = n.path("icon")
-    require(icon.isObject && icon.fieldNames.asScala.toSet == Set("path", "color"), "icon requires path and color")
+    require(icon.isObject && icon.fieldNames.asScala.toSet == Set("path"), "icon accepts only path; its color is determined by operator role")
     val path = icon.path("path")
     require(path.isTextual && path.asText.length <= 2048 && path.asText.matches("[Mm][0-9\\s.,+eE\\-MmLlHhVvCcSsQqTtAaZz]+") && path.asText.exists(_.isDigit), "icon.path must be a 24x24 SVG path (maximum 2048 characters)")
-    require(icon.path("color").isTextual && icon.path("color").asText.matches("#[0-9a-fA-F]{6}"), "icon.color must be #RRGGBB")
   }
 }

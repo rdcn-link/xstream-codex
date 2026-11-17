@@ -3,7 +3,6 @@ version: '1.0'
 description: Replace literal text in bounded UTF-8 lines, preserving line endings.
 icon:
   path: M4 6h9M8.5 6v12M4 18h9M16 9l4 3-4 3
-  color: '#167b9c'
 inputs:
   source:
     representations:

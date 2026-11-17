@@ -67,7 +67,6 @@ parameters:
   additionalProperties: false
 icon:
   path: M4 4H20L14 12V20L10 18V12Z
-  color: '#14866b'
 outputs:
   result:
     view: variable

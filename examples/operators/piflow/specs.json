@@ -39,8 +39,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "drop_field": {
@@ -83,8 +82,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "convert_schema": {
@@ -127,8 +125,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "distinct": {
@@ -170,8 +167,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "add_uuid_stop": {
@@ -214,8 +210,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "filter": {
@@ -259,8 +254,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 4h18l-7 8v7l-4 2V12z",
-      "color": "#14866b"
+      "path": "M3 4h18l-7 8v7l-4 2V12z"
     }
   },
   "fork": {
@@ -302,8 +296,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "column_check": {
@@ -343,8 +336,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "consistency_check": {
@@ -399,8 +391,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "merge": {
@@ -440,8 +431,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#b95f20"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "subtract": {
@@ -481,8 +471,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "join": {
@@ -543,8 +532,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M14 12a5 5 0 1 1-10 0a5 5 0 1 1 10 0M20 12a5 5 0 1 1-10 0a5 5 0 1 1 10 0",
-      "color": "#8456c4"
+      "path": "M14 12a5 5 0 1 1-10 0a5 5 0 1 1 10 0M20 12a5 5 0 1 1-10 0a5 5 0 1 1 10 0"
     }
   },
   "add_day_id": {
@@ -591,8 +579,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "route": {
@@ -652,8 +639,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "execute_sql_stop": {
@@ -703,8 +689,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M4 5h16v14H4zM8 9l3 3-3 3m5 0h4",
-      "color": "#2874bb"
+      "path": "M4 5h16v14H4zM8 9l3 3-3 3m5 0h4"
     }
   },
   "csv_save": {
@@ -754,8 +739,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M13 3h5l3 3v15h-8M18 3v4h3M3 4h7v9H3zM3 7h7M6.5 4v9M3 17h11m-3-3 3 3-3 3",
-      "color": "#c17c22"
+      "path": "M13 3h5l3 3v15h-8M18 3v4h3M3 4h7v9H3zM3 7h7M6.5 4v9M3 17h11m-3-3 3 3-3 3"
     }
   },
   "csv_parser": {
@@ -810,8 +794,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 3h6l3 3v5M9 3v4h3M3 3v15h4M5 10h3M5 13h3M14 12h7v9h-7zM14 15h7M17.5 12v9M6 20h5m-2-2 2 2-2 2",
-      "color": "#2378cb"
+      "path": "M3 3h6l3 3v5M9 3v4h3M3 3v15h4M5 10h3M5 13h3M14 12h7v9h-7zM14 15h7M17.5 12v9M6 20h5m-2-2 2 2-2 2"
     }
   },
   "csv_string_parser": {
@@ -861,8 +844,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M8 5 3 12l5 7m8-14 5 7-5 7M14 4l-4 16",
-      "color": "#ac6a19"
+      "path": "M8 5 3 12l5 7m8-14 5 7-5 7M14 4l-4 16"
     }
   },
   "add_day_state": {
@@ -915,8 +897,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "table_show": {
@@ -960,8 +941,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "single_field_threshold_clean": {
@@ -1032,8 +1012,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "histogram": {
@@ -1098,8 +1077,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "line_chart": {
@@ -1164,8 +1142,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "batch_field_threshold_clean": {
@@ -1210,8 +1187,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "pie_chart": {
@@ -1268,8 +1244,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "scatter_plot_chart": {
@@ -1329,8 +1304,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "custom_view": {
@@ -1364,8 +1338,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "mdv_g": {
@@ -1424,8 +1397,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "mdv_i": {
@@ -1484,8 +1456,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "front_and_back_values_are_valid": {
@@ -1538,8 +1509,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "current_and_post_value_interpolation": {
@@ -1592,8 +1562,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "wpl_correction": {
@@ -1676,8 +1645,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "dr_coordinate_rotation": {
@@ -1850,8 +1818,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "pf_coordinate_rotation": {
@@ -2024,8 +1991,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "wild_spot_culling_mdv_i": {
@@ -2096,8 +2062,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "wild_spot_culling_mdv_g": {
@@ -2168,8 +2133,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "storage_item_ec": {
@@ -2234,8 +2198,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "rainfall_data_culling": {
@@ -2301,8 +2264,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "storage_item_pm_hs": {
@@ -2380,8 +2342,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "storage_item_pm_le": {
@@ -2459,8 +2420,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4",
-      "color": "#8456c4"
+      "path": "M3 5h5l5 7h8M3 19h5l5-7m4-4 4 4-4 4"
     }
   },
   "reichstein_check": {
@@ -2529,8 +2489,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "mock_data": {
@@ -2579,8 +2538,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "excel_write": {
@@ -2629,8 +2587,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   },
   "excel_read": {
@@ -2681,8 +2638,7 @@
       "additionalProperties": false
     },
     "icon": {
-      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14",
-      "color": "#14866b"
+      "path": "M3 5h18v14H3zM3 10h18M3 14h18M9 5v14"
     }
   }
 }

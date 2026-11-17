@@ -28,6 +28,8 @@ The exported `designer.target` remembers the design target. Execution uses the c
 
 ## 3. Build the processing chain
 
+Canvas step borders use a consistent role palette: green for Source, blue for Transform and orange for Sink. Role badges use the same palette and distinct symbols; operator icons use the same role color. Authors supply the SVG path, without `icon.color`.
+
 ```mermaid
 flowchart LR
   Item["Choose Item + view"] --> Read["item_source"]

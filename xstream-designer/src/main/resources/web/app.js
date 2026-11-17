@@ -58,7 +58,7 @@ function changed(){invalidate();render();persist();clearTimeout(yamlTimer);yamlT
 async function syncYaml(){const version=++docSequence;const response=await api('document',payload());if(version===docSequence&&!yamlEdited){jobYamlEditor.setText(response.job_yaml);}return response;}
 function restore(s){cancelConnection();job=clone(s.job);automaticReadViews=new Set(s.automaticReadViews||[]);positions=clone(s.positions);variablesEditor.setText(s.variables);selected=null;selectedSteps.clear();selectedEdge=null;yamlEdited=false;changed();restoreViewport(s.viewport);}
 let viewDefinitions={};
-function operatorIcon(icon){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',icon.path);svg.style.color=icon.color;svg.append(path);return svg;}
+function operatorIcon(icon,color=icon.color||'#77879c'){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',icon.path);svg.style.color=color;svg.append(path);return svg;}
 function operatorTrust(o){
  const score=o?.trust?.score;
  return  Number.isInteger(score)&&score>=0&&score<=5?{score,label:'Repository administrator trust: '+score+' / 5'}:
@@ -71,8 +71,8 @@ function operatorRating(o){
  return rating;
 }
 function operatorMark(o,showRating=true){
- const mark=el('span',undefined,'operator-mark');mark.append(operatorIcon(o?.icon||{path:'M4 5h16v14H4zM8 9h8M8 13h5',color:'#77879c'}));
  const role=o?.role||'transform',type=o?.type||'sdk';
+ const mark=el('span',undefined,'operator-mark role-'+role);mark.append(operatorIcon(o?.icon||{path:'M4 5h16v14H4zM8 9h8M8 13h5'},roleColor(role)));
  const roleGlyph={source:'⇥',transform:'◇',sink:'⇤'}[role]||'◇';
  const typeLabel={sdk:'SDK',command:'CMD',script:'SH'}[type]||type.toUpperCase();
  const roleBadge=el('span',roleGlyph,'operator-role-badge role-'+role),typeBadge=el('span',typeLabel,'operator-type-badge type-'+type);
@@ -101,7 +101,8 @@ function labelPort(button,t,port,input=false){
  const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',spec.path);svg.append(path);badge.append(svg);
  button.replaceChildren(el('span',port,'port-name'),badge);
 }
-function color(t){return manifest(t)?.icon?.color||'#77879c';}
+function color(t){return roleColor(manifest(t)?.role||(t.operator==='client_sink@1.0'?'sink':t.operator==='item_source@1.0'?'source':'transform'));}
+function roleColor(role){return {source:'#16835d',transform:'#376ac7',sink:'#bf7416'}[role]||'#77879c';}
 function point(t){return positions[t.id]||(positions[t.id]={x:70+job.steps.indexOf(t)*310,y:85});}
 function addOperator(op,x,y){const before=snapshot();if(op.name==='client_sink'&&job.steps.some(t=>t.operator==='client_sink@1.0')){notice('A Job accepts one Client Sink. Select its existing step to edit it.');return;}let i=1;while(job.steps.some(t=>t.id==='step_'+i))i++;const id='step_'+i;const t={id,title:op.name==='client_sink'?'Client Sink':op.name,operator:op.name+'@'+op.version,inputs:{},params:{}};if(op.name==='item_source'){t.params={uri:'$INPUT_URI',view:'records'};automaticReadViews.add(id);}job.steps.push(t);positions[id]={x:Math.max(30,x),y:Math.max(55,y)};selected=id;selectedSteps=new Set([id]);render();avoidSteps(dragLayout(),new Set([id]),false);recordSnapshot(before);changed();}
 
