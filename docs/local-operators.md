@@ -69,7 +69,7 @@ icon:
   path: M4 4H20L14 12V20L10 18V12Z
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 Provide code under `src/` using `BytesOperator`, `ByteStreamOperator`, `RecordsOperator` or the low-level SDK. Sources with no inputs and sinks with no outputs are supported. Output ports are announced by execution and the inference method, never duplicated in the manifest. Templates implement inference and bounded samples. See [operator authoring](operator-authoring.md).

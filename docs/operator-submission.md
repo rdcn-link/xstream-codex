@@ -69,7 +69,7 @@ provenance:
   license_file: LICENSE.txt
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 Use an actually registered runtime name/version. For Java or Scala, set `language` accordingly and `entrypoint` to the fully qualified main class, such as `example.WeatherFilter`. Source files belong under `src/example/`. The helper derives the executor and immutable runtime descriptors from the runtime catalog.

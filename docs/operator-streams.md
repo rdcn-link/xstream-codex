@@ -2,7 +2,7 @@
 
 [中文](operator-streams_zh.md)
 
-Port names and single fixed/variable View declarations follow the [port contract](operator-ports.md). Inference describes structure and cannot change declared types.
+Port names and single fixed/variant View declarations follow the [port contract](operator-ports.md). Inference describes structure and cannot change declared types.
 
 Each port consumes or produces one ordered Arrow stream, with an explicit schema, dictionaries and record batches. Bytes use binary chunks; records retain tabular schemas; array and sequence views preserve scientific structures. See [Arrow contracts](arrow-streams.md) for representations and buffer ownership.
 

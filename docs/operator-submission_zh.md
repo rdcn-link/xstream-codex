@@ -69,7 +69,7 @@ provenance:
   license_file: LICENSE.txt
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 运行环境名称/版本必须来自实际仓库。Java/Scala 相应设置 `language`，`entrypoint` 为完整主类名，如 `example.WeatherFilter`，源码放在 `src/example/`。辅助工具从环境目录推导执行器和不可变环境描述。

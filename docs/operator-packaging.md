@@ -40,7 +40,7 @@ parameters:
   additionalProperties: false
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 `jvm` needs a JAR and main class. `python` needs a `.py`, source `.zip` or `.whl` artifact and a module name (`entrypoint` selects the module for wheels; source executes the script). `command` adapts native stdin/stdout programs; see [native commands](native-commands.md). `container` uses its image's existing entrypoint and accepts neither an entrypoint override nor a code artifact. Every executor receives `operator /input /input/params.json` and `XSTREAM_OPERATOR=name@version`, following the existing [Arrow IPC contract](https://github.com/rdcn-link/xstream-codex/blob/main/docs/arrow-streams.md).

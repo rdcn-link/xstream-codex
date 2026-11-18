@@ -37,11 +37,11 @@ async def main():
   table=page.locator('[data-schema-port="read:result"] .port-schema-table')
   await expect(table.locator('th')).to_have_text('initial')
   await expect(table.locator('td')).to_have_text('string?')
-  await expect(page.locator('[data-output="read:result"] .port-view')).to_have_attribute('data-view','variable')
+  await expect(page.locator('[data-output="read:result"] .port-view')).to_have_attribute('data-view','variant')
   await expect(page.locator('[data-input="filter:source"] .port-view')).to_have_attribute('data-view','records')
   # Changing inferred structures must not change either declared interface type.
   await page.evaluate("report.steps.read.outputs.result.representations=['bytes'];refreshPortSchemas()")
-  await expect(page.locator('[data-output="read:result"] .port-view')).to_have_attribute('data-view','variable')
+  await expect(page.locator('[data-output="read:result"] .port-view')).to_have_attribute('data-view','variant')
   await expect(page.locator('[data-input="filter:source"] .port-view')).to_have_attribute('data-view','records')
   await page.evaluate("report.steps.read.outputs.result.representations=['records'];refreshPortSchemas()")
   compact=await table.evaluate('(e)=>({font:getComputedStyle(e).fontSize,padding:getComputedStyle(e.querySelector("td")).padding})')

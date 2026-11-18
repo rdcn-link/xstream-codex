@@ -95,10 +95,12 @@ function inputPorts(t){if(t.operator==='client_sink@1.0')return Object.keys(t.in
 function labelPort(button,t,port,input=false){
  const definition=manifest(t),view=input?PortViews.input(definition,port):PortViews.output(definition,port);
  const spec=PortViews.badge(view),badge=el('span',undefined,'port-view');badge.dataset.view=spec.view;
- badge.title=spec.label+(view==='variable'?' · Schema inference does not change this declared type.':'');
+ badge.title=spec.label+(view==='variant'?' · Schema inference does not change this declared type.':'');
  badge.setAttribute('role','img');badge.setAttribute('aria-label',spec.label);
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');
- const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',spec.path);svg.append(path);badge.append(svg);
+ const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',spec.path);svg.append(path);
+ if(view==='variant'){const dot=document.createElementNS(svg.namespaceURI,'circle');for(const [key,value]of Object.entries({cx:12,cy:12,r:2,fill:'currentColor',stroke:'none'}))dot.setAttribute(key,value);svg.append(dot);}
+ badge.append(svg);
  button.replaceChildren(el('span',port,'port-name'),badge);
 }
 function color(t){return roleColor(manifest(t)?.role||(t.operator==='client_sink@1.0'?'sink':t.operator==='item_source@1.0'?'source':'transform'));}

@@ -69,7 +69,7 @@ icon:
   path: M4 4H20L14 12V20L10 18V12Z
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 在 `src/` 下使用 `BytesOperator`、`ByteStreamOperator`、`RecordsOperator` 或底层 SDK 编写代码。支持无输入的数据源和无输出的终止步骤。输出端口由执行及结构推导方法给出，不在清单中重复声明。模板提供结构推导和有界样例实现，见[算子编写指南](operator-authoring_zh.md)。

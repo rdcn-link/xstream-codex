@@ -2,7 +2,7 @@
 
 [中文](structure-inference_zh.md)
 
-Every operator must declare [port names and View types](operator-ports.md) and provide an inference method. Manifests declare inputs, outputs and static parameters. Inference supplies invocation-specific structures for those declared ports; it cannot change their names or declared Views. A `variable` interface remains variable after inference. Sinks return an empty mapping; sources accept empty inputs. Missing methods, malformed responses, and timeouts fail validation without a manifest fallback.
+Every operator must declare [port names and View types](operator-ports.md) and provide an inference method. Manifests declare inputs, outputs and static parameters. Inference supplies invocation-specific structures for those declared ports; it cannot change their names or declared Views. A `variant` interface remains variant after inference. Sinks return an empty mapping; sources accept empty inputs. Missing methods, malformed responses, and timeouts fail validation without a manifest fallback.
 
 ```mermaid
 flowchart TD

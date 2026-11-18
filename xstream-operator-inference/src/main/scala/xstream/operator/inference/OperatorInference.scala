@@ -18,7 +18,7 @@ object OperatorInference {
   def contract(d:StreamDescriptor):PortContract=PortContract(
     if(d.representations.isEmpty)Set("bytes","records")else d.representations,d.formats,d.schema)
   def descriptor(c:PortContract):StreamDescriptor={
-    val concrete=if(c.representations.size==1 && !c.representations("variable"))c.representations else Set.empty[String]
+    val concrete=if(c.representations.size==1 && c.representations.forall(xstream.operator.OutputViews.isConcrete))c.representations else Set.empty[String]
     StreamDescriptor(concrete,c.formats,if(concrete==Set("records"))c.schema else None,
       if(concrete==Set("bytes") || (concrete==Set("records") && c.schema.nonEmpty))"known"else "unknown")
   }
@@ -31,7 +31,7 @@ object OperatorInference {
     inputs.foreach{case(p,d)=>
       val expected=op.inputs(p)
       expected.cardinality.foreach(c=>require(d.representations==Set("items") && d.structure.exists(_.path("cardinality").asText==c),s"incompatible Item cardinality on input $p"))
-      require(d.representations.size<=1 && !d.representations("variable") && (d.representations.isEmpty || expected.representations("variable") || d.representations.intersect(expected.representations).nonEmpty),s"incompatible representation on input $p")
+      require(d.representations.size<=1 && d.representations.forall(xstream.operator.OutputViews.isConcrete) && (d.representations.isEmpty || expected.representations("variant") || d.representations.intersect(expected.representations).nonEmpty),s"incompatible representation on input $p")
       require(d.formats.isEmpty || expected.formats.isEmpty || d.formats.intersect(expected.formats).nonEmpty,s"incompatible format on input $p")
       for(a<-d.schema;b<-expected.schema)require(a==b,s"incompatible schema on input $p")
     }

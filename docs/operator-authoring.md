@@ -142,7 +142,7 @@ These commands apply to directories following the source-project convention, not
 
 ## Inputs, parameters and outputs
 
-`inputs` declares named inputs, each with one concrete representation or `variable`; `outputs` declares named outputs with a single `view`. `parameters` declares JSON parameter types, defaults and constraints. Implement `inferOutputs`/`infer_outputs` to describe structures for the declared outputs. See [port Views](operator-ports.md). Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
+`inputs` declares named inputs, each with one concrete representation or `variant`; `outputs` declares named outputs with a single `view`. `parameters` declares JSON parameter types, defaults and constraints. Implement `inferOutputs`/`infer_outputs` to describe structures for the declared outputs. See [port Views](operator-ports.md). Parameter values come from Job `params`, such as `uppercase: true`, rather than the input data stream.
 
 Record templates process Arrow RecordBatch/VectorSchemaRoot tables with field types intact; implement `output_schema`/`outputSchema` when changing fields. General contexts provide `ctx.input(name)`, `ctx.records_output`/`ctx.recordsOutput` and byte equivalents. Fully consume multiple inputs one at a time in lexical port-name order; declare all outputs before writing data.
 
@@ -179,7 +179,7 @@ provenance:
   license_file: LICENSE.txt
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 Source archives cannot contain prebuilt JARs, wheels, executables, nested archives or symlinks. Package from the operator project, then run the helper from the XStream checkout:
 

@@ -41,8 +41,8 @@ async def main():
         assert result['calls']==result['history']==result['changes']==0,result
         assert result['input']=='old:result' and result['pendingPort']=='up:result',result
         assert 'bytes → records' in result['messages'][-1]['message'],result
-        # Matching and either-side variable contracts pass. Inference is irrelevant.
-        for output,input_ in [('bytes','bytes'),('records','records'),('variable','records'),('bytes','variable'),('variable','variable'),('array','array'),('items','items')]:
+        # Matching and either-side variant contracts pass. Inference is irrelevant.
+        for output,input_ in [('bytes','bytes'),('records','records'),('variant','records'),('bytes','variant'),('variant','variant'),('array','array'),('items','items')]:
             result=await page.evaluate('''async([output,input])=>{
               declarations.up.outputs.result.view=output;
               declarations.down.inputs.source.representations=[input];
@@ -67,5 +67,5 @@ async def main():
             }''',failure)
             assert result=={'input':'old:result','history':0,'error':True},result
         await browser.close()
-    print('PASS: mismatch rejection, variable types, declaration availability and atomic connection validation')
+    print('PASS: mismatch rejection, variant types, declaration availability and atomic connection validation')
 if __name__=='__main__':asyncio.run(main())

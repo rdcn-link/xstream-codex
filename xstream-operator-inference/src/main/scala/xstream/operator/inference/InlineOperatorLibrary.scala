@@ -31,7 +31,7 @@ object InlineOperatorLibrary {
     val image=docker.inspectImageCmd(runtime.image).exec().getId
     val path=prepared.program.artifact.map(p=>"/operator/"+p.getFileName.toString)
     val outputs=OperatorOutputContracts.ports(operator.definition,xstream.data.Data.mapper.createObjectNode(),Map.empty,allowPending=true)
-    val inputs=prepared.inputs.map{case(port,c)=>port->(if(c.representations==Set("variable"))c.copy(representations=xstream.execution.OperatorPorts.representations(config.plugins))else c)}
+    val inputs=prepared.inputs.map{case(port,c)=>port->(if(c.representations==Set("variant"))c.copy(representations=xstream.execution.OperatorPorts.representations(config.plugins))else c)}
     val program=prepared.program.copy(inputs=inputs.view.mapValues(_.representations).toMap,outputs=outputs.view.mapValues(_.representations).toMap)
     val command=config.plugins.byId(classOf[OperatorExecutor],executor).command(program,path)
     check()

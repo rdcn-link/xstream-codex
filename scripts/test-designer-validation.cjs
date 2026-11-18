@@ -5,7 +5,7 @@ const check=globalThis.WorkflowValidation.check;
 const source=id=>({id,operator:'item_source@1.0',inputs:{},params:{uri:'dacp://example/ds/data'}});
 const filter={id:'filter',operator:'filter@1',inputs:{source:'read'},params:{}};
 const sink={id:'receive',operator:'client_sink@1.0',inputs:{result:'filter'}};
-const catalog=[{name:'item_source',version:'1.0',role:'source',inputs:{},outputs:{result:{view:'variable'}}},{name:'filter',version:'1',role:'transform',outputs:{result:{view:'records'}},inputs:{source:{representations:['records']}}},{name:'client_sink',version:'1.0',role:'sink',outputs:{},inputs:{result:{representations:['variable']}}}];
+const catalog=[{name:'item_source',version:'1.0',role:'source',inputs:{},outputs:{result:{view:'variant'}}},{name:'filter',version:'1',role:'transform',outputs:{result:{view:'records'}},inputs:{source:{representations:['records']}}},{name:'client_sink',version:'1.0',role:'sink',outputs:{},inputs:{result:{representations:['variant']}}}];
 const report={steps:{read:{outputs:{result:{representations:['records']}},diagnostics:[]},filter:{outputs:{result:{representations:['records']}},diagnostics:[]},receive:{outputs:{},diagnostics:[]}}};
 const job={steps:[source('read'),filter,sink]};
 assert.deepEqual(check(job,catalog,report),[]);

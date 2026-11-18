@@ -14,8 +14,8 @@
 - [10. How does a custom operator process an `items` reference stream?](#10-how-does-a-custom-operator-process-an-items-reference-stream)
 - [11. Can I configure multiple operator repositories, and how are duplicate operators resolved?](#11-can-i-configure-multiple-operator-repositories-and-how-are-duplicate-operators-resolved)
 - [12. Why use an operator repository when inline operators are simpler?](#12-why-use-an-operator-repository-when-inline-operators-are-simpler)
-- [13. How do port Views differ from schemas, and why does a port remain variable after inference?](#13-how-do-port-views-differ-from-schemas-and-why-does-a-port-remain-variable-after-inference)
-- [14. Why does Designer reject a connection, and can variable ports consume arbitrary content?](#14-why-does-designer-reject-a-connection-and-can-variable-ports-consume-arbitrary-content)
+- [13. How do port Views differ from schemas, and why does a port remain variant after inference?](#13-how-do-port-views-differ-from-schemas-and-why-does-a-port-remain-variant-after-inference)
+- [14. Why does Designer reject a connection, and can variant ports consume arbitrary content?](#14-why-does-designer-reject-a-connection-and-can-variant-ports-consume-arbitrary-content)
 - [15. Does streaming guarantee no disk writes and no out-of-memory failures?](#15-does-streaming-guarantee-no-disk-writes-and-no-out-of-memory-failures)
 - [16. How do I choose isolated, fused or automatic execution units? Is fusion always faster?](#16-how-do-i-choose-isolated-fused-or-automatic-execution-units-is-fusion-always-faster)
 - [17. How does a failed step retry, and where should I place checkpoints?](#17-how-does-a-failed-step-retry-and-where-should-i-place-checkpoints)
@@ -360,17 +360,17 @@ A repository provides shared versioned identities, declared ports/parameters/exa
 
 Remote DACP nodes and Union accept publicly approved operators and reject inline/local definitions. This gives server administrators a defined code publication boundary; approval is not a guarantee that code is harmless, and container isolation, authorization and resource limits still apply. Develop locally, test the stream contract, then [submit for review](operator-submission.md) when sharing or remote execution is needed. See [local operators](local-operators.md) and [inline operators](inline-operators.md).
 
-## 13. How do port Views differ from schemas, and why does a port remain variable after inference?
+## 13. How do port Views differ from schemas, and why does a port remain variant after inference?
 
 A View determines stream representation, such as `bytes`, `records`, `array` or `items`. A schema describes an invocation's concrete structure, such as record field names and data types.
 
-Each operator port declares one fixed View or `variable` when its interface cannot fix one. Inference can determine an invocation's fields or concrete representation without changing the public port declaration, so a variable port retains its variable icon. `variable` is not a wire format: an opened stream must use one concrete View. A fixed records port may still have an unknown field schema. See [operator port Views](operator-ports.md).
+Each operator port declares one fixed View or `variant` when its interface cannot fix one. Inference can determine an invocation's fields or concrete representation without changing the public port declaration, so a variant port retains its variant icon. `variant` is not a wire format: an opened stream must use one concrete View. A fixed records port may still have an unknown field schema. See [operator port Views](operator-ports.md).
 
-## 14. Why does Designer reject a connection, and can variable ports consume arbitrary content?
+## 14. Why does Designer reject a connection, and can variant ports consume arbitrary content?
 
-Two fixed ports must have matching Views. For example, `bytes` cannot directly connect to `records`; use a parsing or conversion operator. A `variable` declaration at either end permits wiring but does not guarantee data compatibility. Inference and execution still validate the concrete representation.
+Two fixed ports must have matching Views. For example, `bytes` cannot directly connect to `records`; use a parsing or conversion operator. A `variant` declaration at either end permits wiring but does not guarantee data compatibility. Inference and execution still validate the concrete representation.
 
-A variable output producing records cannot feed a bytes-only input. Declaration metadata must also finish loading before a connection can be created. Inspect port hover descriptions, operator parameters and inference results to distinguish View incompatibility from record field incompatibility. See [operator port Views](operator-ports.md).
+A variant output producing records cannot feed a bytes-only input. Declaration metadata must also finish loading before a connection can be created. Inspect port hover descriptions, operator parameters and inference results to distinguish View incompatibility from record field incompatibility. See [operator port Views](operator-ports.md).
 
 ## 15. Does streaming guarantee no disk writes and no out-of-memory failures?
 

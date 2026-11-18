@@ -249,7 +249,7 @@ header button{display:inline-flex;align-items:center;justify-content:center;gap:
 .ports .port-view[data-view="items"]{color:#386ec2;background:#eef4ff;border-color:#d3e1f7}
 .ports .port-view[data-view="pending"],.ports .port-view[data-view="any"]{color:#8a95a4;background:#f4f6f9;border-color:#e5e9ef}
 
-.ports .port-view[data-view="variable"]{color:#7558a1;background:#f4eefb;border-color:#ded0f0}
+.ports .port-view[data-view="variant"]{color:#7558a1;background:#f4eefb;border-color:#ded0f0}
 
 /* Type mismatches never snap or replace an existing binding. */
 .ports button.connection-incompatible{background:#fff0f1;color:#b83251;outline:1px solid #e6a2b1;cursor:not-allowed}

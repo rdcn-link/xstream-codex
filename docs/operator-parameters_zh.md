@@ -51,7 +51,7 @@ parameters:
   additionalProperties: false
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 Job 步骤实际传入的是值，而不是契约：

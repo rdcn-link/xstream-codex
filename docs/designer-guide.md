@@ -39,7 +39,7 @@ flowchart LR
 ```
 
 1. Load an example from **Examples**, or add operators from the library.
-2. Click an output port, move to the destination input port and click to connect. Matching fixed View types connect; different fixed types are rejected with a message and a red preview. A `variable` declaration at either end allows the connection, with concrete compatibility checked during inference and execution. Missing type metadata blocks connection until it loads. Rejected connections preserve existing bindings. Right-click cancels the pending connection.
+2. Click an output port, move to the destination input port and click to connect. Matching fixed View types connect; different fixed types are rejected with a message and a red preview. A `variant` declaration at either end allows the connection, with concrete compatibility checked during inference and execution. Missing type metadata blocks connection until it loads. Rejected connections preserve existing bindings. Right-click cancels the pending connection.
 3. Connect the desired final output to Client Sink. One step output port supplies the Job output.
 4. Drag steps to arrange them. Box-select multiple elements to move them together. Use Delete, Duplicate step, Undo and Redo as needed.
 5. Double-click a step to open its properties. A single click selects it without opening the sidebar.
@@ -58,7 +58,7 @@ Edits apply automatically. Use the bottom **Variables** tab for values reference
 
 Schema inference follows affected stream dependencies when parameters or inputs change. Canvas steps display compact output schemas; the Outputs tab shows each port's expected structure and operator-provided sample. Samples are bounded, normally to 10 rows and 16 KiB per port. Record samples display as tables; binary samples use Base64. They are previews rather than results from the complete dataset.
 
-Each port shows a compact View icon. Hover over it to read the complete type name; assistive technology receives the same label. Bytes use a binary symbol, records a table, arrays stacked layers, Items stacked documents, and a variable View crossing arrows. Every port declares one concrete type or `variable`. A variable declaration remains variable even when schema inference describes the concrete structure for an invocation. Loading metadata uses an ellipsis icon. Schema inference also works in drafts with a disconnected Client Sink; execution-ready export still requires its input connection.
+Each port shows a compact View icon. Hover over it to read the complete type name; assistive technology receives the same label. Bytes use a `[01]` binary symbol, records a table, arrays stacked layers, Items stacked documents, and variant Views a purple diamond with a solid central dot. Every port declares one concrete type or `variant`. A variant declaration remains variant even when schema inference describes the concrete structure for an invocation. Loading metadata uses an ellipsis icon. Schema inference also works in drafts with a disconnected Client Sink; execution-ready export still requires its input connection.
 
 Unknown schema is a valid inference outcome, for example when parsing bytes without enough structure information. An inference error is reported separately. Use Logs for details and verify variables and Item paths. Scientific selection examples are in [scientific views](designer-scientific.md).
 

@@ -18,7 +18,7 @@ def route(req):
   name=path.rsplit('/',1)[1];n=req.request.post_data_json if req.request.method=='POST' else {}
   if name=='config':data={'chat_provider':'disabled','targets':[{'value':'local','label':'Local'}],'generator':{'name':'XStream Designer','version':'test'}}
   elif name=='views':data=views
-  elif name=='operators':data=[{'name':'item_source','version':'1.0','role':'source','type':'sdk','inputs':{},'outputs':{'result':{'view':'variable','view_from':{'parameter':'view'}}},'parameters':{'type':'object','properties':{'uri':{'type':'string'},'view':{'type':'string','enum':['bytes','records','array','sequence']}},'required':['uri']}}]
+  elif name=='operators':data=[{'name':'item_source','version':'1.0','role':'source','type':'sdk','inputs':{},'outputs':{'result':{'view':'variant','view_from':{'parameter':'view'}}},'parameters':{'type':'object','properties':{'uri':{'type':'string'},'view':{'type':'string','enum':['bytes','records','array','sequence']}},'required':['uri']}}]
   elif name=='catalogs':data=[{'name':'Target catalog','uri':'context:/'}]
   elif name=='datasets':data={'complete':True,'datasets':[{'name':'science','uri':'context:/science'}]}
   elif name=='items':data={'items':[{'path':'/genome','kind':'folder','views':['bytes'],'format':'fasta'}]} if n['path']=='/' else {'items':[{'path':'/genome/sequences','kind':'data','views':['sequence','bytes'],'format':'fasta'}]}

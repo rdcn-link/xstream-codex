@@ -9,11 +9,11 @@ artifact: identity.py
 
 inputs:
   source:
-    representations: [variable]
+    representations: [variant]
     formats: []
 
 outputs:
-  result: {view: variable, view_from: {input: source}}
+  result: {view: variant, view_from: {input: source}}
 parameters:
   type: object
   properties: {}

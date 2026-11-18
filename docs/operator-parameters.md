@@ -51,7 +51,7 @@ parameters:
   additionalProperties: false
 outputs:
   result:
-    view: variable
+    view: variant
 ```
 
 A Job step supplies values, rather than the contract:

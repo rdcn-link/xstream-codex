@@ -2,7 +2,7 @@
 
 [English](operator-streams.md)
 
-端口名称与单个固定／可变 View 声明遵循[端口契约](operator-ports_zh.md)；推导只描述结构，不改变声明的类型。
+端口名称与单个固定或 `variant` View 声明遵循[端口契约](operator-ports_zh.md)；推导只描述结构，不改变声明的类型。
 
 每个端口消费或产生一条有序 Arrow 流，带有明确的 schema、字典和记录批次。Bytes 使用二进制块，records 保留表结构，数组及序列视图保留科学数据结构。表示方式和缓冲区所有权见 [Arrow 契约](arrow-streams_zh.md)。
 

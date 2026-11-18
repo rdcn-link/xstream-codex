@@ -76,13 +76,13 @@ steps:
         source = output.getvalue()
         digest = hashlib.sha256(source).hexdigest()
         api('/v1/blobs/sha256/' + digest, 'PUT', raw=source)
-        inputs = {} if role == 'source' else {'result': {'representations': ['variable'], 'formats': []}}
+        inputs = {} if role == 'source' else {'result': {'representations': ['variant'], 'formats': []}}
         params = properties if role == 'source' else {}
         manifest = {
             'api_version': 2, 'name': operator, 'version': '1.0', 'role': role, 'type': 'sdk',
             'description': 'Read a selected catalog Item View as a stream.' if role == 'source' else 'Return named result streams to the Job caller without publishing a dataset.',
-            'icon': {'path': 'M5 6h14v5H5zM12 11v9m-4-4 4 4 4-4' if role == 'source' else 'M4 4h16v12H4zM8 20h8M12 16v4' if role == 'source' else '#a56d1d'},
-            'inputs': inputs, 'outputs': {'result': {'view': 'variable', 'view_from': {'parameter': 'view'}}} if role == 'source' else {}, 'parameters': {'type': 'object', 'properties': params, 'required': ['uri'] if role == 'source' else [], 'additionalProperties': False},
+            'icon': {'path': 'M5 6h14v5H5zM12 11v9m-4-4 4 4 4-4' if role == 'source' else 'M4 4h16v12H4zM8 20h8M12 16v4'},
+            'inputs': inputs, 'outputs': {'result': {'view': 'variant', 'view_from': {'parameter': 'view'}}} if role == 'source' else {}, 'parameters': {'type': 'object', 'properties': params, 'required': ['uri'] if role == 'source' else [], 'additionalProperties': False},
             'execution': {'executor': 'stream', 'entrypoint': operation, 'config': {}},
             'runtime': {'image': runtime['image'], 'archive': runtime['archive']},
             'build': {'language': 'stream'}, 'source_public': True,

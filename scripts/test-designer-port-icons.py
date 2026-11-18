@@ -27,7 +27,7 @@ async def main():
           function manifest(){return definition;}
         ''' + renderer)
         await page.evaluate('''() => {
-          for(const view of ['bytes','records','array','items','sequence','variable','plugin_view']){
+          for(const view of ['bytes','records','array','items','sequence','variant','plugin_view']){
             definition.outputs[view]={view};
             const button=el('button');button.id=view;labelPort(button,{},view);document.querySelector('.out').append(button);
           }
@@ -36,28 +36,30 @@ async def main():
           }
         }''')
         paths=[]
-        for view in ['bytes','records','array','items','sequence','variable','plugin_view']:
+        for view in ['bytes','records','array','items','sequence','variant','plugin_view']:
             icon=page.locator(f'#{view} .port-view')
             await expect(icon).to_have_attribute('data-view',view)
             await expect(icon).to_have_text('')
             await expect(icon).to_have_attribute('role','img')
-            assert view in await icon.get_attribute('aria-label') or view=='variable'
+            assert view in await icon.get_attribute('aria-label') or view=='variant'
             assert await icon.get_attribute('title')
             assert (await icon.bounding_box())['width']==18
             paths.append(await icon.locator('path').get_attribute('d'))
         assert len(set(paths))==len(paths)
+        await expect(page.locator('#variant .port-view circle')).to_have_attribute('fill','currentColor')
+        await expect(page.locator('#variant .port-view')).to_have_css('color','rgb(117, 88, 161)')
         await expect(page.locator('#input .port-view')).to_have_attribute('data-view','records')
         await expect(page.locator('#pending .port-view')).to_have_attribute('data-view','pending')
         for actual in ['records','bytes','items','array']:
             await page.evaluate('''actual => {
-              globalThis.report={steps:{read:{outputs:{variable:{representations:[actual]}}}}};
-              labelPort(document.querySelector('#variable'),{},'variable');
+              globalThis.report={steps:{read:{outputs:{variant:{representations:[actual]}}}}};
+              labelPort(document.querySelector('#variant'),{},'variant');
             }''', actual)
-            await expect(page.locator('#variable .port-view')).to_have_attribute('data-view','variable')
+            await expect(page.locator('#variant .port-view')).to_have_attribute('data-view','variant')
         # A multi-type list must never turn into a wide, slash-separated interface label.
         assert await page.evaluate("PortViews.input({inputs:{source:{representations:['bytes','records']}}},'source')") is None
         await browser.close()
-    print('PASS: compact icons, accessible names, custom Views, loading state and variable invariance')
+    print('PASS: compact icons, accessible names, custom Views, loading state and variant invariance')
 
 if __name__ == '__main__':
     asyncio.run(main())
