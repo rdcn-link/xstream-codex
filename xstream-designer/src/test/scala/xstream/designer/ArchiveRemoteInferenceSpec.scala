@@ -13,7 +13,7 @@ import java.net.http.{HttpClient,HttpRequest,HttpResponse}
 import scala.sys.process._
 
 class ArchiveRemoteInferenceSpec extends AnyFunSuite {
-  test("remote and target-context archive inference select bytes before testing kind and export YAML") {
+  test("public target and private transport support archive inference and YAML export") {
     val dir=Files.createTempDirectory("designer-remote-zip-");val allocator=new RootAllocator()
     val cert=dir.resolve("cert.pem");val key=dir.resolve("key.pem")
     require(Process(Seq("openssl","req","-x509","-newkey","rsa:2048","-nodes","-days","1","-subj","/CN=localhost","-addext","subjectAltName=DNS:localhost","-keyout",key.toString,"-out",cert.toString)).!(ProcessLogger(_=>(),_=>()))==0)
@@ -34,8 +34,9 @@ class ArchiveRemoteInferenceSpec extends AnyFunSuite {
       }
     }
     val server=FlightServer.builder(allocator,Location.forGrpcTls("localhost",0),producer).useTls(cert.toFile,key.toFile).build().start()
-    val origin=s"dacp://localhost:${server.getPort}"
-    val config=Documents.mapping(s"host: 127.0.0.1\nport: 0\nremote_operator_library_urls: ['http://127.0.0.1:1']\nnodes:\n- {url: '$origin', ca: '$cert'}\n")
+    val origin="dacp://demo.example.org:443"
+    val transport=s"dacp://localhost:${server.getPort}"
+    val config=Documents.mapping(s"host: 127.0.0.1\nport: 0\nremote_operator_library_urls: ['http://127.0.0.1:1']\nnodes:\n- {url: '$origin', connect_url: '$transport', ca: '$cert'}\n")
     val site=new Designer(config);site.start();val client=HttpClient.newHttpClient()
     def post(path:String,body:com.fasterxml.jackson.databind.JsonNode)=client.send(HttpRequest.newBuilder(URI.create(s"http://127.0.0.1:${site.address.getPort}"+path)).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(body.toString)).build(),HttpResponse.BodyHandlers.ofString())
     try {

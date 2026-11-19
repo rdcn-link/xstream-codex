@@ -89,6 +89,13 @@ final class Designer(config:JsonNode) extends AutoCloseable {
   private val workerSettings=InferenceWorkerSettings.read(Option(config.get("inference_workers")).map(n=>Json.mapper.convertValue(n,classOf[java.util.LinkedHashMap[String,Object]]).asInstanceOf[Object]))
   private val localCatalog=new xstream.data.ConfiguredDataCatalog(config.path("local_catalog"),inferencePlugins)
   private val nodeConnections=config.path("nodes").elements.asScala.toVector
+  private def connectOrigin(node:JsonNode):String=node.path("connect_url").asText(node.path("url").asText).stripSuffix("/")
+  nodeConnections.filter(_.has("connect_url")).foreach { node =>
+    require(node.path("connect_url").isTextual,"connect_url must be a string")
+    val url=connectOrigin(node)
+    CatalogConnections.origin(url)
+    require(URI.create(url).getRawPath.isEmpty,"connect_url must be a DACP service origin")
+  }
   private val connections=nodeConnections.groupBy(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)).values.map(_.head).toVector.sortBy(_.path("url").asText)
   private def connection(value:String):JsonNode=connections.find(n=>_root_.xstream.connector.dacp.wire.RemoteOrigin.canonical(n.path("url").asText)==CatalogConnections.origin(value)).getOrElse(throw new IllegalArgumentException("Node is not configured"))
   private val inferenceRuntime=new OperatorInferenceService(inferenceCache.resolve("local"),repositoryUrls,
@@ -129,7 +136,8 @@ final class Designer(config:JsonNode) extends AutoCloseable {
     val parts=Option(uri.getPath).getOrElse("").stripPrefix("/").split("/",2)
     require(parts.length==2 && parts.forall(_.nonEmpty),"expected dataset and Item path")
     cancel.active()
-    Using.resource(cancel.add(Source.open(origin+"/"+parts(0),credentials,15)))(dataset=>f(dataset,"/"+parts(1)))
+    val endpoint=configured.fold(origin)(connectOrigin)
+    Using.resource(cancel.add(Source.open(endpoint+"/"+parts(0),credentials,15)))(dataset=>f(dataset,"/"+parts(1)))
   }
   private def inferSource(value:String,requested:String,selection:Option[JsonNode],limits:Option[PreviewLimits],cancel:StreamCancel):StreamDescriptor={
     val base=if(value.startsWith("context:")){
@@ -297,14 +305,19 @@ final class Designer(config:JsonNode) extends AutoCloseable {
         val directory=localCatalog.catalog.directory(()=>());out.put("complete",directory.complete).put("unavailable_sources",directory.unavailableSources)
         directory.entries.foreach(d=>a.addObject().put("name",d.name).put("uri",new URI("context",null,"/"+d.name,null).toASCIIString).put("description",d.description))
       }else {
-        val t=connection(uri);val directory=Source.datasets(t.path("url").asText,tls(t),15);out.put("complete",directory.complete).put("unavailable_sources",directory.unavailableSources)
-        directory.foreach(d=>a.addObject().put("name",d.name).put("uri",if(requested=="context:/")new URI("context",null,"/"+d.name,null).toASCIIString else d.uri).put("description",d.description))
+        val t=connection(uri);val directory=Source.datasets(connectOrigin(t),tls(t),15);out.put("complete",directory.complete).put("unavailable_sources",directory.unavailableSources)
+        directory.foreach { d =>
+          val advertised=if(requested=="context:/")new URI("context",null,"/"+d.name,null).toASCIIString
+            else if(t.has("connect_url"))t.path("url").asText.stripSuffix("/")+URI.create(d.uri).getRawPath
+            else d.uri
+          a.addObject().put("name",d.name).put("uri",advertised).put("description",d.description)
+        }
       };out
     case "/api/items"=>
       val uri=contextual(n.path("uri").asText,selectedTarget(n));val out=Json.obj();val list=out.putArray("items");val path=n.path("path").asText("/")
       if(uri.startsWith("context:"))Using.resource(localCatalog.open(URI.create(uri).getPath.stripPrefix("/"))){ds=>ds.list(path).foreach {i=>
         val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");inferencePlugins.views(i).foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))
-      }}else {val t=connection(uri);Using.resource(Source.open(uri,tls(t),15)){ds=>ds.list(path).foreach{i=>val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");i.views.foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))}}};out
+      }}else {val t=connection(uri);val address=connectOrigin(t)+URI.create(uri).getRawPath;Using.resource(Source.open(address,tls(t),15)){ds=>ds.list(path).foreach{i=>val x=list.addObject().put("path",i.path).put("kind",i.kind).put("format",i.format);val vs=x.putArray("views");i.views.foreach(vs.add);i.schema.foreach(s=>x.set[JsonNode]("schema",Json.mapper.readTree(s.toJson)));i.creationTimeMs.foreach(t=>x.put("creation_time_ms",t));i.lastModifiedTimeMs.foreach(t=>x.put("last_modified_time_ms",t))}}};out
     case "/api/mapping"=>Documents.mapping(n.path("yaml").asText)
     case "/api/document"=>val j=document(n,empty=true);val out=Json.obj().put("job_yaml",YamlDocument.dump(j)).put("variables_yaml",YamlDocument.dump(Documents.variables(n.path("variables_yaml").asText)));out.set[JsonNode]("job",j);out
     case "/api/export"=>val j=document(n);if(n.path("include_designer").asBoolean(true))DesignerLayout.stamp(j) else j.asInstanceOf[com.fasterxml.jackson.databind.node.ObjectNode].remove("designer");Json.obj().put("job_yaml",YamlDocument.dump(j)).put("variables_yaml",YamlDocument.dump(Documents.variables(n.path("variables_yaml").asText)))

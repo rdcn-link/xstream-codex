@@ -197,6 +197,8 @@ nodes:
     token_file: /etc/dacp/node-a.token
 ```
 
+当公开地址由反向代理提供时，可选的 `connect_url` 指定 Designer 服务端实际连接的 DACP 地址。界面、Target 和复制的 URI 都采用 `url`，配置的 CA 和 Token 仅供服务端连接使用。
+
 设计器通过 XStream 插件契约绑定 JVM 级 DataCatalog。可用 `local_catalog.data_catalog` 配置自定义 DataCatalogProvider，替代静态数据集。详见 [XStream 引擎](../docs/xstream_zh.md)和 [Job 读取参数](../docs/jobs_zh.md)。
 
 目录浏览以当前实现为准：左侧 **Catalogs** 初始只加载本地目录及配置的服务根；展开后才加载数据集和文件夹。Target 默认为 Local；上下文目录随 Target 切换，该目录的 Item 使用 `context:`，其他目录使用完整 DACP URI。`item_source` 的结构及样例读取使用对应目录。

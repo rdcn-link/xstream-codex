@@ -197,6 +197,8 @@ nodes:
     token_file: /etc/dacp/node-a.token
 ```
 
+When a reverse proxy serves the public address, the optional `connect_url` specifies the DACP endpoint used by the Designer server. The interface, Target and copied URIs use `url`. The configured CA and Token remain available only to the server-side connection.
+
 The designer binds one JVM-wide DataCatalog through XStream plugin contracts. `local_catalog.data_catalog` can configure a custom DataCatalogProvider instead of static datasets. See [XStream engine](../docs/xstream.md) and [Job read parameters](../docs/jobs.md).
 
 The Catalogs tree distinguishes host roots, datasets, folders and data Items with separate icons. Roots load at startup and children load on expansion.
