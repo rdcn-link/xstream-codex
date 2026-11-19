@@ -2,7 +2,7 @@
 
 <img src="assets/xstream-logo.svg" alt="XStream" width="96">
 
-[中文](README_zh.md)
+[中文](README_zh.md) · [Official website](https://xstream.conox.cn/)
 
 XStream provides Dataset management and Job execution through a Scala data SDK, an embeddable streaming engine and a browser-based visual designer. Steps consume and produce streams; intermediate data need not be saved as files. Explicit execution policies enable whole-Job recovery when required.
 

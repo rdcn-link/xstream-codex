@@ -2,7 +2,7 @@
 
 <img src="assets/xstream-logo.svg" alt="XStream" width="96">
 
-[English](README.md)
+[English](README.md) · [官方网站](https://xstream.conox.cn/)
 
 XStream 提供 Dataset 管理与 Job 执行，包含 Scala 数据 SDK、可嵌入的流式引擎和浏览器图形设计器。步骤消费和生成数据流，中间数据无需保存为文件；失败恢复采用完整 Job 重跑，最终结果通过 Sink 生命周期提交。
 
